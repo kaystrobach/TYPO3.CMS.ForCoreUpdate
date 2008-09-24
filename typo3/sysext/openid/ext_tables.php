@@ -19,14 +19,14 @@ function tx_openid_addToPalette($tableName, $fieldName, $newFields) {
 		die('No field named \'' . $fieldName . '\' found in $TCA for the table named \'' . $tableName . '\'');
 	} else {
 		// Process all definitions
-		foreach ($GLOBALS['TCA']['types'] as $typeCode => $typeDefinition) {
+		foreach ($GLOBALS['TCA'][$tableName]['types'] as $typeCode => $typeDefinition) {
 			$fieldDefinitionModified = false;
 			// Expand comma-separated list of values
-			$fields = t3lib_div::trimExplode(',', $typeDefinition, true);
+			$fields = t3lib_div::trimExplode(',', $typeDefinition['showitem'], true);
 			foreach ($fields as &$field) {
 				// $code1 to $code4 are subcodes separated by a semicolon.
 				// We are not interested here in their values
-				list($currentFieldName, $code1, $palleteCode, $code3, $code4) = explode(';', $field, 2);
+				list($currentFieldName, $code1, $palleteCode, $code3, $code4) = explode(';', $field, 5);
 				if (trim($currentFieldName) === $fieldName) {
 					// Found the field, now look if it already has palettes.
 					// If there is no palette, create a new one and reassemble
@@ -39,18 +39,26 @@ function tx_openid_addToPalette($tableName, $fieldName, $newFields) {
 						// Now find the next free palette number
 						// This loop does not have limitation because number of palletes is
 						// limited anyway. It will stop eventially
-						for ($palleteCode = 1; !isset($GLOBALS['TCA'][$tableName]['palettes'][$palleteCode]); $palleteCode++) {
+						for ($palleteCode = 1; isset($GLOBALS['TCA'][$tableName]['palettes'][$palleteCode]); $palleteCode++) {
 							// Empty loop. We simply need to increase counter until we found a free number
 						}
-						// Put field definition back
-						$field = $curr
+						// Put field definition back. Note that it will create the full field definition
+						// (with all four semicolons) even if original had only some semicolons
+						$field = $currentFieldName . ';' . $code1 . ';' . $palleteCode . ';' . $code3 . ';' . $code4;
+						$fieldDefinitionModified = true;
 					}
 					// Now we check if palette already contains anything
 					if ($GLOBALS['TCA'][$tableName]['palettes'][$palleteCode]['showitem']) {
 						$GLOBALS['TCA'][$tableName]['palettes'][$palleteCode]['showitem'] .= ',';
 					}
 					$GLOBALS['TCA'][$tableName]['palettes'][$palleteCode]['showitem'] .= $newFields;
+					// We processed the field, stop the loop
+					break;
 				}
+			}
+			// If we added a new palette, we need to put modified field definition back
+			if ($fieldDefinitionModified) {
+				$GLOBALS['TCA'][$tableName]['types'][$typeCode]['showitem'] = implode(',', $fields);
 			}
 		}
 	}
@@ -64,7 +72,8 @@ $tempColumns = array (
 		'config' => array (
 			'type' => 'input',
 			'size' => '30',
-			'eval' => 'trim,nospace',
+			// Requirement: unique (BE users are unique in the whole system)
+			'eval' => 'trim,nospace,unique',
 		)
 	),
 );
@@ -72,7 +81,9 @@ $tempColumns = array (
 // Add new columns to be_users table
 t3lib_div::loadTCA('be_users');
 t3lib_extMgm::addTCAcolumns('be_users', $tempColumns, false);
-t3lib_extMgm::addToAllTCAtypes('be_users','tx_openid_openid;;;;1-1-1');
+//t3lib_extMgm::addToAllTCAtypes('be_users','tx_openid_openid;;;;1-1-1');
+tx_openid_addToPalette('be_users', 'username', 'tx_openid_openid');
+t3lib_extMgm::addLLrefForTCAdescr('be_users', 'EXT:' . $_EXTKEY . '/locallang_csh.xml');
 
 // Prepare new columns for fe_users table
 $tempColumns = array (
@@ -82,7 +93,8 @@ $tempColumns = array (
 		'config' => array (
 			'type' => 'input',
 			'size' => '30',
-			'eval' => 'trim,nospace',
+			// Requirement: uniqueInPid (FE users are pid-specific)
+			'eval' => 'trim,nospace,uniqueInPid',
 		)
 	),
 );
@@ -90,6 +102,8 @@ $tempColumns = array (
 // Add new columns to fe_users table
 t3lib_div::loadTCA('fe_users');
 t3lib_extMgm::addTCAcolumns('fe_users', $tempColumns, false);
-t3lib_extMgm::addToAllTCAtypes('fe_users', 'tx_openid_openid;;;;1-1-1');
+//t3lib_extMgm::addToAllTCAtypes('fe_users', 'tx_openid_openid;;;;1-1-1');
+tx_openid_addToPalette('fe_users', 'username', 'tx_openid_openid');
+t3lib_extMgm::addLLrefForTCAdescr('fe_users', 'EXT:' . $_EXTKEY . '/locallang_csh.xml');
 
 ?>
