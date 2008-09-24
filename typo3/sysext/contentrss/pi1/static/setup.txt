@@ -1,0 +1,16 @@
+rssContent = PAGE
+rssContent {
+	typeNum = 911
+
+	10 < tx_contentrss_pi1
+	
+	config {
+	disableAllHeaderCode = 1
+	additionalHeaders = Content-type:application/xml
+	xhtml_cleaning = 0
+	admPanel = 0
+	}
+}
+plugin.tx_contentrss_pi1 {
+
+}
