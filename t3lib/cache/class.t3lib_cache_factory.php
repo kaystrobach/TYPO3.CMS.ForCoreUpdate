@@ -88,7 +88,6 @@ class t3lib_cache_Factory {
 			);
 		}
 
-
 			// loading the cache frontend file and class
 		list($cacheFile, $cacheClassReference) = explode(
 			':',
