@@ -239,21 +239,33 @@ class t3lib_TStemplate	{
 	 * Fetches the "currentPageData" array from cache
 	 *
 	 * NOTE about currentPageData:
-	 * It holds information about the TypoScript conditions along with the list of template uid's which is used on the page.
-	 * In the getFromCache function in TSFE, currentPageData is used to evaluate if there is a template and if the matching conditions are alright.
-	 * Unfortunately this does not take into account if the templates in the rowSum of currentPageData has changed composition, eg. due to hidden fields or start/end time.
-	 * So if a template is hidden or times out, it'll not be discovered unless the page is regenerated - at least the this->start function must be called, because this will make a new portion of data in currentPageData string.
+	 * It holds information about the TypoScript conditions along with the list
+	 * of template uid's which is used on the page. In the getFromCache function
+	 * in TSFE, currentPageData is used to evaluate if there is a template and
+	 * if the matching conditions are alright. Unfortunately this does not take
+	 * into account if the templates in the rowSum of currentPageData has
+	 * changed composition, eg. due to hidden fields or start/end time. So if a
+	 * template is hidden or times out, it'll not be discovered unless the page
+	 * is regenerated - at least the this->start function must be called,
+	 * because this will make a new portion of data in currentPageData string.
 	 *
 	 * @return	array		Returns the unmatched array $currentPageData if found cached in "cache_pagesection". Otherwise false is returned which means that the array must be generated and stored in the cache-table
 	 * @see start(), tslib_fe::getFromCache()
 	 */
 	function getCurrentPageData()	{
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('content', 'cache_pagesection', 'page_id='.intval($GLOBALS['TSFE']->id).' AND mpvar_hash='.t3lib_div::md5int($GLOBALS['TSFE']->MP));
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'content',
+			'cache_pagesection',
+			'page_id = ' . intval($GLOBALS['TSFE']->id)
+				. ' AND mpvar_hash = ' . t3lib_div::md5int($GLOBALS['TSFE']->MP)
+		);
+
 		if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))	{
 			$currentPageData = unserialize($row['content']);
 		} else {
 			$currentPageData = false;
 		}
+
 		return $currentPageData;	// 2008-02-03 / Stucki: Notice that $this->currentPageData is not used anymore!
 	}
 
@@ -292,7 +304,13 @@ class t3lib_TStemplate	{
 		if (is_array($theRootLine)) {
 			$setupData = '';
 			$hash = '';
-			$isCached = false;	// Flag that indicates that the existing data in cache_pagesection could be used (this is the case if $TSFE->all is set, and the rowSum still matches). Based on this we decide if cache_pagesection needs to be updated...
+
+				// Flag that indicates that the existing data in cache_pagesection
+				// could be used (this is the case if $TSFE->all is set, and the
+				// rowSum still matches). Based on this we decide if cache_pagesection
+				// needs to be updated...
+			$isCached = false;
+
 			$this->runThroughTemplates($theRootLine);
 
 			if ($GLOBALS['TSFE']->all) {
@@ -381,7 +399,14 @@ class t3lib_TStemplate	{
 					'tstamp' => $GLOBALS['EXEC_TIME']
 				);
 				$mpvar_hash = t3lib_div::md5int($GLOBALS['TSFE']->MP);
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('cache_pagesection', 'page_id=' . intval($GLOBALS['TSFE']->id) . ' AND mpvar_hash=' . $mpvar_hash, $dbFields);
+
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					'cache_pagesection',
+					'page_id = ' . intval($GLOBALS['TSFE']->id)
+						. ' AND mpvar_hash = ' . $mpvar_hash,
+					$dbFields
+				);
+
 				if ($GLOBALS['TYPO3_DB']->sql_affected_rows() == 0) {
 					$dbFields['page_id'] = intval($GLOBALS['TSFE']->id);
 					$dbFields['mpvar_hash'] = $mpvar_hash;

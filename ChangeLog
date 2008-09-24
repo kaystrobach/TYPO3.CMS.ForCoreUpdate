@@ -1,3 +1,7 @@
+2008-09-24  Ingo Renner  <ingo@typo3.org>
+
+	* cleaned up some code regarding the page caching to prepare for transition to t3lib_cache
+
 2008-08-30  Kasper Skårhøj  <kaspe@typo3.org>
 	* [Testing commit permissions by editing changelog.....]
 
