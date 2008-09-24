@@ -24,15 +24,29 @@
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
- * Hint: use extdeveval to insert/update function index above.
+ *
+ *
+ *   44: class tx_openid_eID
+ *   50:     public function main()
+ *
+ * TOTAL FUNCTIONS: 1
+ * (This index is automatically created/updated by the extension "extdeveval")
+ *
  */
 
+/**
+ * This class is the OpenID return script for the TYPO3 Frontend.
+ *
+ * $Id: $
+ *
+ * @author	Dmitry Dulepov <dmitry@typo3.org>
+ */
 class tx_openid_eID {
 	/**
-	 * Processes eID request.
-	 *
-	 * @return	void
-	 */
+	* Processes eID request.
+	*
+	* @return	void
+	*/
 	public function main() {
 		// Due to the nature of OpenID (redrections, etc) we need to force user
 		// session fetching is there is no session around. This ensures that

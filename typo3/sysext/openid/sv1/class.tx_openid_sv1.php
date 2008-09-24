@@ -22,24 +22,23 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * $Id: $
- *
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
  *
- *   54: class tx_openid_sv1 extends t3lib_svbase
- *   89:     public function init()
- *  111:     public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$pObj)
- *  131:     public function getUser()
- *  168:     public function authUser(array $userRecord)
- *  209:     protected function includePHPOpenIDLibrary()
- *  231:     protected function fetchUserRecord($openIDIdentifier)
- *  249:     protected function getOpenIDConsumer()
- *  272:     protected function sendOpenIDRequest()
- *  340:     protected function getReturnURL()
+ *   57: class tx_openid_sv1 extends t3lib_svbase
+ *   92:     public function init()
+ *  119:     public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$pObj)
+ *  139:     public function getUser()
+ *  176:     public function authUser(array $userRecord)
+ *  221:     protected function includePHPOpenIDLibrary()
+ *  250:     protected function fetchUserRecord($openIDIdentifier)
+ *  273:     protected function getOpenIDConsumer()
+ *  300:     protected function sendOpenIDRequest()
+ *  368:     protected function getReturnURL()
+ *  414:     protected function writeLog($message)
  *
- * TOTAL FUNCTIONS: 9
+ * TOTAL FUNCTIONS: 10
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -48,6 +47,8 @@ require_once(PATH_t3lib . 'class.t3lib_svbase.php');
 
 /**
  * Service "OpenID Authentication" for the "openid" extension.
+ *
+ * $Id: $
  *
  * @author	Dmitry Dulepov <dmitry@typo3.org>
  * @package	TYPO3
@@ -403,7 +404,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * This function accepts variable number of arguments and can format
 	 * parameters. The syntax is the same as for sprintf()
 	 *
-	 * @param	string	$message	Message to output
+	 * @param	string		$message	Message to output
 	 * @return	void
 	 * @see	sprintf()
 	 * @see	t3lib::divLog()

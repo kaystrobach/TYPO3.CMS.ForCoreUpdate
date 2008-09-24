@@ -24,7 +24,14 @@
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
- * Hint: use extdeveval to insert/update function index above.
+ *
+ *
+ *   59: class tx_openid_return
+ *   65:     public function main()
+ *
+ * TOTAL FUNCTIONS: 1
+ * (This index is automatically created/updated by the extension "extdeveval")
+ *
  */
 
 if (!$TYPO3_CONF_VARS['BE']['compressionLevel']) {
@@ -42,12 +49,19 @@ if (isset($_GET['login_status'])) {
 define('TYPO3_MOD_PATH', 'sysext/openid/');
 require_once('../../init.php');
 
+/**
+ * This class is the OpenID return script for the TYPO3 Backend.
+ *
+ * $Id: $
+ *
+ * @author	Dmitry Dulepov <dmitry@typo3.org>
+ */
 class tx_openid_return {
 	/**
-	 * Processed Backend session creation and redirect to backend.php
-	 *
-	 * @return	void
-	 */
+	* Processed Backend session creation and redirect to backend.php
+	*
+	* @return	void
+	*/
 	public function main() {
 		if ($GLOBALS['BE_USER']->user['uid']) {
 			@ob_end_clean();
