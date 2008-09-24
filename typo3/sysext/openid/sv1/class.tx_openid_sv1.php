@@ -27,40 +27,40 @@
  * Hint: use extdeveval to insert/update function index above.
  */
 
-require_once(PATH_t3lib.'class.t3lib_svbase.php');
+require_once(PATH_t3lib . 'class.t3lib_svbase.php');
 
 
 /**
- * Service "OpenID Authentication" for the "openidauth" extension.
+ * Service "OpenID Authentication" for the "openid" extension.
  *
  * @author	Dmitry Dulepov <dmitry@typo3.org>
  * @package	TYPO3
- * @subpackage	tx_openidauth
+ * @subpackage	tx_openid
  */
-class tx_openidauth_sv1 extends t3lib_svbase {
-				var $prefixId = 'tx_openidauth_sv1';		// Same as class name
-				var $scriptRelPath = 'sv1/class.tx_openidauth_sv1.php';	// Path to this script relative to the extension dir.
-				var $extKey = 'openidauth';	// The extension key.
-	
-				/**
+class tx_openid_sv1 extends t3lib_svbase {
+	var $prefixId = 'tx_openid_sv1';		// Same as class name
+	var $scriptRelPath = 'sv1/class.tx_openid_sv1.php';	// Path to this script relative to the extension dir.
+	var $extKey = 'openid';	// The extension key.
+
+	/**
 	 * [Put your description here]
 	 *
 	 * @return	[type]		...
 	 */
-				function init()	{
-					$available = parent::init();
-	
-					// Here you can initialize your class.
-	
-					// The class have to do a strict check if the service is available.
-					// The needed external programs are already checked in the parent class.
-	
-					// If there's no reason for initialization you can remove this function.
-	
-					return $available;
-				}
-	
-				/**
+	function init()	{
+		$available = parent::init();
+
+		// Here you can initialize your class.
+
+		// The class have to do a strict check if the service is available.
+		// The needed external programs are already checked in the parent class.
+
+		// If there's no reason for initialization you can remove this function.
+
+		return $available;
+	}
+
+	/**
 	 * [Put your description here]
 	 * performs the service processing
 	 *
@@ -69,19 +69,19 @@ class tx_openidauth_sv1 extends t3lib_svbase {
 	 * @param	array		Configuration array
 	 * @return	boolean
 	 */
-				function process($content='', $type='', $conf=array())	{
-	
-					// Depending on the service type there's not a process() function.
-					// You have to implement the API of that service type.
-	
-					return FALSE;
-				}
+	function process($content='', $type='', $conf=array())	{
+
+		// Depending on the service type there's not a process() function.
+		// You have to implement the API of that service type.
+
+		return FALSE;
+	}
 }
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/openidauth/sv1/class.tx_openidauth_sv1.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/openidauth/sv1/class.tx_openidauth_sv1.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/openid/sv1/class.tx_openid_sv1.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/openid/sv1/class.tx_openid_sv1.php']);
 }
 
 ?>
