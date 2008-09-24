@@ -21,6 +21,7 @@
 	* Changed adding and retrieving a page to/from the cache to use the t3lib_cache
 	* Added a method flushByTags() to the t3lib_cache classes
 	* Added a method addCacheTags() to tslib_fe so that extensions can easily tag cache entries for pages
+	* Added the caching framework in typo3/init.php so that it is available in the BE, too
 
 2008-09-23  Martin Kutschker  <masi@typo3.org>
 
