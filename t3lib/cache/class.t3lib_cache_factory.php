@@ -92,7 +92,7 @@ class t3lib_cache_Factory {
 			// loading the cache frontend file and class
 		list($cacheFile, $cacheClassReference) = explode(
 			':',
-			$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['caches'][$cacheName]
+			$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheFrontends'][$cacheName]
 		);
 
 		$cacheRequireFile = t3lib_div::getFileAbsFileName($cacheFile);
