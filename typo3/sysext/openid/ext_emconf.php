@@ -27,14 +27,17 @@ $EM_CONF[$_EXTKEY] = array(
 	'createDirs' => 'typo3temp/tx_openid',
 	'modify_tables' => 'fe_users,be_users',
 	'clearCacheOnLoad' => 0,
-	'lockType' => '',
+	'lockType' => 'system',
 	'author_company' => 'TYPO3 core team',
 	'version' => '0.1.0',
 	'constraints' => array(
 		'depends' => array(
-			'cms' => '',
+			'typo3' => '4.3-',
+			'php' => '5.2.0-'
 		),
 		'conflicts' => array(
+			'naw_openid' => '',
+			'naw_openid_be' => '',
 		),
 		'suggests' => array(
 		),
