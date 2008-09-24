@@ -472,7 +472,7 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 			);
 		} catch(t3lib_cache_exception_NoSuchCache $e) {
 			$this->pageCache = $GLOBALS['TYPO3_CACHE']->create(
-				'tx_cms_cache_pages',
+				'cache_pages',
 				't3lib_cache_VariableCache',
 				't3lib_cache_backend_Db', // TODO make the backend configurable
 				array(
