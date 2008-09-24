@@ -35,6 +35,7 @@
 	* Changed table cache_pagesection to use t3lib_cache
 	* Changed table cache_hash to use t3lib_cache
 	* Added indexes for the cache tables (cache_hash, cache_pages, cache_pagesection)
+	* Added options to change the backends used for each cache (cache_hash, cache_pages, cache_pagesection)
 
 2008-09-23  Martin Kutschker  <masi@typo3.org>
 

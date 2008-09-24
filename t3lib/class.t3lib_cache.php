@@ -32,12 +32,18 @@
  */
 class t3lib_cache {
 
+	/**
+	 * initializes the cache_pages cache
+	 *
+	 * @return	void
+	 * @author	Ingo Renner <ingo@typo3.org>
+	 */
 	public static function initPageCache() {
 		try {
 			$GLOBALS['TYPO3_CACHE']->create(
 				'cache_pages',
 				't3lib_cache_VariableCache',
-				't3lib_cache_backend_Db', // TODO make the backend configurable
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pages'],
 				array(
 					'cacheTable' => 'cache_pages'
 				)
@@ -47,12 +53,18 @@ class t3lib_cache {
 		}
 	}
 
+	/**
+	 * initializes the cache_pagesection cache
+	 *
+	 * @return	void
+	 * @author	Ingo Renner <ingo@typo3.org>
+	 */
 	public static function initPageSectionCache() {
 		try {
 			$GLOBALS['TYPO3_CACHE']->create(
 				'cache_pagesection',
 				't3lib_cache_VariableCache',
-				't3lib_cache_backend_Db', // TODO make the backend configurable
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pagesection'],
 				array(
 					'cacheTable' => 'cache_pagesection'
 				)
@@ -62,12 +74,18 @@ class t3lib_cache {
 		}
 	}
 
+	/**
+	 * initializes the cache_hash cache
+	 *
+	 * @return	void
+	 * @author	Ingo Renner <ingo@typo3.org>
+	 */
 	public static function initContentHashCache() {
 		try {
 			$GLOBALS['TYPO3_CACHE']->create(
 				'cache_hash',
 				't3lib_cache_VariableCache',
-				't3lib_cache_backend_Db', // TODO make the backend configurable
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_hash'],
 				array(
 					'cacheTable' => 'cache_hash'
 				)

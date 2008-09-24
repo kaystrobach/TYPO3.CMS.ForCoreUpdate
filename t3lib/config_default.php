@@ -110,6 +110,11 @@ $TYPO3_CONF_VARS = Array(
 				't3lib_cache_backend_Globals'   => 't3lib/cache/backend/class.t3lib_cache_backend_globals.php:t3lib_cache_backend_Globals',
 				't3lib_cache_backend_Memcached' => 't3lib/cache/backend/class.t3lib_cache_backend_memcached.php:t3lib_cache_backend_Memcached',
 				't3lib_cache_backend_Null'      => 't3lib/cache/backend/class.t3lib_cache_backend_null.php:t3lib_cache_backend_Null'
+			),
+			'cacheBackendAssignments' => array(
+				'cache_hash'        => 't3lib_cache_backend_Db',
+				'cache_pages'       => 't3lib_cache_backend_Db',
+				'cache_pagesection' => 't3lib_cache_backend_Db'
 			)
 		)
 	),
