@@ -18,6 +18,7 @@
 	* Backend user authentication is working with OpenID (tested with LiveJournal and Yahoo accounts)
 	* Add security to file-based OpenID store
 	* Added necessary "unique" evaluations on the OpenID field
+	* Patched OpenID library to use cURL proxy settings configured in TYPO3
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 
