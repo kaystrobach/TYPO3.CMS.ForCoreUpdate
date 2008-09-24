@@ -60,28 +60,20 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			return sprintf($this->pi_getLL('wrong_pagetype'), $this->cObj->typoLink($this->pi_getLL('this_link'), array('parameter' => $GLOBALS['TSFE']->id . ',' . $myType)));
 		} else {
 			//validate settings
-			$id = intval(t3lib_div::_GET('id'));
-			if ($id == 0) {
-				//use TS settings instead
-				if ($this->conf['pages'] == '') {
-					return $this->pi_getLL('no_pages_configured');
-				}					
-			} else {
-				//fetch tt_content record
-				$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
-					'pages,recursive',
-					'tt_content',
-					'list_type="contentrss_pi1" AND pid=' . $id . $this->cObj->enableFields('tt_content')
-				);
-				if (!$res) {
-					return $this->pi_getLL('no_pages_selected'); 
-				}
-				$row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-				$this->conf['pages'] = $row['pages'];
-				$this->conf['recursive'] = $row['recursive'];
+			$id = $GLOBALS['TSFE']->id;
+			//fetch tt_content record
+			$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
+				'pages,recursive',
+				'tt_content',
+				'list_type="contentrss_pi1" AND pid=' . $id . $this->cObj->enableFields('tt_content')
+			);
+			if (!$res) {
+				return $this->pi_getLL('no_pages_selected'); 
 			}
+			$row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			$this->conf['pages'] = $row['pages'];
+			$this->conf['recursive'] = $row['recursive'];
 		}
-		
 		
 		// init vars
 		$pidList = $this->pi_getPidList($this->conf['pages'], $this->conf['recursive']);
@@ -94,7 +86,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		
 		// fetch Content elements
 		$where = 'pid IN(' . $pidList .') AND tx_contentrss_excluderss=0';
-		$orderBy = $this->conf['orderBy'] ? $this->conf['orderBy'] : 'tstamp';
+		$orderBy = $this->conf['dateField'];
 		$limit = $this->conf['limit'] ? intval($this->conf['limit']) : '10';
 		
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -119,6 +111,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_content', $row, $GLOBALS['TSFE']->sys_language_content, $this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
 				}
 				if ($this->versioningEnabled) {
+#ToDO: check correct WS-Handling
 					// get workspaces Overlay
 					$GLOBALS['TSFE']->sys_page->versionOL('tt_content', $row);
 					// fix pid for record from workspace
@@ -143,15 +136,17 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		$template = $this->conf['rssTemplate'];		
 		$rowSubpart = $this->cObj->getSubpart($template, '###CONTENTROWS###');
 		$rowHeader = $this->cObj->getSubpart($template, '###HEADER###');
-		
-		$rowContent = '';
-		foreach($rows as $row) {
+		 
+		$rowContent = '';             
+		foreach($rows as $row) {   
+			//allow HTML Output
+			$content = $this->conf['stripHTML'] ? strip_tags($this->pi_RTEcssText($row['bodytext'])) : $this->pi_RTEcssText($row['bodytext']);
 			$markerArray = array(
 				'###TITLE###' => $row['header'] ? $row['header'] : '[no title]',
 				'###LINK###' => $this->conf['siteLink'] . $this->cObj->typoLink_URL(array('parameter' => $row['pid'], 'section' => 'c' . $row['uid'])),
-				'###CONTENT###' => t3lib_div::fixed_lgd(strip_tags($this->pi_RTEcssText($row['bodytext'])), $this->conf['contentLength']),
+				'###CONTENT###' => t3lib_div::fixed_lgd($content, $this->conf['contentLength']),
 				'###AUTHOR###' => $row['author'],
-				'###DATE###' => date('D, d M Y H:i:s O', $row['crdate']) 
+				'###DATE###' => date($this->conf['dateFormat'], $row[$this->conf['dateField']]) 
 			);
 			$rowContent .= $this->cObj->substituteMarkerArrayCached($rowSubpart, $markerArray, array(), array());	
 		}
@@ -169,7 +164,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			'###COPYRIGHT###' => $this->conf['rssCopyright'],
 			'###WEBMASTER###' => $this->conf['rssWebmaster'],
 			'###MANAGINGEDITOR###' => $this->conf['rssManagingEditor'],
-			'###LASTBUILD###' => date('D, d M Y H:i:s O')
+			'###LASTBUILD###' => date($this->conf['dateFormat'])
 			
 		);
 		return $this->cObj->substituteMarkerArrayCached($template, $markerArray, $subpartArray, array());

@@ -8,6 +8,10 @@ plugin.tx_contentrss_pi1 {
 	
 	#rss-related informations
 	limit = 10
+	dateField = tstamp
+	dateFormat = D, d M Y H:i:s O
+	stripHTML = 1
+	contentLength = 200
 	
 	#variables for the template
 	xmlDeclaration = <?xml version="1.0" encoding="utf-8"?>
