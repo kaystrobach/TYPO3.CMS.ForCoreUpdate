@@ -82,6 +82,13 @@ class tx_openid_sv1 extends t3lib_svbase {
 	protected $openIDResponse = null;
 
 	/**
+	 * A reference to the calling object
+	 *
+	 * @var	t3lib_userAuth
+	 */
+	protected $pObj;
+
+	/**
 	 * Checks if service is available,. In case of this service we check that
 	 * prerequesties for "PHP OpenID" libraries are fulfilled:
 	 * - GMP or BCMATH PHP extensions are installed and functional
@@ -126,6 +133,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 			$openIDConsumer = $this->getOpenIDConsumer();
 			$this->openIDResponse = $openIDConsumer->complete($this->getReturnURL());
 		}
+		$this->pObj = $pObj;
 	}
 
 	/**
@@ -149,6 +157,8 @@ class tx_openid_sv1 extends t3lib_svbase {
 					$claimedOpenIDIdentifier = t3lib_div::GPvar('tx_openid_claimed');
 					if ($claimedOpenIDIdentifier) {
 						$userRecord = $this->fetchUserRecord($claimedOpenIDIdentifier);
+						$this->writeLog('User \'%s\' logged in with OpenID \'%s\'',
+							$userRecord[$this->pObj->formfield_uname], $claimedOpenIDIdentifier);
 					}
 				}
 			} else {
@@ -413,7 +423,9 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 */
 	protected function writeLog($message) {
 		if (func_num_args() > 1) {
-			$message = vsprintf($message, array_slice(func_get_args(), 1));
+			$params = func_get_args();
+			array_shift($params);
+			$message = vsprintf($message, $params);
 		}
 		if (TYPO3_MODE == 'BE') {
 			t3lib_div::sysLog($message, $this->extKey, 1);
