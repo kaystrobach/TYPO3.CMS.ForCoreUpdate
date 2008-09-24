@@ -20,6 +20,7 @@
 	* Added necessary "unique" evaluations on the OpenID field
 	* Patched OpenID library to use cURL proxy settings configured in TYPO3
 	* openid system extension is reformatted with extdeveval
+	* Added manual for the OpenID extension
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 
