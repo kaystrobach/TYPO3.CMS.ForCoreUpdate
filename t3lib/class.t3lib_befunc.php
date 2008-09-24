@@ -1195,7 +1195,8 @@ final class t3lib_BEfunc {
 	 *******************************************/
 
 	/**
-	 * Stores the string value $data in the 'cache_hash' table with the hash key, $hash, and visual/symbolic identification, $ident
+	 * Stores the string value $data in the 'cache_hash' cache with the
+	 * hash key, $hash, and visual/symbolic identification, $ident
 	 * IDENTICAL to the function by same name found in t3lib_page:
 	 * Usage: 2
 	 *
@@ -1205,18 +1206,16 @@ final class t3lib_BEfunc {
 	 * @return	void
 	 */
 	public static function storeHash($hash, $data, $ident) {
-		$insertFields = array(
-			'hash' => $hash,
-			'content' => $data,
-			'ident' => $ident,
-			'tstamp' => time()
+		$GLOBALS['cacheManager']->getCache('cache_hash')->save(
+			$hash,
+			$data,
+			array('ident_' . $ident),
+			0 // unlimited lifetime
 		);
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_hash', 'hash='.$GLOBALS['TYPO3_DB']->fullQuoteStr($hash, 'cache_hash'));
-		$GLOBALS['TYPO3_DB']->exec_INSERTquery('cache_hash', $insertFields);
 	}
 
 	/**
-	 * Returns string value stored for the hash string in the table "cache_hash"
+	 * Returns string value stored for the hash string in the cache "cache_hash"
 	 * Can be used to retrieved a cached value
 	 * IDENTICAL to the function by same name found in t3lib_page
 	 * Usage: 2
@@ -1226,6 +1225,9 @@ final class t3lib_BEfunc {
 	 * @return	string
 	 */
 	public static function getHash($hash, $expTime = 0) {
+		$contentHashCache = $GLOBALS['cacheManager']->getCache('cache_hash');
+		$cacheEntry = $contentHashCache->load($hash);
+debug($cacheEntry, 'new');
 			// if expTime is not set, the hash will never expire
 		$expTime = intval($expTime);
 		if ($expTime) {
@@ -1234,7 +1236,8 @@ final class t3lib_BEfunc {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('content', 'cache_hash', 'hash='.$GLOBALS['TYPO3_DB']->fullQuoteStr($hash, 'cache_hash').$whereAdd);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
+debug($row, 'old');
+debug($row == $cacheEntry, 'equal');
 		return (is_array($row) ? $row['content'] : null);
 	}
 

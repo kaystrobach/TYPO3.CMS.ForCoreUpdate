@@ -62,7 +62,20 @@ class t3lib_cache {
 		}
 	}
 
-
+	public static function initContentHashCache() {
+		try {
+			$GLOBALS['TYPO3_CACHE']->create(
+				'cache_hash',
+				't3lib_cache_VariableCache',
+				't3lib_cache_backend_Db', // TODO make the backend configurable
+				array(
+					'cacheTable' => 'cache_hash'
+				)
+			);
+		} catch(t3lib_cache_exception_DuplicateIdentifier $e) {
+				// do nothing, a cache_hash cache already exists
+		}
+	}
 }
 
 

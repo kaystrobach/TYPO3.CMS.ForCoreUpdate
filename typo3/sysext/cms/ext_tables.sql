@@ -7,7 +7,7 @@
 # Table structure for table 'cache_pages'
 #
 CREATE TABLE cache_pages (
-  id int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+  id int(11) unsigned NOT NULL auto_increment,
   identifier varchar(32) DEFAULT '' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   data mediumtext,
@@ -21,7 +21,7 @@ CREATE TABLE cache_pages (
 # Table structure for table 'cache_pagesection'
 #
 CREATE TABLE cache_pagesection (
-  id int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+  id int(11) unsigned NOT NULL auto_increment,
   identifier varchar(32) DEFAULT '' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   data mediumtext,
