@@ -11,7 +11,7 @@ t3lib_extMgm::addService($_EXTKEY, 'auth' /* sv type */,  'tx_openid_sv1' /* sv 
 			'description' => 'OpenID authentication service for Frontend and Backend',
 			'subtype' => 'getUserFE,authUserFE,getUserBE,authUserBE',
 			'available' => true,
-			'priority' => 10,
+			'priority' => 75, // Must be higher than for tx_sv_auth (50) or tx_sv_auth will deny request unconditionally
 			'quality' => 50,
 			'os' => '',
 			'exec' => '',
