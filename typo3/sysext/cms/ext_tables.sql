@@ -13,7 +13,8 @@ CREATE TABLE cache_pages (
   data mediumtext,
   tags mediumtext,
   lifetime int(11) unsigned DEFAULT '0' NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  KEY cache_id (identifier)
 ) ENGINE=InnoDB;
 
 
@@ -27,7 +28,8 @@ CREATE TABLE cache_pagesection (
   data mediumtext,
   tags mediumtext,
   lifetime int(11) unsigned DEFAULT '0' NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  KEY cache_id (identifier)
 ) ENGINE=InnoDB;
 
 
