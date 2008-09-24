@@ -919,62 +919,45 @@ class t3lib_pageSelect {
 	 **********************************/
 
 	/**
-	 * Returns string value stored for the hash string in the table "cache_hash"
+	 * Returns string value stored for the hash string in the cache "cache_hash"
 	 * Can be used to retrieved a cached value
 	 * Can be used from your frontend plugins if you like. It is also used to store the parsed TypoScript template structures. You can call it directly like t3lib_pageSelect::getHash()
 	 *
 	 * @param	string		The hash-string which was used to store the data value
 	 * @param	integer		Allowed expiretime in seconds. Basically a record is selected only if it is not older than this value in seconds. If expTime is not set, the hashed value will never expire.
-	 * @return	string		The "content" field of the "cache_hash" table row.
+	 * @return	string		The "content" field of the "cache_hash" cache entry.
 	 * @see tslib_TStemplate::start(), storeHash()
 	 */
-	function getHash($hash,$expTime=0)	{
+	function getHash($hash, $expTime=0)	{
+		$hashContent = null;
+
 		$contentHashCache = $GLOBALS['cacheManager']->getCache('cache_hash');
 		$cacheEntry = $contentHashCache->load($hash);
-#debug($cacheEntry, 'new');
-			// if expTime is not set, the hash will never expire
-		$expTime = intval($expTime);
-		if ($expTime) {
-			$whereAdd = ' AND tstamp > '.(time()-$expTime);
+
+		if ($cacheEntry) {
+			$hashContent = $cacheEntry;
 		}
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('content', 'cache_hash', 'hash='.$GLOBALS['TYPO3_DB']->fullQuoteStr($hash, 'cache_hash').$whereAdd);
-		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-#debug($row, 'old');
-#debug($row == $cacheEntry, 'equal');
-		if ($row)	{
-			return $row['content'];
-		}
+
+		return $hashContent;
 	}
 
 	/**
-	 * Stores a string value in the cache_hash table identified by $hash.
+	 * Stores a string value in the cache_hash cache identified by $hash.
 	 * Can be used from your frontend plugins if you like. You can call it directly like t3lib_pageSelect::storeHash()
 	 *
 	 * @param	string		32 bit hash string (eg. a md5 hash of a serialized array identifying the data being stored)
 	 * @param	string		The data string. If you want to store an array, then just serialize it first.
-	 * @param	string		$ident is just a textual identification in order to inform about the content! May be 20 characters long.
+	 * @param	string		$ident is just a textual identification in order to inform about the content!
 	 * @return	void
 	 * @see tslib_TStemplate::start(), getHash()
 	 */
-	function storeHash($hash,$data,$ident)	{
+	function storeHash($hash, $data, $ident) {
 		$GLOBALS['cacheManager']->getCache('cache_hash')->save(
 			$hash,
 			$data,
 			array('ident_' . $ident),
 			0 // unlimited lifetime
 		);
-
-			// old stuff below
-
-		$insertFields = array(
-			'hash' => $hash,
-			'content' => $data,
-			'ident' => $ident,
-			'tstamp' => time()
-		);
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_hash', 'hash='.$GLOBALS['TYPO3_DB']->fullQuoteStr($hash, 'cache_hash'));
-		$GLOBALS['TYPO3_DB']->exec_INSERTquery('cache_hash', $insertFields);
 	}
 
 	/**

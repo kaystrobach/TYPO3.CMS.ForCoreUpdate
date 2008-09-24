@@ -7036,7 +7036,7 @@ State was change by %s (username: %s)
 						$GLOBALS['cacheManager']->getCache('cache_pagesection')->flush();
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_treelist', '');
 					}
-					$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_hash','');
+					$GLOBALS['cacheManager']->getCache('cache_hash')->flush();
 
 						// Clearing additional cache tables:
 					if (is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearAllCache_additionalTables']))	{

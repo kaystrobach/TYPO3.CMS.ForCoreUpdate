@@ -375,12 +375,12 @@ class t3lib_TStemplate	{
 				$hash = md5(serialize($cc));
 
 					// This stores the data.
-				t3lib_pageSelect::storeHash($hash, serialize($this->setup), 'TS TEMPLATE');
+				t3lib_pageSelect::storeHash($hash, serialize($this->setup), 'TS_TEMPLATE');
 
 				if ($this->tt_track)	$GLOBALS['TT']->setTSlogMessage('TS template size, serialized: '.strlen(serialize($this->setup)).' bytes');
 
 				$rowSumHash = md5('ROWSUM:'.serialize($this->rowSum));
-				t3lib_pageSelect::storeHash($rowSumHash, serialize($cc['all']), 'TMPL CONDITIONS - ALL');
+				t3lib_pageSelect::storeHash($rowSumHash, serialize($cc['all']), 'TMPL_CONDITIONS_ALL');
 			}
 				// Add rootLine
 			$cc['rootLine'] = $this->rootLine;

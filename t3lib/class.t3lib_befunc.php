@@ -1202,7 +1202,7 @@ final class t3lib_BEfunc {
 	 *
 	 * @param	string		32 bit hash string (eg. a md5 hash of a serialized array identifying the data being stored)
 	 * @param	string		The data string. If you want to store an array, then just serialize it first.
-	 * @param	string		$ident is just a textual identification in order to inform about the content! May be 20 characters long.
+	 * @param	string		$ident is just a textual identification in order to inform about the content!
 	 * @return	void
 	 */
 	public static function storeHash($hash, $data, $ident) {
@@ -1225,20 +1225,16 @@ final class t3lib_BEfunc {
 	 * @return	string
 	 */
 	public static function getHash($hash, $expTime = 0) {
+		$hashContent = null;
+
 		$contentHashCache = $GLOBALS['cacheManager']->getCache('cache_hash');
 		$cacheEntry = $contentHashCache->load($hash);
-debug($cacheEntry, 'new');
-			// if expTime is not set, the hash will never expire
-		$expTime = intval($expTime);
-		if ($expTime) {
-			$whereAdd = ' AND tstamp > '.(time()-$expTime);
+
+		if ($cacheEntry) {
+			$hashContent = $cacheEntry;
 		}
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('content', 'cache_hash', 'hash='.$GLOBALS['TYPO3_DB']->fullQuoteStr($hash, 'cache_hash').$whereAdd);
-		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-debug($row, 'old');
-debug($row == $cacheEntry, 'equal');
-		return (is_array($row) ? $row['content'] : null);
+
+		return $hashContent;
 	}
 
 

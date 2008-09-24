@@ -334,7 +334,7 @@ class SC_mod_web_ts_index extends t3lib_SCbase {
 		list($out['cache_pagesection']) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'count(hash)',
+			'count(id)',
 			'cache_hash',
 			''
 		);

@@ -2203,7 +2203,7 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 				$TCA = $newTc;
 				// Store it in cache if cache is enabled
 				if ($this->TYPO3_CONF_VARS['EXT']['extCache'] != 0) {
-					$this->sys_page->storeHash($tempHash, serialize(array($newTc,$this->TCAcachedExtras)), 'SHORT TC');
+					$this->sys_page->storeHash($tempHash, serialize(array($newTc,$this->TCAcachedExtras)), 'SHORT_TC');
 				}
 			}
 		}
