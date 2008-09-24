@@ -2773,7 +2773,7 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 	 * @return	void
 	 */
 	function clearPageCacheContent_pidList($pidList) {
-		$pageIds = explode(',', $pidList);
+		$pageIds = t3lib_div::trimExplode(',', $pidList);
 
 		foreach ($pageIds as $pageId) {
 			$this->pageCache->flushByTag('pageId_' . (int) $pageId);
