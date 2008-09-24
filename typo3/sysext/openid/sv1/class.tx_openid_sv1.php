@@ -24,7 +24,22 @@
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
- * Hint: use extdeveval to insert/update function index above.
+ *
+ *
+ *   54: class tx_openid_sv1 extends t3lib_svbase
+ *   89:     public function init()
+ *  111:     public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$pObj)
+ *  131:     public function getUser()
+ *  168:     public function authUser(array $userRecord)
+ *  209:     protected function includePHPOpenIDLibrary()
+ *  231:     protected function fetchUserRecord($openIDIdentifier)
+ *  249:     protected function getOpenIDConsumer()
+ *  272:     protected function sendOpenIDRequest()
+ *  340:     protected function getReturnURL()
+ *
+ * TOTAL FUNCTIONS: 9
+ * (This index is automatically created/updated by the extension "extdeveval")
+ *
  */
 
 require_once(PATH_t3lib . 'class.t3lib_svbase.php');
@@ -37,27 +52,27 @@ require_once(PATH_t3lib . 'class.t3lib_svbase.php');
  * @subpackage	tx_openid
  */
 class tx_openid_sv1 extends t3lib_svbase {
+	/** Class name */
 	public $prefixId = 'tx_openid_sv1';		// Same as class name
-	public $scriptRelPath = 'sv1/class.tx_openid_sv1.php';	// Path to this script relative to the extension dir.
-	public $extKey = 'openid';	// The extension key.
 
-	/**
-	 * Login data as passed to initAuth().
-	 *
-	 * @var	array
-	 */
+	/** Path to this script relative to the extension directory */
+	public $scriptRelPath = 'sv1/class.tx_openid_sv1.php';
+
+	/** The extension key */
+	public $extKey = 'openid';
+
+	/** Login data as passed to initAuth() */
 	protected $loginData = array();
 
 	/**
 	 * Additional authentication information provided by t3lub_userAuth. We use
 	 * it to decided what database table contains user records.
-	 *
-	 * @var	array
 	 */
 	protected $authInfo = array();
 
 	/**
-	 * OpenID response object
+	 * OpenID response object. It is initialized when OpenID provider returns
+	 * with success/failure response to us.
 	 *
 	 * @var	Auth_OpenID_ConsumerResponse
 	 */
@@ -67,8 +82,9 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * Checks if service is available,. In case of this service we check that
 	 * prerequesties for "PHP OpenID" libraries are fulfilled:
 	 * - GMP or BCMATH PHP extensions are installed and functional
+	 * - set_include_path() PHP function is available
 	 *
-	 * @return	boolean	true if service is available
+	 * @return	boolean		true if service is available
 	 */
 	public function init() {
 		$available = false;
@@ -86,10 +102,10 @@ class tx_openid_sv1 extends t3lib_svbase {
 	/**
 	 * Initializes authentication for this service.
 	 *
-	 * @param	string	$subType	Subtype for authentication (either "getUserFE" or "getUserBE")
-	 * @param	array	$loginData	Login data submitted by user and preprocessed by t3lib/class.t3lib_userauth.php
-	 * @param	array	$authInfo	Additional TYPO3 information for authentication services (unused here)
-	 * @param	t3lib_userAuth	$pObj	Calling object
+	 * @param	string		$subType	Subtype for authentication (either "getUserFE" or "getUserBE")
+	 * @param	array		$loginData	Login data submitted by user and preprocessed by t3lib/class.t3lib_userauth.php
+	 * @param	array		$authInfo	Additional TYPO3 information for authentication services (unused here)
+	 * @param	t3lib_userAuth		$pObj	Calling object
 	 * @return	void
 	 */
 	public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$pObj) {
@@ -110,7 +126,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * function makes sure that user cannot be authenticated by any other service
 	 * if user tries to use OpenID to authenticate.
 	 *
-	 * @return	mixed	User record (content of fe_users/be_users as appropriate for the current mode)
+	 * @return	mixed		User record (content of fe_users/be_users as appropriate for the current mode)
 	 */
 	public function getUser() {
 		$userRecord = null;
@@ -145,11 +161,11 @@ class tx_openid_sv1 extends t3lib_svbase {
 	/**
 	 * Authenticates user using OpenID.
 	 *
-	 * @param	array	$userRecord	User record
-	 * @return	int	Code that shows if user is really authenticated.
+	 * @param	array		$userRecord	User record
+	 * @return	int		Code that shows if user is really authenticated.
 	 * @see	t3lib_userAuth::checkAuthentication()
 	 */
-	function authUser(array $userRecord) {
+	public function authUser(array $userRecord) {
 		$result = 0;	// 0 means authentication failure
 
 		if ($userRecord['tx_openid_openid'] == '') {
@@ -197,18 +213,26 @@ class tx_openid_sv1 extends t3lib_svbase {
 		@set_include_path($phpOpenIDLibPath . PATH_SEPARATOR .
 						$phpOpenIDLibPath . '/Auth' . PATH_SEPARATOR .
 						$oldIncludePath);
+
+		// Include files
 		require_once($phpOpenIDLibPath . '/Auth/OpenID/Consumer.php');
 		require_once($phpOpenIDLibPath . '/Auth/OpenID/FileStore.php');
 
 		// Restore path
 		@set_include_path($oldIncludePath);
+
+		if (!is_array($_SESSION)) {
+			// Yadis requires session but session is not initialized when
+			// processing Backend authentication
+			@session_start();
+		}
 	}
 
 	/**
 	 * Fetches user record for the user with the OpenID provided by the user
 	 *
-	 * @param	string	$openIDIdentifier	OpenID identifier to search for
-	 * @return	array	Database fields from the table that corresponds to the current login mode (FE/BE)
+	 * @param	string		$openIDIdentifier	OpenID identifier to search for
+	 * @return	array		Database fields from the table that corresponds to the current login mode (FE/BE)
 	 */
 	protected function fetchUserRecord($openIDIdentifier) {
 		$record = null;
@@ -223,26 +247,10 @@ class tx_openid_sv1 extends t3lib_svbase {
 	}
 
 	/**
-	 * Fetches user record for the user with the OpenID provided by the user
-	 *
-	 * TODO Unused function!
-	 *
-	 * @return	boolean	true if OpenID exists
-	 */
-	protected function doesOpenIDExist() {
-		list($record) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('COUNT(*) AS counter',
-			$this->authInfo['db_user']['table'],
-			'tx_openid_openid=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->loginData['uname'], $this->authInfo['db_user']['table']) .
-				$this->authInfo['db_user']['check_pid_clause'] .
-				$this->authInfo['db_user']['enable_clause']);
-		return ($record['counter'] > 0);
-	}
-
-	/**
 	 * Creates OpenID Consumer object with a TYPO3-specific store. This function
 	 * is almost identical to the example from the PHP OpenID library.
 	 *
-	 * @return	Auth_OpenID_Consumer	Consumer instance
+	 * @return	Auth_OpenID_Consumer		Consumer instance
 	 */
 	protected function getOpenIDConsumer() {
 		// TODO Change this to a TYPO3-specific database-based store! Add a class
@@ -290,7 +298,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 
 		// For OpenID version 1, we *should* send a redirect. For OpenID version 2,
 		// we should use a Javascript form to send a POST request to the server.
-		$returnURL = $this->getReturnURL($extensionWebPath);
+		$returnURL = $this->getReturnURL();
 		$trustedRoot = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 
 	    if ($authenticationRequest->shouldSendRedirect()) {
@@ -333,7 +341,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * the OpenID server, the user will be sent to this URL to complete
 	 * authentication process with the current site. We send it to our script.
 	 *
-	 * @return	string	Return URL
+	 * @return	string		Return URL
 	 */
 	protected function getReturnURL() {
 		if ($this->authInfo['loginType'] == 'FE') {
@@ -350,8 +358,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 			// It is much easier for the Backend to manage users.
 			// Notice: 'login_status' parameter name cannot be changed!
 			// It is essential for BE user authentication.
-			$returnURL = t3lib_extMgm::siteRelPath($this->extKey) .
-							'class.tx_openid_return.php?login_status=login&';
+			$returnURL = '/typo3/sysext/' . $this->extKey . '/class.tx_openid_return.php?login_status=login&';
 		}
 		if (t3lib_div::GPvar('tx_openid_mode') == 'finish') {
 			$requestURL = t3lib_div::GPvar('tx_openid_location');

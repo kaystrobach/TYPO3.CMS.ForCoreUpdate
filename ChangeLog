@@ -14,6 +14,8 @@
 	* Added code to connect to the OpenID server and request authentication
 	* Fixed problem: default TYPO3 service (tx_sv_auth) prevented OpenID authentication
 	* Added eID and Backend return scripts
+	* Frontend user authentication is working with OpenID (tested with LiveJournal account)
+	* Backend user authentication is working with OpenID (tested with LiveJournal and Yahoo accounts)
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 

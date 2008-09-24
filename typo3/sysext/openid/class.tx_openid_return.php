@@ -27,6 +27,19 @@
  * Hint: use extdeveval to insert/update function index above.
  */
 
+if (!$TYPO3_CONF_VARS['BE']['compressionLevel']) {
+	// We need to buffer output because we may need to redirect later.
+	// If we do not buffer, redirection may fail because output could be
+	// started in init.php
+	ob_start();
+}
+
+// Fix _GET/_POST values for authentication
+if (isset($_GET['login_status'])) {
+	$_POST['login_status'] = $_GET['login_status'];
+}
+
+define('TYPO3_MOD_PATH', 'sysext/openid/');
 require_once('../../init.php');
 
 class tx_openid_return {
@@ -36,12 +49,11 @@ class tx_openid_return {
 	 * @return	void
 	 */
 	public function main() {
-		echo 'We are back with the following URL parameters:';
-		print_r($_GET);
-		exit;
-
-		header(t3lib_div::HTTP_STATUS_304);
-		header('Location: ' . t3lib_div::locationHeaderUrl('typo3/backend.php'));
+		if ($GLOBALS['BE_USER']->user['uid']) {
+			@ob_end_clean();
+			header(t3lib_div::HTTP_STATUS_303);
+			header('Location: ' . t3lib_div::locationHeaderUrl('/typo3/backend.php'));
+		}
 	}
 }
 
