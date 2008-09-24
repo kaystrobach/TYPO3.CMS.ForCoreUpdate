@@ -22,6 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
+ * $Id: $
+ *
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
@@ -93,9 +95,14 @@ class tx_openid_sv1 extends t3lib_svbase {
 		}
 		elseif (extension_loaded('bcmath')) {
 			$available = is_callable('bcadd');
+		} else {
+			$this->writeLog('Neither bcmath, nor gmp PHP extension found. OpenID authentication will not be available.');
 		}
 		// We also need set_include_path() PHP function
-		$available &= is_callable('set_include_path');
+		if (!is_callable('set_include_path')) {
+			$available = false;
+			$this->writeDevLog('set_icnlude_path() PHP function is not available. OpenID authentication is disabled.');
+		}
 		return $available ? parent::init() : false;
 	}
 
@@ -181,6 +188,10 @@ class tx_openid_sv1 extends t3lib_svbase {
 					// Success (code 200)
 					$result = 200;
 				}
+				else {
+					$this->writeDevLog('OpenID authentication failed with code \'%s\'.',
+							$this->openIDResponse->status);
+				}
 			} else {
 				// We may need to send a request to the OpenID server.
 				// Check if the user identifier looks like OpenID user identifier first.
@@ -225,6 +236,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 			// Yadis requires session but session is not initialized when
 			// processing Backend authentication
 			@session_start();
+			$this->writeLog('Session is initialized');
 		}
 	}
 
@@ -243,6 +255,11 @@ class tx_openid_sv1 extends t3lib_svbase {
 					$this->authInfo['db_user']['check_pid_clause'] .
 					$this->authInfo['db_user']['enable_clause']);
 		}
+		else {
+			// This should never happen and generally means hack attempt.
+			// We just log it and do not return any records.
+			$this->writeLog('fetchUserRecord is called with the empty OpenID');
+		}
 		return $record;
 	}
 
@@ -253,10 +270,14 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * @return	Auth_OpenID_Consumer		Consumer instance
 	 */
 	protected function getOpenIDConsumer() {
-		// TODO Change this to a TYPO3-specific database-based store! Add a class
-		// for it. File-based store is ineffective and insecure. After changing
+		// TODO Change this to a TYPO3-specific database-based store in future.
+		// File-based store is ineffective and insecure. After changing
 		// get rid of the FileStore include in includePHPOpenIDLibrary()
 		$openIDStorePath = PATH_site . 'typo3temp/tx_openid';
+		// For now we just prevent any web access to these files
+		if (!file_exists($openIDStorePath . '/.htaccess')) {
+			file_put_contents($openIDStorePath . '/.htaccess', 'deny from all');
+		}
 		$openIDStore = new Auth_OpenID_FileStore($openIDStorePath);
 		return new Auth_OpenID_Consumer($openIDStore);
 	}
@@ -288,7 +309,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 		if (!$authenticationRequest) {
 			// Not a valid OpenID. Since it can be some other ID, we just return
 			// and let other service handle it.
-			// TODO Log the problem
+			$this->writeLog('Could not create authentication request for OpenID identifier \'%s\'', $openIDIdentifier);
 			return;
 		}
 
@@ -306,7 +327,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 
 			// If the redirect URL can't be built, return. We can only return.
 			if (Auth_OpenID::isFailure($redirectURL)) {
-				// TODO Log the problem
+				$this->writeLog('Authentication request could not create redirect URL for OpenID identifier \'%s\'', $openIDIdentifier);
 				return;
 			}
 
@@ -325,7 +346,7 @@ class tx_openid_sv1 extends t3lib_svbase {
 			// otherwise, render the HTML.
 			if (Auth_OpenID::isFailure($formHtml)) {
 				// Form markup cannot be generated
-				// TODO Log problem
+				$this->writeLog('Could not create form markup for OpenID identifier \'%s\'', $openIDIdentifier);
 				return;
 			} else {
 				@ob_end_clean();
@@ -371,6 +392,37 @@ class tx_openid_sv1 extends t3lib_svbase {
 						'tx_openid_mode=finish&' .
 						'tx_openid_claimed=' . rawurlencode($claimedIdentifier);
 		return t3lib_div::locationHeaderUrl($returnURL);
+	}
+
+	/**
+	 * Writes log message. Destination log depends on the current system mode.
+	 * For FE the function writes to the admin panel log. For BE messages are
+	 * sent to the system log. If developer log is enabled, messages are also
+	 * sent there.
+	 *
+	 * This function accepts variable number of arguments and can format
+	 * parameters. The syntax is the same as for sprintf()
+	 *
+	 * @param	string	$message	Message to output
+	 * @return	void
+	 * @see	sprintf()
+	 * @see	t3lib::divLog()
+	 * @see	t3lib_div::sysLog()
+	 * @see	t3lib_timeTrack::setTSlogMessage()
+	 */
+	protected function writeLog($message) {
+		if (func_num_args() > 1) {
+			$message = vsprintf($message, array_slice(func_get_args(), 1));
+		}
+		if (TYPO3_MODE == 'BE') {
+			t3lib_div::sysLog($message, $this->extKey, 1);
+		}
+		else {
+			$GLOBALS['TT']->setTSlogMessage($message);
+		}
+		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['enable_DLOG']) {
+			t3lib_div::devLog($message, $this->extKey, 1);
+		}
 	}
 }
 
