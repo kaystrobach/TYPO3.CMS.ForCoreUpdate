@@ -929,6 +929,9 @@ class t3lib_pageSelect {
 	 * @see tslib_TStemplate::start(), storeHash()
 	 */
 	function getHash($hash,$expTime=0)	{
+		$contentHashCache = $GLOBALS['cacheManager']->getCache('cache_hash');
+		$cacheEntry = $contentHashCache->load($hash);
+#debug($cacheEntry, 'new');
 			// if expTime is not set, the hash will never expire
 		$expTime = intval($expTime);
 		if ($expTime) {
@@ -937,6 +940,8 @@ class t3lib_pageSelect {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('content', 'cache_hash', 'hash='.$GLOBALS['TYPO3_DB']->fullQuoteStr($hash, 'cache_hash').$whereAdd);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+#debug($row, 'old');
+#debug($row == $cacheEntry, 'equal');
 		if ($row)	{
 			return $row['content'];
 		}
@@ -953,6 +958,15 @@ class t3lib_pageSelect {
 	 * @see tslib_TStemplate::start(), getHash()
 	 */
 	function storeHash($hash,$data,$ident)	{
+		$GLOBALS['cacheManager']->getCache('cache_hash')->save(
+			$hash,
+			$data,
+			array('ident_' . $ident),
+			0 // unlimited lifetime
+		);
+
+			// old stuff below
+
 		$insertFields = array(
 			'hash' => $hash,
 			'content' => $data,

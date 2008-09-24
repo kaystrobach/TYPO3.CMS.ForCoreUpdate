@@ -597,6 +597,7 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 		}
 
 		t3lib_cache::initPageSectionCache();
+		t3lib_cache::initContentHashCache();
 	}
 
 	/**
