@@ -33,12 +33,12 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
  * @subpackage	tx_contentrss
  */
 class tx_contentrss_pi1 extends tslib_pibase {
-	var $prefixId      = 'tx_contentrss_pi1';		// Same as class name
-	var $scriptRelPath = 'pi1/class.tx_contentrss_pi1.php';	// Path to this script relative to the extension dir.
-	var $extKey        = 'contentrss';	// The extension key.
-	var $pi_checkCHash = true;
-	var $versioningEnabled = false;
-	var $sys_language_mode;
+	public $prefixId      = 'tx_contentrss_pi1';		// Same as class name
+	public $scriptRelPath = 'pi1/class.tx_contentrss_pi1.php';	// Path to this script relative to the extension dir.
+	public $extKey        = 'contentrss';	// The extension key.
+	public $pi_checkCHash = true;
+	public $versioningEnabled = false;
+	public $sys_language_mode;
 	
 	/**
 	 * The main method of the PlugIn
@@ -47,15 +47,44 @@ class tx_contentrss_pi1 extends tslib_pibase {
 	 * @param	array		$conf: The PlugIn configuration
 	 * @return	The content that is displayed on the website
 	 */
-	function main($content,$conf)	{
+	public function main($content,$conf)	{
 		$this->conf=$conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
+		$type = $GLOBALS['TSFE']->type;
+		
+		// type must be myType
+		$myType = intval($this->conf['typeNum']); 
+		if ($type == 0 || $type != $myType) {
+			//wrong type - print message with correct link
+			return sprintf($this->pi_getLL('wrong_pagetype'), $this->cObj->typoLink($this->pi_getLL('this_link'), array('parameter' => $GLOBALS['TSFE']->id . ',' . $myType)));
+		} else {
+			//validate settings
+			$id = intval(t3lib_div::_GET('id'));
+			if ($id == 0) {
+				//use TS settings instead
+				if ($this->conf['pages'] == '') {
+					return $this->pi_getLL('no_pages_configured');
+				}					
+			} else {
+				//fetch tt_content record
+				$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
+					'pages,recursive',
+					'tt_content',
+					'list_type="contentrss_pi1" AND pid=' . $id . $this->cObj->enableFields('tt_content')
+				);
+				if (!$res) {
+					return $this->pi_getLL('no_pages_selected'); 
+				}
+				$row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+				$this->conf['pages'] = $row['pages'];
+				$this->conf['recursive'] = $row['recursive'];
+			}
+		}
+		
 		
 		// init vars
-		$pidList = $this->pi_getPidList($this->cObj->data['pages'],$this->conf["recursive"]);
-		$type = $GLOBALS['TSFE']->type;
-		$myType = intval($this->conf['typeNum']);
+		$pidList = $this->pi_getPidList($this->conf['pages'], $this->conf['recursive']);
 		
 		// get language and version infos
 		$this->sys_language_mode = $this->conf['sys_language_mode'] ? $this->conf['sys_language_mode'] : $GLOBALS['TSFE']->sys_language_mode;
@@ -63,29 +92,19 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			$this->versioningEnabled = true;
 		}
 		
-		
-		// no empty pid list
-		if (!$pidList) {
-			return '';
-		}
-		// type must be myType
-		if ($type == 0 || $type != $myType) {
-			return sprintf($this->pi_getLL('wrong_pagetype'), $this->cObj->typoLink('this', array('parameter' => $GLOBALS['TSFE']->id . ',' . $myType)));
-		}
-		
 		// fetch Content elements
-		$where = 'tx_contentrss_excluderss=0';
-		$orderBy = $this->conf['orderBy'] ? $this->conf['orderBy'] : 'crdate';
+		$where = 'pid IN(' . $pidList .') AND tx_contentrss_excluderss=0';
+		$orderBy = $this->conf['orderBy'] ? $this->conf['orderBy'] : 'tstamp';
 		$limit = $this->conf['limit'] ? intval($this->conf['limit']) : '10';
 		
-		$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
-							'*',
-							'tt_content',
-							$where . $this->cObj->enableFields('tt_content'),
-							$groupBy='',
-							$orderBy,
-							$limit=''
-						);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'*',
+			'tt_content',
+			$where . $this->cObj->enableFields('tt_content'),
+			$groupBy='',
+			$orderBy,
+			$limit
+		);
 		if (!$res) {
 			return $this->pi_getLL('no_content_found');
 		}
@@ -119,7 +138,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		return $this->compileRows($contentRows);
 	}
 	
-	function compileRows($rows) {
+	protected function compileRows($rows) {
 	
 		$template = $this->conf['rssTemplate'];		
 		$rowSubpart = $this->cObj->getSubpart($template, '###CONTENTROWS###');

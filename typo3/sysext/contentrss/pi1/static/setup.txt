@@ -1,9 +1,15 @@
 plugin.tx_contentrss_pi1 {
 	
 	typeNum = {$plugin.tx_contentrss_pi1.rssTypeNum}  
-	limit = 10
+	
+	#fill these variables if you want to use it without plugin on page
+	pages = 
+	recursive = 
 	
 	#rss-related informations
+	limit = 10
+	
+	#variables for the template
 	xmlDeclaration = <?xml version="1.0" encoding="utf-8"?>
 	siteTitle = {$plugin.tx_contentrss_pi1.siteTitle}
 	siteLink = {$plugin.tx_contentrss_pi1.siteLink}
