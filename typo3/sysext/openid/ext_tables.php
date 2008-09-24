@@ -73,7 +73,7 @@ $tempColumns = array (
 			'type' => 'input',
 			'size' => '30',
 			// Requirement: unique (BE users are unique in the whole system)
-			'eval' => 'trim,nospace',
+			'eval' => 'trim,nospace,unique',
 		)
 	),
 );
@@ -82,7 +82,6 @@ $tempColumns = array (
 t3lib_div::loadTCA('be_users');
 t3lib_extMgm::addTCAcolumns('be_users', $tempColumns, false);
 t3lib_extMgm::addToAllTCAtypes('be_users','tx_openid_openid;;;;1-1-1', '', 'after:username');
-//tx_openid_addToPalette('be_users', 'username', 'tx_openid_openid');
 t3lib_extMgm::addLLrefForTCAdescr('be_users', 'EXT:' . $_EXTKEY . '/locallang_csh.xml');
 
 // Prepare new columns for fe_users table

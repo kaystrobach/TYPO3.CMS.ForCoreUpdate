@@ -17,6 +17,7 @@
 	* Frontend user authentication is working with OpenID (tested with LiveJournal account)
 	* Backend user authentication is working with OpenID (tested with LiveJournal and Yahoo accounts)
 	* Add security to file-based OpenID store
+	* Added necessary "unique" evaluations on the OpenID field
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 
