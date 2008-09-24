@@ -128,11 +128,6 @@ CREATE TABLE cache_hash (
   data mediumtext,
   tags mediumtext,
   lifetime int(11) unsigned DEFAULT '0' NOT NULL,
-
-  hash varchar(32) DEFAULT '' NOT NULL,
-  content mediumtext,
-  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-  ident varchar(20) DEFAULT '' NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
