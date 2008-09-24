@@ -93,7 +93,7 @@ abstract class t3lib_cache_AbstractCache {
 	 * @return void
 	 * @author Robert Lemke <robert@typo3.org>
 	 */
-	abstract public function save($entryIdentifier, $data, array $tags = array());
+	abstract public function save($entryIdentifier, $data, array $tags = array(), $lifetime = null);
 
 	/**
 	 * Loads data from the cache.

@@ -12,6 +12,7 @@
 
 	* cleaned up some code regarding the page caching to prepare for transition to t3lib_cache
 	* added columns to cache_pages needed for the t3lib_cache DB backend
+	* fixed bug in t3lib_cache: t3lib_cache_AbstractCache->save() didn't request a lifetime parameter, but the cache backends do
 
 2008-09-23  Martin Kutschker  <masi@typo3.org>
 
