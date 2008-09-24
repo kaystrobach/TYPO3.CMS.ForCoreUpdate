@@ -1928,7 +1928,9 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 		$cachedPage = $this->pageCache->load($this->newHash);
 		$GLOBALS['TT']->pull();
 
-		$this->pageCachePostProcess($cachedPage, 'get');
+		if ($cachedPage) {
+			$this->pageCachePostProcess($cachedPage, 'get');
+		}
 
 		return $cachedPage;
 	}
