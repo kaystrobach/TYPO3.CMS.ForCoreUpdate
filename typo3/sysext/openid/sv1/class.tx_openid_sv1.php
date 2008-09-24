@@ -28,7 +28,11 @@
  */
 
 require_once(PATH_t3lib . 'class.t3lib_svbase.php');
-
+$tx_openid_libPath = t3lib_extMgm::extPath('openid') . 'lib/php-openid/Auth/';
+require_once($tx_openid_libPath . 'Consumer.php');
+require_once($tx_openid_libPath . 'FileStore.php');
+require_once($tx_openid_libPath . 'SReg.php');
+require_once($tx_openid_libPath . 'PAPE.php');
 
 /**
  * Service "OpenID Authentication" for the "openid" extension.
@@ -38,43 +42,132 @@ require_once(PATH_t3lib . 'class.t3lib_svbase.php');
  * @subpackage	tx_openid
  */
 class tx_openid_sv1 extends t3lib_svbase {
-	var $prefixId = 'tx_openid_sv1';		// Same as class name
-	var $scriptRelPath = 'sv1/class.tx_openid_sv1.php';	// Path to this script relative to the extension dir.
-	var $extKey = 'openid';	// The extension key.
+	public $prefixId = 'tx_openid_sv1';		// Same as class name
+	public $scriptRelPath = 'sv1/class.tx_openid_sv1.php';	// Path to this script relative to the extension dir.
+	public $extKey = 'openid';	// The extension key.
 
 	/**
-	 * [Put your description here]
+	 * Checks if service is available,. In case of this service we check that
+	 * prerequesties for "PHP OpenID" libraries are fulfilled:
+	 * - GMP or BCMATH PHP extensions are installed and functional
 	 *
-	 * @return	[type]		...
+	 * @return	boolean	true if service is available
 	 */
-	function init()	{
-		$available = parent::init();
-
-		// Here you can initialize your class.
-
-		// The class have to do a strict check if the service is available.
-		// The needed external programs are already checked in the parent class.
-
-		// If there's no reason for initialization you can remove this function.
-
-		return $available;
+	public function init() {
+		$available = false;
+		if (extension_loaded('gmp')) {
+			$available = is_callable('gmp_init');
+		}
+		elseif (extension_loaded('bcmath')) {
+			$available = is_callable('bcadd');
+		}
+		return $available ? parent::init() : false;
 	}
 
 	/**
-	 * [Put your description here]
-	 * performs the service processing
+	 * Initializes authentication for this service.
 	 *
-	 * @param	string		Content which should be processed.
-	 * @param	string		Content type
-	 * @param	array		Configuration array
-	 * @return	boolean
+	 * @param	string	$subType	Subtype for authentication (either "getUserFE" or "getUserBE")
+	 * @param	array	$loginData	Login data submitted by user and preprocessed by t3lib/class.t3lib_userauth.php
+	 * @param	array	$authInfo	Additional TYPO3 information for authentication services (unused here)
+	 * @param	t3lib_userAuth	$pObj	Calling object
+	 * @return	void
 	 */
-	function process($content='', $type='', $conf=array())	{
+	public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$pObj) {
+		return;
+	}
 
-		// Depending on the service type there's not a process() function.
-		// You have to implement the API of that service type.
+	/**
+	 * This function returns authenticated user record back to the t3lib_userAuth.
+	 * If user is not authenticated, it returns null.
+	 *
+	 * @return	mixed	User record (content of fe_users/be_users as appropriate for the current mode)
+	 */
+	public function getUser() {
+		return null;
+	}
 
-		return FALSE;
+	/**
+	 * Creates OpenID Consumer object with a TYPO3-specific store. This function
+	 * is almost identical to the example from the PHP OpenID library.
+	 *
+	 * @return	Auth_OpenID_Consumer	Consumer instance
+	 */
+	protected function getOpenIDConsumer() {
+		// TODO Change this to a database-based store!
+		$openIDStorePath = PATH_site . 'typo3temp/tx_openid';
+		$openIDStore = new Auth_OpenID_FileStore($openIDStorePath);
+		return new Auth_OpenID_Consumer($openIDStore);
+	}
+
+	/**
+	 * Sends request to the OpenID server to authenticate the user with the
+	 * given ID. This function is almost identical to the example from the PHP
+	 * OpenID library. Due to the OpenID specification we cannot do a slient login.
+	 * Sometimes we have to redirect to the OpenID provider web site so that
+	 * user can enter his password there. In this case we will redirect and provide
+	 * a return adress to the special script inside this directory, which will
+	 * handle the result appropriately.
+	 *
+	 * @param	string	$openIDIdentifier	OpenID identifier provided by the user
+	 * @return	boolean	false if there are problems setting up OpenID framework or connecting to the OpenID provider
+	 */
+	protected function sendOpenIDRequest($openIDIdentifier) {
+		// Initialize OpenID client system, get the consumer
+		$openIDConsumer = $this->getOpenIDConsumer();
+
+		// Begin the OpenID authentication process
+		$authenticationRequest = $openIDConsumer->begin($openIDIdentifier);
+		 if (!$authenticationRequest) {
+			// Not a valid OpenID. Since it can be some other ID, we just return
+			// and let other service handle it.
+			// TODO Log the problem
+			return false;
+		}
+/*
+		// We do not need to get user's mickname yet!
+		$sregRequest = Auth_OpenID_SRegRequest::build(array('nickname'));
+		if ($sregRequest) {
+			$authenticationRequest->addExtension($sregRequest);
+		}
+*/
+/*
+		// We do not need any policies yet!
+		 $policy_uris = $_GET['policies'];
+
+		 $pape_request = new Auth_OpenID_PAPE_Request($policy_uris);
+		 if ($pape_request) {
+			 $auth_request->addExtension($pape_request);
+		 }
+*/
+		// Redirect the user to the OpenID server for authentication.
+		// Store the token for this authentication so we can verify the
+		// response.
+
+		// For OpenID 1, we *should* send a redirect. For OpenID 2, use a Javascript
+		// form to send a POST request to the server. Due to TYPO3 specifics, we
+		// always send a redirect. This is allowed by OpenID specification.
+		$redirectURL = $authenticationRequest->redirectURL(getTrustRoot(),
+														getReturnTo());
+
+		// If the redirect URL can't be built, return. We can only return.
+		if (Auth_OpenID::isFailure($redirectURL)) {
+			// TODO Log the problem
+			return false;
+		}
+
+		// Send redirect.
+		@ob_end_clean();
+		header(t3lib_div::HTTP_STATUS_307);
+		header('Location: ' . $redirectURL);
+		// According to the HTTP specification we *should* produce a short note
+		// saying what we do if we use HTTP status 307.
+		// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.8
+		// TODO Should we localize this message? Does it make sense during authentication?
+		echo 'Redirecting to the OpenID server for authentication. If your browser ' .
+			'does not redirect, click <a href="' . $redirectURL . '">here</a> ' .
+			'to go to the OpenID server manually.';
+		exit;
 	}
 }
 

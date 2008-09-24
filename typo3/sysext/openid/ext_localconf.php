@@ -9,7 +9,7 @@ t3lib_extMgm::addService($_EXTKEY, 'auth' /* sv type */,  'tx_openid_sv1' /* sv 
 		array(
 			'title' => 'OpenID Authentication',
 			'description' => 'OpenID authentication service for Frontend and Backend',
-			'subtype' => 'authUserFE,authUserBE',
+			'subtype' => 'getUserFE,authUserFE,getUserBE,authUserBE',
 			'available' => true,
 			'priority' => 10,
 			'quality' => 50,
