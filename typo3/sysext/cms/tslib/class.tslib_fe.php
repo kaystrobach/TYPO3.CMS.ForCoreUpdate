@@ -465,20 +465,6 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 				t3lib_div::callUserFunction($_funcRef,$_params,$this);
 			}
 		}
-
-		try {
-			$this->pageCache = $GLOBALS['cacheManager']->getCache(
-				'cache_pages'
-			);
-		} catch(t3lib_cache_exception_NoSuchCache $e) {
-			t3lib_cache::initPageCache();
-
-			$this->pageCache = $GLOBALS['cacheManager']->getCache(
-				'cache_pages'
-			);
-		}
-
-		t3lib_cache::initPageSectionCache();
 	}
 
 	/**
@@ -591,6 +577,27 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 	 *
 	 ********************************************/
 
+
+	/**
+	 * Initializes the caching system.
+	 *
+	 * @return	void
+	 */
+	public function initCaches() {
+		try {
+			$this->pageCache = $GLOBALS['cacheManager']->getCache(
+				'cache_pages'
+			);
+		} catch(t3lib_cache_exception_NoSuchCache $e) {
+			t3lib_cache::initPageCache();
+
+			$this->pageCache = $GLOBALS['cacheManager']->getCache(
+				'cache_pages'
+			);
+		}
+
+		t3lib_cache::initPageSectionCache();
+	}
 
 	/**
 	 * Initializes the front-end login user.
@@ -2167,7 +2174,7 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 
 			if ($this->TYPO3_CONF_VARS['EXT']['extCache'] != 0) {
 				// Try to fetch if cache is enabled
-				list($TCA,$this->TCAcachedExtras) = unserialize($this->sys_page->getHash($tempHash, 0));
+				list($TCA, $this->TCAcachedExtras) = unserialize($this->sys_page->getHash($tempHash, 0));
 			}
 
 				// If no result, create it:

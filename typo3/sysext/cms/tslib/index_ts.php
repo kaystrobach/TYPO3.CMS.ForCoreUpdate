@@ -185,15 +185,16 @@ $TT->pull();
 // ***********************************
 $temp_TSFEclassName = t3lib_div::makeInstanceClassName('tslib_fe');
 $TSFE = new $temp_TSFEclassName(
-		$TYPO3_CONF_VARS,
-		t3lib_div::_GP('id'),
-		t3lib_div::_GP('type'),
-		t3lib_div::_GP('no_cache'),
-		t3lib_div::_GP('cHash'),
-		t3lib_div::_GP('jumpurl'),
-		t3lib_div::_GP('MP'),
-		t3lib_div::_GP('RDCT')
-	);
+	$TYPO3_CONF_VARS,
+	t3lib_div::_GP('id'),
+	t3lib_div::_GP('type'),
+	t3lib_div::_GP('no_cache'),
+	t3lib_div::_GP('cHash'),
+	t3lib_div::_GP('jumpurl'),
+	t3lib_div::_GP('MP'),
+	t3lib_div::_GP('RDCT')
+);
+$TSFE->initCaches();
 
 if($TYPO3_CONF_VARS['FE']['pageUnavailable_force'] &&
    !t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
@@ -215,6 +216,7 @@ if ($temp_previewConfig = $TSFE->ADMCMD_preview())	{
 		t3lib_div::_GP('MP'),
 		t3lib_div::_GP('RDCT')
 	);
+	$TSFE->initCaches();
 	$TSFE->ADMCMD_preview_postInit($temp_previewConfig);
 }
 
