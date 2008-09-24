@@ -213,6 +213,19 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 		}
 	}
 
+	/**
+	 * Removes all cache entries of this cache which are tagged by the specified tags.
+	 *
+	 * @param array	The tags the entries must have
+	 * @return void
+	 * @author Ingo Renner <ingo@typo3.org>
+	 */
+	public function flushByTags(array $tags) {
+		foreach ($this->findEntriesByTags($tags) as $entryIdentifier) {
+			$this->remove($entryIdentifier);
+		}
+	}
+
 	protected function setCacheTable($cacheTable) {
 		$this->cacheTable = $cacheTable;
 	}
@@ -227,7 +240,7 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 	 */
 	protected function getListQueryForTag($tag) {
 		return str_replace('*', '%', $GLOBALS['TYPO3_DB']->listQuery('tags', $tag, $this->cacheTable));
-	}	
+	}
 }
 
 

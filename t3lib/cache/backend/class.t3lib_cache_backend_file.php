@@ -303,8 +303,8 @@ class t3lib_cache_backend_File extends t3lib_cache_AbstractBackend {
 			);
 		}
 
-		$path       = $this->cacheDirectory . 'tags/';
-		$pattern    = $path . $tag . '/*';
+		$path       = $this->cacheDirectory . 'tags/' . $tag . '/';
+		$pattern    = $path . '*';
 		$filesFound = glob($pattern);
 
 		if ($filesFound === FALSE || count($filesFound) == 0) {
@@ -390,6 +390,19 @@ class t3lib_cache_backend_File extends t3lib_cache_AbstractBackend {
 			unlink($file);
 		}
 		rmdir($path);
+	}
+
+	/**
+	 * Removes all cache entries of this cache which are tagged by the specified tag.
+	 *
+	 * @param array	The tags the entries must have
+	 * @return void
+	 * @author Ingo Renner <ingo@typo3.org>
+	 */
+	public function flushByTags(array $tags) {
+		foreach ($tags as $tag) {
+			$this->flushByTag($tag);
+		}
 	}
 
 	/**
