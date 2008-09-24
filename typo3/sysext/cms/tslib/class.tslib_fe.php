@@ -477,6 +477,8 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 				'cache_pages'
 			);
 		}
+
+		t3lib_cache::initPageSectionCache();
 	}
 
 	/**

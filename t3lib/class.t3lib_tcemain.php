@@ -6955,16 +6955,15 @@ State was change by %s (username: %s)
 						$pageCache = $GLOBALS['cacheManager']->getCache(
 							'cache_pages'
 						);
+						$pageSectionCache = $GLOBALS['cacheManager']->getCache(
+							'cache_pagesection'
+						);
 
 						$pageIds = $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache);
 						foreach ($pageIds as $pageId) {
 							$pageCache->flushByTag('pageId_' . $pageId);
+							$pageSectionCache->flushByTag('pageId_' . $pageId);
 						}
-
-						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-							'cache_pagesection',
-							'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')'
-						);
 					}
 				}
 			}
@@ -7034,7 +7033,7 @@ State was change by %s (username: %s)
 				if ($this->admin || $this->BE_USER->getTSConfigVal('options.clearCache.all'))	{
 					if (t3lib_extMgm::isLoaded('cms'))	{
 						$this->internal_clearPageCache();
-						$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pagesection', '');
+						$GLOBALS['cacheManager']->getCache('cache_pagesection')->flush();
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_treelist', '');
 					}
 					$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_hash','');
@@ -7081,16 +7080,14 @@ State was change by %s (username: %s)
 					$pageCache = $GLOBALS['cacheManager']->getCache(
 						'cache_pages'
 					);
+					$pageSectionCache = $GLOBALS['cacheManager']->getCache(
+						'cache_pagesection'
+					);
 
 					foreach ($list_cache as $pageId) {
 						$pageCache->flushByTag('pageId_' . (int) $pageId);
+						$pageSectionCache->flushByTag('pageId_' . (int) $pageId);
 					}
-
-						// Originally, cache_pagesection was not cleared with cache_pages!
-					$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-						'cache_pagesection',
-						'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')'
-					);
 				}
 			}
 		}

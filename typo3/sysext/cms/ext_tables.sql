@@ -7,11 +7,11 @@
 # Table structure for table 'cache_pages'
 #
 CREATE TABLE cache_pages (
-  id int(11) unsigned NOT NULL auto_increment,
+  id int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
   identifier varchar(32) DEFAULT '' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   data mediumtext,
-  tags text,
+  tags mediumtext,
   lifetime int(11) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
@@ -21,11 +21,13 @@ CREATE TABLE cache_pages (
 # Table structure for table 'cache_pagesection'
 #
 CREATE TABLE cache_pagesection (
-  page_id int(11) unsigned DEFAULT '0' NOT NULL,
-  mpvar_hash int(11) unsigned DEFAULT '0' NOT NULL,
-  content blob,
-  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-  PRIMARY KEY (page_id,mpvar_hash)
+  id int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
+  identifier varchar(32) DEFAULT '' NOT NULL,
+  crdate int(11) unsigned DEFAULT '0' NOT NULL,
+  data mediumtext,
+  tags mediumtext,
+  lifetime int(11) unsigned DEFAULT '0' NOT NULL,
+  PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
 

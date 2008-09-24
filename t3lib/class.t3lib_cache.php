@@ -46,6 +46,23 @@ class t3lib_cache {
 				// do nothing, a cache_pages cache already exists
 		}
 	}
+
+	public static function initPageSectionCache() {
+		try {
+			$GLOBALS['TYPO3_CACHE']->create(
+				'cache_pagesection',
+				't3lib_cache_VariableCache',
+				't3lib_cache_backend_Db', // TODO make the backend configurable
+				array(
+					'cacheTable' => 'cache_pagesection'
+				)
+			);
+		} catch(t3lib_cache_exception_DuplicateIdentifier $e) {
+				// do nothing, a cache_pagesection cache already exists
+		}
+	}
+
+
 }
 
 

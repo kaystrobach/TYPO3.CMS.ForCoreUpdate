@@ -68,7 +68,7 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 	 * Loads data from a cache file.
 	 *
 	 * @param string An identifier which describes the cache entry to load
-	 * @return mixed The cache entry's content as a string or FALSE if the cache entry could not be loaded
+	 * @return mixed The cache entry's data as a string or FALSE if the cache entry could not be loaded
 	 * @author Ingo Renner <ingo@typo3.org>
 	 */
 	public function load($entryIdentifier) {

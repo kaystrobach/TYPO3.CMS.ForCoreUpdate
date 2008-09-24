@@ -197,6 +197,7 @@ $cacheFactoryClass = t3lib_div::makeInstanceClassName('t3lib_cache_Factory');
 $TYPO3_CACHE       = new $cacheFactoryClass($cacheManager);
 
 t3lib_cache::initPageCache();
+t3lib_cache::initPageSectionCache();
 unset($cacheFactoryClass);
 
 // *************************
