@@ -1,6 +1,7 @@
 plugin.tx_contentrss_pi1 {
 	
 	typeNum = {$plugin.tx_contentrss_pi1.rssTypeNum}  
+	limit = 10
 	
 	#rss-related informations
 	xmlDeclaration = <?xml version="1.0" encoding="utf-8"?>

@@ -70,7 +70,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		}
 		// type must be myType
 		if ($type == 0 || $type != $myType) {
-			return 'Wrong page type! Try ' . $this->cObj->typoLink('this', array('parameter' => $GLOBALS['TSFE']->id . ',' . $myType));
+			return sprintf($this->pi_getLL('wrong_pagetype'), $this->cObj->typoLink('this', array('parameter' => $GLOBALS['TSFE']->id . ',' . $myType)));
 		}
 		
 		// fetch Content elements
@@ -87,27 +87,33 @@ class tx_contentrss_pi1 extends tslib_pibase {
 							$limit=''
 						);
 		if (!$res) {
-			return 'No Content found';
+			return $this->pi_getLL('no_content_found');
 		}
 		
 		$contentRows = array();
 		while ($row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$listType = $row['list_type'];
-			if (intval($listType) != $listType) {
-				// plugins
-				continue;
+			if ($listType == '') {
+				// normal content elements
+				//get language overlay  
+				if ($GLOBALS['TSFE']->sys_language_content) {
+					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_content', $row, $GLOBALS['TSFE']->sys_language_content, $this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
+				}
+				if ($this->versioningEnabled) {
+					// get workspaces Overlay
+					$GLOBALS['TSFE']->sys_page->versionOL('tt_content', $row);
+					// fix pid for record from workspace
+					$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_content', $row);
+				}
+				$contentRows[] = $row;   
+			} else {
+				// it's a plugin, look for registered function
+				if ($GLOBALS['extConf'][$this->extKey]['contentRSS'][$listType]['contentPreview']) {
+					// call registered function
+					$row['bodytext'] = t3lib_div::callUserFunction($GLOBALS['extConf'][$this->extKey]['contentRSS'][$listType]['contentPreview'], $row);
+					$contentRows[] = $row;   
+				}
 			}
-			//get language overlay  
-			if ($GLOBALS['TSFE']->sys_language_content) {
-				$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_content', $row, $GLOBALS['TSFE']->sys_language_content, $this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
-			}
-			if ($this->versioningEnabled) {
-				// get workspaces Overlay
-				$GLOBALS['TSFE']->sys_page->versionOL('tt_content', $row);
-				// fix pid for record from workspace
-				$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_content', $row);
-			}
-			$contentRows[] = $row;
 		}
 		
 		return $this->compileRows($contentRows);
