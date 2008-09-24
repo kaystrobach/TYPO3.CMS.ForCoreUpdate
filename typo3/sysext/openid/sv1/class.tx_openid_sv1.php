@@ -28,11 +28,6 @@
  */
 
 require_once(PATH_t3lib . 'class.t3lib_svbase.php');
-$tx_openid_libPath = t3lib_extMgm::extPath('openid') . 'lib/php-openid/Auth/';
-require_once($tx_openid_libPath . 'Consumer.php');
-require_once($tx_openid_libPath . 'FileStore.php');
-require_once($tx_openid_libPath . 'SReg.php');
-require_once($tx_openid_libPath . 'PAPE.php');
 
 /**
  * Service "OpenID Authentication" for the "openid" extension.
@@ -45,6 +40,21 @@ class tx_openid_sv1 extends t3lib_svbase {
 	public $prefixId = 'tx_openid_sv1';		// Same as class name
 	public $scriptRelPath = 'sv1/class.tx_openid_sv1.php';	// Path to this script relative to the extension dir.
 	public $extKey = 'openid';	// The extension key.
+
+	/**
+	 * Login data as passed to initAuth().
+	 *
+	 * @var	array
+	 */
+	protected $loginData = array();
+
+	/**
+	 * Additional authentication information provided by t3lub_userAuth. We use
+	 * it to decided what database table contains user records.
+	 *
+	 * @var	array
+	 */
+	protected $authInfo = array();
 
 	/**
 	 * Checks if service is available,. In case of this service we check that
@@ -61,6 +71,8 @@ class tx_openid_sv1 extends t3lib_svbase {
 		elseif (extension_loaded('bcmath')) {
 			$available = is_callable('bcadd');
 		}
+		// We also need set_include_path() PHP function
+		$available &= is_callable('set_include_path');
 		return $available ? parent::init() : false;
 	}
 
@@ -74,7 +86,9 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * @return	void
 	 */
 	public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$pObj) {
-		return;
+		// Store login and authetication data
+		$this->loginData = $loginData;
+		$this->authInfo = $authInfo;
 	}
 
 	/**
@@ -84,7 +98,90 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * @return	mixed	User record (content of fe_users/be_users as appropriate for the current mode)
 	 */
 	public function getUser() {
-		return null;
+		return $this->fetchUserRecord();
+	}
+
+	/**
+	 * Authenticates user using OpenID.
+	 *
+	 * @param	array	$userRecord	User record
+	 * @return	int	Code that shows if user is really authenticated.
+	 * @see	t3lib_userAuth::checkAuthentication()
+	 */
+	function authUser(array $userRecord) {
+		if ($userRecord['tx_openid_openid'] == '') {
+			// If user does not have OpenID, let other services to try (code 100)
+			return 100;
+		}
+
+		// Check if user is identified
+		if (true) {
+			// We may need to send a request to the OpenID server.
+			// Check if the user identifier looks like OpenID user identifier first.
+			// Prevent PHP warning in case if identifiers is not an OpenID identifier
+			// (not an URL).
+			$urlParts = @parse_url($this->loginData['uname']);
+			if (is_array($urlParts) && $urlParts['scheme'] != '' && $urlParts['path']) {
+				// Yes, this looks like good OpenID
+				$this->sendOpenIDRequest();
+				// If we are here, it means we have a valid OpenID but failed to
+				// contact the server. We stop authentication process.
+				return 0;
+			}
+		}
+		// Not authenticated, stop
+		// TODO Is this correct?
+		return 100;
+	}
+
+	/**
+	 * Includes necessary files for the PHP OpenID library
+	 *
+	 * @return	void
+	 */
+	protected function includePHPOpenIDLibrary() {
+		// PHP OpenID libraries requires adjustments of path settings. This
+		$oldIncludePath = get_include_path();
+		$phpOpenIDLibPath = t3lib_extMgm::extPath('openid') . 'lib/php-openid';
+		@set_include_path($phpOpenIDLibPath . PATH_SEPARATOR .
+						$phpOpenIDLibPath . '/Auth' . PATH_SEPARATOR .
+						$oldIncludePath);
+		require_once($phpOpenIDLibPath . '/Auth/OpenID/Consumer.php');
+		require_once($phpOpenIDLibPath . '/Auth/OpenID/FileStore.php');
+		require_once($phpOpenIDLibPath . '/Auth/OpenID/SReg.php');
+		require_once($phpOpenIDLibPath . '/Auth/OpenID/PAPE.php');
+		// Restore path
+		@set_include_path($oldIncludePath);
+	}
+
+	/**
+	 * Fetches user record for the user with the OpenID provided by the user
+	 *
+	 * @return	array	Database fields from the table that corresponds to the current login mode (FE/BE)
+	 */
+	protected function fetchUserRecord() {
+		list($record) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*',
+			$this->authInfo['db_user']['table'],
+			'tx_openid_openid=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->loginData['uname'], $this->authInfo['db_user']['table']) .
+				$this->authInfo['db_user']['check_pid_clause'] .
+				$this->authInfo['db_user']['enable_clause']);
+		return $record;
+	}
+
+	/**
+	 * Fetches user record for the user with the OpenID provided by the user
+	 *
+	 * TODO Unused function!
+	 *
+	 * @return	boolean	true if OpenID exists
+	 */
+	protected function doesOpenIDExist() {
+		list($record) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('COUNT(*) AS counter',
+			$this->authInfo['db_user']['table'],
+			'tx_openid_openid=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->loginData['uname'], $this->authInfo['db_user']['table']) .
+				$this->authInfo['db_user']['check_pid_clause'] .
+				$this->authInfo['db_user']['enable_clause']);
+		return ($record['counter'] > 0);
 	}
 
 	/**
@@ -94,7 +191,8 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * @return	Auth_OpenID_Consumer	Consumer instance
 	 */
 	protected function getOpenIDConsumer() {
-		// TODO Change this to a database-based store!
+		// TODO Change this to a TYPO3-specific database-based store! Add a class
+		// for it. File-based store is ineffective and insecure.
 		$openIDStorePath = PATH_site . 'typo3temp/tx_openid';
 		$openIDStore = new Auth_OpenID_FileStore($openIDStorePath);
 		return new Auth_OpenID_Consumer($openIDStore);
@@ -109,69 +207,77 @@ class tx_openid_sv1 extends t3lib_svbase {
 	 * a return adress to the special script inside this directory, which will
 	 * handle the result appropriately.
 	 *
-	 * @param	string	$openIDIdentifier	OpenID identifier provided by the user
 	 * @return	boolean	false if there are problems setting up OpenID framework or connecting to the OpenID provider
 	 */
-	protected function sendOpenIDRequest($openIDIdentifier) {
+	protected function sendOpenIDRequest() {
+		$this->includePHPOpenIDLibrary();
+
+		$openIDIdentifier = $this->loginData['uname'];
+
 		// Initialize OpenID client system, get the consumer
 		$openIDConsumer = $this->getOpenIDConsumer();
 
 		// Begin the OpenID authentication process
 		$authenticationRequest = $openIDConsumer->begin($openIDIdentifier);
-		 if (!$authenticationRequest) {
+		if (!$authenticationRequest) {
 			// Not a valid OpenID. Since it can be some other ID, we just return
 			// and let other service handle it.
 			// TODO Log the problem
 			return false;
 		}
-/*
-		// We do not need to get user's mickname yet!
-		$sregRequest = Auth_OpenID_SRegRequest::build(array('nickname'));
-		if ($sregRequest) {
-			$authenticationRequest->addExtension($sregRequest);
-		}
-*/
-/*
-		// We do not need any policies yet!
-		 $policy_uris = $_GET['policies'];
 
-		 $pape_request = new Auth_OpenID_PAPE_Request($policy_uris);
-		 if ($pape_request) {
-			 $auth_request->addExtension($pape_request);
-		 }
-*/
 		// Redirect the user to the OpenID server for authentication.
 		// Store the token for this authentication so we can verify the
 		// response.
 
-		// For OpenID 1, we *should* send a redirect. For OpenID 2, use a Javascript
-		// form to send a POST request to the server. Due to TYPO3 specifics, we
-		// always send a redirect. This is allowed by OpenID specification.
-		$redirectURL = $authenticationRequest->redirectURL(getTrustRoot(),
-														getReturnTo());
+		// For OpenID version 1, we *should* send a redirect. For OpenID version 2,
+		// we should use a Javascript form to send a POST request to the server.
+		$extensionWebPath = t3lib_div::locationHeaderUrl(t3lib_extMgm::siteRelPath($this->extKey));
+		$returnURL = $this->getReturnURL($extensionWebPath);
 
-		// If the redirect URL can't be built, return. We can only return.
-		if (Auth_OpenID::isFailure($redirectURL)) {
-			// TODO Log the problem
-			return false;
+	    if ($authenticationRequest->shouldSendRedirect()) {
+			$redirectURL = $authenticationRequest->redirectURL($extensionWebPath, $returnURL);
+
+			// If the redirect URL can't be built, return. We can only return.
+			if (Auth_OpenID::isFailure($redirectURL)) {
+				// TODO Log the problem
+				return false;
+			}
+
+			// Send redirect. We use 303 code because it allows to redirect POST
+			// requests without resending the form. This is exactly what we need here.
+			// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
+			@ob_end_clean();
+			header(t3lib_div::HTTP_STATUS_303);
+			header('Location: ' . $redirectURL);
+			exit;
 		}
+		else {
+			$formHtml = $authenticationRequest->htmlMarkup($extensionWebPath,
+							$returnURL, false, array('id' => 'openid_message'));
 
-		// Send redirect.
-		@ob_end_clean();
-		header(t3lib_div::HTTP_STATUS_307);
-		header('Location: ' . $redirectURL);
-		// According to the HTTP specification we *should* produce a short note
-		// saying what we do if we use HTTP status 307.
-		// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.8
-		// TODO Should we localize this message? Does it make sense during authentication?
-		echo 'Redirecting to the OpenID server for authentication. If your browser ' .
-			'does not redirect, click <a href="' . $redirectURL . '">here</a> ' .
-			'to go to the OpenID server manually.';
-		exit;
+			// Display an error if the form markup couldn't be generated;
+			// otherwise, render the HTML.
+			if (Auth_OpenID::isFailure($form_html)) {
+				// Form markup cannot be generated
+				// TODO Log problem
+				return false;
+			} else {
+				@ob_end_clean();
+				echo $formHtml;
+				exit;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	protected function getReturnURL($extenstionWebPath) {
+		$returnURL = $extenstionWebPath . 'class.tx_openid_return.php?';
+		return $returnURL;
 	}
 }
-
-
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/openid/sv1/class.tx_openid_sv1.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/openid/sv1/class.tx_openid_sv1.php']);
