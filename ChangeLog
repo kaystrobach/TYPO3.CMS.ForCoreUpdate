@@ -9,6 +9,7 @@
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 
 	* cleaned up some code regarding the page caching to prepare for transition to t3lib_cache
+	* added columns to cache_pages needed for the t3lib_cache DB backend
 
 2008-09-23  Martin Kutschker  <masi@typo3.org>
 

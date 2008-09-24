@@ -16,6 +16,13 @@ CREATE TABLE cache_pages (
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,
   expires int(10) unsigned DEFAULT '0' NOT NULL,
   cache_data mediumblob,
+
+  identifier varchar(255) DEFAULT '' NOT NULL,
+  crdate int(11) unsigned DEFAULT '0' NOT NULL,
+  data mediumtext,
+  tags text,
+  lifetime int(11) unsigned DEFAULT '0' NOT NULL,
+
   KEY page_id (page_id),
   KEY sel (hash,page_id),
   PRIMARY KEY (id)
