@@ -173,6 +173,7 @@ $TT->push('Initializing the Caching System','');
 	$cacheManager      = t3lib_div::makeInstance('t3lib_cache_Manager');
 	$cacheFactoryClass = t3lib_div::makeInstanceClassName('t3lib_cache_Factory');
 	$TYPO3_CACHE       = new $cacheFactoryClass($cacheManager);
+
 	unset($cacheFactoryClass);
 $TT->pull();
 

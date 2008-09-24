@@ -8,23 +8,11 @@
 #
 CREATE TABLE cache_pages (
   id int(11) unsigned NOT NULL auto_increment,
-  hash varchar(32) DEFAULT '' NOT NULL,
-  page_id int(11) unsigned DEFAULT '0' NOT NULL,
-  reg1 int(11) unsigned DEFAULT '0' NOT NULL,
-  HTML mediumtext,
-  temp_content int(1) DEFAULT '0' NOT NULL,
-  tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-  expires int(10) unsigned DEFAULT '0' NOT NULL,
-  cache_data mediumblob,
-
   identifier varchar(255) DEFAULT '' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   data mediumtext,
   tags text,
   lifetime int(11) unsigned DEFAULT '0' NOT NULL,
-
-  KEY page_id (page_id),
-  KEY sel (hash,page_id),
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 

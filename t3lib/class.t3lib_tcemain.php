@@ -6951,6 +6951,27 @@ State was change by %s (username: %s)
 
 						// Delete cache for selected pages:
 					if (is_array($list_cache))	{
+						
+						$pageCache = null;
+						try {
+							$pageCache = $GLOBALS['cacheManager']->getCache(
+								'cache_pages'
+							);
+						} catch(t3lib_cache_exception_NoSuchCache $e) {
+							$pageCache = $GLOBALS['TYPO3_CACHE']->create(
+								'tx_cms_cache_pages',
+								't3lib_cache_VariableCache',
+								't3lib_cache_backend_Db', // TODO make the backend configurable
+								array(
+									'cacheTable' => 'cache_pages'
+								)
+							);
+						}
+						/* @var $pageCache t3lib_cache_AbstractCache */
+						
+						$pageCache->flushByTag();
+						
+						
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 							'cache_pages',
 							'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')'
