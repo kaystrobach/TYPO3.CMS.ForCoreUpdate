@@ -176,6 +176,8 @@ $PARSETIME_START = t3lib_div::milliseconds();		// Is set to the system time in m
 // ***********************************
 
 	// TODO implement autoloading so that we only require stuff we really need
+require_once(PATH_t3lib . 'class.t3lib_cache.php');
+
 require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractbackend.php');
 require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractcache.php');
 require_once(PATH_t3lib . 'cache/class.t3lib_cache_exception.php');
@@ -194,6 +196,7 @@ $cacheManager      = t3lib_div::makeInstance('t3lib_cache_Manager');
 $cacheFactoryClass = t3lib_div::makeInstanceClassName('t3lib_cache_Factory');
 $TYPO3_CACHE       = new $cacheFactoryClass($cacheManager);
 
+t3lib_cache::initPageCache();
 unset($cacheFactoryClass);
 
 // *************************

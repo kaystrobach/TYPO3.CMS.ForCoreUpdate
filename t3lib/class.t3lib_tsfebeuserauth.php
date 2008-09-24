@@ -965,16 +965,11 @@ $query.'
 	 * @param	integer		The page id.
 	 * @return	integer		The number of pages for this page in the table "cache_pages"
 	 */
-	function extGetNumberOfCachedPages($page_id)	{
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'count(id)',
-			'cache_pages',
-			'page_id = ' . intval($page_id)
-		);
+	function extGetNumberOfCachedPages($pageId) {
+		$pageCache = $GLOBALS['cacheManager']->getCache('cache_pages');
+		$pageCacheEntries = $pageCache->findEntriesByTag('pageId_' . (int) $pageId);
 
-		list($num) = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
-
-		return $num;
+		return count($pageCacheEntries);
 	}
 
 

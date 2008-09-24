@@ -156,6 +156,8 @@ $TT->pull();
 
 $TT->push('Initializing the Caching System','');
 		// TODO implement autoloading so that we only require stuff we really need
+	require_once(PATH_t3lib . 'class.t3lib_cache.php');
+
 	require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractbackend.php');
 	require_once(PATH_t3lib . 'cache/class.t3lib_cache_abstractcache.php');
 	require_once(PATH_t3lib . 'cache/class.t3lib_cache_exception.php');

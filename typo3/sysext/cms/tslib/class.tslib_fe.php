@@ -471,13 +471,10 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 				'cache_pages'
 			);
 		} catch(t3lib_cache_exception_NoSuchCache $e) {
-			$this->pageCache = $GLOBALS['TYPO3_CACHE']->create(
-				'cache_pages',
-				't3lib_cache_VariableCache',
-				't3lib_cache_backend_Db', // TODO make the backend configurable
-				array(
-					'cacheTable' => 'cache_pages'
-				)
+			t3lib_cache::initPageCache();
+
+			$this->pageCache = $GLOBALS['cacheManager']->getCache(
+				'cache_pages'
 			);
 		}
 	}
@@ -2708,7 +2705,7 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 	}
 
 	/**
-	 * Sets cache content; Inserts the content string into the cache_pages table.
+	 * Sets cache content; Inserts the content string into the cache_pages cache.
 	 *
 	 * @param	string		The content to store in the HTML field of the cache table
 	 * @param	mixed		The additional cache_data array, fx. $this->config
@@ -2762,20 +2759,19 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 	/**
 	 * Clears cache content for a list of page ids
 	 *
-	 * @param	string		A list of INTEGER numbers which points to page uids for which to clear entries in the cache_pages table (page content cache)
+	 * @param	string		A list of INTEGER numbers which points to page uids for which to clear entries in the cache_pages cache (page content cache)
 	 * @return	void
 	 */
-	function clearPageCacheContent_pidList($pidList)	{
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			'cache_pages',
-			'page_id IN ('.$GLOBALS['TYPO3_DB']->cleanIntList($pidList).')'
-		);
+	function clearPageCacheContent_pidList($pidList) {
+		foreach ($pidList as $pageId) {
+			$this->pageCache->flushByTag('pageId_' . (int) $pageId);
+		}
 	}
 
 	/**
 	 * Post processing page cache rows for both get and set.
 	 *
-	 * @param	array		Input "cache_pages" row, passed by reference!
+	 * @param	array		Input "cache_pages" entry, passed by reference!
 	 * @param	string		Type of operation, either "get" or "set"
 	 * @return	void
 	 */

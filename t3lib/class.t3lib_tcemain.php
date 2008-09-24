@@ -6952,30 +6952,15 @@ State was change by %s (username: %s)
 						// Delete cache for selected pages:
 					if (is_array($list_cache))	{
 
-						$pageCache = null;
-						try {
-							$pageCache = $GLOBALS['cacheManager']->getCache(
-								'cache_pages'
-							);
-						} catch(t3lib_cache_exception_NoSuchCache $e) {
-							$pageCache = $GLOBALS['TYPO3_CACHE']->create(
-								'cache_pages',
-								't3lib_cache_VariableCache',
-								't3lib_cache_backend_Db', // TODO make the backend configurable
-								array(
-									'cacheTable' => 'cache_pages'
-								)
-							);
-						}
-						/* @var $pageCache t3lib_cache_AbstractCache */
-
-						$pageCache->flushByTag();
-
-
-						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-							'cache_pages',
-							'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')'
+						$pageCache = $GLOBALS['cacheManager']->getCache(
+							'cache_pages'
 						);
+
+						$pageIds = $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache);
+						foreach ($pageIds as $pageId) {
+							$pageCache->flushByTag('pageId_' . $pageId);
+						}
+
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 							'cache_pagesection',
 							'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')'
@@ -7092,11 +7077,14 @@ State was change by %s (username: %s)
 				}
 
 					// Delete cache for selected pages:
-				if (is_array($list_cache))	{
-					$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-						'cache_pages',
-						'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')'
+				if (is_array($list_cache)) {
+					$pageCache = $GLOBALS['cacheManager']->getCache(
+						'cache_pages'
 					);
+
+					foreach ($list_cache as $pageId) {
+						$pageCache->flushByTag('pageId_' . (int) $pageId);
+					}
 
 						// Originally, cache_pagesection was not cleared with cache_pages!
 					$GLOBALS['TYPO3_DB']->exec_DELETEquery(
@@ -7250,7 +7238,8 @@ State was change by %s (username: %s)
 					t3lib_div::sysLog('Could not remove page cache files in "'.$cacheDir.'"','Core/t3lib_tcemain',2);
 				}
 			}
-			$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pages', '');
+
+			$GLOBALS['cacheManager']->getCache('cache_pages')->flush();
 		}
 	}
 

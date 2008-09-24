@@ -258,10 +258,11 @@ class tslib_feTCE	{
 	 */
 	function clear_cacheCmd($cacheCmd)	{
 		$cacheCmd = intval($cacheCmd);
+
 		if ($cacheCmd)	{
-			$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-				'cache_pages',
-				'page_id = ' . intval($cacheCmd)
+
+			$GLOBALS['cacheManager']->getCache('cache_pages')->flushByTag(
+				'pageId_' . $cacheCmd
 			);
 
 			if ($cacheCmd == intval($GLOBALS['TSFE']->id)) {

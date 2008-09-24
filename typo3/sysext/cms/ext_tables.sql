@@ -8,7 +8,7 @@
 #
 CREATE TABLE cache_pages (
   id int(11) unsigned NOT NULL auto_increment,
-  identifier varchar(255) DEFAULT '' NOT NULL,
+  identifier varchar(32) DEFAULT '' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
   data mediumtext,
   tags text,
