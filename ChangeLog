@@ -2,6 +2,7 @@
 
 	* Fixed bug: Using list query with SQL LIKE wildcards does not work
 	* Fixed bug #9408: Selecting by tag using wildcards does not work with database disposal of t3lib_cache
+	* Fixed bug: Problems with listQuery at single pattern matching
 
 2008-09-24  Dmitry Dulepov  <dmitry@typo3.org>
 
