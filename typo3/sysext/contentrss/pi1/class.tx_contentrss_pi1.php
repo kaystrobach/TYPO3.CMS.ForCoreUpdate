@@ -88,7 +88,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 
 		// fetch Content elements
 		$where = 'pid IN (' . $pidList .') AND tx_contentrss_excluderss=0';
-		$orderBy = $this->conf['dateField'];
+		$orderBy = $this->conf['orderField'];
 		$limit = $this->conf['limit'] ? intval($this->conf['limit']) : 10;
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -123,7 +123,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			} elseif ($row['CType'] == 'list' && in_array($row['CType'], $allowedTypes) && $row['list_type']) {
 				// it's a plugin, look for registered function
 				$listType = $row['listType'];
-				if ($GLOBALS['extConf'][$this->extKey]['contentRSS'][$row['list_type']]['contentPreview']) {
+				if ($GLOBALS['extConf'][$this->extKey][$row['list_type']]['contentPreview']) {
 					// call registered function
 					$row['bodytext'] = t3lib_div::callUserFunction($GLOBALS['extConf'][$this->extKey]['contentRSS'][$row['list_type']]['contentPreview'], $row);
 					$contentRows[] = $row;
@@ -156,7 +156,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 				'###LINK###' => $this->conf['siteLink'] . $this->cObj->typoLink_URL(array('parameter' => $row['pid'], 'section' => 'c' . $row['uid'])),
 				'###CONTENT###' => t3lib_div::fixed_lgd($content, $this->conf['contentLength']),
 				'###AUTHOR###' => $row['author'],
-				'###DATE###' => date($this->conf['dateFormat'], $row[$this->conf['dateField']])
+				'###DATE###' => date($this->conf['dateFormat'], $row[$this->conf['orderField']])
 			);
 			$rowContent .= $this->cObj->substituteMarkerArrayCached($rowSubpart, $markerArray, array(), array());
 		}

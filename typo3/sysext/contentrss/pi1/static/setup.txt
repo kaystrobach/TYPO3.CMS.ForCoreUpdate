@@ -12,7 +12,7 @@ plugin.tx_contentrss_pi1 {
 	#count of maximum items in feed
 	limit = 10
 	#sort field, use crdate or tstamp for date order
-	dateField = crdate
+	orderField = crdate
 	#see RSS-specification for valid date format. Use string for date(), see http://php.net/date for details
 	dateFormat = D, d M Y H:i:s O
 	#by setting HTML-Tags are stripped
