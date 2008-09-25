@@ -19,13 +19,13 @@
 	* Added eID and Backend return scripts
 	* Frontend user authentication is working with OpenID (tested with LiveJournal account)
 	* Backend user authentication is working with OpenID (tested with LiveJournal and Yahoo accounts)
-	* Add security to file-based OpenID store
+	* Added security to file-based OpenID store
 	* Added necessary "unique" evaluations on the OpenID field
 	* Patched OpenID library to use cURL proxy settings configured in TYPO3
 	* openid system extension is reformatted with extdeveval
 	* Added manual for the OpenID extension
 	* Changed icons for contentrss and openid extensions
-	* Add two missing methods to t3lib/cache/backend/class.t3lib_cache_backend_memcached.php
+	* Added two missing methods to t3lib/cache/backend/class.t3lib_cache_backend_memcached.php
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 
