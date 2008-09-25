@@ -136,7 +136,7 @@ $TYPO3_CONF_VARS = Array(
 				'cache_pages' => array(
 					'backend' => 't3lib_cache_backend_Memcached',
 					'options' => array(
-						'servers' => array('localhost:11211'),	// port is mandatory!
+						'servers' => array('localhost:11211', 'otherhost:11211', 'thirdhost:11211'),	// port is mandatory!
 					)
 				),
 				=============
