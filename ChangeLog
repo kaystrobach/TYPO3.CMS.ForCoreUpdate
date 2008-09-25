@@ -31,6 +31,7 @@
 	* Changed icons for contentrss and openid extensions
 	* Added two missing methods to t3lib/cache/backend/class.t3lib_cache_backend_memcached.php
 	* Removed hard–coded default memcached server
+	* Added instructions about configuring memcached to t3lib/config_default.php
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 

@@ -130,6 +130,18 @@ $TYPO3_CONF_VARS = Array(
 						'cacheTable' => 'cache_pagesection'
 					)
 				)
+				/*
+				 For memcached, use:
+				=============
+				'cache_pages' => array(
+					'backend' => 't3lib_cache_backend_Memcached',
+					'options' => array(
+						'servers' => array('localhost:11211'),	// port is mandatory!
+					)
+				),
+				=============
+				You need to have memcached installed as a daemon and also as a PHP extension!
+				*/
 			)
 		)
 	),
