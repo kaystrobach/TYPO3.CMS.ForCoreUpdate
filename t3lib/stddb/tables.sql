@@ -125,7 +125,7 @@ CREATE TABLE cache_hash (
   id int(11) unsigned NOT NULL auto_increment,
   identifier varchar(32) DEFAULT '' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
-  data mediumtext,
+  content mediumtext,
   tags mediumtext,
   lifetime int(11) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (id),

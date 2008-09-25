@@ -57,7 +57,7 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 			array(
 				'identifier' => $entryIdentifier,
 				'crdate'     => time(),
-				'data'       => $data,
+				'content'       => $data,
 				'tags'       => implode(',', $tags),
 				'lifetime'   => $lifetime
 			)
