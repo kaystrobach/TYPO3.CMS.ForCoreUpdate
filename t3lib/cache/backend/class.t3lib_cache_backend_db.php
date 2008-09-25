@@ -57,7 +57,7 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 			array(
 				'identifier' => $entryIdentifier,
 				'crdate'     => time(),
-				'content'       => $data,
+				'content'    => $data,
 				'tags'       => implode(',', $tags),
 				'lifetime'   => $lifetime
 			)
@@ -75,14 +75,14 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 		$cacheEntry = false;
 
 		$caheEntries = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'data',
+			'content',
 			$this->cacheTable,
 			'identifier = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($entryIdentifier, $this->cacheTable) . ' '
 				. 'AND ((crdate + lifetime) >= ' . time() . ' OR lifetime = 0)'
 		);
 
 		if (count($caheEntries) == 1) {
-			$cacheEntry = $caheEntries[0]['data'];
+			$cacheEntry = $caheEntries[0]['content'];
 		}
 
 		return $cacheEntry;
@@ -99,7 +99,7 @@ class t3lib_cache_backend_Db extends t3lib_cache_AbstractBackend {
 		$hasEntry = false;
 
 		$caheEntries = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'data',
+			'content',
 			$this->cacheTable,
 			'identifier = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($entryIdentifier, $this->cacheTable) . ' '
 				. 'AND (crdate + lifetime) >= ' . time()
