@@ -418,7 +418,7 @@ if (!strcasecmp($TYPO3_CONF_VARS['FE']['pageNotFound_handling'],'TRUE'))	{
 // http://support.typo3.org/general/dev/m/re-typo3-dev-hackontest-2008-list-of-tasks-366277/p/239/
 /*
 	// Allow htmlentities in SiteName
-	// Don't care about security as this value is coming from a completely trusted source
+	// Don't care about potential XSS code as this value is coming from a trusted source
 if (preg_match('|[&#;]|', $TYPO3_CONF_VARS['SYS']['sitename'])) {
 	$temporaryValue_sitename = $TYPO3_CONF_VARS['SYS']['sitename'];
 
@@ -432,7 +432,7 @@ if (preg_match('|[&#;]|', $TYPO3_CONF_VARS['SYS']['sitename'])) {
 	}
 
 	$TYPO3_CONF_VARS['SYS']['sitename'] = $temporaryValue_sitename;
-	unset ($temporaryValue_sitename);
+	unset ($temporaryValue_charset, $temporaryValue_sitename);
 }
 */
 
