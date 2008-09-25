@@ -110,6 +110,7 @@ class SC_index {
 		// sets the level of security. *'normal' = clear-text. 'challenged' = hashed password/username from form in $formfield_uident. 'superchallenged' = hashed password hashed again with username.
 	var $loginSecurityLevel = 'superchallenged';
 
+	protected $javaScriptLoginSecurityLevelCall = '';
 
 
 
@@ -158,6 +159,21 @@ class SC_index {
 		}
 	}
 
+	public function setJavaScriptLoginSecurityLevelCall($call = '') {
+		$call = trim($call);
+
+		if (!$call) {
+			if ($this->loginSecurityLevel == 'challenged') {
+				$call = 'doChallengeResponse(0);';
+			} elseif ($this->loginSecurityLevel == 'normal') {
+				$call = 'doNormalSecurityLevelHandling();';
+			} else { // if ($this->loginSecurityLevel == 'superchallenged') {
+				$call = 'doChallengeResponse(0);';
+			}
+		}
+
+		$this->javaScriptLoginSecurityLevelCall = $call;
+	}
 
 	/**
 	 * Main function - creating the login/logout form
@@ -171,11 +187,6 @@ class SC_index {
 		$TBE_TEMPLATE->bodyTagAdditions = ' onload="startUp();"';
 		$TBE_TEMPLATE->moduleTemplate = $TBE_TEMPLATE->getHtmlTemplate('templates/login.html');
 
-
-			// Set JavaScript for creating a MD5 hash of the password:
-		$TBE_TEMPLATE->JScode.= $this->getJScode();
-
-
 			// Checking, if we should make a redirect.
 			// Might set JavaScript in the header to close window.
 		$this->checkRedirect();
@@ -188,6 +199,7 @@ class SC_index {
 
 			// Creating form based on whether there is a login or not:
 		if (!$BE_USER->user['uid'])	{
+			$this->setJavaScriptLoginSecurityLevelCall();
 			$TBE_TEMPLATE->form = $this->startForm();
 			$loginForm = $this->makeLoginForm();
 		} else {
@@ -198,18 +210,24 @@ class SC_index {
 			$loginForm = $this->makeLogoutForm();
 		}
 
-			// Starting page:
-		$this->content.=$TBE_TEMPLATE->startPage('TYPO3 Login: '.$TYPO3_CONF_VARS['SYS']['sitename']);
-
-			// Add login form:
-		$this->content.=$this->wrapLoginForm($loginForm);
-
 			// Create a random challenge string
 		$challenge = $this->getChallenge();
 
 			// Save challenge value in session data (thanks to Bernhard Kraft for providing code):
 		session_start();
 		$_SESSION['login_challenge'] = $challenge;
+
+			// Extend the login form by specific information delivered by services:
+		$this->extendDocument();
+
+				// Set JavaScript for creating a MD5 hash of the password:
+		$TBE_TEMPLATE->JScode.= $this->getJScode();
+
+			// Starting page:
+		$this->content.=$TBE_TEMPLATE->startPage('TYPO3 Login: '.$TYPO3_CONF_VARS['SYS']['sitename']);
+
+			// Add login form:
+		$this->content.=$this->wrapLoginForm($loginForm);
 
 			// Add hidden fields and end the page
 		$this->content.= $this->getHiddenFields($challenge);
@@ -587,25 +605,10 @@ class SC_index {
 	 * @return	string		Opening form tag string
 	 */
 	function startForm()	{
-		$output = '';
-
-		if ($this->loginSecurityLevel == 'challenged') {
-			$output.= '
-				<form action="index.php" method="post" name="loginform" onsubmit="doChallengeResponse(0);">
-				';
-		} elseif ($this->loginSecurityLevel == 'normal') {
-			$output.= '
-				<form action="index.php" method="post" name="loginform" onsubmit="document.loginform.userident.value=document.loginform.p_field.value;document.loginform.p_field.value=\'\';return true;">
-				';
-		} else { // if ($this->loginSecurityLevel == 'superchallenged') {
-			$output.= '
-				<form action="index.php" method="post" name="loginform" onsubmit="doChallengeResponse(1);">
-				';
-		}
-
 		$output.= '
-					<input type="hidden" name="login_status" value="login" />
-				';
+			<form action="index.php" method="post" name="loginform" onsubmit="securityLevelHandler()">
+			<input type="hidden" name="login_status" value="login" />
+		';
 
 		return $output;
 	}
@@ -653,6 +656,12 @@ class SC_index {
 					}
 				}
 
+				function doNormalSecurityLevelHandling() {
+					document.loginform.userident.value = document.loginform.p_field.value;
+					document.loginform.p_field.value = "";
+					return true;
+				}
+
 				function startUp() {
 						// If the login screen is shown in the login_frameset window for re-login, then try to get the username of the current/former login from opening windows main frame:
 					if (parent.opener && parent.opener.TS && parent.opener.TS.username && document.loginform && document.loginform.username)	{
@@ -672,6 +681,10 @@ class SC_index {
 						document.loginform.p_field.focus();
 					}
 				}
+
+				function securityLevelHandler() {
+					' . $this->javaScriptLoginSecurityLevelCall . '
+				}
 			');
 
 		return $JScode;
@@ -685,6 +698,23 @@ class SC_index {
 	function getChallenge()	{
 		$challenge = md5(uniqid('').getmypid());
 		return $challenge;
+	}
+
+	/**
+	 * Extends the current document by specific information required for
+	 * authentication services, like additional JavaScript resources or
+	 * form fields.
+	 *
+	 * @return	void
+	 */
+	protected function extendDocument() {
+		$serviceChain = '';
+		while (is_object($serviceObj = t3lib_div::makeInstanceService('auth', 'extendDocumentBE', $serviceChain))) {
+			$serviceChain.= ','.$serviceObj->getServiceKey();
+			$serviceObj->extendDocument($GLOBALS['TBE_TEMPLATE'], $this);
+			unset($serviceObj);
+		}
+		unset($serviceObj);
 	}
 }
 
