@@ -1,3 +1,7 @@
+2008-09-25  Dmitry Dulepov  <dmitry@typo3.org>
+
+	* Fixed: possible problems with multiple sites using the same cache keys for memcached (other caching Backends can be affected too!)
+
 2008-09-25  Ingo Renner  <ingo@typo3.org>
 
 	* !!! Removed option $TYPO3_CONF_VARS['FE']['pageCacheToExternalFiles'] as it's not needed anymore with the new caching framework

@@ -55,6 +55,11 @@ class t3lib_cache_backend_Memcached extends t3lib_cache_AbstractBackend {
 	protected $identifierPrefix;
 
 	/**
+	 * @var	string	The ID of this TYPO3 server. If many sites are using the same memcached, it prevents conflicts
+	 */
+	protected $serverId;
+
+	/**
 	 * Constructs this backend
 	 *
 	 * @param string $context FLOW3's application context
@@ -69,12 +74,16 @@ class t3lib_cache_backend_Memcached extends t3lib_cache_AbstractBackend {
 			);
 		}
 
+		// Set default value for the server ID
+		$this->serverId = t3lib_div::getIndpEnv('HTTP_HOST');
+
 		parent::__construct($options);
 
 		$this->memcache = new Memcache();
 		$this->identifierPrefix = 'TYPO3_' . md5(
 			t3lib_div::getIndpEnv('SCRIPT_FILENAME')
 			. php_sapi_name()
+			. $this->serverId
 		) . '_';
 
 		if (!count($this->servers)) {
@@ -88,6 +97,16 @@ class t3lib_cache_backend_Memcached extends t3lib_cache_AbstractBackend {
 			$conf = explode(':',$serverConf, 2);
 			$this->memcache->addServer($conf[0], $conf[1]);
 		}
+	}
+
+	/**
+	 * Setter for serverId property.
+	 *
+	 * @param	int	$serverId	The value of the property
+	 * @return	void
+	 */
+	protected function setServerId($serverId) {
+		$this->serverId = $serverId;
 	}
 
 	/**
