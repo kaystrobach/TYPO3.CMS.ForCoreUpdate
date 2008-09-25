@@ -112,9 +112,24 @@ $TYPO3_CONF_VARS = Array(
 				't3lib_cache_backend_Null'      => 't3lib/cache/backend/class.t3lib_cache_backend_null.php:t3lib_cache_backend_Null'
 			),
 			'cacheBackendAssignments' => array(
-				'cache_hash'        => 't3lib_cache_backend_Db',
-				'cache_pages'       => 't3lib_cache_backend_Db',
-				'cache_pagesection' => 't3lib_cache_backend_Db'
+				'cache_hash' => array(
+					'backend' => 't3lib_cache_backend_Db',
+					'options' => array(
+						'cacheTable' => 'cache_hash'
+					)
+				),
+				'cache_pages' => array(
+					'backend' => 't3lib_cache_backend_Db',
+					'options' => array(
+						'cacheTable' => 'cache_pages'
+					)
+				),
+				'cache_pagesection' => array(
+					'backend' => 't3lib_cache_backend_Db',
+					'options' => array(
+						'cacheTable' => 'cache_pagesection'
+					)
+				)
 			)
 		)
 	),

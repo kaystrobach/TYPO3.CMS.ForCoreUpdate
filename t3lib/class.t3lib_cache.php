@@ -43,10 +43,8 @@ class t3lib_cache {
 			$GLOBALS['TYPO3_CACHE']->create(
 				'cache_pages',
 				't3lib_cache_VariableCache',
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pages'],
-				array(
-					'cacheTable' => 'cache_pages'
-				)
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pages']['backend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pages']['options']
 			);
 		} catch(t3lib_cache_exception_DuplicateIdentifier $e) {
 				// do nothing, a cache_pages cache already exists
@@ -64,10 +62,8 @@ class t3lib_cache {
 			$GLOBALS['TYPO3_CACHE']->create(
 				'cache_pagesection',
 				't3lib_cache_VariableCache',
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pagesection'],
-				array(
-					'cacheTable' => 'cache_pagesection'
-				)
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pagesection']['backend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_pagesection']['options']
 			);
 		} catch(t3lib_cache_exception_DuplicateIdentifier $e) {
 				// do nothing, a cache_pagesection cache already exists
@@ -85,10 +81,8 @@ class t3lib_cache {
 			$GLOBALS['TYPO3_CACHE']->create(
 				'cache_hash',
 				't3lib_cache_VariableCache',
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_hash'],
-				array(
-					'cacheTable' => 'cache_hash'
-				)
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_hash']['backend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheBackendAssignments']['cache_hash']['options']
 			);
 		} catch(t3lib_cache_exception_DuplicateIdentifier $e) {
 				// do nothing, a cache_hash cache already exists

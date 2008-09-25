@@ -43,6 +43,7 @@
 	* Added options to change the backends used for each cache (cache_hash, cache_pages, cache_pagesection)
 	* Fixed several issues in t3lib_cache_backend_file
 	* Renamed the "data" column in cache tables to "content" to prevent conflicts with reserved names
+	* Added a way to define options for the different caching backends
 
 2008-09-23  Martin Kutschker  <masi@typo3.org>
 
