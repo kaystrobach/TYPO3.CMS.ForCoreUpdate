@@ -2,6 +2,11 @@
 
 	* Fixed bug #8195: Encoding problems with $TYPO3_CONF_VARS[SYS][sitename] - leaving the actual fix commented out as the problem should be fixed on the client side
 
+2008-09-24 Steffen Kamper  <info@sk-typo3.de>
+	* contentrss: clean up, allow usage without plugin on page with TS configuration
+	* contentrss: use registered function for plugins: $GLOBALS['extConf']['contentrss']['contentRSS'][$listType]['contentPreview']
+	* contentrss: working version for normal content elements with language and version overlays
+
 2008-09-24  Oliver Hader  <oliver@typo3.org>
 
 	* Fixed bug: Using list query with SQL LIKE wildcards does not work
@@ -32,6 +37,7 @@
 	* Added two missing methods to t3lib/cache/backend/class.t3lib_cache_backend_memcached.php
 	* Removed hard–coded default memcached server
 	* Added instructions about configuring memcached to t3lib/config_default.php
+	* Updates and clean up for contentrss system extension
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 

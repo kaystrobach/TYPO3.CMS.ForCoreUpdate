@@ -1,8 +1,0 @@
-08-09-24 Steffen Kamper  <info@sk-typo3.de>
-	* clean up, allow usage without plugin on page with TS configuration
-	* use registered function for plugins: $GLOBALS['extConf']['contentrss']['contentRSS'][$listType]['contentPreview']
-	* working version for normal content elements with language and version overlays
-
-08-09-24 Steffen Kamper  <info@sk-typo3.de>
-
-	* Initial release

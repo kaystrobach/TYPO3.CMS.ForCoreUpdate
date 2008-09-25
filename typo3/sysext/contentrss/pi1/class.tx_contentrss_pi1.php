@@ -22,7 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once(PATH_tslib . 'class.tslib_pibase.php');
 
 
 /**
@@ -39,7 +39,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 	public $pi_checkCHash = true;
 	public $versioningEnabled = false;
 	public $sys_language_mode;
-	
+
 	/**
 	 * The main method of the PlugIn
 	 *
@@ -47,67 +47,68 @@ class tx_contentrss_pi1 extends tslib_pibase {
 	 * @param	array		$conf: The PlugIn configuration
 	 * @return	The content that is displayed on the website
 	 */
-	public function main($content,$conf)	{
-		$this->conf=$conf;
+	public function main($content, $conf)	{
+		$this->conf = $conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
 		$type = $GLOBALS['TSFE']->type;
-		
+
 		// type must be myType
-		$myType = intval($this->conf['typeNum']); 
+		$myType = intval($this->conf['typeNum']);
 		if ($type == 0 || $type != $myType) {
-			//wrong type - print message with correct link
+			// wrong type - print message with correct link
 			return sprintf($this->pi_getLL('wrong_pagetype'), $this->cObj->typoLink($this->pi_getLL('this_link'), array('parameter' => $GLOBALS['TSFE']->id . ',' . $myType)));
 		} else {
-			//validate settings
+			// validate settings
 			$id = $GLOBALS['TSFE']->id;
-			//fetch tt_content record
-			$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			// fetch tt_content record
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'pages,recursive',
 				'tt_content',
 				'list_type=\'contentrss_pi1\' AND pid=' . $id . $this->cObj->enableFields('tt_content')
 			);
-			if (!$res) {
-				return $this->pi_getLL('no_pages_selected'); 
+			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 0) {
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
+				return $this->pi_getLL('no_pages_selected');
 			}
-			$row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			$this->conf['pages'] = $row['pages'];
 			$this->conf['recursive'] = $row['recursive'];
-			$GLOBALS['TYPO3_DB']->sql_free_result($res); 
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
-		
+
 		// init vars
 		$pidList = $this->pi_getPidList($this->conf['pages'], $this->conf['recursive']);
-		
+
 		// get language and version infos
 		$this->sys_language_mode = $this->conf['sys_language_mode'] ? $this->conf['sys_language_mode'] : $GLOBALS['TSFE']->sys_language_mode;
 		if (t3lib_extMgm::isLoaded('version')) {
 			$this->versioningEnabled = true;
 		}
-		
+
 		// fetch Content elements
-		$where = 'pid IN(' . $pidList .') AND tx_contentrss_excluderss=0';
+		$where = 'pid IN (' . $pidList .') AND tx_contentrss_excluderss=0';
 		$orderBy = $this->conf['dateField'];
-		$limit = $this->conf['limit'] ? intval($this->conf['limit']) : '10';
-		
+		$limit = $this->conf['limit'] ? intval($this->conf['limit']) : 10;
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'*',
 			'tt_content',
 			$where . $this->cObj->enableFields('tt_content'),
-			$groupBy='',
+			'',
 			$orderBy,
 			$limit
 		);
-		if (!$res) {
+		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) == 0) {
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			return $this->pi_getLL('no_content_found');
 		}
-		
+
 		$contentRows = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$listType = $row['list_type'];
-			if ($listType == '') {
+		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+			if ($row['CType'] !== 'list') {
 				// we have normal content elements
-				//get language overlay  
+				// get language overlay
 				if ($GLOBALS['TSFE']->sys_language_content) {
 					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_content', $row, $GLOBALS['TSFE']->sys_language_content, $this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
 				}
@@ -117,21 +118,22 @@ class tx_contentrss_pi1 extends tslib_pibase {
 					// fix pid for record from workspace
 					$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_content', $row);
 				}
-				$contentRows[] = $row;   
+				$contentRows[] = $row;
 			} else {
 				// it's a plugin, look for registered function
+				$listType = $row['listType'];
 				if ($GLOBALS['extConf'][$this->extKey]['contentRSS'][$listType]['contentPreview']) {
 					// call registered function
 					$row['bodytext'] = t3lib_div::callUserFunction($GLOBALS['extConf'][$this->extKey]['contentRSS'][$listType]['contentPreview'], $row);
-					$contentRows[] = $row;   
+					$contentRows[] = $row;
 				}
 			}
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-		
+
 		return $this->compileRows($contentRows);
 	}
-	
+
 	/**
 	 * compile the rows and fill template
 	 *
@@ -139,26 +141,26 @@ class tx_contentrss_pi1 extends tslib_pibase {
 	 * @return	complete XML output
 	 */
 	protected function compileRows($rows) {
-	
-		$template = $this->conf['rssTemplate'];		
+
+		$template = $this->conf['rssTemplate'];
 		$rowSubpart = $this->cObj->getSubpart($template, '###CONTENTROWS###');
 		$rowHeader = $this->cObj->getSubpart($template, '###HEADER###');
-		 
-		$rowContent = '';             
-		foreach($rows as $row) {   
-			//allow HTML Output eg for atom 
+
+		$rowContent = '';
+		foreach($rows as $row) {
+			// Allow HTML Output eg for atom
 			$content = $this->conf['stripHTML'] ? strip_tags($this->pi_RTEcssText($row['bodytext'])) : $this->pi_RTEcssText($row['bodytext']);
 			$markerArray = array(
 				'###TITLE###' => $row['header'] ? $row['header'] : '[no title]',
 				'###LINK###' => $this->conf['siteLink'] . $this->cObj->typoLink_URL(array('parameter' => $row['pid'], 'section' => 'c' . $row['uid'])),
 				'###CONTENT###' => t3lib_div::fixed_lgd($content, $this->conf['contentLength']),
 				'###AUTHOR###' => $row['author'],
-				'###DATE###' => date($this->conf['dateFormat'], $row[$this->conf['dateField']]) 
+				'###DATE###' => date($this->conf['dateFormat'], $row[$this->conf['dateField']])
 			);
-			$rowContent .= $this->cObj->substituteMarkerArrayCached($rowSubpart, $markerArray, array(), array());	
+			$rowContent .= $this->cObj->substituteMarkerArrayCached($rowSubpart, $markerArray, array(), array());
 		}
 		$subpartArray['###CONTENTROWS###'] = $rowContent;
-		
+
 		$markerArray = array(
 			'###XML_DECLARATION###' => $this->conf['xmlDeclaration'],
 			'###SITE_TITLE###' => $this->conf['siteTitle'],
@@ -172,7 +174,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			'###WEBMASTER###' => $this->conf['rssWebmaster'],
 			'###MANAGINGEDITOR###' => $this->conf['rssManagingEditor'],
 			'###LASTBUILD###' => date($this->conf['dateFormat'])
-			
+
 		);
 		return $this->cObj->substituteMarkerArrayCached($template, $markerArray, $subpartArray, array());
 	}
