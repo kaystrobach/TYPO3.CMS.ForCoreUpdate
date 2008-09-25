@@ -26,7 +26,7 @@ Compatibility
 Speed improvements
 ==================
 
-	* ...
+	* New caching framework includes support for file–based cache and memcached daemon.
 
 Frontend
 ==================
@@ -46,7 +46,11 @@ TypoScript changes
 Database changes
 ================
 
-	* ...
+	* Structure of cache_pages, cache_pagesection, cache_hash tables is changed
+	  severely. TYPO3 database analyzer cannot update these tables automatically.
+	  Therefore these tables should be dropped manually using phpMyAdmin or MySQL
+	  tools. After dropping Database Analyzer will be able to create them with
+	  proper structure.
 
 DBAL
 ====
