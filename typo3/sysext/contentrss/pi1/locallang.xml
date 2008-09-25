@@ -10,7 +10,6 @@
 			<label index="no_content_found">No Content found</label>
 			<label index="this_link">this link</label>
 			<label index="no_pages_selected">please set the startingpoint in plugin configuration!</label>
-			<label index="no_pages_configured">please configure plugin.tx_contentrss_pi1.pages in your template!</label>
 		</languageKey>
 	</data>
 </T3locallang>

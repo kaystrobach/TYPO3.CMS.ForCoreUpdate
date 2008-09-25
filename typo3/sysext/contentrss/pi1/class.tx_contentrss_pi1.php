@@ -105,8 +105,9 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		}
 
 		$contentRows = array();
+		$allowedTypes = t3lib_div::trimExplode(',', $this->conf['allowedTypes'], true); 
 		while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-			if ($row['CType'] !== 'list') {
+			if ($row['CType'] != 'list' && in_array($row['CType'], $allowedTypes)) {  
 				// we have normal content elements
 				// get language overlay
 				if ($GLOBALS['TSFE']->sys_language_content) {
@@ -119,12 +120,12 @@ class tx_contentrss_pi1 extends tslib_pibase {
 					$GLOBALS['TSFE']->sys_page->fixVersioningPid('tt_content', $row);
 				}
 				$contentRows[] = $row;
-			} else {
+			} elseif ($row['CType'] == 'list' && in_array($row['CType'], $allowedTypes) && $row['list_type']) {
 				// it's a plugin, look for registered function
 				$listType = $row['listType'];
-				if ($GLOBALS['extConf'][$this->extKey]['contentRSS'][$listType]['contentPreview']) {
+				if ($GLOBALS['extConf'][$this->extKey]['contentRSS'][$row['list_type']]['contentPreview']) {
 					// call registered function
-					$row['bodytext'] = t3lib_div::callUserFunction($GLOBALS['extConf'][$this->extKey]['contentRSS'][$listType]['contentPreview'], $row);
+					$row['bodytext'] = t3lib_div::callUserFunction($GLOBALS['extConf'][$this->extKey]['contentRSS'][$row['list_type']]['contentPreview'], $row);
 					$contentRows[] = $row;
 				}
 			}

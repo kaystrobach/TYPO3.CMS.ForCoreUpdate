@@ -5,16 +5,22 @@ plugin.tx_contentrss_pi1 {
 	#fill these variables if you want to use it without plugin on page
 	pages = 
 	recursive = 
-	allowedTypes
-	#rss-related informations
+	
+	#this are the CTypes which will be feeded. list is used by plugins, which needs registering for content feed.
+	allowedTypes = text,textpic,list
+	
+	#count of maximum items in feed
 	limit = 10
-	dateField = tstamp
+	#sort field, use crdate or tstamp for date order
+	dateField = crdate
+	#see RSS-specification for valid date format. Use string for date(), see http://php.net/date for details
 	dateFormat = D, d M Y H:i:s O
+	#by setting HTML-Tags are stripped
 	stripHTML = 1
+	#cropping length for content (appended with '...'), use 0 for no cropping
 	contentLength = 200
 	
 	#variables for the template
-	xmlDeclaration = <?xml version="1.0" encoding="utf-8"?>
 	siteTitle = {$plugin.tx_contentrss_pi1.siteTitle}
 	siteLink = {$plugin.tx_contentrss_pi1.siteLink}
 	siteDescription = {$plugin.tx_contentrss_pi1.siteDescription}
@@ -27,7 +33,7 @@ plugin.tx_contentrss_pi1 {
 	
 	
 	rssTemplate (
-###XML_DECLARATION###
+<?xml version="1.0" encoding="utf-8"?> 
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 	<channel>
 		<title>###SITE_TITLE###</title>
@@ -70,7 +76,7 @@ rssContent {
 	
 	config {
 	disableAllHeaderCode = 1
-	additionalHeaders = Content-type:application/xml
+	#additionalHeaders = Content-type:application/xml
 	xhtml_cleaning = 0
 	admPanel = 0
 	}
