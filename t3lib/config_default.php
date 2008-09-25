@@ -404,6 +404,37 @@ if (!strcasecmp($TYPO3_CONF_VARS['FE']['pageNotFound_handling'],'TRUE'))	{
 	$TYPO3_CONF_VARS['FE']['pageNotFound_handling'] = TRUE;
 }
 
+// Note by michael@typo3.org:
+// Although requested by Hackontest staff, the TYPO3 developers have come to
+// the conclusion that this problem can be neglected, as it only happens if
+// clients have misconfigured their file editors to a wrong character set
+// encoding (it mismatches the value of $TYPO3_CONF_VARS[BE][forceCharset]).
+//
+// So here is a fully functional fix that will solve the problem, but since
+// it slows down every page request with unneccessary functionality, it
+// remains commented out.
+//
+// For further reference, see
+// http://support.typo3.org/general/dev/m/re-typo3-dev-hackontest-2008-list-of-tasks-366277/p/239/
+/*
+	// Allow htmlentities in SiteName
+	// Don't care about security as this value is coming from a completely trusted source
+if (preg_match('|[&#;]|', $TYPO3_CONF_VARS['SYS']['sitename'])) {
+	$temporaryValue_sitename = $TYPO3_CONF_VARS['SYS']['sitename'];
+
+	if ($TYPO3_CONF_VARS['BE']['forceCharset']=='utf-8') {
+			// If utf-8 is set then the corresponding PHP value is well known
+		$temporaryValue_charset = 'UTF-8';
+		$temporaryValue_sitename = html_entity_decode($temporaryValue_sitename, ENT_COMPAT, $temporaryValue_charset);
+	} else {
+			// Otherwise, expect latin1 and rely on PHPs default...
+		$temporaryValue_sitename = html_entity_decode($temporaryValue_sitename);
+	}
+
+	$TYPO3_CONF_VARS['SYS']['sitename'] = $temporaryValue_sitename;
+	unset ($temporaryValue_sitename);
+}
+*/
 
 	// simple debug function which prints output immediately
 function xdebug($var='',$br=0)	{
