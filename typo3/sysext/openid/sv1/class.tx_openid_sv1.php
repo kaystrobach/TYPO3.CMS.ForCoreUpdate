@@ -212,11 +212,13 @@ class tx_openid_sv1 extends t3lib_svbase {
 				if (is_array($urlParts) && $urlParts['scheme'] != '' && $urlParts['host']) {
 					// Yes, this looks like a good OpenID. Ask OpenID server (should not return)
 					$this->sendOpenIDRequest();
+					// If we are here, it means we have a valid OpenID but failed to
+					// contact the server. We stop authentication process.
+					// Alternatively it may mean that OpenID format is not correct.
+					// In both cases we return code 0 (complete failure)
+				} else {
+					$result = 100;
 				}
-				// If we are here, it means we have a valid OpenID but failed to
-				// contact the server. We stop authentication process.
-				// Alternatively it may mean that OpenID format is not correct.
-				// In both cases we return code 0 (complete failure)
 			}
 		}
 

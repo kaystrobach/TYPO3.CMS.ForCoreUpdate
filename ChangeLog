@@ -44,6 +44,7 @@
 	* Added instructions about configuring memcached to t3lib/config_default.php
 	* Updates and clean up for contentrss system extension
 	* Updated NEWS.txt
+	* Fixed problem: normal authentication is not possible if user has configured OpenID
 
 2008-09-24  Ingo Renner  <ingo@typo3.org>
 
