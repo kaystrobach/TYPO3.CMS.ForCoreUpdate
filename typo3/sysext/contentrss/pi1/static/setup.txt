@@ -5,7 +5,7 @@ plugin.tx_contentrss_pi1 {
 	#fill these variables if you want to use it without plugin on page
 	pages = 
 	recursive = 
-	
+	allowedTypes
 	#rss-related informations
 	limit = 10
 	dateField = tstamp

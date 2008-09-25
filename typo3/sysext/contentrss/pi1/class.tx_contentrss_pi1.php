@@ -132,6 +132,12 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		return $this->compileRows($contentRows);
 	}
 	
+	/**
+	 * compile the rows and fill template
+	 *
+	 * @param	array		$rows: contain all rows for output
+	 * @return	complete XML output
+	 */
 	protected function compileRows($rows) {
 	
 		$template = $this->conf['rssTemplate'];		
@@ -140,7 +146,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		 
 		$rowContent = '';             
 		foreach($rows as $row) {   
-			//allow HTML Output
+			//allow HTML Output eg for atom 
 			$content = $this->conf['stripHTML'] ? strip_tags($this->pi_RTEcssText($row['bodytext'])) : $this->pi_RTEcssText($row['bodytext']);
 			$markerArray = array(
 				'###TITLE###' => $row['header'] ? $row['header'] : '[no title]',
