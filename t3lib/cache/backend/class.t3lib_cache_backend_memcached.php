@@ -42,7 +42,7 @@ class t3lib_cache_backend_Memcached extends t3lib_cache_AbstractBackend {
 	/**
 	 * @var array
 	 */
-	protected $servers = array('localhost:11211');
+	protected $servers = array();
 
 	/**
 	 * @var boolean whether the memcache uses compression or not (requires zlib)
