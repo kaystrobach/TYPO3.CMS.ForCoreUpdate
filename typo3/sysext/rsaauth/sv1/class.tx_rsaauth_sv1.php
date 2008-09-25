@@ -62,12 +62,13 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 	}
 
 	/**
-	 * Enter description here...
+	 * Initialize authentication service
 	 *
-	 * @param	string			$subType
-	 * @param	array			$loginData
-	 * @param	array			$authInfo
-	 * @param	t3lib_userAuth	$parentObject
+	 * @param	string			$subType: Subtype of service (e.g. 'authUserBE')
+	 * @param	array			$loginData: Submitted data to the login form
+	 * @param	array			$authInfo: Additional authentication information
+	 * @param	t3lib_userAuth	$parentObject: The calling parent object
+	 * @return	void
 	 */
 	public function initAuth($subType, array $loginData, array $authInfo, t3lib_userAuth &$parentObject) {
 		session_start();
@@ -95,9 +96,10 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 	}
 
 	/**
-	 * Enter description here...
+	 * Authenticates a user (Check various conditions for the user that might invalidate its authentication, eg. password match, domain, IP, etc.)
 	 *
-	 * @param	array		$user
+	 * @param	array		$user: User record (selected by username)
+	 * @return	boolean		Whether the user was sucesfully authenticated
 	 */
 	public function authUser($user) {
 		$authenticated = false;
@@ -119,8 +121,8 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 	/**
 	 * Extends a docuement by specific information like JavaScript or form fields.
 	 *
-	 * @param	template	$template
-	 * @param	object		$parentObject
+	 * @param	template	$template: The template document currently working on
+	 * @param	object		$parentObject: The calling parent object
 	 * @return	void
 	 */
 	public function extendDocument(template &$template, &$parentObject) {
@@ -138,7 +140,7 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 	/**
 	 * Includes JavaScript classes that are required on client-side to use RSA.
 	 *
-	 * @param	template	$template
+	 * @param	template	$template: The template object currently working on
 	 * @return	void
 	 */
 	protected function includeJavaScript(template &$template) {
@@ -156,6 +158,12 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 		}
 	}
 
+	/**
+	 * Includes hidden form fields for RSA specific information.
+	 *
+	 * @param	template		$template: The template object currently working on
+	 * @return	void
+	 */
 	protected function includeHiddenFormFields(template &$template) {
 		$template->form.= '
 			<input type="hidden" name="' . $this->prefixId . '[publicExponent]" value="' . $this->rsa->getPublicExponent() . '" />
@@ -163,6 +171,12 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 		';
 	}
 
+	/**
+	 * Sets RSA specific information that is required for evaluation the submitted
+	 * form data in the next request to a session.
+	 *
+	 * @return	void
+	 */
 	protected function setSessionData() {
 		$_SESSION[$this->prefixId] = array(
 			'publicExponent'	=> $this->rsa->getPublicExponent(),
