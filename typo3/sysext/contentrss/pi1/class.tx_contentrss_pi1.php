@@ -65,7 +65,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'pages,recursive',
 				'tt_content',
-				'list_type="contentrss_pi1" AND pid=' . $id . $this->cObj->enableFields('tt_content')
+				'list_type=\'contentrss_pi1\' AND pid=' . $id . $this->cObj->enableFields('tt_content')
 			);
 			if (!$res) {
 				return $this->pi_getLL('no_pages_selected'); 
@@ -73,6 +73,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 			$row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			$this->conf['pages'] = $row['pages'];
 			$this->conf['recursive'] = $row['recursive'];
+			$GLOBALS['TYPO3_DB']->sql_free_result($res); 
 		}
 		
 		// init vars
@@ -102,16 +103,15 @@ class tx_contentrss_pi1 extends tslib_pibase {
 		}
 		
 		$contentRows = array();
-		while ($row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$listType = $row['list_type'];
 			if ($listType == '') {
-				// normal content elements
+				// we have normal content elements
 				//get language overlay  
 				if ($GLOBALS['TSFE']->sys_language_content) {
 					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tt_content', $row, $GLOBALS['TSFE']->sys_language_content, $this->sys_language_mode == 'strict' ? 'hideNonTranslated' : '');
 				}
 				if ($this->versioningEnabled) {
-#ToDO: check correct WS-Handling
 					// get workspaces Overlay
 					$GLOBALS['TSFE']->sys_page->versionOL('tt_content', $row);
 					// fix pid for record from workspace
@@ -127,6 +127,7 @@ class tx_contentrss_pi1 extends tslib_pibase {
 				}
 			}
 		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		
 		return $this->compileRows($contentRows);
 	}
