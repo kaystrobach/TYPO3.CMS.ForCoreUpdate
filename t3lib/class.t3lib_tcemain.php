@@ -7226,16 +7226,7 @@ State was change by %s (username: %s)
 	 * @return	void
 	 */
 	function internal_clearPageCache() {
-		if (t3lib_extMgm::isLoaded('cms'))	{
-			if ($GLOBALS['TYPO3_CONF_VARS']['FE']['pageCacheToExternalFiles']) {
-				$cacheDir = PATH_site.'typo3temp/cache_pages';
-				$retVal   = t3lib_div::rmdir($cacheDir, true);
-
-				if (!$retVal) {
-					t3lib_div::sysLog('Could not remove page cache files in "'.$cacheDir.'"','Core/t3lib_tcemain',2);
-				}
-			}
-
+		if (t3lib_extMgm::isLoaded('cms')) {
 			$GLOBALS['cacheManager']->getCache('cache_pages')->flush();
 		}
 	}

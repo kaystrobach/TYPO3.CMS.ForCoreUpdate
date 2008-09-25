@@ -1,3 +1,7 @@
+2008-09-25  Ingo Renner  <ingo@typo3.org>
+
+	* !!! Removed option $TYPO3_CONF_VARS['FE']['pageCacheToExternalFiles'] as it's not needed anymore with the new caching framework
+
 2008-09-25  Michael Stucki  <michael@typo3.org>
 
 	* Fixed bug #8195: Encoding problems with $TYPO3_CONF_VARS[SYS][sitename] - leaving the actual fix commented out as the problem should be fixed on the client side

@@ -111,7 +111,6 @@
  * 2355:     function setPageCacheContent($content,$data,$tstamp)
  * 2382:     function clearPageCacheContent()
  * 2392:     function clearPageCacheContent_pidList($pidList)
- * 2403:     function pageCachePostProcess(&$row,$type)
  * 2426:     function setSysLastChanged()
  *
  *              SECTION: Page generation; rendering and inclusion
@@ -1928,10 +1927,6 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 		$cachedPage = $this->pageCache->load($this->newHash);
 		$GLOBALS['TT']->pull();
 
-		if ($cachedPage) {
-			$this->pageCachePostProcess($cachedPage, 'get');
-		}
-
 		return $cachedPage;
 	}
 
@@ -2749,8 +2744,6 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 			$this->pageCacheTags[] = 'reg1_' . $reg1;
 		}
 
-		$this->pageCachePostProcess($cacheData, 'set');
-
 		$this->pageCache->save(
 			$cacheData['hash'],
 			$cacheData,
@@ -2779,30 +2772,6 @@ require_once (PATH_t3lib.'class.t3lib_lock.php');
 
 		foreach ($pageIds as $pageId) {
 			$this->pageCache->flushByTag('pageId_' . (int) $pageId);
-		}
-	}
-
-	/**
-	 * Post processing page cache rows for both get and set.
-	 *
-	 * @param	array		Input "cache_pages" entry, passed by reference!
-	 * @param	string		Type of operation, either "get" or "set"
-	 * @return	void
-	 */
-	function pageCachePostProcess(&$row, $type)	{
-
-		if ($this->TYPO3_CONF_VARS['FE']['pageCacheToExternalFiles'])	{
-			$cacheFileName = PATH_site.'typo3temp/cache_pages/'.$row['hash']{0}.$row['hash']{1}.'/'.$row['hash'].'.html';
-
-			switch((string)$type) {
-				case 'get':
-					$row['HTML'] = @is_file($cacheFileName) ? t3lib_div::getUrl($cacheFileName) : '<!-- CACHING ERROR, sorry -->';
-				break;
-				case 'set':
-					t3lib_div::writeFileToTypo3tempDir($cacheFileName,$row['HTML']);
-					$row['HTML'] = '';
-				break;
-			}
 		}
 	}
 
