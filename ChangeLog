@@ -15,6 +15,7 @@
 	* Added RSA Authentication for back-end disposal (however it still has problems with decrypting)
 	* Clean up: Removed wizard data created by kickstarted from rsaauth extension
 	* Clean up: Added PHPdoc comments to methods
+	* Reverted changed on typo3/index.php concerning the RSA Authentication since back-end was not accessible anymore
 
 2008-09-24  Dmitry Dulepov  <dmitry@typo3.org>
 
