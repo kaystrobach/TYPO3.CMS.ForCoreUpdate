@@ -7031,12 +7031,13 @@ State was change by %s (username: %s)
 			break;
 			case 'all':
 				if ($this->admin || $this->BE_USER->getTSConfigVal('options.clearCache.all'))	{
+
+						// clear all caches that use the t3lib_cache framework
+					$GLOBALS['cacheManager']->flushCaches();
+
 					if (t3lib_extMgm::isLoaded('cms'))	{
-						$this->internal_clearPageCache();
-						$GLOBALS['cacheManager']->getCache('cache_pagesection')->flush();
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_treelist', '');
 					}
-					$GLOBALS['cacheManager']->getCache('cache_hash')->flush();
 
 						// Clearing additional cache tables:
 					if (is_array($TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearAllCache_additionalTables']))	{
@@ -7049,12 +7050,12 @@ State was change by %s (username: %s)
 						}
 					}
 				}
-				if ($this->admin && $TYPO3_CONF_VARS['EXT']['extCache'])	{
+				if ($this->admin && $TYPO3_CONF_VARS['EXT']['extCache']) {
 					$this->removeCacheFiles();
 				}
 			break;
 			case 'temp_CACHED':
-				if ($this->admin && $TYPO3_CONF_VARS['EXT']['extCache'])	{
+				if ($this->admin && $TYPO3_CONF_VARS['EXT']['extCache']) {
 					$this->removeCacheFiles();
 				}
 			break;
