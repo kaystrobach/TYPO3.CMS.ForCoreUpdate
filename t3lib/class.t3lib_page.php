@@ -927,6 +927,8 @@ class t3lib_pageSelect {
 	 * @param	integer		Allowed expiretime in seconds. Basically a record is selected only if it is not older than this value in seconds. If expTime is not set, the hashed value will never expire.
 	 * @return	string		The "content" field of the "cache_hash" cache entry.
 	 * @see tslib_TStemplate::start(), storeHash()
+	 *
+	 * TODO check where $expTime is used, the new caching API can't handle it, so it can be removed
 	 */
 	function getHash($hash, $expTime=0)	{
 		$hashContent = null;
