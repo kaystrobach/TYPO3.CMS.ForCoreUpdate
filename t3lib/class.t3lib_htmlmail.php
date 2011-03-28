@@ -180,25 +180,25 @@
  */
 class t3lib_htmlmail {
 		// Headerinfo:
-	var $recipient = '';
-	var $recipient_copy = ''; // This recipient (or list of...) will also receive the mail. Regard it as a copy.
-	var $recipient_blindcopy = ''; // This recipient (or list of...) will also receive the mail as a blind copy. Regard it as a copy.
-	var $subject = '';
-	var $from_email = '';
-	var $from_name = '';
-	var $replyto_email = '';
-	var $replyto_name = '';
-	var $organisation = '';
-	var $priority = 3; // 1 = highest, 5 = lowest, 3 = normal
-	var $mailer = ''; // X-mailer, set to TYPO3 Major.Minor in constructor
-	var $alt_base64 = 0;
-	var $alt_8bit = 0;
-	var $jumperURL_prefix = ''; // This is a prefix that will be added to all links in the mail. Example: 'http://www.mydomain.com/jump?userid=###FIELD_uid###&url='. if used, anything after url= is urlencoded.
-	var $jumperURL_useId = 0; // If set, then the array-key of the urls are inserted instead of the url itself. Smart in order to reduce link-length
-	var $mediaList = ''; // If set, this is a list of the media-files (index-keys to the array) that should be represented in the html-mail
-	var $http_password = '';
-	var $http_username = '';
-	var $postfix_version1 = FALSE;
+	public $recipient = '';
+	public $recipient_copy = ''; // This recipient (or list of...) will also receive the mail. Regard it as a copy.
+	public $recipient_blindcopy = ''; // This recipient (or list of...) will also receive the mail as a blind copy. Regard it as a copy.
+	public $subject = '';
+	public $from_email = '';
+	public $from_name = '';
+	public $replyto_email = '';
+	public $replyto_name = '';
+	public $organisation = '';
+	public $priority = 3; // 1 = highest, 5 = lowest, 3 = normal
+	public $mailer = ''; // X-mailer, set to TYPO3 Major.Minor in constructor
+	public $alt_base64 = 0;
+	public $alt_8bit = 0;
+	public $jumperURL_prefix = ''; // This is a prefix that will be added to all links in the mail. Example: 'http://www.mydomain.com/jump?userid=###FIELD_uid###&url='. if used, anything after url= is urlencoded.
+	public $jumperURL_useId = 0; // If set, then the array-key of the urls are inserted instead of the url itself. Smart in order to reduce link-length
+	public $mediaList = ''; // If set, this is a list of the media-files (index-keys to the array) that should be represented in the html-mail
+	public $http_password = '';
+	public $http_username = '';
+	public $postfix_version1 = FALSE;
 
 		// Internal
 	/*
@@ -216,23 +216,23 @@ class t3lib_htmlmail {
 		'attach' => array()
 	);
 	*/
-	var $theParts = array();
+	protected $theParts = array();
 
-	var $messageid = '';
-	var $returnPath = '';
-	var $Xid = '';
-	var $dontEncodeHeader = FALSE; // If set, the header will not be encoded
+	protected $messageid = '';
+	protected $returnPath = '';
+	protected $Xid = '';
+	protected $dontEncodeHeader = FALSE; // If set, the header will not be encoded
 
-	var $headers = '';
-	var $message = '';
-	var $part = 0;
-	var $image_fullpath_list = '';
-	var $href_fullpath_list = '';
+	protected $headers = '';
+	protected $message = '';
+	protected $part = 0;
+	protected $image_fullpath_list = '';
+	protected $href_fullpath_list = '';
 
-	var $plain_text_header = '';
-	var $html_text_header = '';
-	var $charset = '';
-	var $defaultCharset = 'iso-8859-1';
+	protected $plain_text_header = '';
+	protected $html_text_header = '';
+	protected $charset = '';
+	protected $defaultCharset = 'iso-8859-1';
 
 
 	/**

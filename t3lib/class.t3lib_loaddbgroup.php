@@ -66,31 +66,32 @@
  */
 class t3lib_loadDBGroup {
 		// External, static:
-	var $fromTC = 1; // Means that only uid and the label-field is returned
-	var $registerNonTableValues = 0; // If set, values that are not ids in tables are normally discarded. By this options they will be preserved.
+	public $fromTC = 1; // Means that only uid and the label-field is returned
+	public $registerNonTableValues = 0; // If set, values that are not ids in tables are normally discarded. By this options they will be preserved.
 
 		// Internal, dynamic:
-	var $tableArray = Array(); // Contains the table names as keys. The values are the id-values for each table. Should ONLY contain proper table names.
-	var $itemArray = Array(); // Contains items in an numeric array (table/id for each). Tablenames here might be "_NO_TABLE"
-	var $nonTableArray = array(); // Array for NON-table elements
-	var $additionalWhere = array();
-	var $checkIfDeleted = 1; // deleted-column is added to additionalWhere... if this is set...
-	var $dbPaths = Array();
-	var $firstTable = ''; // Will contain the first table name in the $tablelist (for positive ids)
-	var $secondTable = ''; // Will contain the second table name in the $tablelist (for negative ids)
+	public $tableArray = Array(); // Contains the table names as keys. The values are the id-values for each table. Should ONLY contain proper table names.
+	public $itemArray = Array(); // Contains items in an numeric array (table/id for each). Tablenames here might be "_NO_TABLE"
+	protected $nonTableArray = array(); // Array for NON-table elements
+	public $additionalWhere = array();
+	protected $checkIfDeleted = 1; // deleted-column is added to additionalWhere... if this is set...
+	protected $dbPaths = Array();
+	protected $firstTable = ''; // Will contain the first table name in the $tablelist (for positive ids)
+	protected $secondTable = ''; // Will contain the second table name in the $tablelist (for negative ids)
 		// private
-	var $MM_is_foreign = 0; // boolean - if 1, uid_local and uid_foreign are switched, and the current table is inserted as tablename - this means you display a foreign relation "from the opposite side"
-	var $MM_oppositeField = ''; // field name at the "local" side of the MM relation
-	var $MM_oppositeTable = ''; // only set if MM_is_foreign is set
-	var $MM_oppositeFieldConf = ''; // only set if MM_is_foreign is set
-	var $MM_isMultiTableRelationship = 0; // is empty by default; if MM_is_foreign is set and there is more than one table allowed (on the "local" side), then it contains the first table (as a fallback)
-	var $currentTable; // current table => Only needed for reverse relations
-	var $undeleteRecord; // if a record should be undeleted (so do not use the $useDeleteClause on t3lib_BEfunc)
+	protected $MM_is_foreign = 0; // boolean - if 1, uid_local and uid_foreign are switched, and the current table is inserted as tablename - this means you display a foreign relation "from the opposite side"
+	protected $MM_oppositeField = ''; // field name at the "local" side of the MM relation
+	protected $MM_oppositeTable = ''; // only set if MM_is_foreign is set
+	protected $MM_oppositeFieldConf = ''; // only set if MM_is_foreign is set
+	protected $MM_isMultiTableRelationship = 0; // is empty by default; if MM_is_foreign is set and there is more than one table allowed (on the "local" side), then it contains the first table (as a fallback)
+	protected $currentTable; // current table => Only needed for reverse relations
+	protected $undeleteRecord; // if a record should be undeleted (so do not use the $useDeleteClause on t3lib_BEfunc)
 
 
-	var $MM_match_fields = array(); // array of fields value pairs that should match while SELECT and will be written into MM table if $MM_insert_fields is not set
-	var $MM_insert_fields = array(); // array of fields and value pairs used for insert in MM table
-	var $MM_table_where = ''; // extra MM table where
+	protected $MM_match_fields = array(); // array of fields value pairs that should match while SELECT and will be written into MM table if $MM_insert_fields is not set
+	protected $MM_insert_fields = array(); // array of fields and value pairs used for insert in MM table
+	protected $MM_table_where = ''; // extra MM table where
+	protected $MM_hasUidField = FALSE;
 
 	/**
 	 * @var boolean
@@ -108,7 +109,7 @@ class t3lib_loadDBGroup {
 	 * @param	integer		TCA configuration for current field
 	 * @return	void
 	 */
-	function start($itemlist, $tablelist, $MMtable = '', $MMuid = 0, $currentTable = '', $conf = array()) {
+	public function start($itemlist, $tablelist, $MMtable = '', $MMuid = 0, $currentTable = '', $conf = array()) {
 			// SECTION: MM reverse relations
 		$this->MM_is_foreign = ($conf['MM_opposite_field'] ? 1 : 0);
 		$this->MM_oppositeField = $conf['MM_opposite_field'];
@@ -202,7 +203,7 @@ class t3lib_loadDBGroup {
 	 * @param	string		Item list
 	 * @return	void
 	 */
-	function readList($itemlist) {
+	protected function readList($itemlist) {
 		if ((string) trim($itemlist) != '') {
 			$tempItemArray = t3lib_div::trimExplode(',', $itemlist); // Changed to trimExplode 31/3 04; HMENU special type "list" didn't work if there were spaces in the list... I suppose this is better overall...
 			foreach ($tempItemArray as $key => $val) {
@@ -248,7 +249,7 @@ class t3lib_loadDBGroup {
 	 * @param	string		$sortby: The default_sortby field/command (e.g. 'price DESC')
 	 * @return	void
 	 */
-	function sortList($sortby) {
+	protected function sortList($sortby) {
 			// sort directly without fetching addional data
 		if ($sortby == 'uid') {
 			usort($this->itemArray, create_function('$a,$b', 'return $a["id"] < $b["id"] ? -1 : 1;'));
@@ -280,7 +281,7 @@ class t3lib_loadDBGroup {
 	 * @param	integer		Local UID
 	 * @return	void
 	 */
-	function readMM($tableName, $uid) {
+	protected function readMM($tableName, $uid) {
 		$key = 0;
 		$additionalWhere = '';
 
@@ -340,7 +341,7 @@ class t3lib_loadDBGroup {
 	 * @param	boolean		If set, then table names will always be written.
 	 * @return	void
 	 */
-	function writeMM($MM_tableName, $uid, $prependTableName = 0) {
+	public function writeMM($MM_tableName, $uid, $prependTableName = 0) {
 
 		if ($this->MM_is_foreign) { // in case of a reverse relation
 			$uidLocal_field = 'uid_foreign';
@@ -489,7 +490,7 @@ class t3lib_loadDBGroup {
 	 * @param	boolean		If set, then table names will always be written.
 	 * @return	void
 	 */
-	function remapMM($MM_tableName, $uid, $newUid, $prependTableName = 0) {
+	public function remapMM($MM_tableName, $uid, $newUid, $prependTableName = 0) {
 
 		if ($this->MM_is_foreign) { // in case of a reverse relation
 			$uidLocal_field = 'uid_foreign';
@@ -530,7 +531,7 @@ class t3lib_loadDBGroup {
 	 * @param	array		$conf: TCA configuration for current field
 	 * @return	void
 	 */
-	function readForeignField($uid, $conf) {
+	protected function readForeignField($uid, $conf) {
 		$key = 0;
 		$uid = intval($uid);
 		$whereClause = '';
@@ -606,7 +607,7 @@ class t3lib_loadDBGroup {
 	 * @param	 boolean		$skipSorting: Do not update the sorting columns, this could happen for imported values
 	 * @return	void
 	 */
-	function writeForeignField($conf, $parentUid, $updateToUid = 0, $skipSorting = FALSE) {
+	public function writeForeignField($conf, $parentUid, $updateToUid = 0, $skipSorting = FALSE) {
 		$c = 0;
 		$foreign_table = $conf['foreign_table'];
 		$foreign_field = $conf['foreign_field'];
@@ -715,7 +716,7 @@ class t3lib_loadDBGroup {
 	 * @param	boolean		If set, then table names will ALWAYS be prepended (unless its a _NO_TABLE value)
 	 * @return	array		A numeric array.
 	 */
-	function getValueArray($prependTableName = '') {
+	public function getValueArray($prependTableName = '') {
 			// INIT:
 		$valueArray = Array();
 		$tableC = count($this->tableArray);
@@ -743,7 +744,7 @@ class t3lib_loadDBGroup {
 	 * @param	string		NEGative foreign table
 	 * @return	array		The array with ID integer values, converted to positive for those where the table name was set but did NOT match the positive foreign table.
 	 */
-	function convertPosNeg($valueArray, $fTable, $nfTable) {
+	public function convertPosNeg($valueArray, $fTable, $nfTable) {
 		if (is_array($valueArray) && $fTable) {
 			foreach ($valueArray as $key => $val) {
 				$val = strrev($val);
@@ -765,7 +766,7 @@ class t3lib_loadDBGroup {
 	 *
 	 * @return	void
 	 */
-	function getFromDB() {
+	public function getFromDB() {
 			// Traverses the tables listed:
 		foreach ($this->tableArray as $key => $val) {
 			if (is_array($val)) {
@@ -800,7 +801,7 @@ class t3lib_loadDBGroup {
 	 * @return	string
 	 * @see t3lib_transferdata::renderRecord()
 	 */
-	function readyForInterface() {
+	public function readyForInterface() {
 		global $TCA;
 
 		if (!is_array($this->itemArray)) {
@@ -828,7 +829,7 @@ class t3lib_loadDBGroup {
 	 * @param	boolean		Whether to put the count value in an array
 	 * @return	mixed		The plain count as integer or the same inside an array
 	 */
-	function countItems($returnAsArray = TRUE) {
+	public function countItems($returnAsArray = TRUE) {
 		$count = count($this->itemArray);
 		if ($returnAsArray) {
 			$count = array($count);
@@ -845,7 +846,7 @@ class t3lib_loadDBGroup {
 	 * @param	integer		Record UID
 	 * @return	array Information concerning modifications delivered by t3lib_refindex::updateRefIndexTable()
 	 */
-	function updateRefIndex($table, $id) {
+	public function updateRefIndex($table, $id) {
 		if ($this->updateReferenceIndex === TRUE) {
 			/** @var $refIndexObj t3lib_refindex */
 			$refIndexObj = t3lib_div::makeInstance('t3lib_refindex');
@@ -861,7 +862,7 @@ class t3lib_loadDBGroup {
 	 * @param	array		$childRec: The record row of the child record
 	 * @return	boolean		Returns true if looking from the symmetric ("other") side to the relation.
 	 */
-	function isOnSymmetricSide($parentUid, $parentConf, $childRec) {
+	public static function isOnSymmetricSide($parentUid, $parentConf, $childRec) {
 		return t3lib_div::testInt($childRec['uid']) && $parentConf['symmetric_field'] && $parentUid == $childRec[$parentConf['symmetric_field']]
 				? TRUE
 				: FALSE;

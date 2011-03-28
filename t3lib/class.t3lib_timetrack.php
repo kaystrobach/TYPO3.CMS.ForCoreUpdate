@@ -76,10 +76,10 @@
  * @see t3lib_tsfeBeUserAuth, tslib_fe, tslib_cObj, TSpagegen
  */
 class t3lib_timeTrack {
-	var $starttime = 0; // Is loaded with the millisecond time when this object is created
+	public $starttime = 0; // Is loaded with the millisecond time when this object is created
 
-	var $LR = 1; // Log Rendering flag. If set, ->push() and ->pull() is called from the cObj->cObjGetSingle(). This determines whether or not the TypoScript parsing activity is logged. But it also slows down the rendering
-	var $printConf = array(
+	public $LR = 1; // Log Rendering flag. If set, ->push() and ->pull() is called from the cObj->cObjGetSingle(). This determines whether or not the TypoScript parsing activity is logged. But it also slows down the rendering
+	public $printConf = array(
 		'showParentKeys' => 1,
 		'contentLength' => 10000, // Determines max lenght of displayed content before it gets cropped.
 		'contentLength_FILE' => 400, // Determines max lenght of displayed content FROM FILE cObjects before it gets cropped. Reason is that most FILE cObjects are huge and often used as template-code.
@@ -91,17 +91,17 @@ class t3lib_timeTrack {
 		'keyLgd' => 40,
 	);
 
-	var $wrapError = array();
-	var $wrapIcon = array();
-	var $uniqueCounter = 0;
-	var $tsStack = array(array());
-	var $tsStackLevel = 0;
-	var $tsStackLevelMax = array();
-	var $tsStackLog = array();
-	var $tsStackPointer = 0;
-	var $currentHashPointer = array();
+	public $wrapError = array();
+	public $wrapIcon = array();
+	public $uniqueCounter = 0;
+	public $tsStack = array(array());
+	public $tsStackLevel = 0;
+	public $tsStackLevelMax = array();
+	public $tsStackLog = array();
+	public $tsStackPointer = 0;
+	public $currentHashPointer = array();
 
-	var $highlightLongerThan = 0; // Log entries that take than this number of milliseconds (own time) will be highlighted during log display. Set 0 to disable highlighting.
+	public $highlightLongerThan = 0; // Log entries that take than this number of milliseconds (own time) will be highlighted during log display. Set 0 to disable highlighting.
 
 
 	/*******************************************

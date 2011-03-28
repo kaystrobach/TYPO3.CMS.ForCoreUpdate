@@ -59,7 +59,7 @@
  * @subpackage t3lib
  */
 class t3lib_pageTree extends t3lib_treeView {
-	var $fieldArray = array(
+	public $fieldArray = array(
 		'uid',
 		'title',
 		'doktype',
@@ -68,8 +68,8 @@ class t3lib_pageTree extends t3lib_treeView {
 		't3ver_state',
 		't3ver_swapmode'
 	);
-	var $defaultList = 'uid,pid,tstamp,sorting,deleted,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,crdate,cruser_id';
-	var $setRecs = 0;
+	public $defaultList = 'uid,pid,tstamp,sorting,deleted,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,crdate,cruser_id';
+	public $setRecs = 0;
 
 	/**
 	 * Init function
@@ -78,7 +78,7 @@ class t3lib_pageTree extends t3lib_treeView {
 	 * @param	string		Part of where query which will filter out non-readable pages.
 	 * @return	void
 	 */
-	function init($clause = '') {
+	public function init($clause = '') {
 		parent::init(' AND deleted=0 ' . $clause, 'sorting');
 
 		if (t3lib_extMgm::isLoaded('cms')) {
@@ -104,7 +104,7 @@ class t3lib_pageTree extends t3lib_treeView {
 	 * @param	integer		ID (uid) to test for (see extending classes where this is checked againts session data)
 	 * @return	boolean
 	 */
-	function expandNext($id) {
+	public function expandNext($id) {
 		return 1;
 	}
 
@@ -121,7 +121,7 @@ class t3lib_pageTree extends t3lib_treeView {
 	 * @access private
 	 * @see t3lib_treeView::PMicon()
 	 */
-	function PMicon($row, $a, $c, $nextCount, $exp) {
+	public function PMicon($row, $a, $c, $nextCount, $exp) {
 		$PM = 'join';
 		$BTM = ($a == $c) ? 'bottom' : '';
 		$icon = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/' . $PM . $BTM . '.gif', 'width="18" height="16"') . ' alt="" />';
@@ -137,7 +137,7 @@ class t3lib_pageTree extends t3lib_treeView {
 	 * @return	void
 	 * @access private
 	 */
-	function initializePositionSaving() {
+	public function initializePositionSaving() {
 		$this->stored = array();
 	}
 }

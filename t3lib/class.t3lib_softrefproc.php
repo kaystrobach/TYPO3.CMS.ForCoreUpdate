@@ -112,11 +112,11 @@
 class t3lib_softrefproc {
 
 		// external configuration
-	var $fileAdminDir = 'fileadmin';
+	public $fileAdminDir = 'fileadmin';
 
 
 		// Internal:
-	var $tokenID_basePrefix = '';
+	protected $tokenID_basePrefix = '';
 
 	/**
 	 * Main function through which all processing happens
@@ -130,7 +130,7 @@ class t3lib_softrefproc {
 	 * @param	string		If running from inside a FlexForm structure, this is the path of the tag.
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef($table, $field, $uid, $content, $spKey, $spParams, $structurePath = '') {
+	public function findRef($table, $field, $uid, $content, $spKey, $spParams, $structurePath = '') {
 
 		$retVal = FALSE;
 
@@ -206,7 +206,7 @@ class t3lib_softrefproc {
 	 * @param	array		Parameters set for the softref parser key in TCA/columns
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef_images($content, $spParams) {
+	protected function findRef_images($content, $spParams) {
 
 			// Start HTML parser and split content by image tag:
 		$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
@@ -273,7 +273,7 @@ class t3lib_softrefproc {
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 * @see tslib_content::typolink(), getTypoLinkParts()
 	 */
-	function findRef_typolink($content, $spParams) {
+	protected function findRef_typolink($content, $spParams) {
 
 			// First, split the input string by a comma if the "linkList" parameter is set.
 			// An example: the link field for images in content elements of type "textpic" or "image". This field CAN be configured to define a link per image, separated by comma.
@@ -310,7 +310,7 @@ class t3lib_softrefproc {
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 * @see tslib_content::typolink(), getTypoLinkParts()
 	 */
-	function findRef_typolink_tag($content, $spParams) {
+	protected function findRef_typolink_tag($content, $spParams) {
 
 			// Parse string for special TYPO3 <link> tag:
 		$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
@@ -345,7 +345,7 @@ class t3lib_softrefproc {
 	 * @param	array		Parameters set for the softref parser key in TCA/columns
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef_TStemplate($content, $spParams) {
+	protected function findRef_TStemplate($content, $spParams) {
 		$elements = array();
 
 			// First, try to find images and links:
@@ -427,7 +427,7 @@ class t3lib_softrefproc {
 	 * @param	array		Parameters set for the softref parser key in TCA/columns
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef_TSconfig($content, $spParams) {
+	protected function findRef_TSconfig($content, $spParams) {
 		$elements = array();
 
 			// Process free fileadmin/ references from TSconfig
@@ -450,7 +450,7 @@ class t3lib_softrefproc {
 	 * @param	array		Parameters set for the softref parser key in TCA/columns
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef_email($content, $spParams) {
+	protected function findRef_email($content, $spParams) {
 		$resultArray = array();
 
 			// email:
@@ -490,7 +490,7 @@ class t3lib_softrefproc {
 	 * @param	array		Parameters set for the softref parser key in TCA/columns
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef_url($content, $spParams) {
+	protected function findRef_url($content, $spParams) {
 		$resultArray = array();
 
 			// Fileadmin files:
@@ -534,7 +534,7 @@ class t3lib_softrefproc {
 	 * @param	array		Parameters set for the softref parser key in TCA/columns
 	 * @return	array		Result array on positive matches, see description above. Otherwise false
 	 */
-	function findRef_extension_fileref($content, $spParams) {
+	protected function findRef_extension_fileref($content, $spParams) {
 		$resultArray = array();
 
 			// Fileadmin files:
@@ -574,7 +574,7 @@ class t3lib_softrefproc {
 	 * @param	array		Element array to be modified with new entries. Passed by reference.
 	 * @return	string		Output content, possibly with tokens inserted.
 	 */
-	function fileadminReferences($content, &$elements) {
+	protected function fileadminReferences($content, &$elements) {
 
 			// Fileadmin files are found
 		$parts = preg_split("/([^[:alnum:]]+)(" . $this->fileAdminDir . "\/[^[:space:]\"'<>]*)/", ' ' . $content . ' ', 10000, PREG_SPLIT_DELIM_CAPTURE);
@@ -617,7 +617,7 @@ class t3lib_softrefproc {
 	 * @return	array		Array with the properties of the input link specified. The key "LINK_TYPE" will reveal the type. If that is blank it could not be determined.
 	 * @see tslib_content::typolink(), setTypoLinkPartsElement()
 	 */
-	function getTypoLinkParts($typolinkValue) {
+	protected function getTypoLinkParts($typolinkValue) {
 		$finalTagParts = array();
 
 			// Split by space into link / target / class
@@ -705,7 +705,7 @@ class t3lib_softrefproc {
 	 * @return	string		The input content, possibly containing tokens now according to the added substitution entries in $elements
 	 * @see getTypoLinkParts()
 	 */
-	function setTypoLinkPartsElement($tLP, &$elements, $content, $idx) {
+	protected function setTypoLinkPartsElement($tLP, &$elements, $content, $idx) {
 
 			// Initialize, set basic values. In any case a link will be shown
 		$tokenID = $this->makeTokenID('setTypoLinkPartsElement:' . $idx);
@@ -819,7 +819,7 @@ class t3lib_softrefproc {
 	 * @param	integer		Page alias string value
 	 * @return	integer		Page uid corresponding to alias value.
 	 */
-	function getPageIdFromAlias($link_param) {
+	protected function getPageIdFromAlias($link_param) {
 		$pRec = t3lib_BEfunc::getRecordsByField('pages', 'alias', $link_param);
 
 		return $pRec[0]['uid'];
@@ -831,7 +831,7 @@ class t3lib_softrefproc {
 	 * @param	string		suffix value.
 	 * @return	string		Token ID
 	 */
-	function makeTokenID($index = '') {
+	protected function makeTokenID($index = '') {
 		return md5($this->tokenID_basePrefix . ':' . $index);
 	}
 }

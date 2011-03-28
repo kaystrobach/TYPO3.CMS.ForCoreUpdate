@@ -67,32 +67,32 @@
  * @see t3lib_tstemplate, t3lib_BEfunc::getPagesTSconfig(), t3lib_userAuthGroup::fetchGroupData(), t3lib_TStemplate::generateConfig()
  */
 class t3lib_TSparser {
-	var $strict = 1; // If set, then key names cannot contain characters other than [:alnum:]_\.-
+	public $strict = 1; // If set, then key names cannot contain characters other than [:alnum:]_\.-
 
 		// Internal
-	var $setup = array(); // TypoScript hierarchy being build during parsing.
-	var $raw; // raw data, the input string exploded by LF
-	var $rawP; // pointer to entry in raw data array
-	var $lastComment = ''; // Holding the value of the last comment
-	var $commentSet = 0; // Internally set, used as internal flag to create a multi-line comment (one of those like /*... */)
-	var $multiLineEnabled = 0; // Internally set, when multiline value is accumulated
-	var $multiLineObject = ''; // Internally set, when multiline value is accumulated
-	var $multiLineValue = array(); // Internally set, when multiline value is accumulated
-	var $inBrace = 0; // Internally set, when in brace. Counter.
-	var $lastConditionTrue = 1; // For each condition this flag is set, if the condition is true, else it's cleared. Then it's used by the [ELSE] condition to determine if the next part should be parsed.
-	var $sections = array(); // Tracking all conditions found
-	var $sectionsMatch = array(); // Tracking all matching conditions found
-	var $syntaxHighLight = 0; // If set, then syntax highlight mode is on; Call the function syntaxHighlight() to use this function
-	var $highLightData = array(); // Syntax highlight data is accumulated in this array. Used by syntaxHighlight_print() to construct the output.
-	var $highLightData_bracelevel = array(); // Syntax highlight data keeping track of the curly brace level for each line
+	public $setup = array(); // TypoScript hierarchy being build during parsing.
+	public $raw; // raw data, the input string exploded by LF
+	public $rawP; // pointer to entry in raw data array
+	public $lastComment = ''; // Holding the value of the last comment
+	public $commentSet = 0; // Internally set, used as internal flag to create a multi-line comment (one of those like /*... */)
+	public $multiLineEnabled = 0; // Internally set, when multiline value is accumulated
+	public $multiLineObject = ''; // Internally set, when multiline value is accumulated
+	public $multiLineValue = array(); // Internally set, when multiline value is accumulated
+	public $inBrace = 0; // Internally set, when in brace. Counter.
+	public $lastConditionTrue = 1; // For each condition this flag is set, if the condition is true, else it's cleared. Then it's used by the [ELSE] condition to determine if the next part should be parsed.
+	public $sections = array(); // Tracking all conditions found
+	public $sectionsMatch = array(); // Tracking all matching conditions found
+	public $syntaxHighLight = 0; // If set, then syntax highlight mode is on; Call the function syntaxHighlight() to use this function
+	public $highLightData = array(); // Syntax highlight data is accumulated in this array. Used by syntaxHighlight_print() to construct the output.
+	public $highLightData_bracelevel = array(); // Syntax highlight data keeping track of the curly brace level for each line
 
 		// Debugging, analysis:
-	var $regComments = 0; // DO NOT register the comments. This is default for the ordinary sitetemplate!
-	var $regLinenumbers = 0; // DO NOT register the linenumbers. This is default for the ordinary sitetemplate!
-	var $errors = array(); // Error accumulation array.
-	var $lineNumberOffset = 0; // Used for the error messages line number reporting. Set externally.
-	var $breakPointLN = 0; // Line for break point.
-	var $highLightStyles = array(
+	public $regComments = 0; // DO NOT register the comments. This is default for the ordinary sitetemplate!
+	public $regLinenumbers = 0; // DO NOT register the linenumbers. This is default for the ordinary sitetemplate!
+	public $errors = array(); // Error accumulation array.
+	public $lineNumberOffset = 0; // Used for the error messages line number reporting. Set externally.
+	public $breakPointLN = 0; // Line for break point.
+	public $highLightStyles = array(
 		'prespace' => array('<span class="ts-prespace">', '</span>'), // Space before any content on a line
 		'objstr_postspace' => array('<span class="ts-objstr_postspace">', '</span>'), // Space after the object string on a line
 		'operator_postspace' => array('<span class="ts-operator_postspace">', '</span>'), // Space after the operator on a line
@@ -108,8 +108,8 @@ class t3lib_TSparser {
 		'error' => array('<span class="ts-error">', '</span>'), // Error messages
 		'linenum' => array('<span class="ts-linenum">', '</span>'), // Line numbers
 	);
-	var $highLightBlockStyles = ''; // Additional attributes for the <span> tags for a blockmode line
-	var $highLightBlockStyles_basecolor = '#cccccc'; // The hex-HTML color for the blockmode
+	public $highLightBlockStyles = ''; // Additional attributes for the <span> tags for a blockmode line
+	public $highLightBlockStyles_basecolor = '#cccccc'; // The hex-HTML color for the blockmode
 
 	public $parentObject; //Instance of parentObject, used by t3lib_tsparser_ext
 
@@ -120,7 +120,7 @@ class t3lib_TSparser {
 	 * @param	object		If is object, then this is used to match conditions found in the TypoScript code. If matchObj not specified, then no conditions will work! (Except [GLOBAL])
 	 * @return	void
 	 */
-	function parse($string, $matchObj = '') {
+	public function parse($string, $matchObj = '') {
 		$this->raw = explode(LF, $string);
 		$this->rawP = 0;
 		$pre = '[GLOBAL]';
@@ -164,7 +164,7 @@ class t3lib_TSparser {
 	 * @return	string		The condition value
 	 * @see parse()
 	 */
-	function nextDivider() {
+	protected function nextDivider() {
 		while (isset($this->raw[$this->rawP])) {
 			$line = ltrim($this->raw[$this->rawP]);
 			$this->rawP++;
@@ -180,7 +180,7 @@ class t3lib_TSparser {
 	 * @param	array		Reference to the setup array in which to accumulate the values.
 	 * @return	string		Returns the string of the condition found, the exit signal or possible nothing (if it completed parsing with no interruptions)
 	 */
-	function parseSub(&$setup) {
+	protected function parseSub(&$setup) {
 		global $TYPO3_CONF_VARS;
 
 		while (isset($this->raw[$this->rawP])) {
@@ -424,7 +424,7 @@ class t3lib_TSparser {
 	 * @return	string		Returns the exitSignal
 	 * @see parseSub()
 	 */
-	function rollParseSub($string, &$setup) {
+	protected function rollParseSub($string, &$setup) {
 		if ((string) $string != '') {
 			$keyLen = strcspn($string, '.');
 			if ($keyLen == strlen($string)) {
@@ -456,7 +456,7 @@ class t3lib_TSparser {
 	 * @param	array		Global setup code if $string points to a global object path. But if string is prefixed with "." then its the local setup array.
 	 * @return	array		An array with keys 0/1 being value/property respectively
 	 */
-	function getVal($string, $setup) {
+	protected function getVal($string, $setup) {
 		if ((string) $string != '') {
 			$keyLen = strcspn($string, '.');
 			if ($keyLen == strlen($string)) {
@@ -486,7 +486,7 @@ class t3lib_TSparser {
 	 * @param	boolean		If set, then both value and property is wiped out when a copy is made of another value.
 	 * @return	void
 	 */
-	function setVal($string, &$setup, $value, $wipeOut = 0) {
+	protected function setVal($string, &$setup, $value, $wipeOut = 0) {
 		if ((string) $string != '') {
 			$keyLen = strcspn($string, '.');
 			if ($keyLen == strlen($string)) {
@@ -540,7 +540,7 @@ class t3lib_TSparser {
 	 * @param	integer		The error severity (in the scale of $GLOBALS['TT']->setTSlogMessage: Approx: 2=warning, 1=info, 0=nothing, 3=fatal.)
 	 * @return	void
 	 */
-	function error($err, $num = 2) {
+	protected function error($err, $num = 2) {
 		if (is_object($GLOBALS['TT'])) {
 			$GLOBALS['TT']->setTSlogMessage($err, $num);
 		}
@@ -557,7 +557,7 @@ class t3lib_TSparser {
 	 * @return	string		Complete TypoScript with includes added.
 	 * @static
 	 */
-	function checkIncludeLines($string, $cycle_counter = 1, $returnFiles = FALSE) {
+	public static function checkIncludeLines($string, $cycle_counter = 1, $returnFiles = FALSE) {
 		$includedFiles = array();
 		if ($cycle_counter > 100) {
 			t3lib_div::sysLog('It appears like TypoScript code is looping over itself. Check your templates for "&lt;INCLUDE_TYPOSCRIPT: ..." tags', 'Core', 2);
@@ -636,9 +636,9 @@ class t3lib_TSparser {
 	 * @param	array		Array with TypoScript in each value
 	 * @return	array		Same array but where the values has been parsed for include-commands
 	 */
-	function checkIncludeLines_array($array) {
+	public static function checkIncludeLines_array(array $array) {
 		foreach ($array as $k => $v) {
-			$array[$k] = t3lib_TSparser::checkIncludeLines($array[$k]);
+			$array[$k] = self::checkIncludeLines($array[$k]);
 		}
 		return $array;
 	}
@@ -652,7 +652,7 @@ class t3lib_TSparser {
 	 * @return	 string	 template content with uncommented include statements
 	 * @author	 Fabrizio Branca <typo3@fabrizio-branca.de>
 	 */
-	function extractIncludes($string, $cycle_counter = 1, $extractedFileNames = array()) {
+	public static function extractIncludes($string, $cycle_counter = 1, $extractedFileNames = array()) {
 
 		if ($cycle_counter > 10) {
 			t3lib_div::sysLog('It appears like TypoScript code is looping over itself. Check your templates for "&lt;INCLUDE_TYPOSCRIPT: ..." tags', 'Core', 2);
@@ -767,9 +767,9 @@ class t3lib_TSparser {
 	 * @return	array		Same array but where the values has been processed with extractIncludes
 	 * @author	 Fabrizio Branca <typo3@fabrizio-branca.de>
 	 */
-	function extractIncludes_array($array) {
+	public static function extractIncludes_array($array) {
 		foreach ($array as $k => $v) {
-			$array[$k] = t3lib_TSparser::extractIncludes($array[$k]);
+			$array[$k] = self::extractIncludes($array[$k]);
 		}
 		return $array;
 	}
@@ -790,10 +790,10 @@ class t3lib_TSparser {
 	 * @param	boolean		If set, then the highlighted output will be formatted in blocks based on the brace levels. prespace will be ignored and empty lines represented with a single no-break-space.
 	 * @return	string		HTML code for the syntax highlighted string
 	 */
-	function doSyntaxHighlight($string, $lineNum = '', $highlightBlockMode = 0) {
+	public function doSyntaxHighlight($string, $lineNum = '', $highlightBlockMode = 0) {
 		$this->syntaxHighLight = 1;
 		$this->highLightData = array();
-		$this->error = array();
+		$this->errors = array();
 		$string = str_replace(CR, '', $string); // This is done in order to prevent empty <span>..</span> sections around CR content. Should not do anything but help lessen the amount of HTML code.
 
 		$this->parse($string);
@@ -808,10 +808,9 @@ class t3lib_TSparser {
 	 * @param	integer		Pointer to the line in $this->raw which this is about
 	 * @param	integer		The number of chars LEFT on this line before the end is reached.
 	 * @return	void
-	 * @access private
 	 * @see	parse()
 	 */
-	function regHighLight($code, $pointer, $strlen = -1) {
+	protected function regHighLight($code, $pointer, $strlen = -1) {
 		if ($strlen == -1) {
 			$this->highLightData[$pointer] = array(array($code, 0));
 		} else {
@@ -826,10 +825,9 @@ class t3lib_TSparser {
 	 * @param	mixed		If blank, linenumbers are NOT printed. If array then the first key is the linenumber offset to add to the internal counter.
 	 * @param	boolean		If set, then the highlighted output will be formatted in blocks based on the brace levels. prespace will be ignored and empty lines represented with a single no-break-space.
 	 * @return	string		HTML content
-	 * @access private
 	 * @see doSyntaxHighlight()
 	 */
-	function syntaxHighlight_print($lineNumDat, $highlightBlockMode) {
+	protected function syntaxHighlight_print($lineNumDat, $highlightBlockMode) {
 			// Registers all error messages in relation to their linenumber
 		$errA = array();
 		foreach ($this->errors as $err) {

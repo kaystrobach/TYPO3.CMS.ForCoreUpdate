@@ -143,50 +143,50 @@
 class t3lib_stdGraphic {
 
 		// Internal configuration, set in init()
-	var $combineScript = 'combine'; // The ImageMagick filename used for combining two images. This name changed during the versions.
-	var $noFramePrepended = 0; // If set, there is no frame pointer prepended to the filenames.
-	var $GD2 = 1; // Set, if the GDlib used is version 2. @deprecated as of TYPO3 4.4, as this variables is now always set (GDlib2 always has this method, and PHP recommends to only use imagecreatetruecolor() over imagecreate())
-	var $imagecopyresized_fix = 0; // If set, imagecopyresized will not be called directly. For GD2 (some PHP installs?)
-	var $gifExtension = 'gif'; // This should be changed to 'png' if you want this class to read/make PNG-files instead!
-	var $gdlibExtensions = ''; // File formats supported by gdlib. This variable get's filled in "init" method
-	var $png_truecolor = FALSE; // Set to true if generated png's should be truecolor by default
-	var $truecolorColors = 0xffffff; // 16777216 Colors is the maximum value for PNG, JPEG truecolor images (24-bit, 8-bit / Channel)
-	var $enable_typo3temp_db_tracking = 0; // If set, then all files in typo3temp will be logged in a database table. In addition to being a log of the files with original filenames, it also serves to secure that the same image is not rendered simultaneously by two different processes.
-	var $imageFileExt = 'gif,jpg,jpeg,png,tif,bmp,tga,pcx,ai,pdf'; // Commalist of file extensions perceived as images by TYPO3. List should be set to 'gif,png,jpeg,jpg' if IM is not available. Lowercase and no spaces between!
-	var $webImageExt = 'gif,jpg,jpeg,png'; // Commalist of web image extensions (can be shown by a webbrowser)
-	var $maskNegate = ''; // Will be ' -negate' if ImageMagick ver 5.2+. See init();
-	var $NO_IM_EFFECTS = '';
-	var $cmds = array(
+	public $combineScript = 'combine'; // The ImageMagick filename used for combining two images. This name changed during the versions.
+	public $noFramePrepended = 0; // If set, there is no frame pointer prepended to the filenames.
+	public $GD2 = 1; // Set, if the GDlib used is version 2. @deprecated as of TYPO3 4.4, as this variables is now always set (GDlib2 always has this method, and PHP recommends to only use imagecreatetruecolor() over imagecreate())
+	public $imagecopyresized_fix = 0; // If set, imagecopyresized will not be called directly. For GD2 (some PHP installs?)
+	public $gifExtension = 'gif'; // This should be changed to 'png' if you want this class to read/make PNG-files instead!
+	public $gdlibExtensions = ''; // File formats supported by gdlib. This variable get's filled in "init" method
+	public $png_truecolor = FALSE; // Set to true if generated png's should be truecolor by default
+	public $truecolorColors = 0xffffff; // 16777216 Colors is the maximum value for PNG, JPEG truecolor images (24-bit, 8-bit / Channel)
+	public $enable_typo3temp_db_tracking = 0; // If set, then all files in typo3temp will be logged in a database table. In addition to being a log of the files with original filenames, it also serves to secure that the same image is not rendered simultaneously by two different processes.
+	public $imageFileExt = 'gif,jpg,jpeg,png,tif,bmp,tga,pcx,ai,pdf'; // Commalist of file extensions perceived as images by TYPO3. List should be set to 'gif,png,jpeg,jpg' if IM is not available. Lowercase and no spaces between!
+	public $webImageExt = 'gif,jpg,jpeg,png'; // Commalist of web image extensions (can be shown by a webbrowser)
+	public $maskNegate = ''; // Will be ' -negate' if ImageMagick ver 5.2+. See init();
+	public $NO_IM_EFFECTS = '';
+	public $cmds = array(
 		'jpg' => '',
 		'jpeg' => '',
 		'gif' => '',
 		'png' => '-colors 64'
 	);
-	var $NO_IMAGE_MAGICK = '';
-	var $V5_EFFECTS = 0;
-	var $im_version_4 = 0;
-	var $mayScaleUp = 1;
+	public $NO_IMAGE_MAGICK = '';
+	public $V5_EFFECTS = 0;
+	public $im_version_4 = 0;
+	public $mayScaleUp = 1;
 
 		// Variables for testing, alternative usage etc.
-	var $filenamePrefix = ''; // Filename prefix for images scaled in imageMagickConvert()
-	var $imageMagickConvert_forceFileNameBody = ''; // Forcing the output filename of imageMagickConvert() to this value. However after calling imageMagickConvert() it will be set blank again.
-	var $dontCheckForExistingTempFile = 0; // This flag should always be false. If set true, imageMagickConvert will always write a new file to the tempdir! Used for debugging.
-	var $dontCompress = 0; // Prevents imageMagickConvert() from compressing the gif-files with t3lib_div::gif_compress()
-	var $dontUnlinkTempFiles = 0; // For debugging ONLY!
-	var $alternativeOutputKey = ''; // For debugging only. Filenames will not be based on mtime and only filename (not path) will be used. This key is also included in the hash of the filename...
+	public $filenamePrefix = ''; // Filename prefix for images scaled in imageMagickConvert()
+	public $imageMagickConvert_forceFileNameBody = ''; // Forcing the output filename of imageMagickConvert() to this value. However after calling imageMagickConvert() it will be set blank again.
+	public $dontCheckForExistingTempFile = 0; // This flag should always be false. If set true, imageMagickConvert will always write a new file to the tempdir! Used for debugging.
+	public $dontCompress = 0; // Prevents imageMagickConvert() from compressing the gif-files with t3lib_div::gif_compress()
+	public $dontUnlinkTempFiles = 0; // For debugging ONLY!
+	public $alternativeOutputKey = ''; // For debugging only. Filenames will not be based on mtime and only filename (not path) will be used. This key is also included in the hash of the filename...
 
 		// Internal:
-	var $IM_commands = array(); // All ImageMagick commands executed is stored in this array for tracking. Used by the Install Tools Image section
-	var $workArea = array();
+	protected $IM_commands = array(); // All ImageMagick commands executed is stored in this array for tracking. Used by the Install Tools Image section
+	protected $workArea = array();
 
 		// Constants:
-	var $tempPath = 'typo3temp/'; // The temp-directory where to store the files. Normally relative to PATH_site but is allowed to be the absolute path AS LONG AS it is a subdir to PATH_site.
-	var $absPrefix = ''; // Prefix for relative paths. Used in "show_item.php" script. Is prefixed the output file name IN imageMagickConvert()
-	var $scalecmd = '-geometry'; // ImageMagick scaling command; "-geometry" eller "-sample". Used in makeText() and imageMagickConvert()
-	var $im5fx_blurSteps = '1x2,2x2,3x2,4x3,5x3,5x4,6x4,7x5,8x5,9x5'; // Used by v5_blur() to simulate 10 continuous steps of blurring
-	var $im5fx_sharpenSteps = '1x2,2x2,3x2,2x3,3x3,4x3,3x4,4x4,4x5,5x5'; // Used by v5_sharpen() to simulate 10 continuous steps of sharpening.
-	var $pixelLimitGif = 10000; // This is the limit for the number of pixels in an image before it will be rendered as JPG instead of GIF/PNG
-	var $colMap = array( // Array mapping HTML color names to RGB values.
+	public $tempPath = 'typo3temp/'; // The temp-directory where to store the files. Normally relative to PATH_site but is allowed to be the absolute path AS LONG AS it is a subdir to PATH_site.
+	public $absPrefix = ''; // Prefix for relative paths. Used in "show_item.php" script. Is prefixed the output file name IN imageMagickConvert()
+	public $scalecmd = '-geometry'; // ImageMagick scaling command; "-geometry" eller "-sample". Used in makeText() and imageMagickConvert()
+	public $im5fx_blurSteps = '1x2,2x2,3x2,4x3,5x3,5x4,6x4,7x5,8x5,9x5'; // Used by v5_blur() to simulate 10 continuous steps of blurring
+	public $im5fx_sharpenSteps = '1x2,2x2,3x2,2x3,3x3,4x3,3x4,4x4,4x5,5x5'; // Used by v5_sharpen() to simulate 10 continuous steps of sharpening.
+	public $pixelLimitGif = 10000; // This is the limit for the number of pixels in an image before it will be rendered as JPG instead of GIF/PNG
+	public $colMap = array( // Array mapping HTML color names to RGB values.
 		'aqua' => array(0, 255, 255),
 		'black' => array(0, 0, 0),
 		'blue' => array(0, 0, 255),
@@ -210,8 +210,8 @@ class t3lib_stdGraphic {
 	 *
 	 * @var t3lib_cs
 	 */
-	var $csConvObj;
-	var $nativeCharset = ''; // Is set to the native character set of the input strings.
+	protected $csConvObj;
+	protected $nativeCharset = ''; // Is set to the native character set of the input strings.
 
 
 	/**
@@ -220,7 +220,7 @@ class t3lib_stdGraphic {
 	 *
 	 * @return	void
 	 */
-	function init() {
+	public function init() {
 		$gfxConf = $GLOBALS['TYPO3_CONF_VARS']['GFX'];
 
 		if (function_exists('imagecreatefromjpeg') && function_exists('imagejpeg')) {
@@ -334,7 +334,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make()
 	 */
-	function maskImageOntoImage(&$im, $conf, $workArea) {
+	protected function maskImageOntoImage(&$im, $conf, $workArea) {
 		if ($conf['file'] && $conf['mask']) {
 			$imgInf = pathinfo($conf['file']);
 			$imgExt = strtolower($imgInf['extension']);
@@ -404,7 +404,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make(), maskImageOntoImage()
 	 */
-	function copyImageOntoImage(&$im, $conf, $workArea) {
+	protected function copyImageOntoImage(&$im, $conf, $workArea) {
 		if ($conf['file']) {
 			if (!t3lib_div::inList($this->gdlibExtensions, $conf['BBOX'][2])) {
 				$conf['BBOX'] = $this->imageMagickConvert($conf['BBOX'][3], $this->gifExtension, '', '', '', '', '');
@@ -426,7 +426,7 @@ class t3lib_stdGraphic {
 	 * @return	void		Works on the $im image pointer
 	 * @access private
 	 */
-	function copyGifOntoGif(&$im, $cpImg, $conf, $workArea) {
+	protected function copyGifOntoGif(&$im, $cpImg, $conf, $workArea) {
 		$cpW = imagesx($cpImg);
 		$cpH = imagesy($cpImg);
 		$tile = t3lib_div::intExplode(',', $conf['tile']);
@@ -505,7 +505,7 @@ class t3lib_stdGraphic {
 	 * @access private
 	 * @see t3lib_iconWorks::imagecopyresized()
 	 */
-	function imagecopyresized(&$im, $cpImg, $Xstart, $Ystart, $cpImgCutX, $cpImgCutY, $w, $h, $w, $h) {
+	protected function imagecopyresized(&$im, $cpImg, $Xstart, $Ystart, $cpImgCutX, $cpImgCutY, $w, $h, $w, $h) {
 		if ($this->imagecopyresized_fix) {
 			$im_base = imagecreatetruecolor(imagesx($im), imagesy($im)); // Make true color image
 			imagecopyresized($im_base, $im, 0, 0, 0, 0, imagesx($im), imagesy($im), imagesx($im), imagesy($im)); // Copy the source image onto that
@@ -532,7 +532,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make()
 	 */
-	function makeText(&$im, $conf, $workArea) {
+	public function makeText(&$im, $conf, $workArea) {
 			// Spacing
 		list($spacing, $wordSpacing) = $this->calcWordSpacing($conf);
 			// Position
@@ -647,7 +647,7 @@ class t3lib_stdGraphic {
 	 * @access private
 	 * @see makeText()
 	 */
-	function txtPosition($conf, $workArea, $BB) {
+	protected function txtPosition($conf, $workArea, $BB) {
 		$bbox = $BB[2];
 		$angle = intval($conf['angle']) / 180 * pi();
 		$conf['angle'] = 0;
@@ -701,7 +701,7 @@ class t3lib_stdGraphic {
 	 * @access private
 	 * @see txtPosition(), tslib_gifBuilder::start()
 	 */
-	function calcBBox($conf) {
+	protected function calcBBox($conf) {
 		$sF = $this->getTextScalFactor($conf);
 		list($spacing, $wordSpacing) = $this->calcWordSpacing($conf, $sF);
 		$theText = $this->recodeString($conf['text']);
@@ -782,7 +782,7 @@ class t3lib_stdGraphic {
 	 * @access private
 	 * @see makeText(), calcTextCordsForMap()
 	 */
-	function addToMap($cords, $conf) {
+	protected function addToMap($cords, $conf) {
 		$JS = $conf['noBlur'] ? '' : ' onfocus="blurLink(this);"';
 
 		$this->map .= '<area' .
@@ -805,7 +805,7 @@ class t3lib_stdGraphic {
 	 * @access private
 	 * @see makeText(), calcTextCordsForMap()
 	 */
-	function calcTextCordsForMap($cords, $offset, $conf) {
+	protected function calcTextCordsForMap($cords, $offset, $conf) {
 		$pars = t3lib_div::intExplode(',', $conf['explode'] . ',');
 
 		$newCords[0] = $cords[0] + $offset[0] - $pars[0];
@@ -840,7 +840,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @access private
 	 */
-	function SpacedImageTTFText(&$im, $fontSize, $angle, $x, $y, $Fcolor, $fontFile, $text, $spacing, $wordSpacing, $splitRenderingConf, $sF = 1) {
+	protected function SpacedImageTTFText(&$im, $fontSize, $angle, $x, $y, $Fcolor, $fontFile, $text, $spacing, $wordSpacing, $splitRenderingConf, $sF = 1) {
 
 		$spacing *= $sF;
 		$wordSpacing *= $sF;
@@ -875,7 +875,7 @@ class t3lib_stdGraphic {
 	 * @author René Fritz <r.fritz@colorcube.de>
 	 * @see tslib_gifBuilder::start()
 	 */
-	function fontResize($conf) {
+	protected function fontResize($conf) {
 			// you have to use +calc options like [10.h] in 'offset' to get the right position of your text-image, if you use +calc in XY height!!!!
 		$maxWidth = intval($conf['maxWidth']);
 		list($spacing, $wordSpacing) = $this->calcWordSpacing($conf);
@@ -919,7 +919,7 @@ class t3lib_stdGraphic {
 	 * @param	integer		Scale factor
 	 * @return	array		Information array.
 	 */
-	function ImageTTFBBoxWrapper($fontSize, $angle, $fontFile, $string, $splitRendering, $sF = 1) {
+	protected function ImageTTFBBoxWrapper($fontSize, $angle, $fontFile, $string, $splitRendering, $sF = 1) {
 
 			// Initialize:
 		$offsetInfo = array();
@@ -966,7 +966,7 @@ class t3lib_stdGraphic {
 	 * @param	integer		Scale factor
 	 * @return	void
 	 */
-	function ImageTTFTextWrapper($im, $fontSize, $angle, $x, $y, $color, $fontFile, $string, $splitRendering, $sF = 1) {
+	protected function ImageTTFTextWrapper($im, $fontSize, $angle, $x, $y, $color, $fontFile, $string, $splitRendering, $sF = 1) {
 
 			// Initialize:
 		$stringParts = $this->splitString($string, $splitRendering, $fontSize, $fontFile);
@@ -1019,7 +1019,7 @@ class t3lib_stdGraphic {
 	 * @param	string		Current font file
 	 * @return	array		Array with input string splitted according to configuration
 	 */
-	function splitString($string, $splitRendering, $fontSize, $fontFile) {
+	protected function splitString($string, $splitRendering, $fontSize, $fontFile) {
 
 			// Initialize by setting the whole string and default configuration as the first entry.
 		$result = array();
@@ -1173,7 +1173,7 @@ class t3lib_stdGraphic {
 	 * @access private
 	 * @see calcBBox()
 	 */
-	function calcWordSpacing($conf, $scaleFactor = 1) {
+	protected function calcWordSpacing($conf, $scaleFactor = 1) {
 
 		$spacing = intval($conf['spacing']);
 		$wordSpacing = intval($conf['wordSpacing']);
@@ -1192,7 +1192,7 @@ class t3lib_stdGraphic {
 	 * @return	integer		TypoScript value from eg $conf['niceText.']['scaleFactor']
 	 * @access private
 	 */
-	function getTextScalFactor($conf) {
+	protected function getTextScalFactor($conf) {
 		if (!$conf['niceText']) {
 			$sF = 1;
 		} else { // NICETEXT::
@@ -1327,7 +1327,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make(), makeText()
 	 */
-	function makeOutline(&$im, $conf, $workArea, $txtConf) {
+	public function makeOutline(&$im, $conf, $workArea, $txtConf) {
 		$thickness = intval($conf['thickness']);
 		if ($thickness) {
 			$txtConf['fontColor'] = $conf['color'];
@@ -1349,14 +1349,12 @@ class t3lib_stdGraphic {
 	/**
 	 * Creates some offset values in an array used to simulate a circularly applied outline around TEXT
 	 *
-	 * access private
-	 *
 	 * @param	integer		Distance
 	 * @param	integer		Iterations.
 	 * @return	array
 	 * @see makeOutline()
 	 */
-	function circleOffset($distance, $iterations) {
+	protected function circleOffset($distance, $iterations) {
 		$res = array();
 		if ($distance && $iterations) {
 			for ($a = 0; $a < $iterations; $a++) {
@@ -1384,7 +1382,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make(), makeShadow()
 	 */
-	function makeEmboss(&$im, $conf, $workArea, $txtConf) {
+	public function makeEmboss(&$im, $conf, $workArea, $txtConf) {
 		$conf['color'] = $conf['highColor'];
 		$this->makeShadow($im, $conf, $workArea, $txtConf);
 		$newOffset = t3lib_div::intExplode(',', $conf['offset']);
@@ -1406,7 +1404,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make(), makeText(), makeEmboss()
 	 */
-	function makeShadow(&$im, $conf, $workArea, $txtConf) {
+	public function makeShadow(&$im, $conf, $workArea, $txtConf) {
 		$workArea = $this->applyOffset($workArea, t3lib_div::intExplode(',', $conf['offset']));
 		$blurRate = t3lib_div::intInRange(intval($conf['blur']), 0, 99);
 
@@ -1519,7 +1517,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make()
 	 */
-	function makeBox(&$im, $conf, $workArea) {
+	public function makeBox(&$im, $conf, $workArea) {
 		$cords = t3lib_div::intExplode(',', $conf['dimensions'] . ',,,');
 		$conf['offset'] = $cords[0] . ',' . $cords[1];
 		$cords = $this->objPosition($conf, $workArea, array($cords[2], $cords[3]));
@@ -1581,7 +1579,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make(), applyImageMagickToPHPGif()
 	 */
-	function makeEffect(&$im, $conf) {
+	public function makeEffect(&$im, $conf) {
 		$commands = $this->IMparams($conf['value']);
 		if ($commands) {
 			$this->applyImageMagickToPHPGif($im, $commands);
@@ -1589,14 +1587,13 @@ class t3lib_stdGraphic {
 	}
 
 	/**
-	 * Creating ImageMagick paramters from TypoScript property
+	 * Creating ImageMagick parameters from TypoScript property
 	 *
 	 * @param	string		A string with effect keywords=value pairs separated by "|"
 	 * @return	string		ImageMagick prepared parameters.
-	 * @access private
 	 * @see makeEffect()
 	 */
-	function IMparams($setup) {
+	protected function IMparams($setup) {
 		if (!trim($setup)) {
 			return '';
 		}
@@ -1681,7 +1678,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make(), autoLevels(), outputLevels(), inputLevels()
 	 */
-	function adjust(&$im, $conf) {
+	public function adjust(&$im, $conf) {
 		$setup = $conf['value'];
 		if (!trim($setup)) {
 			return '';
@@ -1715,7 +1712,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make()
 	 */
-	function crop(&$im, $conf) {
+	public function crop(&$im, $conf) {
 		$this->setWorkArea(''); // clears workArea to total image
 		$cords = t3lib_div::intExplode(',', $conf['crop'] . ',,,');
 		$conf['offset'] = $cords[0] . ',' . $cords[1];
@@ -1754,7 +1751,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::make()
 	 */
-	function scale(&$im, $conf) {
+	public function scale(&$im, $conf) {
 		if ($conf['width'] || $conf['height'] || $conf['params']) {
 			$tmpStr = $this->randomName();
 			$theFile = $tmpStr . '.' . $this->gifExtension;
@@ -1783,10 +1780,9 @@ class t3lib_stdGraphic {
 	 *
 	 * @param	string		Working area dimensions, comma separated
 	 * @return	void
-	 * @access private
 	 * @see tslib_gifBuilder::make()
 	 */
-	function setWorkArea($workArea) {
+	protected function setWorkArea($workArea) {
 		$this->workArea = t3lib_div::intExplode(',', $workArea);
 		$this->workArea = $this->applyOffset($this->workArea, $this->OFFSET);
 		if (!$this->workArea[2]) {
@@ -1810,7 +1806,7 @@ class t3lib_stdGraphic {
 	 * @param	integer		GDlib Image Pointer
 	 * @return	void
 	 */
-	function autolevels(&$im) {
+	public function autolevels(&$im) {
 		$totalCols = ImageColorsTotal($im);
 		$min = 255;
 		$max = 0;
@@ -1841,7 +1837,7 @@ class t3lib_stdGraphic {
 	 * @param	boolean		If swap, then low and high are swapped. (Useful for negated masks...)
 	 * @return	void
 	 */
-	function outputLevels(&$im, $low, $high, $swap = '') {
+	public function outputLevels(&$im, $low, $high, $swap = '') {
 		if ($low < $high) {
 			$low = t3lib_div::intInRange($low, 0, 255);
 			$high = t3lib_div::intInRange($high, 0, 255);
@@ -1873,7 +1869,7 @@ class t3lib_stdGraphic {
 	 * @param	boolean		If swap, then low and high are swapped. (Useful for negated masks...)
 	 * @return	void
 	 */
-	function inputLevels(&$im, $low, $high, $swap = '') {
+	public function inputLevels(&$im, $low, $high, $swap = '') {
 		if ($low < $high) {
 			$low = t3lib_div::intInRange($low, 0, 255);
 			$high = t3lib_div::intInRange($high, 0, 255);
@@ -1903,7 +1899,7 @@ class t3lib_stdGraphic {
 	 * @param	integer		Number of colors to reduce the image to.
 	 * @return	string		Reduced file
 	 */
-	function IMreduceColors($file, $cols) {
+	public function IMreduceColors($file, $cols) {
 		$fI = t3lib_div::split_fileref($file);
 		$ext = strtolower($fI['fileext']);
 		$result = $this->randomName() . '.' . $ext;
@@ -1941,7 +1937,7 @@ class t3lib_stdGraphic {
 	 * @param	string		The font file
 	 * @return	string		The font file with absolute path.
 	 */
-	function prependAbsolutePath($fontFile) {
+	public static function prependAbsolutePath($fontFile) {
 		$absPath = defined('PATH_typo3') ? dirname(PATH_thisScript) . '/' : PATH_site;
 		$fontFile = t3lib_div::isAbsPath($fontFile) ? $fontFile : t3lib_div::resolveBackPath($absPath . $fontFile);
 		return $fontFile;
@@ -1955,7 +1951,7 @@ class t3lib_stdGraphic {
 	 * @return	string		The sharpening command, eg. " -sharpen 3x4"
 	 * @see makeText(), IMparams(), v5_blur()
 	 */
-	function v5_sharpen($factor) {
+	protected function v5_sharpen($factor) {
 		$factor = t3lib_div::intInRange(ceil($factor / 10), 0, 10);
 
 		$sharpenArr = explode(',', ',' . $this->im5fx_sharpenSteps);
@@ -1974,7 +1970,7 @@ class t3lib_stdGraphic {
 	 * @return	string		The blurring command, eg. " -blur 3x4"
 	 * @see makeText(), IMparams(), v5_sharpen()
 	 */
-	function v5_blur($factor) {
+	protected function v5_blur($factor) {
 		$factor = t3lib_div::intInRange(ceil($factor / 10), 0, 10);
 
 		$blurArr = explode(',', ',' . $this->im5fx_blurSteps);
@@ -1987,11 +1983,11 @@ class t3lib_stdGraphic {
 
 	/**
 	 * Returns a random filename prefixed with "temp_" and then 32 char md5 hash (without extension) from $this->tempPath.
-	 * Used by functions in this class to create truely temporary files for the on-the-fly processing. These files will most likely be deleted right away.
+	 * Used by functions in this class to create truly temporary files for the on-the-fly processing. These files will most likely be deleted right away.
 	 *
 	 * @return	string
 	 */
-	function randomName() {
+	public function randomName() {
 		$this->createTempSubDir('temp/');
 		return $this->tempPath . 'temp/' . md5(uniqid(''));
 	}
@@ -2004,7 +2000,7 @@ class t3lib_stdGraphic {
 	 * @param	array		Offset values in key 0/1
 	 * @return	array		Modified $cords array
 	 */
-	function applyOffset($cords, $OFFSET) {
+	public function applyOffset($cords, $OFFSET) {
 		$cords[0] = intval($cords[0]) + intval($OFFSET[0]);
 		$cords[1] = intval($cords[1]) + intval($OFFSET[1]);
 		return $cords;
@@ -2017,7 +2013,7 @@ class t3lib_stdGraphic {
 	 * @param	string		"HTML-color" data type string, eg. 'red', '#ffeedd' or '255,0,255'. You can also add a modifying operator afterwards. There are two options: "255,0,255 : 20" - will add 20 to values, result is "255,20,255". Or "255,0,255 : *1.23" which will multiply all RGB values with 1.23
 	 * @return	array		RGB values in key 0/1/2 of the array
 	 */
-	function convertColor($string) {
+	public function convertColor($string) {
 		$col = array();
 		$cParts = explode(':', $string, 2);
 
@@ -2067,7 +2063,7 @@ class t3lib_stdGraphic {
 	 * @param	string		The text to recode
 	 * @return	string		The recoded string. Should be UTF-8 output. MAY contain entities (eg. &#123; or &#quot; which should render as real chars).
 	 */
-	function recodeString($string) {
+	public function recodeString($string) {
 			// Recode string to UTF-8 from $this->nativeCharset:
 		if ($this->nativeCharset && $this->nativeCharset != 'utf-8') {
 			$string = $this->csConvObj->utf8_encode($string, $this->nativeCharset); // Convert to UTF-8
@@ -2084,7 +2080,7 @@ class t3lib_stdGraphic {
 	 * @param	boolean		Return Unicode numbers instead of chars.
 	 * @return	array		Numerical array with a char as each value.
 	 */
-	function singleChars($theText, $returnUnicodeNumber = FALSE) {
+	public function singleChars($theText, $returnUnicodeNumber = FALSE) {
 		if ($this->nativeCharset) {
 			return $this->csConvObj->utf8_to_numberarray($theText, 1, $returnUnicodeNumber ? 0 : 1); // Get an array of separated UTF-8 chars
 		} else {
@@ -2104,10 +2100,9 @@ class t3lib_stdGraphic {
 	 * @param	array		Workarea definition
 	 * @param	array		BB (Bounding box) array. Not just used for TEXT objects but also for others
 	 * @return	array		[0]=x, [1]=y, [2]=w, [3]=h
-	 * @access private
 	 * @see copyGifOntoGif(), makeBox(), crop()
 	 */
-	function objPosition($conf, $workArea, $BB) {
+	protected function objPosition($conf, $workArea, $BB) {
 			// offset, align, valign, workarea
 		$result = array();
 		$result[2] = $BB[0];
@@ -2167,7 +2162,7 @@ class t3lib_stdGraphic {
 	 * @return	array		[0]/[1] is w/h, [2] is file extension and [3] is the filename.
 	 * @see getImageScale(), typo3/show_item.php, fileList_ext::renderImage(), tslib_cObj::getImgResource(), SC_tslib_showpic::show(), maskImageOntoImage(), copyImageOntoImage(), scale()
 	 */
-	function imageMagickConvert($imagefile, $newExt = '', $w = '', $h = '', $params = '', $frame = '', $options = '', $mustCreate = 0) {
+	public function imageMagickConvert($imagefile, $newExt = '', $w = '', $h = '', $params = '', $frame = '', $options = '', $mustCreate = 0) {
 		if ($this->NO_IMAGE_MAGICK) {
 				// Returning file info right away
 			return $this->getImageDimensions($imagefile);
@@ -2283,7 +2278,7 @@ class t3lib_stdGraphic {
 	 * @return	array		Returns an array where [0]/[1] is w/h, [2] is extension and [3] is the filename.
 	 * @see imageMagickConvert(), tslib_cObj::getImgResource()
 	 */
-	function getImageDimensions($imageFile) {
+	public function getImageDimensions($imageFile) {
 		preg_match('/([^\.]*)$/', $imageFile, $reg);
 		if (file_exists($imageFile) && t3lib_div::inList($this->imageFileExt, strtolower($reg[0]))) {
 			if ($returnArr = $this->getCachedImageDimensions($imageFile)) {
@@ -2311,7 +2306,7 @@ class t3lib_stdGraphic {
 	 * @return	boolean		True if operation was successful
 	 * @author	Michael Stucki <michael@typo3.org> / Robert Lemke <rl@robertlemke.de>
 	 */
-	function cacheImageDimensions($identifyResult) {
+	protected function cacheImageDimensions($identifyResult) {
 			// Create md5 hash of filemtime and filesize
 		$md5Hash = md5(filemtime($identifyResult[3]) . filesize($identifyResult[3]));
 
@@ -2347,7 +2342,7 @@ class t3lib_stdGraphic {
 	 * @author	Michael Stucki <michael@typo3.org>
 	 * @author	Robert Lemke <rl@robertlemke.de>
 	 */
-	function getCachedImageDimensions($imageFile) {
+	protected function getCachedImageDimensions($imageFile) {
 			// Create md5 hash of filemtime and filesize
 		$md5Hash = md5(filemtime($imageFile) . filesize($imageFile));
 
@@ -2387,10 +2382,9 @@ class t3lib_stdGraphic {
 	 * @param	integer		"required" height
 	 * @param	array		Options: Keys are like "maxW", "maxH", "minW", "minH"
 	 * @return	array
-	 * @access private
 	 * @see imageMagickConvert()
 	 */
-	function getImageScale($info, $w, $h, $options) {
+	protected function getImageScale($info, $w, $h, $options) {
 		if (strstr($w . $h, 'm')) {
 			$max = 1;
 		} else {
@@ -2502,9 +2496,8 @@ class t3lib_stdGraphic {
 	 * @param	string		Output imagefile
 	 * @param	string		Original basis file
 	 * @return	boolean		Returns true if the file is already being made; thus "true" means "Don't render the image again"
-	 * @access private
 	 */
-	function file_exists_typo3temp_file($output, $orig = '') {
+	protected function file_exists_typo3temp_file($output, $orig = '') {
 		if ($this->enable_typo3temp_db_tracking) {
 			if (file_exists($output)) { // If file exists, then we return immediately
 				return 1;
@@ -2559,7 +2552,7 @@ class t3lib_stdGraphic {
 	 * @param	string		The relative (to PATH_site) image filepath
 	 * @return	array
 	 */
-	function imageMagickIdentify($imagefile) {
+	public function imageMagickIdentify($imagefile) {
 		if (!$this->NO_IMAGE_MAGICK) {
 			$frame = $this->noFramePrepended ? '' : '[0]';
 			$cmd = t3lib_div::imageMagickCommand('identify', $this->wrapFileName($imagefile) . $frame);
@@ -2598,7 +2591,7 @@ class t3lib_stdGraphic {
 	 *				will select the first frame, 1 will select the next and so on...
 	 * @return	string		The result of a call to PHP function "exec()"
 	 */
-	function imageMagickExec($input, $output, $params, $frame = 0) {
+	public function imageMagickExec($input, $output, $params, $frame = 0) {
 		if (!$this->NO_IMAGE_MAGICK) {
 
 				// Unless noFramePrepended is set in the Install Tool, a frame number is added to
@@ -2630,7 +2623,7 @@ class t3lib_stdGraphic {
 	 * @param	[type]		$handleNegation: ...
 	 * @return	void
 	 */
-	function combineExec($input, $overlay, $mask, $output, $handleNegation = FALSE) {
+	public function combineExec($input, $overlay, $mask, $output, $handleNegation = FALSE) {
 		if (!$this->NO_IMAGE_MAGICK) {
 			$params = '-colorspace GRAY +matte';
 			if ($handleNegation) {
@@ -2658,7 +2651,6 @@ class t3lib_stdGraphic {
 	 * Escapes a file name so it can safely be used on the command line.
 	 *
 	 * @param string $inputName filename to safeguard, must not be empty
-	 *
 	 * @return string $inputName escaped as needed
 	 */
 	protected function wrapFileName($inputName) {
@@ -2686,7 +2678,7 @@ class t3lib_stdGraphic {
 	 * @param	string		Input file to check
 	 * @return	string		Returns the filename if the file existed, otherwise empty.
 	 */
-	function checkFile($file) {
+	protected function checkFile($file) {
 		if (@is_file($file)) {
 			return $file;
 		} else {
@@ -2700,7 +2692,7 @@ class t3lib_stdGraphic {
 	 * @param	string		Name of sub directory
 	 * @return	boolean		Result of t3lib_div::mkdir(), true if it went well.
 	 */
-	function createTempSubDir($dirName) {
+	protected function createTempSubDir($dirName) {
 
 			// Checking if the this->tempPath is already prefixed with PATH_site and if not, prefix it with that constant.
 		if (t3lib_div::isFirstPartOfStr($this->tempPath, PATH_site)) {
@@ -2722,7 +2714,7 @@ class t3lib_stdGraphic {
 	 * @param	string		The ImageMagick parameters. Like effects, scaling etc.
 	 * @return	void
 	 */
-	function applyImageMagickToPHPGif(&$im, $command) {
+	public function applyImageMagickToPHPGif(&$im, $command) {
 		$tmpStr = $this->randomName();
 		$theFile = $tmpStr . '.' . $this->gifExtension;
 		$this->ImageWrite($im, $theFile);
@@ -2748,7 +2740,7 @@ class t3lib_stdGraphic {
 	 * @param	integer		The height of the output image.
 	 * @return	string		The filename, either "jpg" or "gif"/"png" (whatever $this->gifExtension is set to.)
 	 */
-	function gif_or_jpg($type, $w, $h) {
+	protected function gif_or_jpg($type, $w, $h) {
 		if ($type == 'ai' || $w * $h < $this->pixelLimitGif) {
 			return $this->gifExtension;
 		} else {
@@ -2765,7 +2757,7 @@ class t3lib_stdGraphic {
 	 * @return	string		Returns input filename
 	 * @see tslib_gifBuilder::gifBuild()
 	 */
-	function output($file) {
+	public function output($file) {
 		if ($file) {
 			$reg = array();
 			preg_match('/([^\.]*)$/', $file, $reg);
@@ -2807,7 +2799,7 @@ class t3lib_stdGraphic {
 	 * @return	void
 	 * @see tslib_gifBuilder::gifBuild()
 	 */
-	function destroy() {
+	public function destroy() {
 		ImageDestroy($this->im);
 	}
 
@@ -2817,7 +2809,7 @@ class t3lib_stdGraphic {
 	 * @param	array		Image information array, key 0/1 is width/height and key 3 is the src value
 	 * @return	string		Image tag for the input image information array.
 	 */
-	function imgTag($imgInfo) {
+	public function imgTag($imgInfo) {
 		return '<img src="' . $imgInfo[3] . '" width="' . $imgInfo[0] . '" height="' . $imgInfo[1] . '" border="0" alt="" />';
 	}
 
@@ -2830,7 +2822,7 @@ class t3lib_stdGraphic {
 	 * @return	boolean		The output of either imageGif, imagePng or imageJpeg based on the filename to write
 	 * @see maskImageOntoImage(), scale(), output()
 	 */
-	function ImageWrite($destImg, $theImage, $quality = 0) {
+	public function ImageWrite($destImg, $theImage, $quality = 0) {
 		imageinterlace($destImg, 0);
 		$ext = strtolower(substr($theImage, strrpos($theImage, '.') + 1));
 		$result = FALSE;
@@ -2869,7 +2861,7 @@ class t3lib_stdGraphic {
 	 * @param	string		Image filename
 	 * @return	pointer		Image Resource pointer
 	 */
-	function imageCreateFromFile($sourceImg) {
+	public function imageCreateFromFile($sourceImg) {
 		$imgInf = pathinfo($sourceImg);
 		$ext = strtolower($imgInf['extension']);
 
@@ -2906,7 +2898,7 @@ class t3lib_stdGraphic {
 	 * @param	array		RGB color array
 	 * @return	string		HEX color value
 	 */
-	function hexColor($col) {
+	public function hexColor($col) {
 		$r = dechex($col[0]);
 		if (strlen($r) < 2) {
 			$r = '0' . $r;
@@ -2930,7 +2922,7 @@ class t3lib_stdGraphic {
 	 * @param	[type]		$closest: ...
 	 * @return	integer		The index of the unified color
 	 */
-	function unifyColors(&$img, $colArr, $closest = FALSE) {
+	public function unifyColors(&$img, $colArr, $closest = FALSE) {
 		$retCol = -1;
 		if (is_array($colArr) && count($colArr) && function_exists('imagepng') && function_exists('imagecreatefrompng')) {
 			$firstCol = array_shift($colArr);

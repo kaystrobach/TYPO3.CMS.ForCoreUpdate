@@ -77,27 +77,27 @@
 class t3lib_positionMap {
 
 		// EXTERNAL, static:
-	var $moveOrCopy = 'move';
-	var $dontPrintPageInsertIcons = 0;
-	var $backPath = '';
-	var $depth = 2; // How deep the position page tree will go.
-	var $cur_sys_language; // Can be set to the sys_language uid to select content elements for.
+	public $moveOrCopy = 'move';
+	public $dontPrintPageInsertIcons = 0;
+	public $backPath = '';
+	public $depth = 2; // How deep the position page tree will go.
+	public $cur_sys_language; // Can be set to the sys_language uid to select content elements for.
 
 
 		// INTERNAL, dynamic:
-	var $R_URI = ''; // Request uri
-	var $elUid = ''; // Element id.
-	var $moveUid = ''; // tt_content element uid to move.
+	protected $R_URI = ''; // Request uri
+	protected $elUid = ''; // Element id.
+	protected $moveUid = ''; // tt_content element uid to move.
 
 		// Caching arrays:
-	var $getModConfigCache = array();
-	var $checkNewPageCache = Array();
+	protected $getModConfigCache = array();
+	protected $checkNewPageCache = Array();
 
 		// Label keys:
-	var $l_insertNewPageHere = 'insertNewPageHere';
-	var $l_insertNewRecordHere = 'insertNewRecordHere';
+	protected $l_insertNewPageHere = 'insertNewPageHere';
+	protected $l_insertNewRecordHere = 'insertNewRecordHere';
 
-	var $modConfigStr = 'mod.web_list.newPageWiz';
+	protected $modConfigStr = 'mod.web_list.newPageWiz';
 
 
 	/*************************************
@@ -116,7 +116,7 @@ class t3lib_positionMap {
 	 * @param	string		Current REQUEST_URI
 	 * @return	string		HTML code for the tree.
 	 */
-	function positionTree($id, $pageinfo, $perms_clause, $R_URI) {
+	public function positionTree($id, $pageinfo, $perms_clause, $R_URI) {
 		global $LANG, $BE_USER;
 
 		$code = '';
@@ -233,7 +233,7 @@ class t3lib_positionMap {
 	 * @param	string		Insert record image prefix.
 	 * @return	string		<script> section
 	 */
-	function JSimgFunc($prefix = '') {
+	protected function JSimgFunc($prefix = '') {
 		$code = $GLOBALS['TBE_TEMPLATE']->wrapScriptTags('
 
 			var img_newrecord_marker=new Image();
@@ -263,7 +263,7 @@ class t3lib_positionMap {
 	 * @param	integer		The current id.
 	 * @return	string		The title string.
 	 */
-	function boldTitle($t_code, $dat, $id) {
+	protected function boldTitle($t_code, $dat, $id) {
 		if ($dat['row']['uid'] == $id) {
 			$t_code = '<strong>' . $t_code . '</strong>';
 		}
@@ -280,7 +280,7 @@ class t3lib_positionMap {
 	 * @param	integer		New page id.
 	 * @return	string		Onclick attribute content
 	 */
-	function onClickEvent($pid, $newPagePID) {
+	protected function onClickEvent($pid, $newPagePID) {
 		$TSconfigProp = $this->getModConfig($newPagePID);
 
 		if ($TSconfigProp['overrideWithExtension']) {
@@ -299,7 +299,7 @@ class t3lib_positionMap {
 	 *
 	 * @return	string		The localized label for "insert new page here"
 	 */
-	function insertlabel() {
+	protected function insertlabel() {
 		global $LANG;
 		return $LANG->getLL($this->l_insertNewPageHere, 1);
 	}
@@ -311,7 +311,7 @@ class t3lib_positionMap {
 	 * @param	array		Page record (?)
 	 * @return	string		Wrapped title.
 	 */
-	function linkPageTitle($str, $rec) {
+	protected function linkPageTitle($str, $rec) {
 		return $str;
 	}
 
@@ -322,7 +322,7 @@ class t3lib_positionMap {
 	 * @param	integer		Page id for which to test.
 	 * @return	boolean
 	 */
-	function checkNewPageInPid($pid) {
+	public function checkNewPageInPid($pid) {
 		global $BE_USER;
 		if (!isset($this->checkNewPageCache[$pid])) {
 			$pidInfo = t3lib_BEfunc::getRecord('pages', $pid);
@@ -338,7 +338,7 @@ class t3lib_positionMap {
 	 * @return	array		The properties of teh module configuration for the page id.
 	 * @see onClickEvent()
 	 */
-	function getModConfig($pid) {
+	public function getModConfig($pid) {
 		if (!isset($this->getModConfigCache[$pid])) {
 				// Acquiring TSconfig for this PID:
 			$this->getModConfigCache[$pid] = t3lib_BEfunc::getModTSconfig($pid, $this->modConfigStr);
@@ -353,7 +353,7 @@ class t3lib_positionMap {
 	 * @param	boolean		If true all lines are just blank clear.gifs
 	 * @return	string		HTML content.
 	 */
-	function insertQuadLines($codes, $allBlank = 0) {
+	protected function insertQuadLines($codes, $allBlank = 0) {
 		$codeA = t3lib_div::trimExplode(',', $codes . ",line", 1);
 
 		$lines = array();
@@ -384,7 +384,7 @@ class t3lib_positionMap {
 	 * @param	string		Request URI
 	 * @return	string		HTML
 	 */
-	function printContentElementColumns($pid, $moveUid, $colPosList, $showHidden, $R_URI) {
+	protected function printContentElementColumns($pid, $moveUid, $colPosList, $showHidden, $R_URI) {
 		$this->R_URI = $R_URI;
 		$this->moveUid = $moveUid;
 		$colPosArray = t3lib_div::trimExplode(',', $colPosList, 1);
@@ -425,7 +425,7 @@ class t3lib_positionMap {
 	 * @param	integer		The id of the page
 	 * @return	string		HTML
 	 */
-	function printRecordMap($lines, $colPosArray, $pid = 0) {
+	protected function printRecordMap($lines, $colPosArray, $pid = 0) {
 
 		$row1 = '';
 		$row2 = '';
@@ -536,7 +536,7 @@ class t3lib_positionMap {
 	 * @return	string
 	 * @see printRecordMap()
 	 */
-	function wrapColumnHeader($str, $vv) {
+	protected function wrapColumnHeader($str, $vv) {
 		return $str;
 	}
 
@@ -550,7 +550,7 @@ class t3lib_positionMap {
 	 * @param	integer		PID value.
 	 * @return	string
 	 */
-	function insertPositionIcon($row, $vv, $kk, $moveUid, $pid) {
+	protected function insertPositionIcon($row, $vv, $kk, $moveUid, $pid) {
 		$cc = hexdec(substr(md5($row['uid'] . '-' . $vv . '-' . $kk), 0, 4));
 		return '<a href="#" onclick="' . htmlspecialchars($this->onClickInsertRecord($row, $vv, $moveUid, $pid, $this->cur_sys_language)) . '" onmouseover="' . htmlspecialchars('changeImg(\'mImg' . $cc . '\',0);') . '" onmouseout="' . htmlspecialchars('changeImg(\'mImg' . $cc . '\',1);') . '">' .
 			   '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/newrecord2_marker_d.gif', 'width="100" height="8"') . ' name="mImg' . $cc . '" border="0" align="top" title="' . $GLOBALS['LANG']->getLL($this->l_insertNewRecordHere, 1) . '" alt="" />' .
@@ -567,7 +567,7 @@ class t3lib_positionMap {
 	 * @param	integer		System language (not used currently)
 	 * @return	string
 	 */
-	function onClickInsertRecord($row, $vv, $moveUid, $pid, $sys_lang = 0) {
+	protected function onClickInsertRecord($row, $vv, $moveUid, $pid, $sys_lang = 0) {
 		$table = 'tt_content';
 		if (is_array($row)) {
 			$location = 'tce_db.php?cmd[' . $table . '][' . $moveUid . '][' . $this->moveOrCopy . ']=-' . $row['uid'] . '&prErr=1&uPT=1&vC=' . $GLOBALS['BE_USER']->veriCode() . t3lib_BEfunc::getUrlToken('tceAction');
@@ -587,7 +587,7 @@ class t3lib_positionMap {
 	 * @param	array		Record array.
 	 * @return	string		HTML content
 	 */
-	function wrapRecordHeader($str, $row) {
+	protected function wrapRecordHeader($str, $row) {
 		return $str;
 	}
 
@@ -597,7 +597,7 @@ class t3lib_positionMap {
 	 * @param	array		Record row.
 	 * @return	string		HTML
 	 */
-	function getRecordHeader($row) {
+	protected function getRecordHeader($row) {
 		$line = t3lib_iconWorks::getSpriteIconForRecord('tt_content', $row, array('title' => htmlspecialchars(t3lib_BEfunc::getRecordIconAltText($row, 'tt_content'))));
 		$line .= t3lib_BEfunc::getRecordTitle('tt_content', $row, TRUE);
 		return $this->wrapRecordTitle($line, $row);
@@ -610,7 +610,7 @@ class t3lib_positionMap {
 	 * @param	array		The record row.
 	 * @return	string		Wrapped title string.
 	 */
-	function wrapRecordTitle($str, $row) {
+	protected function wrapRecordTitle($str, $row) {
 		return '<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('uid' => intval($row['uid']), 'moveUid' => ''))) . '">' . $str . '</a>';
 	}
 }

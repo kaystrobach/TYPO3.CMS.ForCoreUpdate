@@ -139,26 +139,26 @@ class t3lib_extobjbase {
 	 * @var t3lib_SCbase
 	 * @see init()
 	 */
-	var $pObj; // parent SC object
+	public $pObj; // parent SC object
 
 	/**
 	 * Set to the directory name of this class file.
 	 * @see init()
 	 */
-	var $thisPath = '';
+	protected $thisPath = '';
 
 	/**
 	 * Can be hardcoded to the name of a locallang.php file (from the same directory as the class file) to use/load
 	 * @see incLocalLang()
 	 */
-	var $localLangFile = 'locallang.php';
+	protected $localLangFile = 'locallang.php';
 
 	/**
 	 * Contains module configuration parts from TBE_MODULES_EXT if found
 	 *
 	 * @see handleExternalFunctionValue()
 	 */
-	var $extClassConf;
+	protected $extClassConf;
 
 	/**
 	 * If this value is set it points to a key in the TBE_MODULES_EXT array (not on the top level..) where another classname/filepath/title can be defined for sub-subfunctions.
@@ -167,7 +167,7 @@ class t3lib_extobjbase {
 	 *
 	 * @see handleExternalFunctionValue(), tx_funcwizards_webfunc
 	 */
-	var $function_key = '';
+	protected $function_key = '';
 
 
 	/**
@@ -178,7 +178,7 @@ class t3lib_extobjbase {
 	 * @return	void
 	 * @see t3lib_SCbase::checkExtObj()
 	 */
-	function init(&$pObj, $conf) {
+	public function init(&$pObj, array $conf) {
 		global $LANG;
 
 		$this->pObj = $pObj;
@@ -205,7 +205,7 @@ class t3lib_extobjbase {
 	 * @return	void
 	 * @see $function_key, tx_funcwizards_webfunc::init()
 	 */
-	function handleExternalFunctionValue() {
+	protected function handleExternalFunctionValue() {
 			// Must clean first to make sure the correct key is set...
 		$this->pObj->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->pObj->MOD_MENU, t3lib_div::_GP('SET'), $this->pObj->MCONF['name']);
 		if ($this->function_key) {
@@ -221,7 +221,7 @@ class t3lib_extobjbase {
 	 *
 	 * @return	void
 	 */
-	function incLocalLang() {
+	protected function incLocalLang() {
 		global $LANG;
 		#if ($this->localLangFile && @is_file($this->thisPath.'/'.$this->localLangFile))	{
 		#	include($this->thisPath.'/'.$this->localLangFile);
@@ -239,7 +239,7 @@ class t3lib_extobjbase {
 	 * @return	void
 	 * @see t3lib_SCbase::checkExtObj()
 	 */
-	function checkExtObj() {
+	public function checkExtObj() {
 		if (is_array($this->extClassConf) && $this->extClassConf['name']) {
 			$this->extObj = t3lib_div::makeInstance($this->extClassConf['name']);
 			$this->extObj->init($this->pObj, $this->extClassConf);
@@ -254,7 +254,7 @@ class t3lib_extobjbase {
 	 *
 	 * @return	void
 	 */
-	function extObjContent() {
+	public function extObjContent() {
 		if (is_object($this->extObj)) {
 			return $this->extObj->main();
 		}
@@ -267,7 +267,7 @@ class t3lib_extobjbase {
 	 * @return	array		A MOD_MENU array which will be merged together with the one from the parent object
 	 * @see init(), tx_cms_webinfo_page::modMenu()
 	 */
-	function modMenu() {
+	protected function modMenu() {
 		return array();
 	}
 }

@@ -100,15 +100,15 @@
 class t3lib_treeView {
 
 		// EXTERNAL, static:
-	var $expandFirst = 0; // If set, the first element in the tree is always expanded.
-	var $expandAll = 0; // If set, then ALL items will be expanded, regardless of stored settings.
-	var $thisScript = ''; // Holds the current script to reload to.
-	var $titleAttrib = 'title'; // Which HTML attribute to use: alt/title. See init().
-	var $ext_IconMode = FALSE; // If true, no context menu is rendered on icons. If set to "titlelink" the icon is linked as the title is.
-	var $addSelfId = 0; // If set, the id of the mounts will be added to the internal ids array
-	var $title = 'no title'; // Used if the tree is made of records (not folders for ex.)
-	var $showDefaultTitleAttribute = FALSE; // If true, a default title attribute showing the UID of the record is shown. This cannot be enabled by default because it will destroy many applications where another title attribute is in fact applied later.
-	var $highlightPagesWithVersions = TRUE; // If true, pages containing child records which has versions will be highlighted in yellow. This might be too expensive in terms of processing power.
+	public $expandFirst = 0; // If set, the first element in the tree is always expanded.
+	public $expandAll = 0; // If set, then ALL items will be expanded, regardless of stored settings.
+	public $thisScript = ''; // Holds the current script to reload to.
+	public $titleAttrib = 'title'; // Which HTML attribute to use: alt/title. See init().
+	public $ext_IconMode = FALSE; // If true, no context menu is rendered on icons. If set to "titlelink" the icon is linked as the title is.
+	public $addSelfId = 0; // If set, the id of the mounts will be added to the internal ids array
+	public $title = 'no title'; // Used if the tree is made of records (not folders for ex.)
+	public $showDefaultTitleAttribute = FALSE; // If true, a default title attribute showing the UID of the record is shown. This cannot be enabled by default because it will destroy many applications where another title attribute is in fact applied later.
+	public $highlightPagesWithVersions = TRUE; // If true, pages containing child records which has versions will be highlighted in yellow. This might be too expensive in terms of processing power.
 
 	/**
 	 * Needs to be initialized with $GLOBALS['BE_USER']
@@ -116,53 +116,53 @@ class t3lib_treeView {
 	 *
 	 * @var t3lib_beUserAuth
 	 */
-	var $BE_USER = '';
+	public $BE_USER = '';
 
 	/**
 	 * Needs to be initialized with e.g. $GLOBALS['WEBMOUNTS']
 	 * Default setting in init() is 0 => 0
 	 * The keys are mount-ids (can be anything basically) and the values are the ID of the root element (COULD be zero or anything else. For pages that would be the uid of the page, zero for the pagetree root.)
 	 */
-	var $MOUNTS = '';
+	public $MOUNTS = '';
 
 
 	/**
 	 * Database table to get the tree data from.
 	 * Leave blank if data comes from an array.
 	 */
-	var $table = '';
+	public $table = '';
 
 	/**
 	 * Defines the field of $table which is the parent id field (like pid for table pages).
 	 */
-	var $parentField = 'pid';
+	public $parentField = 'pid';
 
 	/**
 	 * WHERE clause used for selecting records for the tree. Is set by function init.
 	 * Only makes sense when $this->table is set.
 	 * @see init()
 	 */
-	var $clause = '';
+	public $clause = '';
 
 	/**
 	 * Field for ORDER BY. Is set by function init.
 	 * Only makes sense when $this->table is set.
 	 * @see init()
 	 */
-	var $orderByFields = '';
+	public $orderByFields = '';
 
 	/**
 	 * Default set of fields selected from the tree table.
 	 * Make SURE that these fields names listed herein are actually possible to select from $this->table (if that variable is set to a TCA table name)
 	 * @see addField()
 	 */
-	var $fieldArray = array('uid', 'title');
+	public $fieldArray = array('uid', 'title');
 
 	/**
 	 * List of other fields which are ALLOWED to set (here, based on the "pages" table!)
 	 * @see addField()
 	 */
-	var $defaultList = 'uid,pid,tstamp,sorting,deleted,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,crdate,cruser_id';
+	public $defaultList = 'uid,pid,tstamp,sorting,deleted,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,crdate,cruser_id';
 
 
 	/**
@@ -172,7 +172,7 @@ class t3lib_treeView {
 	 * MUST NOT contain underscore chars.
 	 * etc.
 	 */
-	var $treeName = '';
+	public $treeName = '';
 
 	/**
 	 * A prefix for table cell id's which will be wrapped around an item.
@@ -180,63 +180,63 @@ class t3lib_treeView {
 	 * Needs to be unique if multiple trees are on one HTML page.
 	 * @see printTree()
 	 */
-	var $domIdPrefix = 'row';
+	public $domIdPrefix = 'row';
 
 	/**
 	 * Back path for icons
 	 */
-	var $backPath;
+	public $backPath;
 
 	/**
 	 * Icon file path.
 	 */
-	var $iconPath = '';
+	public $iconPath = '';
 
 
 	/**
 	 * Icon file name for item icons.
 	 */
-	var $iconName = 'default.gif';
+	public $iconName = 'default.gif';
 
 	/**
 	 * If true, HTML code is also accumulated in ->tree array during rendering of the tree.
 	 * If 2, then also the icon prefix code (depthData) is stored
 	 */
-	var $makeHTML = 1;
+	public $makeHTML = 1;
 
 	/**
 	 * If true, records as selected will be stored internally in the ->recs array
 	 */
-	var $setRecs = 0;
+	public $setRecs = 0;
 
 	/**
 	 * Sets the associative array key which identifies a new sublevel if arrays are used for trees.
 	 * This value has formerly been "subLevel" and "--sublevel--"
 	 */
-	var $subLevelID = '_SUB_LEVEL';
+	public $subLevelID = '_SUB_LEVEL';
 
 
 		// *********
 		// Internal
 		// *********
 		// For record trees:
-	var $ids = array(); // one-dim array of the uid's selected.
-	var $ids_hierarchy = array(); // The hierarchy of element uids
-	var $orig_ids_hierarchy = array(); // The hierarchy of versioned element uids
-	var $buffer_idH = array(); // Temporary, internal array
+	public $ids = array(); // one-dim array of the uid's selected.
+	public $ids_hierarchy = array(); // The hierarchy of element uids
+	public $orig_ids_hierarchy = array(); // The hierarchy of versioned element uids
+	public $buffer_idH = array(); // Temporary, internal array
 
 		// For FOLDER trees:
-	var $specUIDmap = array(); // Special UIDs for folders (integer-hashes of paths)
+	protected $specUIDmap = array(); // Special UIDs for folders (integer-hashes of paths)
 
 		// For arrays:
-	var $data = FALSE; // Holds the input data array
-	var $dataLookup = FALSE; // Holds an index with references to the data array.
+	protected $data = FALSE; // Holds the input data array
+	protected $dataLookup = FALSE; // Holds an index with references to the data array.
 
 		// For both types
-	var $tree = array(); // Tree is accumulated in this variable
-	var $stored = array(); // Holds (session stored) information about which items in the tree are unfolded and which are not.
-	var $bank = 0; // Points to the current mountpoint key
-	var $recs = array(); // Accumulates the displayed records.
+	public $tree = array(); // Tree is accumulated in this variable
+	protected $stored = array(); // Holds (session stored) information about which items in the tree are unfolded and which are not.
+	protected $bank = 0; // Points to the current mountpoint key
+	protected $recs = array(); // Accumulates the displayed records.
 
 
 	/**
@@ -247,7 +247,7 @@ class t3lib_treeView {
 	 * @param	string		record ORDER BY field
 	 * @return	void
 	 */
-	function init($clause = '', $orderByFields = '') {
+	public function init($clause = '', $orderByFields = '') {
 		$this->BE_USER = $GLOBALS['BE_USER']; // Setting BE_USER by default
 		$this->titleAttrib = 'title'; // Setting title attribute to use.
 		$this->backPath = $GLOBALS['BACK_PATH']; // Setting backpath.
@@ -282,7 +282,7 @@ class t3lib_treeView {
 	 * @param	string		Default is the table name. Underscores are stripped.
 	 * @return	void
 	 */
-	function setTreeName($treeName = '') {
+	public function setTreeName($treeName = '') {
 		$this->treeName = $treeName ? $treeName : $this->treeName;
 		$this->treeName = $this->treeName ? $this->treeName : $this->table;
 		$this->treeName = str_replace('_', '', $this->treeName);
@@ -296,7 +296,7 @@ class t3lib_treeView {
 	 * @param	boolean		If set, the fieldname will be set no matter what. Otherwise the field name must either be found as key in $TCA[$table]['columns'] or in the list ->defaultList
 	 * @return	void
 	 */
-	function addField($field, $noCheck = 0) {
+	public function addField($field, $noCheck = 0) {
 		global $TCA;
 		if ($noCheck || is_array($TCA[$this->table]['columns'][$field]) || t3lib_div::inList($this->defaultList, $field)) {
 			$this->fieldArray[] = $field;
@@ -309,7 +309,7 @@ class t3lib_treeView {
 	 *
 	 * @return	void
 	 */
-	function reset() {
+	public function reset() {
 		$this->tree = array();
 		$this->recs = array();
 		$this->ids = array();
@@ -330,7 +330,7 @@ class t3lib_treeView {
 	 *
 	 * @return	string		HTML code for the browsable tree
 	 */
-	function getBrowsableTree() {
+	public function getBrowsableTree() {
 
 			// Get stored tree structure AND updating it if needed according to incoming PM GET var.
 		$this->initializePositionSaving();
@@ -395,7 +395,7 @@ class t3lib_treeView {
 	 * @param	array		"tree-array" - if blank string, the internal ->tree array is used.
 	 * @return	string		The HTML code for the tree
 	 */
-	function printTree($treeArr = '') {
+	public function printTree($treeArr = '') {
 		$titleLen = intval($this->BE_USER->uc['titleLen']);
 		if (!is_array($treeArr)) {
 			$treeArr = $this->tree;
@@ -447,10 +447,9 @@ class t3lib_treeView {
 	 * @param	integer		The number of sub-elements to the current element.
 	 * @param	boolean		The element was expanded to render subelements if this flag is set.
 	 * @return	string		Image tag with the plus/minus icon.
-	 * @access private
 	 * @see t3lib_pageTree::PMicon()
 	 */
-	function PMicon($row, $a, $c, $nextCount, $exp) {
+	protected function PMicon($row, $a, $c, $nextCount, $exp) {
 		$PM = $nextCount ? ($exp ? 'minus' : 'plus') : 'join';
 		$BTM = ($a == $c) ? 'bottom' : '';
 		$icon = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/' . $PM . $BTM . '.gif', 'width="18" height="16"') . ' alt="" />';
@@ -470,9 +469,8 @@ class t3lib_treeView {
 	 * @param	string		Command for 'PM' get var
 	 * @param	boolean		If set, the link will have a anchor point (=$bMark) and a name attribute (=$bMark)
 	 * @return	string		Link-wrapped input string
-	 * @access private
 	 */
-	function PM_ATagWrap($icon, $cmd, $bMark = '') {
+	protected function PM_ATagWrap($icon, $cmd, $bMark = '') {
 		if ($this->thisScript) {
 			if ($bMark) {
 				$anchor = '#' . $bMark;
@@ -492,9 +490,8 @@ class t3lib_treeView {
 	 * @param	string		Item record
 	 * @param	integer		Bank pointer (which mount point number)
 	 * @return	string
-	 * @access private
 	 */
-	function wrapTitle($title, $row, $bank = 0) {
+	protected function wrapTitle($title, $row, $bank = 0) {
 		$aOnClick = 'return jumpTo(\'' . $this->getJumpToParam($row) . '\',this,\'' . $this->domIdPrefix . $this->getId($row) . '\',' . $bank . ');';
 		return '<a href="#" onclick="' . htmlspecialchars($aOnClick) . '">' . $title . '</a>';
 	}
@@ -505,9 +502,8 @@ class t3lib_treeView {
 	 * @param	string		The image tag for the icon
 	 * @param	array		The row for the current element
 	 * @return	string		The processed icon input value.
-	 * @access private
 	 */
-	function wrapIcon($icon, $row) {
+	protected function wrapIcon($icon, $row) {
 		return $icon;
 	}
 
@@ -518,7 +514,7 @@ class t3lib_treeView {
 	 * @param	string		Attributes to add, eg. ' border="0"'
 	 * @return	string		Image tag, modified with $attr attributes added.
 	 */
-	function addTagAttributes($icon, $attr) {
+	public function addTagAttributes($icon, $attr) {
 		return preg_replace('/ ?\/?>$/', '', $icon) . ' ' . $attr . ' />';
 	}
 
@@ -528,9 +524,8 @@ class t3lib_treeView {
 	 * @param	string		Input string, like a page title for the tree
 	 * @param	array		record row with "php_tree_stop" field
 	 * @return	string		Modified string
-	 * @access private
 	 */
-	function wrapStop($str, $row) {
+	protected function wrapStop($str, $row) {
 		if ($row['php_tree_stop']) {
 			$str .= '<span class="typo3-red"><a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => $row['uid']))) . '" class="typo3-red">+</a> </span>';
 		}
@@ -551,10 +546,9 @@ class t3lib_treeView {
 	 *
 	 * @param	integer		record id/key
 	 * @return	boolean
-	 * @access private
 	 * @see t3lib_pageTree::expandNext()
 	 */
-	function expandNext($id) {
+	protected function expandNext($id) {
 		return ($this->stored[$this->bank][$id] || $this->expandAll) ? 1 : 0;
 	}
 
@@ -562,9 +556,8 @@ class t3lib_treeView {
 	 * Get stored tree structure AND updating it if needed according to incoming PM GET var.
 	 *
 	 * @return	void
-	 * @access private
 	 */
-	function initializePositionSaving() {
+	protected function initializePositionSaving() {
 			// Get stored tree structure:
 		$this->stored = unserialize($this->BE_USER->uc['browseTrees'][$this->treeName]);
 
@@ -589,9 +582,8 @@ class t3lib_treeView {
 	 * $this->treeName will be used as key for BE_USER->uc[] to store it in
 	 *
 	 * @return	void
-	 * @access private
 	 */
-	function savePosition() {
+	protected function savePosition() {
 		$this->BE_USER->uc['browseTrees'][$this->treeName] = serialize($this->stored);
 		$this->BE_USER->writeUC();
 	}
@@ -609,7 +601,7 @@ class t3lib_treeView {
 	 * @param	array		Record for root.
 	 * @return	string		Icon image tag.
 	 */
-	function getRootIcon($rec) {
+	public function getRootIcon($rec) {
 		return $this->wrapIcon(t3lib_iconWorks::getSpriteIcon('apps-pagetree-root'), $rec);
 	}
 
@@ -621,7 +613,7 @@ class t3lib_treeView {
 	 * @param	array		Item row.
 	 * @return	string		Image tag.
 	 */
-	function getIcon($row) {
+	public function getIcon($row) {
 		if ($this->iconPath && $this->iconName) {
 			$icon = '<img' . t3lib_iconWorks::skinImg('', $this->iconPath . $this->iconName, 'width="18" height="16"') . ' alt=""' . ($this->showDefaultTitleAttribute ? ' title="UID: ' . $row['uid'] . '"' : '') . ' />';
 		} else {
@@ -645,7 +637,7 @@ class t3lib_treeView {
 	 * @param	integer		Title length (30)
 	 * @return	string		The title.
 	 */
-	function getTitleStr($row, $titleLen = 30) {
+	public function getTitleStr($row, $titleLen = 30) {
 		if ($this->ext_showNavTitle && strlen(trim($row['nav_title'])) > 0) {
 			$title = '<span title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_tca.xml:title', 1) . ' ' . htmlspecialchars(trim($row['title'])) . '">' . htmlspecialchars(t3lib_div::fixed_lgd_cs($row['nav_title'], $titleLen)) . '</span>';
 		} else {
@@ -666,7 +658,7 @@ class t3lib_treeView {
 	 * @return	string		The attribute value (is htmlspecialchared() already)
 	 * @see wrapIcon()
 	 */
-	function getTitleAttrib($row) {
+	public function getTitleAttrib($row) {
 		return htmlspecialchars($row['title']);
 	}
 
@@ -676,7 +668,7 @@ class t3lib_treeView {
 	 * @param	array		Record array
 	 * @return	integer		The "uid" field value.
 	 */
-	function getId($row) {
+	public function getId($row) {
 		return $row['uid'];
 	}
 
@@ -686,7 +678,7 @@ class t3lib_treeView {
 	 * @param	array		The record array.
 	 * @return	string		The jump-url parameter.
 	 */
-	function getJumpToParam($row) {
+	public function getJumpToParam($row) {
 		return $this->getId($row);
 	}
 
@@ -707,7 +699,7 @@ class t3lib_treeView {
 	 * @param	string		CSS class to use for <td> sub-elements
 	 * @return	integer		The count of items on the level
 	 */
-	function getTree($uid, $depth = 999, $depthData = '', $blankLineCode = '', $subCSSclass = '') {
+	public function getTree($uid, $depth = 999, $depthData = '', $blankLineCode = '', $subCSSclass = '') {
 
 			// Buffer for id hierarchy is reset:
 		$this->buffer_idH = array();
@@ -804,9 +796,8 @@ class t3lib_treeView {
 	 *
 	 * @param	integer		id to count subitems for
 	 * @return	integer
-	 * @access private
 	 */
-	function getCount($uid) {
+	protected function getCount($uid) {
 		if (is_array($this->data)) {
 			$res = $this->getDataInit($uid);
 			return $this->getDataCount($res);
@@ -829,7 +820,7 @@ class t3lib_treeView {
 	 * @param	integer		uid, <= 0 (normally, this does not matter)
 	 * @return	array		Array with title/uid keys with values of $this->title/0 (zero)
 	 */
-	function getRootRecord($uid) {
+	public function getRootRecord($uid) {
 		return array('title' => $this->title, 'uid' => 0);
 	}
 
@@ -842,7 +833,7 @@ class t3lib_treeView {
 	 * @param	integer		UID to look up
 	 * @return	array		The record
 	 */
-	function getRecord($uid) {
+	public function getRecord($uid) {
 		if (is_array($this->data)) {
 			return $this->dataLookup[$uid];
 		} else {
@@ -858,9 +849,8 @@ class t3lib_treeView {
 	 * @param	integer		parent item id
 	 * @param	string		Class for sub-elements.
 	 * @return	mixed		data handle (Tables: An sql-resource, arrays: A parentId integer. -1 is returned if there were NO subLevel.)
-	 * @access private
 	 */
-	function getDataInit($parentId, $subCSSclass = '') {
+	protected function getDataInit($parentId, $subCSSclass = '') {
 		if (is_array($this->data)) {
 			if (!is_array($this->dataLookup[$parentId][$this->subLevelID])) {
 				$parentId = -1;
@@ -888,10 +878,9 @@ class t3lib_treeView {
 	 *
 	 * @param	mixed		data handle
 	 * @return	integer		number of items
-	 * @access private
 	 * @see getDataInit()
 	 */
-	function getDataCount(&$res) {
+	protected function getDataCount(&$res) {
 		if (is_array($this->data)) {
 			return count($this->dataLookup[$res][$this->subLevelID]);
 		} else {
@@ -906,10 +895,9 @@ class t3lib_treeView {
 	 * @param	mixed		data handle
 	 * @param	string		CSS class for sub elements (workspace related)
 	 * @return	array		item data array OR FALSE if end of elements.
-	 * @access private
 	 * @see getDataInit()
 	 */
-	function getDataNext(&$res, $subCSSclass = '') {
+	protected function getDataNext(&$res, $subCSSclass = '') {
 		if (is_array($this->data)) {
 			if ($res < 0) {
 				$row = FALSE;
@@ -954,9 +942,8 @@ class t3lib_treeView {
 	 *
 	 * @param	mixed		data handle
 	 * @return	void
-	 * @access private
 	 */
-	function getDataFree(&$res) {
+	protected function getDataFree(&$res) {
 		if (!is_array($this->data)) {
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
@@ -974,7 +961,7 @@ class t3lib_treeView {
 	 * @param	integer		Internal, for recursion.
 	 * @return	void
 	 */
-	function setDataFromArray(&$dataArr, $traverse = FALSE, $pid = 0) {
+	public function setDataFromArray(&$dataArr, $traverse = FALSE, $pid = 0) {
 		if (!$traverse) {
 			$this->data = &$dataArr;
 			$this->dataLookup = array();
@@ -1003,7 +990,7 @@ class t3lib_treeView {
 	 * @param	array		Content for $this->dataLookup
 	 * @return	void
 	 */
-	function setDataFromTreeArray(&$treeArr, &$treeLookupArr) {
+	public function setDataFromTreeArray(array &$treeArr, array &$treeLookupArr) {
 		$this->data = &$treeArr;
 		$this->dataLookup =& $treeLookupArr;
 	}

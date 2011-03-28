@@ -1955,7 +1955,7 @@ final class t3lib_div {
 	 * @param	array	Array by reference which should be remapped
 	 * @param	array	Array with remap information, array/$oldKey => $newKey)
 	 */
-	function remapArrayKeys(&$array, $mappingTable) {
+	public static function remapArrayKeys(&$array, $mappingTable) {
 		if (is_array($mappingTable)) {
 			foreach ($mappingTable as $old => $new) {
 				if ($new && isset($array[$old])) {
@@ -2524,7 +2524,7 @@ final class t3lib_div {
 	 * @return	mixed		If the parsing had errors, a string with the error message is returned. Otherwise an array with the content.
 	 * @see array2xml()
 	 */
-	protected function xml2arrayProcess($string, $NSprefix = '', $reportDocTag = FALSE) {
+	protected static function xml2arrayProcess($string, $NSprefix = '', $reportDocTag = FALSE) {
 		global $TYPO3_CONF_VARS;
 
 			// Create parser:
@@ -2913,6 +2913,7 @@ final class t3lib_div {
 	 * @return	boolean		True if the file was successfully opened and written to.
 	 */
 	public static function writeFile($file, $content) {
+		$changePermissions = FALSE;
 		if (!@is_file($file)) {
 			$changePermissions = TRUE;
 		}
@@ -4385,7 +4386,8 @@ final class t3lib_div {
 	 *						 Otherwise an empty array and it is FALSE in error case.
 	 */
 	public static function readLLfile($fileRef, $langKey, $charset = '', $errorMode = 0) {
-
+		$fileNotFound = FALSE;
+		$LOCAL_LANG = NULL;
 		$result = FALSE;
 		$file = self::getFileAbsFileName($fileRef);
 		if ($file) {

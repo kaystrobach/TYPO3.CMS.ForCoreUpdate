@@ -67,7 +67,7 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param	string		Additional clause for selecting pages.
 	 * @return	void
 	 */
-	function init($clause = '') {
+	public function init($clause = '') {
 
 			// this will hide records from display - it has nothing todo with user rights!!
 		$clauseExludePidList = '';
@@ -112,7 +112,7 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param	array		The table row.
 	 * @return	string
 	 */
-	function getTitleAttrib($row) {
+	public function getTitleAttrib($row) {
 		return t3lib_BEfunc::titleAttribForPages($row, '1=1 ' . $this->clause, 0);
 	}
 
@@ -124,7 +124,7 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @return	string		The processed icon input value.
 	 * @access private
 	 */
-	function wrapIcon($icon, $row) {
+	public function wrapIcon($icon, $row) {
 			// Add title attribute to input icon tag
 		$theIcon = $this->addTagAttributes($icon, ($this->titleAttrib ? $this->titleAttrib . '="' . $this->getTitleAttrib($row) . '"' : ''));
 
@@ -146,7 +146,7 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param	integer		Title length (30)
 	 * @return	string		The title.
 	 */
-	function getTitleStr($row, $titleLen = 30) {
+	public function getTitleStr($row, $titleLen = 30) {
 			// get the basic title from the parent implementation in t3lib_treeview
 		$title = parent::getTitleStr($row, $titleLen);
 		if (isset($row['is_siteroot']) && $row['is_siteroot'] != 0 && $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showDomainNameWithTitle')) {
@@ -167,7 +167,7 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @return	string		Modified string
 	 * @access private
 	 */
-	function wrapStop($str, $row) {
+	public function wrapStop($str, $row) {
 		if ($row['php_tree_stop']) {
 			$str .= '<span class="typo3-red">
 								<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => $row['uid']))) . '" class="typo3-red">+</a>

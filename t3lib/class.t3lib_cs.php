@@ -125,30 +125,30 @@
  * @subpackage t3lib
  */
 class t3lib_cs {
-	var $noCharByteVal = 63; // ASCII Value for chars with no equivalent.
+	protected $noCharByteVal = 63; // ASCII Value for chars with no equivalent.
 
 		// This is the array where parsed conversion tables are stored (cached)
-	var $parsedCharsets = array();
+	protected $parsedCharsets = array();
 
 		// An array where case folding data will be stored (cached)
-	var $caseFolding = array();
+	protected $caseFolding = array();
 
 		// An array where charset-to-ASCII mappings are stored (cached)
-	var $toASCII = array();
+	protected $toASCII = array();
 
 		// This tells the converter which charsets has two bytes per char:
-	var $twoByteSets = array(
+	protected $twoByteSets = array(
 		'ucs-2' => 1, // 2-byte Unicode
 	);
 
 		// This tells the converter which charsets has four bytes per char:
-	var $fourByteSets = array(
+	protected $fourByteSets = array(
 		'ucs-4' => 1, // 4-byte Unicode
 		'utf-32' => 1, // 4-byte Unicode (limited to the 21-bits of UTF-16)
 	);
 
 		// This tells the converter which charsets use a scheme like the Extended Unix Code:
-	var $eucBasedSets = array(
+	protected $eucBasedSets = array(
 		'gb2312' => 1, // Chinese, simplified.
 		'big5' => 1, // Chinese, traditional.
 		'euc-kr' => 1, // Korean
@@ -157,7 +157,7 @@ class t3lib_cs {
 
 		// see	http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html
 		// http://czyborra.com/charsets/iso8859.html
-	var $synonyms = array(
+	protected $synonyms = array(
 		'us' => 'ascii',
 		'us-ascii' => 'ascii',
 		'cp819' => 'iso-8859-1',
@@ -244,7 +244,7 @@ class t3lib_cs {
 	);
 
 		// mapping of iso-639-1 language codes to script names
-	var $lang_to_script = array(
+	protected $lang_to_script = array(
 			// iso-639-1 language codes, see http://www.loc.gov/standards/iso639-2/php/code_list.php
 		'ar' => 'arabic',
 		'bg' => 'cyrillic', // Bulgarian
@@ -405,7 +405,7 @@ class t3lib_cs {
 	);
 
 		// mapping of language (family) names to charsets on Unix
-	var $script_to_charset_unix = array(
+	protected $script_to_charset_unix = array(
 		'west_european' => 'iso-8859-1',
 		'estonian' => 'iso-8859-1',
 		'east_european' => 'iso-8859-2',
@@ -428,7 +428,7 @@ class t3lib_cs {
 	);
 
 		// mapping of language (family) names to charsets on Windows
-	var $script_to_charset_windows = array(
+	protected $script_to_charset_windows = array(
 		'east_european' => 'windows-1250',
 		'cyrillic' => 'windows-1251',
 		'west_european' => 'windows-1252',
@@ -451,7 +451,7 @@ class t3lib_cs {
 	);
 
 		// mapping of locale names to charsets
-	var $locale_to_charset = array(
+	protected $locale_to_charset = array(
 		'japanese.euc' => 'euc-jp',
 		'ja_jp.ujis' => 'euc-jp',
 		'korean.euc' => 'euc-kr',
@@ -463,7 +463,7 @@ class t3lib_cs {
 
 		// TYPO3 specific: Array with the system charsets used for each system language in TYPO3:
 		// Empty values means "iso-8859-1"
-	var $charSetArray = array(
+	public $charSetArray = array(
 		'dk' => '',
 		'de' => '',
 		'no' => '',
@@ -518,7 +518,7 @@ class t3lib_cs {
 
 		// TYPO3 specific: Array with the iso names used for each system language in TYPO3:
 		// Missing keys means: same as Typo3
-	var $isoArray = array(
+	public $isoArray = array(
 		'ba' => 'bs',
 		'br' => 'pt_BR',
 		'ch' => 'zh_CN',
@@ -545,7 +545,7 @@ class t3lib_cs {
 	 * @return	string		Normalized charset
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function parse_charset($charset) {
+	public function parse_charset($charset) {
 		$charset = trim(strtolower($charset));
 		if (isset($this->synonyms[$charset])) {
 			$charset = $this->synonyms[$charset];
@@ -566,7 +566,7 @@ class t3lib_cs {
 	 * @return	string		Charset resolved for locale string
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function get_locale_charset($locale) {
+	public function get_locale_charset($locale) {
 		$locale = strtolower($locale);
 
 			// exact locale specific charset?
@@ -620,7 +620,7 @@ class t3lib_cs {
 	 * @return	string		Converted string
 	 * @see convArray()
 	 */
-	function conv($str, $fromCS, $toCS, $useEntityForNoChar = 0) {
+	public function conv($str, $fromCS, $toCS, $useEntityForNoChar = 0) {
 		if ($fromCS == $toCS) {
 			return $str;
 		}
@@ -672,7 +672,7 @@ class t3lib_cs {
 	 * @return	void
 	 * @see conv()
 	 */
-	function convArray(&$array, $fromCS, $toCS, $useEntityForNoChar = 0) {
+	public function convArray(&$array, $fromCS, $toCS, $useEntityForNoChar = 0) {
 		foreach ($array as $key => $value) {
 			if (is_array($array[$key])) {
 				$this->convArray($array[$key], $fromCS, $toCS, $useEntityForNoChar);
@@ -689,7 +689,7 @@ class t3lib_cs {
 	 * @param	string		Charset, lowercase. Must be found in csconvtbl/ folder.
 	 * @return	string		Output string, converted to UTF-8
 	 */
-	function utf8_encode($str, $charset) {
+	public function utf8_encode($str, $charset) {
 
 		if ($charset === 'utf-8') {
 			return $str;
@@ -743,7 +743,7 @@ class t3lib_cs {
 	 * @param	boolean		If set, then characters that are not available in the destination character set will be encoded as numeric entities
 	 * @return	string		Output string, converted to local charset
 	 */
-	function utf8_decode($str, $charset, $useEntityForNoChar = 0) {
+	public function utf8_decode($str, $charset, $useEntityForNoChar = 0) {
 
 		if ($charset === 'utf-8') {
 			return $str;
@@ -800,7 +800,7 @@ class t3lib_cs {
 	 * @param	string		Input string
 	 * @return	string		Output string
 	 */
-	function utf8_to_entities($str) {
+	public function utf8_to_entities($str) {
 		$strLen = strlen($str);
 		$outStr = '';
 		$buf = '';
@@ -839,7 +839,7 @@ class t3lib_cs {
 	 * @param	boolean		If set, then all string-HTML entities (like &amp; or &pound; will be converted as well)
 	 * @return	string		Output string
 	 */
-	function entities_to_utf8($str, $alsoStdHtmlEnt = 0) {
+	public function entities_to_utf8($str, $alsoStdHtmlEnt = 0) {
 		if ($alsoStdHtmlEnt) {
 			$trans_tbl = array_flip(get_html_translation_table(HTML_ENTITIES)); // Getting them in iso-8859-1 - but thats ok since this is observed below.
 		}
@@ -873,7 +873,7 @@ class t3lib_cs {
 	 * @param	boolean		If set, then instead of integer numbers the real UTF-8 char is returned.
 	 * @return	array		Output array with the char numbers
 	 */
-	function utf8_to_numberarray($str, $convEntities = 0, $retChar = 0) {
+	public function utf8_to_numberarray($str, $convEntities = 0, $retChar = 0) {
 			// If entities must be registered as well...:
 		if ($convEntities) {
 			$str = $this->entities_to_utf8($str, 1);
@@ -929,7 +929,7 @@ class t3lib_cs {
 	 * @return	string		UTF-8 multibyte character string
 	 * @see utf8CharToUnumber()
 	 */
-	function UnumberToChar($cbyte) {
+	public function UnumberToChar($cbyte) {
 		$str = '';
 
 		if ($cbyte < 0x80) {
@@ -984,7 +984,7 @@ class t3lib_cs {
 	 * @return	integer		UNICODE integer
 	 * @see UnumberToChar()
 	 */
-	function utf8CharToUnumber($str, $hex = 0) {
+	public function utf8CharToUnumber($str, $hex = 0) {
 		$ord = ord(substr($str, 0, 1)); // First char
 
 		if (($ord & 192) == 192) { // This verifyes that it IS a multi byte string
@@ -1024,7 +1024,7 @@ class t3lib_cs {
 	 * @return	integer		Returns '1' if already loaded. Returns FALSE if charset conversion table was not found. Returns '2' if the charset conversion table was found and parsed.
 	 * @access private
 	 */
-	function initCharset($charset) {
+	public function initCharset($charset) {
 			// Only process if the charset is not yet loaded:
 		if (!is_array($this->parsedCharsets[$charset])) {
 
@@ -1092,7 +1092,7 @@ class t3lib_cs {
 	 * @return	integer		Returns FALSE on error, a TRUE value on success: 1 table already loaded, 2, cached version, 3 table parsed (and cached).
 	 * @access private
 	 */
-	function initUnicodeData($mode = NULL) {
+	protected function initUnicodeData($mode = NULL) {
 			// cache files
 		$cacheFileCase = t3lib_div::getFileAbsFileName('typo3temp/cs/cscase_utf-8.tbl');
 		$cacheFileASCII = t3lib_div::getFileAbsFileName('typo3temp/cs/csascii_utf-8.tbl');
@@ -1344,7 +1344,7 @@ class t3lib_cs {
 	 * @return	integer		Returns FALSE on error, a TRUE value on success: 1 table already loaded, 2, cached version, 3 table parsed (and cached).
 	 * @access private
 	 */
-	function initCaseFolding($charset) {
+	protected function initCaseFolding($charset) {
 			// Only process if the case table is not yet loaded:
 		if (is_array($this->caseFolding[$charset])) {
 			return 1;
@@ -1414,7 +1414,7 @@ class t3lib_cs {
 	 * @return	integer		Returns FALSE on error, a TRUE value on success: 1 table already loaded, 2, cached version, 3 table parsed (and cached).
 	 * @access private
 	 */
-	function initToASCII($charset) {
+	protected function initToASCII($charset) {
 			// Only process if the case table is not yet loaded:
 		if (is_array($this->toASCII[$charset])) {
 			return 1;
@@ -1473,7 +1473,7 @@ class t3lib_cs {
 	 * @see substr(), mb_substr()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function substr($charset, $string, $start, $len = NULL) {
+	public function substr($charset, $string, $start, $len = NULL) {
 		if ($len === 0 || $string === '') {
 			return '';
 		}
@@ -1528,7 +1528,7 @@ class t3lib_cs {
 	 * @see strlen()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function strlen($charset, $string) {
+	public function strlen($charset, $string) {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'mbstring') {
 			return mb_strlen($string, $charset);
 		} elseif ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'iconv') {
@@ -1582,7 +1582,7 @@ class t3lib_cs {
 	 * @see substr(), mb_strimwidth()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function crop($charset, $string, $len, $crop = '') {
+	public function crop($charset, $string, $len, $crop = '') {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'mbstring') {
 			return $this->cropMbstring($charset, $string, $len, $crop);
 		}
@@ -1643,7 +1643,7 @@ class t3lib_cs {
 	 * @see mb_strcut()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function strtrunc($charset, $string, $len) {
+	public function strtrunc($charset, $string, $len) {
 		if ($len <= 0) {
 			return '';
 		}
@@ -1681,7 +1681,7 @@ class t3lib_cs {
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 * @see strtolower(), strtoupper()
 	 */
-	function conv_case($charset, $string, $case) {
+	public function conv_case($charset, $string, $case) {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'mbstring') {
 			if ($case == 'toLower') {
 				$string = mb_strtolower($string, $charset);
@@ -1707,7 +1707,7 @@ class t3lib_cs {
 	 * @param	string		Input string to convert
 	 * @return	string		The converted string
 	 */
-	function specCharsToASCII($charset, $string) {
+	public function specCharsToASCII($charset, $string) {
 		if ($charset == 'utf-8') {
 			$string = $this->utf8_char_mapping($string, 'ascii');
 		} elseif (isset($this->eucBasedSets[$charset])) {
@@ -1799,7 +1799,7 @@ class t3lib_cs {
 	 * @return	string		the converted string
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function sb_char_mapping($str, $charset, $mode, $opt = '') {
+	protected function sb_char_mapping($str, $charset, $mode, $opt = '') {
 		switch ($mode) {
 			case 'case':
 				if (!$this->initCaseFolding($charset)) {
@@ -1850,7 +1850,7 @@ class t3lib_cs {
 	 * @see substr()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_substr($str, $start, $len = NULL) {
+	protected function utf8_substr($str, $start, $len = NULL) {
 		if (!strcmp($len, '0')) {
 			return '';
 		}
@@ -1891,7 +1891,7 @@ class t3lib_cs {
 	 * @see strlen()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_strlen($str) {
+	protected function utf8_strlen($str) {
 		$n = 0;
 		for ($i = 0; strlen($str{$i}); $i++) {
 			$c = ord($str{$i});
@@ -1916,7 +1916,7 @@ class t3lib_cs {
 	 * @see mb_strcut()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_strtrunc($str, $len) {
+	protected function utf8_strtrunc($str, $len) {
 		$i = $len - 1;
 		if (ord($str{$i}) & 0x80) { // part of a multibyte sequence
 			for (; $i > 0 && !(ord($str{$i}) & 0x40); $i--) ; // find the first byte
@@ -1942,7 +1942,7 @@ class t3lib_cs {
 	 * @see strpos()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_strpos($haystack, $needle, $offset = 0) {
+	protected function utf8_strpos($haystack, $needle, $offset = 0) {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'mbstring') {
 			return mb_strpos($haystack, $needle, $offset, 'utf-8');
 		} elseif ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'iconv') {
@@ -1971,7 +1971,7 @@ class t3lib_cs {
 	 * @see strrpos()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_strrpos($haystack, $needle) {
+	protected function utf8_strrpos($haystack, $needle) {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'mbstring') {
 			return mb_strrpos($haystack, $needle, 'utf-8');
 		} elseif ($GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] == 'iconv') {
@@ -1995,7 +1995,7 @@ class t3lib_cs {
 	 * @return	integer		Byte position
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_char2byte_pos($str, $pos) {
+	protected function utf8_char2byte_pos($str, $pos) {
 		$n = 0; // number of characters found
 		$p = abs($pos); // number of characters wanted
 
@@ -2044,7 +2044,7 @@ class t3lib_cs {
 	 * @return	integer		character position
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_byte2char_pos($str, $pos) {
+	protected function utf8_byte2char_pos($str, $pos) {
 		$n = 0; // number of characters
 		for ($i = $pos; $i > 0; $i--) {
 			$c = (int) ord($str{$i});
@@ -2073,7 +2073,7 @@ class t3lib_cs {
 	 * @return	string		the converted string
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function utf8_char_mapping($str, $mode, $opt = '') {
+	protected function utf8_char_mapping($str, $mode, $opt = '') {
 		if (!$this->initUnicodeData($mode)) {
 			return $str;
 		} // do nothing
@@ -2139,7 +2139,7 @@ class t3lib_cs {
 	 * @see mb_strcut()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function euc_strtrunc($str, $len, $charset) {
+	protected function euc_strtrunc($str, $len, $charset) {
 		$sjis = ($charset == 'shift_jis');
 		for ($i = 0; strlen($str{$i}) && $i < $len; $i++) {
 			$c = ord($str{$i});
@@ -2175,7 +2175,7 @@ class t3lib_cs {
 	 * @return	string		the substring
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function euc_substr($str, $start, $charset, $len = NULL) {
+	protected function euc_substr($str, $start, $charset, $len = NULL) {
 		$byte_start = $this->euc_char2byte_pos($str, $start, $charset);
 		if ($byte_start === FALSE) {
 			return FALSE;
@@ -2208,7 +2208,7 @@ class t3lib_cs {
 	 * @see strlen()
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function euc_strlen($str, $charset) {
+	protected function euc_strlen($str, $charset) {
 		$sjis = ($charset == 'shift_jis');
 		$n = 0;
 		for ($i = 0; strlen($str{$i}); $i++) {
@@ -2239,7 +2239,7 @@ class t3lib_cs {
 	 * @return	integer		byte position
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function euc_char2byte_pos($str, $pos, $charset) {
+	protected function euc_char2byte_pos($str, $pos, $charset) {
 		$sjis = ($charset == 'shift_jis');
 		$n = 0; // number of characters seen
 		$p = abs($pos); // number of characters wanted
@@ -2288,7 +2288,7 @@ class t3lib_cs {
 	 * @return	string		the converted string
 	 * @author	Martin Kutschker <martin.t.kutschker@blackbox.net>
 	 */
-	function euc_char_mapping($str, $charset, $mode, $opt = '') {
+	protected function euc_char_mapping($str, $charset, $mode, $opt = '') {
 		switch ($mode) {
 			case 'case':
 				if (!$this->initCaseFolding($charset)) {

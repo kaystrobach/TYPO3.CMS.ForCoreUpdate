@@ -85,7 +85,7 @@
  * @subpackage t3lib
  */
 class t3lib_queryGenerator {
-	var $lang = array(
+	public $lang = array(
 		'OR' => 'or',
 		'AND' => 'and',
 		'comparison' => array(
@@ -144,7 +144,7 @@ class t3lib_queryGenerator {
 		)
 	);
 
-	var $compSQL = array(
+	public $compSQL = array(
 			// Type = text	offset = 0
 		'0' => "#FIELD# LIKE '%#VALUE#%'",
 		'1' => "#FIELD# NOT LIKE '%#VALUE#%'",
@@ -199,7 +199,7 @@ class t3lib_queryGenerator {
 		'163' => '(#FIELD# & #VALUE#)=0'
 	);
 
-	var $comp_offsets = array(
+	public $comp_offsets = array(
 		'text' => 0,
 		'number' => 1,
 		'multiple' => 2,
@@ -210,17 +210,17 @@ class t3lib_queryGenerator {
 		'boolean' => 4,
 		'binary' => 5
 	);
-	var $noWrap = ' nowrap';
+	public $noWrap = ' nowrap';
 
-	var $name; // Form data name prefix
-	var $table; // table for the query
-	var $fieldList; // field list
-	var $fields = array(); // Array of the fields possible
-	var $extFieldLists = array();
-	var $queryConfig = array(); // The query config
-	var $enablePrefix = 0;
-	var $enableQueryParts = 0;
-	var $extJSCODE = '';
+	public $name; // Form data name prefix
+	public $table; // table for the query
+	public $fieldList; // field list
+	public $fields = array(); // Array of the fields possible
+	public $extFieldLists = array();
+	public $queryConfig = array(); // The query config
+	public $enablePrefix = 0;
+	public $enableQueryParts = 0;
+	public $extJSCODE = '';
 
 	protected $formName = '';
 
@@ -228,7 +228,7 @@ class t3lib_queryGenerator {
 	/**
 	 * @return	[type]		...
 	 */
-	function makeFieldList() {
+	protected function makeFieldList() {
 		global $TCA;
 		$fieldListArr = array();
 		if (is_array($TCA[$this->table])) {
@@ -263,7 +263,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$fieldList: ...
 	 * @return	[type]		...
 	 */
-	function init($name, $table, $fieldList = '') {
+	public function init($name, $table, $fieldList = '') {
 		global $TCA;
 
 			// Analysing the fields in the table.
@@ -399,7 +399,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$force: ...
 	 * @return	[type]		...
 	 */
-	function setAndCleanUpExternalLists($name, $list, $force = '') {
+	protected function setAndCleanUpExternalLists($name, $list, $force = '') {
 		$fields = array_unique(t3lib_div::trimExplode(',', $list . ',' . $force, 1));
 		$reList = array();
 		foreach ($fields as $fN) {
@@ -416,7 +416,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$qC: ...
 	 * @return	[type]		...
 	 */
-	function procesData($qC = '') {
+	protected function procesData($qC = '') {
 		$this->queryConfig = $qC;
 
 		$POST = t3lib_div::_POST();
@@ -519,7 +519,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$queryConfig: ...
 	 * @return	[type]		...
 	 */
-	function cleanUpQueryConfig($queryConfig) {
+	protected function cleanUpQueryConfig($queryConfig) {
 			//since we dont traverse the array using numeric keys in the upcoming whileloop make sure it's fresh and clean before displaying
 		if (is_array($queryConfig)) {
 			ksort($queryConfig);
@@ -581,7 +581,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$parent: ...
 	 * @return	[type]		...
 	 */
-	function getFormElements($subLevel = 0, $queryConfig = '', $parent = '') {
+	protected function getFormElements($subLevel = 0, $queryConfig = '', $parent = '') {
 		$codeArr = array();
 		if (!is_array($queryConfig)) {
 			$queryConfig = $this->queryConfig;
@@ -746,7 +746,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function makeOptionList($fN, $conf, $table) {
+	protected function makeOptionList($fN, $conf, $table) {
 		$out = '';
 		$fieldSetup = $this->fields[$fN];
 		if ($fieldSetup['type'] == 'files') {
@@ -957,7 +957,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$l: ...
 	 * @return	[type]		...
 	 */
-	function printCodeArray($codeArr, $l = 0) {
+	protected function printCodeArray($codeArr, $l = 0) {
 		$line = '';
 		if ($l) {
 			$indent = '<td style="vertical-align:top;"><img height="1" width="50"></td>';
@@ -983,7 +983,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$str: ...
 	 * @return	[type]		...
 	 */
-	function formatQ($str) {
+	protected function formatQ($str) {
 		return '<font size="1" face="verdana" color="maroon"><i>' . htmlspecialchars($str) . '</i></font>';
 	}
 
@@ -996,7 +996,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$submit: ...
 	 * @return	[type]		...
 	 */
-	function mkOperatorSelect($name, $op, $draw, $submit) {
+	protected function mkOperatorSelect($name, $op, $draw, $submit) {
 		if ($draw) {
 			$out = '<select name="' . $name . '[operator]"' . ($submit ? ' onChange="submit();"' : '') . '>'; //
 			$out .= '<option value="AND"' . (!$op || $op == "AND" ? ' selected' : '') . '>' . $this->lang["AND"] . '</option>';
@@ -1018,7 +1018,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$prepend: ...
 	 * @return	[type]		...
 	 */
-	function mkTypeSelect($name, $fieldName, $prepend = 'FIELD_') {
+	protected function mkTypeSelect($name, $fieldName, $prepend = 'FIELD_') {
 		$out = '<select name="' . $name . '" onChange="submit();">';
 		$out .= '<option value=""></option>';
 		foreach ($this->fields as $key => $value) {
@@ -1038,7 +1038,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$fieldName: ...
 	 * @return	[type]		...
 	 */
-	function verifyType($fieldName) {
+	protected function verifyType($fieldName) {
 		$first = '';
 		foreach ($this->fields as $key => $value) {
 			if (!$first) {
@@ -1058,7 +1058,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$neg: ...
 	 * @return	[type]		...
 	 */
-	function verifyComparison($comparison, $neg) {
+	protected function verifyComparison($comparison, $neg) {
 		$compOffSet = $comparison >> 5;
 		$first = -1;
 		for ($i = 32 * $compOffSet + $neg; $i < 32 * ($compOffSet + 1); $i += 2) {
@@ -1079,7 +1079,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$fieldName: ...
 	 * @return	[type]		...
 	 */
-	function mkFieldToInputSelect($name, $fieldName) {
+	protected function mkFieldToInputSelect($name, $fieldName) {
 		$out = '<input type="Text" value="' . htmlspecialchars($fieldName) . '" name="' . $name . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth() . '>' . $this->updateIcon();
 		$out .= '<a href="#" onClick="document.forms[0][\'' . $name . '\'].value=\'\';return false;">' . t3lib_iconWorks::getSpriteIcon('actions-edit-delete', array('title' => 'Clear list')) . '</a>';
 		$out .= '<BR><select name="_fieldListDummy" size="5" onChange="document.forms[0][\'' . $name . '\'].value+=\',\'+this.value">';
@@ -1101,7 +1101,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$cur: ...
 	 * @return	[type]		...
 	 */
-	function mkTableSelect($name, $cur) {
+	protected function mkTableSelect($name, $cur) {
 		global $TCA;
 		$out = '<select name="' . $name . '" onChange="submit();">';
 		$out .= '<option value=""></option>';
@@ -1122,7 +1122,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$neg: ...
 	 * @return	[type]		...
 	 */
-	function mkCompSelect($name, $comparison, $neg) {
+	protected function mkCompSelect($name, $comparison, $neg) {
 		$compOffSet = $comparison >> 5;
 		$out = '<select name="' . $name . '" onChange="submit();">';
 		for ($i = 32 * $compOffSet + $neg; $i < 32 * ($compOffSet + 1); $i += 2) {
@@ -1140,7 +1140,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$arr: ...
 	 * @return	[type]		...
 	 */
-	function getSubscript($arr) {
+	protected function getSubscript($arr) {
 		while (is_array($arr)) {
 			reset($arr);
 			list($key,) = each($arr);
@@ -1155,7 +1155,7 @@ class t3lib_queryGenerator {
 	 *
 	 * @return	[type]		...
 	 */
-	function initUserDef() {
+	protected function initUserDef() {
 
 	}
 
@@ -1164,7 +1164,7 @@ class t3lib_queryGenerator {
 	 *
 	 * @return	[type]		...
 	 */
-	function userDef() {
+	protected function userDef() {
 	}
 
 	/**
@@ -1173,7 +1173,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$queryConfig: ...
 	 * @return	[type]		...
 	 */
-	function userDefCleanUp($queryConfig) {
+	protected function userDefCleanUp($queryConfig) {
 		return $queryConfig;
 	}
 
@@ -1184,7 +1184,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$pad: ...
 	 * @return	[type]		...
 	 */
-	function getQuery($queryConfig, $pad = '') {
+	public function getQuery($queryConfig, $pad = '') {
 		$qs = '';
 			// Since we don't traverse the array using numeric keys in the upcoming whileloop make sure it's fresh and clean
 		ksort($queryConfig);
@@ -1213,7 +1213,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$first: ...
 	 * @return	[type]		...
 	 */
-	function getQuerySingle($conf, $first) {
+	protected function getQuerySingle($conf, $first) {
 		$qs = '';
 		$prefix = $this->enablePrefix ? $this->table . '.' : '';
 		if (!$first) {
@@ -1254,7 +1254,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$suffix: ...
 	 * @return	[type]		...
 	 */
-	function cleanInputVal($conf, $suffix = '') {
+	protected function cleanInputVal($conf, $suffix = '') {
 		if (($conf['comparison'] >> 5 == 0) || ($conf['comparison'] == 32 || $conf['comparison'] == 33 || $conf['comparison'] == 64 || $conf['comparison'] == 65 || $conf['comparison'] == 66 || $conf['comparison'] == 67 || $conf['comparison'] == 96 || $conf['comparison'] == 97)) {
 			$inputVal = $conf['inputValue' . $suffix];
 		} elseif ($conf['comparison'] == 39 || $conf['comparison'] == 38) { // in list:
@@ -1279,7 +1279,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$qcArr: ...
 	 * @return	[type]		...
 	 */
-	function getUserDefQuery($qcArr) {
+	protected function getUserDefQuery($qcArr) {
 	}
 
 	/**
@@ -1287,7 +1287,7 @@ class t3lib_queryGenerator {
 	 *
 	 * @return	[type]		...
 	 */
-	function updateIcon() {
+	protected function updateIcon() {
 		return '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="14" height="14"') . ' title="Update" name="just_update">';
 	}
 
@@ -1296,7 +1296,7 @@ class t3lib_queryGenerator {
 	 *
 	 * @return	[type]		...
 	 */
-	function getLabelCol() {
+	protected function getLabelCol() {
 		global $TCA;
 		return $TCA[$this->table]['ctrl']['label'];
 	}
@@ -1308,7 +1308,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$enableList: ...
 	 * @return	[type]		...
 	 */
-	function makeSelectorTable($modSettings, $enableList = 'table,fields,query,group,order,limit') {
+	public function makeSelectorTable($modSettings, $enableList = 'table,fields,query,group,order,limit') {
 		$enableArr = explode(',', $enableList);
 			// Make output
 		$TDparams = ' class="bgColor5" nowrap';
@@ -1443,7 +1443,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$perms_clause: ...
 	 * @return	[type]		...
 	 */
-	function getTreeList($id, $depth, $begin = 0, $perms_clause) {
+	protected function getTreeList($id, $depth, $begin = 0, $perms_clause) {
 		$depth = intval($depth);
 		$begin = intval($begin);
 		$id = intval($id);
@@ -1477,7 +1477,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$fN: ...
 	 * @return	[type]		...
 	 */
-	function getSelectQuery($qString = '', $fN = '') {
+	protected function getSelectQuery($qString = '', $fN = '') {
 		if (!$qString) {
 			$qString = $this->getQuery($this->queryConfig);
 		}
@@ -1521,7 +1521,7 @@ class t3lib_queryGenerator {
 	 * @param	[type]		$formname: ...
 	 * @return	[type]		...
 	 */
-	function JSbottom($formname) {
+	protected function JSbottom($formname) {
 		$out = '';
 		if ($this->extJSCODE) {
 			$out .= '

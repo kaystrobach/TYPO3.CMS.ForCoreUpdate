@@ -114,7 +114,7 @@ class t3lib_cache {
 	 *
 	 * @return	boolean
 	 */
-	public function isCachingFrameworkInitialized() {
+	public static function isCachingFrameworkInitialized() {
 		if (!self::$isCachingFrameworkInitialized
 				&& isset($GLOBALS['typo3CacheManager']) && $GLOBALS['typo3CacheManager'] instanceof t3lib_cache_Manager
 				&& isset($GLOBALS['typo3CacheFactory']) && $GLOBALS['typo3CacheFactory'] instanceof t3lib_cache_Factory

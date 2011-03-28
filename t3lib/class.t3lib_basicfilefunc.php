@@ -76,17 +76,17 @@
  * @see t3lib_basicFileFunctions::init()
  */
 class t3lib_basicFileFunctions {
-	var $getUniqueNamePrefix = ''; // Prefix which will be prepended the file when using the getUniqueName-function
-	var $maxNumber = 99; // This number decides the highest allowed appended number used on a filename before we use naming with unique strings
-	var $uniquePrecision = 6; // This number decides how many characters out of a unique MD5-hash that is appended to a filename if getUniqueName is asked to find an available filename.
-	var $maxInputNameLen = 60; // This is the maximum length of names treated by cleanFileName()
-	var $tempFN = '_temp_'; // Temp-foldername. A folder in the root of one of the mounts with this name is regarded a TEMP-folder (used for upload from clipboard)
+	public $getUniqueNamePrefix = ''; // Prefix which will be prepended the file when using the getUniqueName-function
+	public $maxNumber = 99; // This number decides the highest allowed appended number used on a filename before we use naming with unique strings
+	public $uniquePrecision = 6; // This number decides how many characters out of a unique MD5-hash that is appended to a filename if getUniqueName is asked to find an available filename.
+	public $maxInputNameLen = 60; // This is the maximum length of names treated by cleanFileName()
+	public $tempFN = '_temp_'; // Temp-foldername. A folder in the root of one of the mounts with this name is regarded a TEMP-folder (used for upload from clipboard)
 
 	// internal
-	var $f_ext = Array(); // See comment in header
-	var $mounts = Array(); // See comment in header
-	var $webPath = ''; // Set to DOCUMENT_ROOT.
-	var $isInit = 0; // Set to true after init()/start();
+	protected $f_ext = array(); // See comment in header
+	protected $mounts = array(); // See comment in header
+	protected $webPath = ''; // Set to DOCUMENT_ROOT.
+	protected $isInit = 0; // Set to true after init()/start();
 
 
 	/**********************************
@@ -126,7 +126,7 @@ class t3lib_basicFileFunctions {
 	 * @return	void
 	 * @see typo3/init.php, t3lib_userAuthGroup::returnFilemounts()
 	 */
-	function init($mounts, $f_ext) {
+	public function init($mounts, $f_ext) {
 		$this->f_ext['webspace']['allow'] = t3lib_div::uniqueList(strtolower($f_ext['webspace']['allow']));
 		$this->f_ext['webspace']['deny'] = t3lib_div::uniqueList(strtolower($f_ext['webspace']['deny']));
 		$this->f_ext['ftpspace']['allow'] = t3lib_div::uniqueList(strtolower($f_ext['ftpspace']['allow']));
@@ -160,7 +160,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Filepath to existing file. Should probably be absolute. Filefunctions are performed on this value.
 	 * @return	array		Information about the file in the filepath
 	 */
-	function getTotalFileInfo($wholePath) {
+	public function getTotalFileInfo($wholePath) {
 		$theuser = getmyuid();
 		$info = t3lib_div::split_fileref($wholePath);
 		$info['tstamp'] = @filemtime($wholePath);
@@ -180,7 +180,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Either "webspage" or "ftpspace" - points to a key in $this->f_ext
 	 * @return	boolean		True if file extension is allowed.
 	 */
-	function is_allowed($iconkey, $type) {
+	protected function is_allowed($iconkey, $type) {
 		if (isset($this->f_ext[$type])) {
 			$ik = strtolower($iconkey);
 			if ($ik) {
@@ -213,7 +213,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Absolute path
 	 * @return	boolean
 	 */
-	function checkIfFullAccess($theDest) {
+	protected function checkIfFullAccess($theDest) {
 		$type = $this->is_webpath($theDest) ? 'webspace' : 'ftpspace';
 		if (isset($this->f_ext[$type])) {
 			if ((string) $this->f_ext[$type]['deny'] == '' || $this->f_ext[$type]['allow'] == '*') {
@@ -229,7 +229,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Absolute path to check
 	 * @return	boolean
 	 */
-	function is_webpath($path) {
+	protected function is_webpath($path) {
 		if ($this->isInit) {
 			$testPath = $this->slashPath($path);
 			$testPathWeb = $this->slashPath($this->webPath);
@@ -249,7 +249,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Filename to check against TYPO3_CONF_VARS[BE][fileDenyPattern]
 	 * @return	boolean		True if extension/filename is allowed
 	 */
-	function checkIfAllowed($ext, $theDest, $filename = '') {
+	public function checkIfAllowed($ext, $theDest, $filename = '') {
 		return t3lib_div::verifyFilenameAgainstDenyPattern($filename) && $this->is_allowed($ext, ($this->is_webpath($theDest) ? 'webspace' : 'ftpspace'));
 	}
 
@@ -259,7 +259,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Filename, eg "somefile.html"
 	 * @return	boolean
 	 */
-	function checkFileNameLen($fileName) {
+	public function checkFileNameLen($fileName) {
 		return strlen($fileName) <= $this->maxInputNameLen;
 	}
 
@@ -269,7 +269,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Directory path to check
 	 * @return	string		Returns the cleaned up directory name if OK, otherwise false.
 	 */
-	function is_directory($theDir) {
+	public function is_directory($theDir) {
 		if ($this->isPathValid($theDir)) {
 			$theDir = $this->cleanDirectoryName($theDir);
 			if (@is_dir($theDir)) {
@@ -286,7 +286,7 @@ class t3lib_basicFileFunctions {
 	 * @return	boolean		True, if no '//', '..' or '\' is in the $theFile
 	 * @see	t3lib_div::validPathStr()
 	 */
-	function isPathValid($theFile) {
+	protected function isPathValid($theFile) {
 		return t3lib_div::validPathStr($theFile);
 	}
 
@@ -301,7 +301,7 @@ class t3lib_basicFileFunctions {
 	 * @return	string		The destination absolute filepath (not just the name!) of a unique filename/foldername in that path.
 	 * @see t3lib_TCEmain::checkValue()
 	 */
-	function getUniqueName($theFile, $theDest, $dontCheckForUnique = 0) {
+	public function getUniqueName($theFile, $theDest, $dontCheckForUnique = 0) {
 		$theDest = $this->is_directory($theDest); // $theDest is cleaned up
 		$origFileInfo = t3lib_div::split_fileref($theFile); // Fetches info about path, name, extention of $theFile
 		if ($theDest) {
@@ -344,7 +344,7 @@ class t3lib_basicFileFunctions {
 	 * @return	string		The key to the first mount found, otherwise nothing is returned.
 	 * @see init()
 	 */
-	function checkPathAgainstMounts($thePath) {
+	public function checkPathAgainstMounts($thePath) {
 		if ($thePath && $this->isPathValid($thePath) && is_array($this->mounts)) {
 			foreach ($this->mounts as $k => $val) {
 				if (t3lib_div::isFirstPartOfStr($thePath, $val['path'])) {
@@ -359,7 +359,7 @@ class t3lib_basicFileFunctions {
 	 *
 	 * @return	string		The key to the first mount inside PATH_site."fileadmin" found, otherwise nothing is returned.
 	 */
-	function findFirstWebFolder() {
+	public function findFirstWebFolder() {
 		global $TYPO3_CONF_VARS;
 
 		if (is_array($this->mounts)) {
@@ -378,7 +378,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		$thePath is a path which MUST be found within one of the internally set filemounts, $this->mounts
 	 * @return	string		The processed input path
 	 */
-	function blindPath($thePath) {
+	public function blindPath($thePath) {
 		$k = $this->checkPathAgainstMounts($thePath);
 		if ($k) {
 			$name = '';
@@ -394,7 +394,7 @@ class t3lib_basicFileFunctions {
 	 *
 	 * @return	string		Returns the path if found, otherwise nothing if error.
 	 */
-	function findTempFolder() {
+	public function findTempFolder() {
 		if ($this->tempFN && is_array($this->mounts)) {
 			foreach ($this->mounts as $k => $val) {
 				$tDir = $val['path'] . $this->tempFN;
@@ -418,7 +418,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Input string
 	 * @return	string		Output string
 	 */
-	function cleanDirectoryName($theDir) {
+	public function cleanDirectoryName($theDir) {
 		return preg_replace('/[\/\. ]*$/', '', $this->rmDoubleSlash($theDir));
 	}
 
@@ -428,7 +428,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Input value
 	 * @return	string		Returns the converted string
 	 */
-	function rmDoubleSlash($string) {
+	protected function rmDoubleSlash($string) {
 		return str_replace('//', '/', $string);
 	}
 
@@ -438,7 +438,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Input string
 	 * @return	string		Output string with a slash in the end (if not already there)
 	 */
-	function slashPath($path) {
+	protected function slashPath($path) {
 		if (substr($path, -1) != '/') {
 			return $path . '/';
 		}
@@ -453,7 +453,7 @@ class t3lib_basicFileFunctions {
 	 * @param	string		Charset of the a filename (defaults to current charset; depending on context)
 	 * @return	string		Output string with any characters not matching [.a-zA-Z0-9_-] is substituted by '_' and trailing dots removed
 	 */
-	function cleanFileName($fileName, $charset = '') {
+	public function cleanFileName($fileName, $charset = '') {
 			// Handle UTF-8 characters
 		if ($GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'] == 'utf-8' && $GLOBALS['TYPO3_CONF_VARS']['SYS']['UTF8filesystem']) {
 				// allow ".", "-", 0-9, a-z, A-Z and everything beyond U+C0 (latin capital letter a with grave)

@@ -77,15 +77,15 @@
  */
 class t3lib_refindex {
 
-	var $temp_flexRelations = array();
-	var $errorLog = array();
-	var $WSOL = FALSE;
-	var $relations = array();
+	public $temp_flexRelations = array();
+	public $errorLog = array();
+	public $WSOL = FALSE;
+	public $relations = array();
 
-	var $words_strings = array();
-	var $words = array();
+	public $words_strings = array();
+	public $words = array();
 
-	var $hashVersion = 1; // Number which we can increase if a change in the code means we will have to force a re-generation of the index.
+	public $hashVersion = 1; // Number which we can increase if a change in the code means we will have to force a re-generation of the index.
 
 
 	/**
@@ -97,7 +97,7 @@ class t3lib_refindex {
 	 * @param	boolean		If set, nothing will be written to the index but the result value will still report statistics on what is added, deleted and kept. Can be used for mere analysis.
 	 * @return	array		Array with statistics about how many index records were added, deleted and not altered plus the complete reference set for the record.
 	 */
-	function updateRefIndexTable($table, $uid, $testOnly = FALSE) {
+	public function updateRefIndexTable($table, $uid, $testOnly = FALSE) {
 
 			// First, secure that the index table is not updated with workspace tainted relations:
 		$this->WSOL = FALSE;
@@ -174,7 +174,7 @@ class t3lib_refindex {
 	 * @param	integer		Record UID
 	 * @return	array		Index Rows
 	 */
-	function generateRefIndexData($table, $uid) {
+	protected function generateRefIndexData($table, $uid) {
 		global $TCA;
 
 		if (isset($TCA[$table])) {
@@ -264,7 +264,7 @@ class t3lib_refindex {
 	 * @param	string		Soft reference ID for key. Might be useful for replace operations.
 	 * @return	array		Array record to insert into table.
 	 */
-	function createEntryData($table, $uid, $field, $flexpointer, $deleted, $ref_table, $ref_uid, $ref_string = '', $sort = -1, $softref_key = '', $softref_id = '') {
+	protected function createEntryData($table, $uid, $field, $flexpointer, $deleted, $ref_table, $ref_uid, $ref_string = '', $sort = -1, $softref_key = '', $softref_id = '') {
 		return array(
 			'tablename' => $table,
 			'recuid' => $uid,
@@ -291,7 +291,7 @@ class t3lib_refindex {
 	 * @param	array		Data array with databaes relations (table/id)
 	 * @return	void
 	 */
-	function createEntryData_dbRels($table, $uid, $fieldname, $flexpointer, $deleted, $items) {
+	protected function createEntryData_dbRels($table, $uid, $fieldname, $flexpointer, $deleted, $items) {
 		foreach ($items as $sort => $i) {
 			$this->relations[] = $this->createEntryData($table, $uid, $fieldname, $flexpointer, $deleted, $i['table'], $i['id'], '', $sort);
 		}
@@ -308,7 +308,7 @@ class t3lib_refindex {
 	 * @param	array		Data array with file relations
 	 * @return	void
 	 */
-	function createEntryData_fileRels($table, $uid, $fieldname, $flexpointer, $deleted, $items) {
+	protected function createEntryData_fileRels($table, $uid, $fieldname, $flexpointer, $deleted, $items) {
 		foreach ($items as $sort => $i) {
 			$filePath = $i['ID_absFile'];
 			if (t3lib_div::isFirstPartOfStr($filePath, PATH_site)) {
@@ -329,7 +329,7 @@ class t3lib_refindex {
 	 * @param	array		Data array with soft reference keys
 	 * @return	void
 	 */
-	function createEntryData_softreferences($table, $uid, $fieldname, $flexpointer, $deleted, $keys) {
+	protected function createEntryData_softreferences($table, $uid, $fieldname, $flexpointer, $deleted, $keys) {
 		if (is_array($keys)) {
 			foreach ($keys as $spKey => $elements) {
 				if (is_array($elements)) {
@@ -373,7 +373,7 @@ class t3lib_refindex {
 	 * @return	array		Array with information about relations
 	 * @see export_addRecord()
 	 */
-	function getRelations($table, $row, $onlyField = '') {
+	protected function getRelations($table, $row, $onlyField = '') {
 		global $TCA;
 
 			// Load full table description
@@ -471,7 +471,7 @@ class t3lib_refindex {
 	 * @return	void
 	 * @see t3lib_TCEmain::checkValue_flex_procInData_travDS()
 	 */
-	function getRelations_flexFormCallBack($dsArr, $dataValue, $PA, $structurePath, $pObj) {
+	public function getRelations_flexFormCallBack($dsArr, $dataValue, $PA, $structurePath, $pObj) {
 		$structurePath = substr($structurePath, 5) . '/'; // removing "data/" in the beginning of path (which points to location in data array)
 
 		$dsConf = $dsArr['TCEforms']['config'];
@@ -523,7 +523,7 @@ class t3lib_refindex {
 	 * @param	integer		Field uid
 	 * @return	array		If field type is OK it will return an array with the files inside. Else false
 	 */
-	function getRelations_procFiles($value, $conf, $uid) {
+	protected function getRelations_procFiles($value, $conf, $uid) {
 			// Take care of files...
 		if ($conf['type'] == 'group' && ($conf['internal_type'] == 'file' || $conf['internal_type'] == 'file_reference')) {
 
@@ -574,7 +574,7 @@ class t3lib_refindex {
 	 * @param	string		Table name
 	 * @return	array		If field type is OK it will return an array with the database relations. Else false
 	 */
-	function getRelations_procDB($value, $conf, $uid, $table = '') {
+	protected function getRelations_procDB($value, $conf, $uid, $table = '') {
 
 			// DB record lists:
 		if ($this->isReferenceField($conf)) {
@@ -613,7 +613,7 @@ class t3lib_refindex {
 	 * @param	boolean		If set, it will bypass check for workspace-zero and admin user
 	 * @return	string		If a return string, that carries an error message, otherwise false (=OK) (except if $returnDataArray is set!)
 	 */
-	function setReferenceValue($hash, $newValue, $returnDataArray = FALSE, $bypassWorkspaceAdminCheck = FALSE) {
+	protected function setReferenceValue($hash, $newValue, $returnDataArray = FALSE, $bypassWorkspaceAdminCheck = FALSE) {
 
 		if (($GLOBALS['BE_USER']->workspace === 0 && $GLOBALS['BE_USER']->isAdmin()) || $bypassWorkspaceAdminCheck) {
 
@@ -733,7 +733,7 @@ class t3lib_refindex {
 	 * @param	string		Flexform pointer, if in a flex form field.
 	 * @return	string		Error message if any, otherwise false = OK
 	 */
-	function setReferenceValue_dbRels($refRec, $itemArray, $newValue, &$dataArray, $flexpointer = '') {
+	protected function setReferenceValue_dbRels($refRec, $itemArray, $newValue, &$dataArray, $flexpointer = '') {
 		if (!strcmp($itemArray[$refRec['sorting']]['id'], $refRec['ref_uid']) && !strcmp($itemArray[$refRec['sorting']]['table'], $refRec['ref_table'])) {
 
 				// Setting or removing value:
@@ -773,7 +773,7 @@ class t3lib_refindex {
 	 * @param	string		Flexform pointer, if in a flex form field.
 	 * @return	string		Error message if any, otherwise false = OK
 	 */
-	function setReferenceValue_fileRels($refRec, $itemArray, $newValue, &$dataArray, $flexpointer = '') {
+	protected function setReferenceValue_fileRels($refRec, $itemArray, $newValue, &$dataArray, $flexpointer = '') {
 		if (!strcmp(substr($itemArray[$refRec['sorting']]['ID_absFile'], strlen(PATH_site)), $refRec['ref_string']) && !strcmp('_FILE', $refRec['ref_table'])) {
 
 				// Setting or removing value:
@@ -813,7 +813,7 @@ class t3lib_refindex {
 	 * @param	string		Flexform pointer, if in a flex form field.
 	 * @return	string		Error message if any, otherwise false = OK
 	 */
-	function setReferenceValue_softreferences($refRec, $softref, $newValue, &$dataArray, $flexpointer = '') {
+	protected function setReferenceValue_softreferences($refRec, $softref, $newValue, &$dataArray, $flexpointer = '') {
 		if (is_array($softref['keys'][$refRec['softref_key']][$refRec['softref_id']])) {
 
 				// Set new value:
@@ -856,7 +856,7 @@ class t3lib_refindex {
 	 * @param	array		config array for TCA/columns field
 	 * @return	boolean		True if DB reference field (group/db or select with foreign-table)
 	 */
-	function isReferenceField($conf) {
+	protected function isReferenceField($conf) {
 		return ($conf['type'] == 'group' && $conf['internal_type'] == 'db') || (($conf['type'] == 'select' || $conf['type'] == 'inline') && $conf['foreign_table']);
 	}
 
@@ -866,7 +866,7 @@ class t3lib_refindex {
 	 * @param	string		Folder relative to PATH_site
 	 * @return	string		Input folder prefixed with PATH_site. No checking for existence is done. Output must be a folder without trailing slash.
 	 */
-	function destPathFromUploadFolder($folder) {
+	protected function destPathFromUploadFolder($folder) {
 		if (!$folder) {
 			return substr(PATH_site, 0, -1);
 		}
@@ -879,7 +879,7 @@ class t3lib_refindex {
 	 * @param	string		Error message
 	 * @return	void
 	 */
-	function error($msg) {
+	protected function error($msg) {
 		$this->errorLog[] = $msg;
 	}
 
@@ -890,7 +890,7 @@ class t3lib_refindex {
 	 * @param	boolean		If set, output CLI status
 	 * @return	array		Header and body status content
 	 */
-	function updateIndex($testOnly, $cli_echo = FALSE) {
+	public function updateIndex($testOnly, $cli_echo = FALSE) {
 		global $TCA, $TYPO3_DB;
 
 		$errors = array();

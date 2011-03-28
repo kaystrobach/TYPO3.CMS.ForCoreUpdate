@@ -66,19 +66,19 @@
  * @subpackage t3lib
  */
 class t3lib_loadModules {
-	var $modules = array(); // After the init() function this array will contain the structure of available modules for the backend user.
-	var $absPathArray = array(); // Array with paths pointing to the location of modules from extensions
+	public $modules = array(); // After the init() function this array will contain the structure of available modules for the backend user.
+	public $absPathArray = array(); // Array with paths pointing to the location of modules from extensions
 
-	var $modListGroup = array(); // this array will hold the elements that should go into the select-list of modules for groups...
-	var $modListUser = array(); // this array will hold the elements that should go into the select-list of modules for users...
+	public $modListGroup = array(); // this array will hold the elements that should go into the select-list of modules for groups...
+	public $modListUser = array(); // this array will hold the elements that should go into the select-list of modules for users...
 
 	/**
 	 * The backend user for use internally
 	 *
 	 * @var t3lib_beUserAuth
 	 */
-	var $BE_USER;
-	var $observeWorkspaces = FALSE; // If set true, workspace "permissions" will be observed so non-allowed modules will not be included in the array of modules.
+	protected $BE_USER;
+	public $observeWorkspaces = FALSE; // If set true, workspace "permissions" will be observed so non-allowed modules will not be included in the array of modules.
 
 	/**
 	 * Contains the registered navigation components
@@ -96,7 +96,7 @@ class t3lib_loadModules {
 	 * @param	object		Optional backend user object to use. If not set, the global BE_USER object is used.
 	 * @return	void
 	 */
-	function load($modulesArray, $BE_USER = '') {
+	public function load(array $modulesArray, $BE_USER = '') {
 			// Setting the backend user for use internally
 		if (is_object($BE_USER)) {
 			$this->BE_USER = $BE_USER;
@@ -218,7 +218,7 @@ class t3lib_loadModules {
 	 * @param	string		Module name
 	 * @return	string		If found, the relative path from PATH_site
 	 */
-	function checkExtensionModule($name) {
+	protected function checkExtensionModule($name) {
 		global $TYPO3_LOADED_EXT;
 
 		if (isset($this->absPathArray[$name])) {
@@ -237,7 +237,7 @@ class t3lib_loadModules {
 	 * @param	string		Absolute path to module
 	 * @return	mixed		See description of function
 	 */
-	function checkMod($name, $fullpath) {
+	protected function checkMod($name, $fullpath) {
 		if ($name == 'user_ws' && !t3lib_extMgm::isLoaded('version')) {
 			return FALSE;
 		}
@@ -359,7 +359,7 @@ class t3lib_loadModules {
 	 * @param	array		MCONF array (module configuration array) from the modules conf.php file (contains settings about what access level the module has)
 	 * @return	boolean		True if access is granted for $this->BE_USER
 	 */
-	function checkModAccess($name, $MCONF) {
+	protected function checkModAccess($name, $MCONF) {
 		if ($MCONF['access']) {
 			$access = strtolower($MCONF['access']);
 				// Checking if admin-access is required
@@ -393,7 +393,7 @@ class t3lib_loadModules {
 	 * @param	array		MCONF array (module configuration array) from the modules conf.php file (contains settings about workspace restrictions)
 	 * @return	boolean		True if access is granted for $this->BE_USER
 	 */
-	function checkModWorkspace($name, $MCONF) {
+	protected function checkModWorkspace($name, $MCONF) {
 		if ($this->observeWorkspaces) {
 			$status = TRUE;
 			if ($MCONF['workspaces']) {
@@ -419,7 +419,7 @@ class t3lib_loadModules {
 	 * @param	array		moduleArray ($TBE_MODULES)
 	 * @return	array		Output structure with available modules
 	 */
-	function parseModulesArray($arr) {
+	protected function parseModulesArray($arr) {
 		$theMods = array();
 		if (is_array($arr)) {
 			foreach ($arr as $mod => $subs) {
@@ -448,7 +448,7 @@ class t3lib_loadModules {
 	 * @param	string		String to clean up
 	 * @return	string
 	 */
-	function cleanName($str) {
+	protected function cleanName($str) {
 		return preg_replace('/[^a-z0-9]/i', '', $str);
 	}
 
@@ -459,7 +459,7 @@ class t3lib_loadModules {
 	 * @param	string		Destination directory
 	 * @return	string		The relative path of destination compared to base.
 	 */
-	function getRelativePath($baseDir, $destDir) {
+	protected function getRelativePath($baseDir, $destDir) {
 			// By René Fritz
 			// a special case , the dirs are equals
 		if ($baseDir == $destDir) {

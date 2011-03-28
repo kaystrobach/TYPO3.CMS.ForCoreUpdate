@@ -63,14 +63,14 @@
  */
 class t3lib_flexformtools {
 
-	var $convertCharset = FALSE; // If set, the charset of data XML is converted to system charset.
-	var $reNumberIndexesOfSectionData = FALSE; // If set, section indexes are re-numbered before processing
+	public $convertCharset = FALSE; // If set, the charset of data XML is converted to system charset.
+	public $reNumberIndexesOfSectionData = FALSE; // If set, section indexes are re-numbered before processing
 
-	var $traverseFlexFormXMLData_DS = array(); // Contains data structure when traversing flexform
-	var $traverseFlexFormXMLData_Data = array(); // Contains data array when traversing flexform
+	public $traverseFlexFormXMLData_DS = array(); // Contains data structure when traversing flexform
+	public $traverseFlexFormXMLData_Data = array(); // Contains data array when traversing flexform
 
 		// Options for array2xml() for flexform. This will map the weird keys from the internal array to tags that could potentially be checked with a DTD/schema
-	var $flexArray2Xml_options = array(
+	public $flexArray2Xml_options = array(
 		'parentTagMap' => array(
 			'data' => 'sheet',
 			'sheet' => 'language',
@@ -88,8 +88,8 @@ class t3lib_flexformtools {
 	/**
 	 * Reference to object called
 	 */
-	var $callBackObj = NULL;
-	var $cleanFlexFormXML = array(); // Used for accumulation of clean XML
+	protected $callBackObj = NULL;
+	protected $cleanFlexFormXML = array(); // Used for accumulation of clean XML
 
 	/**
 	 * Handler for Flex Forms

@@ -99,7 +99,7 @@ class t3lib_formmail {
 	 * @param	boolean		Whether to base64 encode the mail content
 	 * @return	void
 	 */
-	function start($valueList, $base64 = false) {
+	public function start($valueList, $base64 = false) {
 
 		$this->mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
 

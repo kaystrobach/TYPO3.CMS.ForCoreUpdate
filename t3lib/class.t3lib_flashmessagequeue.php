@@ -35,7 +35,7 @@
  */
 class t3lib_FlashMessageQueue {
 
-	static $messages = array();
+	protected static $messages = array();
 
 	/**
 	 * Static class, no instances allowed.

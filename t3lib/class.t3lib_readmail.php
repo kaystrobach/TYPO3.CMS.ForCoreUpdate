@@ -67,7 +67,7 @@
  * @subpackage t3lib
  */
 class t3lib_readmail {
-	var $dateAbbrevs = array(
+	public $dateAbbrevs = array(
 		'JAN' => 1,
 		'FEB' => 2,
 		'MAR' => 3,
@@ -81,7 +81,7 @@ class t3lib_readmail {
 		'NOV' => 11,
 		'DEC' => 12
 	);
-	var $serverGMToffsetMinutes = 60; // = +0100 (CET)
+	public $serverGMToffsetMinutes = 60; // = +0100 (CET)
 
 	/*******************************
 	 *
@@ -96,7 +96,7 @@ class t3lib_readmail {
 	 * @param	array		Output from extractMailHeader()
 	 * @return	string		The content.
 	 */
-	function getMessage($mailParts) {
+	public function getMessage($mailParts) {
 		if ($mailParts['content-type']) {
 			$CType = $this->getCType($mailParts['content-type']);
 			if ($CType['boundary']) {
@@ -122,7 +122,7 @@ class t3lib_readmail {
 	 * @param	string		Raw mail content
 	 * @return	string		Body of message
 	 */
-	function getTextContent($content) {
+	public function getTextContent($content) {
 		$p = $this->extractMailHeader($content);
 
 			// Here some decoding might be needed...
@@ -132,13 +132,15 @@ class t3lib_readmail {
 
 	/**
 	 * Splits the body of a mail into parts based on the boundary string given.
-	 * Obsolete, use fullParse()
 	 *
 	 * @param	string		Boundary string used to split the content.
 	 * @param	string		BODY section of a mail
 	 * @return	array		Parts of the mail based on this
+	 * @deprecated since TYPO3 4.6: use fullParse()
 	 */
-	function getMailBoundaryParts($boundary, $content) {
+	public function getMailBoundaryParts($boundary, $content) {
+		t3lib_div::deprecationLog('method "getMailBoundaryParts()" is deprecated since TYPO3 4.6 - use "fullParse()" instead.');
+
 		$mParts = explode('--' . $boundary, $content);
 		unset($mParts[0]);
 		$new = array();
@@ -154,13 +156,14 @@ class t3lib_readmail {
 
 	/**
 	 * Returns Content Type plus more.
-	 * Obsolete, use fullParse()
 	 *
 	 * @param	string		"ContentType" string with more
 	 * @return	array		parts in key/value pairs
-	 * @ignore
+	 * @deprecated since TYPO3 4.6: use fullParse()
 	 */
-	function getCType($str) {
+	public function getCType($str) {
+		t3lib_div::deprecationLog('method "getMailBoundaryParts()" is deprecated since TYPO3 4.6 - use "fullParse()" instead.');
+
 		$parts = explode(';', $str);
 		$cTypes = array();
 		$cTypes['ContentType'] = $parts[0];
@@ -184,7 +187,7 @@ class t3lib_readmail {
 	 * @param	string		message body/text
 	 * @return	array		key/value pairs with analysis result. Eg. "reason", "content", "reason_text", "mailserver" etc.
 	 */
-	function analyseReturnError($c) {
+	public function analyseReturnError($c) {
 		$cp = array();
 		if (strstr($c, '--- Below this line is a copy of the message.')) { // QMAIL
 			list($c) = explode('--- Below this line is a copy of the message.', $c); // Splits by the QMAIL divider
@@ -239,7 +242,7 @@ class t3lib_readmail {
 	 * @param	string		A string (encoded or not) from a mail header, like sender name etc.
 	 * @return	string		The input string, but with the parts in =?....?= decoded.
 	 */
-	function decodeHeaderString($str) {
+	protected function decodeHeaderString($str) {
 		$parts = explode('=?', $str, 2);
 		if (count($parts) == 2) {
 			list($charset, $encType, $encContent) = explode('?', $parts[1], 3);
@@ -268,7 +271,7 @@ class t3lib_readmail {
 	 * @param	string		Value from a header field containing name/email values.
 	 * @return	array		Array with the name and email in. Email is validated, otherwise not set.
 	 */
-	function extractNameEmail($str) {
+	protected function extractNameEmail($str) {
 		$outArr = array();
 
 			// Email:
@@ -300,7 +303,7 @@ class t3lib_readmail {
 	 * @param	string		"Content-type-string"
 	 * @return	array		key/value pairs with the result.
 	 */
-	function getContentTypeData($contentTypeStr) {
+	protected function getContentTypeData($contentTypeStr) {
 		$outValue = array();
 		$cTypeParts = t3lib_div::trimExplode(';', $contentTypeStr, 1);
 		$outValue['_MIME_TYPE'] = $cTypeParts[0]; // content type, first value is supposed to be the mime-type, whatever after the first is something else.
@@ -324,7 +327,7 @@ class t3lib_readmail {
 	 * @param	string		String with a timestamp according to email standards.
 	 * @return	integer		The timestamp converted to unix-time in seconds and compensated for GMT/CET ($this->serverGMToffsetMinutes);
 	 */
-	function makeUnixDate($dateStr) {
+	protected function makeUnixDate($dateStr) {
 		$dateParts = explode(',', $dateStr);
 		$dateStr = count($dateParts) > 1 ? $dateParts[1] : $dateParts[0];
 
@@ -347,9 +350,9 @@ class t3lib_readmail {
 	 * @return	integer		Minutes to offset the timestamp
 	 * @access private
 	 */
-	function getGMToffset($GMT) {
-		$GMToffset = substr($GMT, 1, 2) * 60 + substr($GMT, 3, 2);
-		$GMToffset *= substr($GMT, 0, 1) == '+' ? 1 : -1;
+	protected function getGMToffset($GMT) {
+		$GMToffset = (int)substr($GMT, 1, 2) * 60 + (int)substr($GMT, 3, 2);
+		$GMToffset *= substr($GMT, 0, 1) === '+' ? 1 : -1;
 		$GMToffset -= $this->serverGMToffsetMinutes;
 
 		return $GMToffset;
@@ -362,7 +365,7 @@ class t3lib_readmail {
 	 * @param	integer		A safety limit that will put a upper length to how many header chars will be processed. Set to zero means that there is no limit. (Uses a simple substr() to limit the amount of mail data to process to avoid run-away)
 	 * @return	array		An array where each key/value pair is a header-key/value pair. The mail BODY is returned in the key 'CONTENT' if $limit is not set!
 	 */
-	function extractMailHeader($content, $limit = 0) {
+	public function extractMailHeader($content, $limit = 0) {
 		if ($limit) {
 			$content = substr($content, 0, $limit);
 		}
@@ -400,7 +403,7 @@ class t3lib_readmail {
 	 * @param	string		Raw email input.
 	 * @return	array		Multidimensional array with all parts of the message organized nicely. Use t3lib_utility_Debug::debug() to analyse it visually.
 	 */
-	function fullParse($content) {
+	public function fullParse($content) {
 		// *************************
 		// PROCESSING the HEADER part of the mail
 		// *************************

@@ -61,10 +61,10 @@
 class t3lib_rteapi {
 
 		// Internal, dynamic:
-	var $errorLog = array(); // Error messages regarding non-availability is collected here.
+	protected $errorLog = array(); // Error messages regarding non-availability is collected here.
 
 		// Internal, static:
-	var $ID = ''; // Set this to the extension key of the RTE so it can identify itself.
+	protected $ID = ''; // Set this to the extension key of the RTE so it can identify itself.
 
 
 	/***********************************
@@ -81,7 +81,7 @@ class t3lib_rteapi {
 	 *
 	 * @return	boolean		TRUE if this RTE object offers an RTE in the current browser environment
 	 */
-	function isAvailable() {
+	public function isAvailable() {
 		global $CLIENT;
 
 		$this->errorLog = array();
@@ -110,7 +110,7 @@ class t3lib_rteapi {
 	 * @param	integer		PID value of record (true parent page id)
 	 * @return	string		HTML code for RTE!
 	 */
-	function drawRTE(&$pObj, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
+	protected function drawRTE(&$pObj, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
 
 			// Transform value:
 		$value = $this->transformContent('rte', $PA['itemFormElValue'], $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $thePidValue);
@@ -144,7 +144,7 @@ class t3lib_rteapi {
 	 * @param	integer		PID value of record (true parent page id)
 	 * @return	string		Transformed content
 	 */
-	function transformContent($dirRTE, $value, $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $pid) {
+	protected function transformContent($dirRTE, $value, $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $pid) {
 
 		#debug(array($dirRTE,$value,$table,$field,array(),$specConf,$thisConfig,$RTErelPath,$pid));
 
@@ -180,7 +180,7 @@ class t3lib_rteapi {
 	 * @param	string		Field name of the RTE field.
 	 * @return	string		<input> field of type "hidden" with a flag telling the TCEmain that this fields content should be traansformed back to database state.
 	 */
-	function triggerField($fieldName) {
+	protected function triggerField($fieldName) {
 
 		$triggerFieldName = preg_replace('/\[([^]]+)\]$/', '[_TRANSFORM_\1]', $fieldName);
 		return '<input type="hidden" name="' . htmlspecialchars($triggerFieldName) . '" value="RTE" />';

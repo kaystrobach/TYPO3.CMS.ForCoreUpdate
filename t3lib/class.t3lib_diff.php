@@ -60,12 +60,12 @@
 class t3lib_diff {
 
 		// External, static:
-	var $stripTags = 0; // If set, the HTML tags are stripped from the input strings first.
-	var $diffOptions = ''; // Diff options. eg "--unified=3"
+	public $stripTags = 0; // If set, the HTML tags are stripped from the input strings first.
+	public $diffOptions = ''; // Diff options. eg "--unified=3"
 
 		// Internal, dynamic:
-	var $clearBufferIdx = 0; // This indicates the number of times the function addClearBuffer has been called - and used to detect the very first call...
-	var $differenceLgd = 0;
+	protected $clearBufferIdx = 0; // This indicates the number of times the function addClearBuffer has been called - and used to detect the very first call...
+	protected $differenceLgd = 0;
 
 
 	/**
@@ -76,7 +76,7 @@ class t3lib_diff {
 	 * @param	string		Setting the wrapping tag name
 	 * @return	string		Formatted output.
 	 */
-	function makeDiffDisplay($str1, $str2, $wrapTag = 'span') {
+	public function makeDiffDisplay($str1, $str2, $wrapTag = 'span') {
 		if ($this->stripTags) {
 			$str1 = strip_tags($str1);
 			$str2 = strip_tags($str2);
@@ -154,7 +154,7 @@ class t3lib_diff {
 	 * @return	array		The result from the exec() function call.
 	 * @access private
 	 */
-	function getDiff($str1, $str2) {
+	public function getDiff($str1, $str2) {
 			// Create file 1 and write string
 		$file1 = t3lib_div::tempnam('diff1_');
 		t3lib_div::writeFile($file1, $str1);
@@ -180,7 +180,7 @@ class t3lib_diff {
 	 * @return	string		Processed string.
 	 * @access private
 	 */
-	function addClearBuffer($clearBuffer, $last = 0) {
+	protected function addClearBuffer($clearBuffer, $last = 0) {
 		if (strlen($clearBuffer) > 200) {
 			$clearBuffer = ($this->clearBufferIdx ? t3lib_div::fixed_lgd_cs($clearBuffer, 70) : '') . '[' . strlen($clearBuffer) . ']' . (!$last ? t3lib_div::fixed_lgd_cs($clearBuffer, -70) : '');
 		}
@@ -196,7 +196,7 @@ class t3lib_diff {
 	 * @return	array		Array with words.
 	 * @access private
 	 */
-	function explodeStringIntoWords($str) {
+	protected function explodeStringIntoWords($str) {
 		$strArr = t3lib_div::trimExplode(LF, $str);
 		$outArray = array();
 		foreach ($strArr as $lineOfWords) {
@@ -216,7 +216,7 @@ class t3lib_diff {
 	 * @return	string		Processed string
 	 * @access private
 	 */
-	function tagSpace($str, $rev = 0) {
+	protected function tagSpace($str, $rev = 0) {
 		if ($rev) {
 			return str_replace(' &lt;', '&lt;', str_replace('&gt; ', '&gt;', $str));
 		} else {

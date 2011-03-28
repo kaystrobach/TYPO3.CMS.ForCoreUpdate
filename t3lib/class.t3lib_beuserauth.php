@@ -65,16 +65,16 @@
  * @subpackage t3lib
  */
 class t3lib_beUserAuth extends t3lib_userAuthGroup {
-	var $session_table = 'be_sessions'; // Table to use for session data.
-	var $name = 'be_typo_user'; // Session/Cookie name
+	public $session_table = 'be_sessions'; // Table to use for session data.
+	public $name = 'be_typo_user'; // Session/Cookie name
 
-	var $user_table = 'be_users'; // Table in database with userdata
-	var $username_column = 'username'; // Column for login-name
-	var $userident_column = 'password'; // Column for password
-	var $userid_column = 'uid'; // Column for user-id
-	var $lastLogin_column = 'lastlogin';
+	public $user_table = 'be_users'; // Table in database with userdata
+	public $username_column = 'username'; // Column for login-name
+	public $userident_column = 'password'; // Column for password
+	public $userid_column = 'uid'; // Column for user-id
+	public $lastLogin_column = 'lastlogin';
 
-	var $enablecolumns = Array(
+	public $enablecolumns = array(
 		'rootLevel' => 1,
 		'deleted' => 'deleted',
 		'disabled' => 'disable',
@@ -82,32 +82,32 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 		'endtime' => 'endtime'
 	);
 
-	var $formfield_uname = 'username'; // formfield with login-name
-	var $formfield_uident = 'userident'; // formfield with password
-	var $formfield_chalvalue = 'challenge'; // formfield with a unique value which is used to encrypt the password and username
-	var $formfield_status = 'login_status'; // formfield with status: *'login', 'logout'
+	public $formfield_uname = 'username'; // formfield with login-name
+	public $formfield_uident = 'userident'; // formfield with password
+	public $formfield_chalvalue = 'challenge'; // formfield with a unique value which is used to encrypt the password and username
+	public $formfield_status = 'login_status'; // formfield with status: *'login', 'logout'
 
-	var $writeStdLog = 1; // Decides if the writelog() function is called at login and logout
-	var $writeAttemptLog = 1; // If the writelog() functions is called if a login-attempt has be tried without success
+	public $writeStdLog = 1; // Decides if the writelog() function is called at login and logout
+	public $writeAttemptLog = 1; // If the writelog() functions is called if a login-attempt has be tried without success
 
-	var $auth_timeout_field = 6000; // if > 0 : session-timeout in seconds. if false/<0 : no timeout. if string: The string is fieldname from the usertable where the timeout can be found.
-	var $lifetime = 0; // 0 = Session-cookies. If session-cookies, the browser will stop session when the browser is closed. Else it keeps the session for $lifetime seconds.
-	var $challengeStoredInCookie = TRUE;
+	public $auth_timeout_field = 6000; // if > 0 : session-timeout in seconds. if false/<0 : no timeout. if string: The string is fieldname from the usertable where the timeout can be found.
+	public $lifetime = 0; // 0 = Session-cookies. If session-cookies, the browser will stop session when the browser is closed. Else it keeps the session for $lifetime seconds.
+	public $challengeStoredInCookie = TRUE;
 
 
 		// User Config:
-	var $uc;
+	public $uc;
 
 		// User Config Default values:
 		// The array may contain other fields for configuration. For this, see "setup" extension and "TSConfig" document (User TSconfig, "setup.[xxx]....")
 	/*
-		   Reserved keys for other storage of session data:
-		   moduleData
-		   moduleSessionID
-	   */
-	var $uc_default = Array(
+		Reserved keys for other storage of session data:
+		moduleData
+		moduleSessionID
+	*/
+	protected $uc_default = array(
 		'interfaceSetup' => '', // serialized content that is used to store interface pane and menu positions. Set by the logout.php-script
-		'moduleData' => Array(), // user-data for the modules
+		'moduleData' => array(), // user-data for the modules
 		'thumbnailsByDefault' => 0,
 		'emailMeAtLogin' => 0,
 		'condensedMode' => 0,
@@ -135,7 +135,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 *
 	 * @return	void
 	 */
-	function start() {
+	public function start() {
 		$securityLevel = trim($GLOBALS['TYPO3_CONF_VARS']['BE']['loginSecurityLevel']);
 		$this->security_level = $securityLevel ? $securityLevel : 'superchallenged';
 
@@ -148,7 +148,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 * @return	boolean		True, if IP address validates OK (or no check is done at all)
 	 * @access private
 	 */
-	function checkLockToIP() {
+	public function checkLockToIP() {
 		global $TYPO3_CONF_VARS;
 		$out = 1;
 		if ($TYPO3_CONF_VARS['BE']['enabledBeUserIPLock']) {
@@ -168,7 +168,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 *
 	 * @return	void
 	 */
-	function backendCheckLogin() {
+	public function backendCheckLogin() {
 		if (!$this->user['uid']) {
 			if (!defined('TYPO3_PROCEED_IF_NO_USER') || !TYPO3_PROCEED_IF_NO_USER) {
 				t3lib_utility_Http::redirect($GLOBALS['BACK_PATH']);
@@ -193,7 +193,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 *
 	 * @return	boolean		Returns true if a CLI user was loaded, otherwise false!
 	 */
-	function checkCLIuser() {
+	public function checkCLIuser() {
 			// First, check if cliMode is enabled:
 		if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI) {
 			if (!$this->user['uid']) {
@@ -225,7 +225,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 * @return	void
 	 * @internal
 	 */
-	function backendSetUC() {
+	public function backendSetUC() {
 		global $TYPO3_CONF_VARS;
 
 			// UC - user configuration is a serialized array inside the userobject
@@ -272,7 +272,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 * @return	void
 	 * @internal
 	 */
-	function overrideUC() {
+	public function overrideUC() {
 		$this->uc = array_merge((array) $this->uc, (array) $this->getTSConfigProp('setup.override')); // Candidate for t3lib_div::array_merge() if integer-keys will some day make trouble...
 	}
 
@@ -282,7 +282,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 * @return	void
 	 * @internal
 	 */
-	function resetUC() {
+	public function resetUC() {
 		$this->user['uc'] = '';
 		$this->uc = '';
 		$this->backendSetUC();
@@ -295,7 +295,7 @@ class t3lib_beUserAuth extends t3lib_userAuthGroup {
 	 * @return	void
 	 * @access private
 	 */
-	function emailAtLogin() {
+	protected function emailAtLogin() {
 		if ($this->loginSessionStarted) {
 				// Send notify-mail
 			$subject = 'At "' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] . '"' .

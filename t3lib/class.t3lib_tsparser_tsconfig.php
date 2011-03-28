@@ -40,6 +40,9 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 	 */
 	protected $rootLine = array();
 
+	protected $type;
+	protected $id;
+
 	/**
 	 * Parses the passed TS-Config using conditions and caching
 	 *

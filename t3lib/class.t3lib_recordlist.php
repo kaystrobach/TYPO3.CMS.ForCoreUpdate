@@ -65,34 +65,34 @@
 class t3lib_recordList {
 
 		// Used in this class:
-	var $iLimit = 10; // default Max items shown
-	var $leftMargin = 0; // OBSOLETE - NOT USED ANYMORE. leftMargin
-	var $showIcon = 1;
-	var $no_noWrap = 0;
-	var $oddColumnsTDParams = ''; // Deprecated since TYPO3 4.2, remove in 4.4. If set this is <td>-params for odd columns in addElement. Used with db_layout / pages section
-	var $oddColumnsCssClass = ''; // If set this is <td> CSS-classname for odd columns in addElement. Used with db_layout / pages section
-	var $backPath = '';
-	var $fieldArray = Array(); // Decides the columns shown. Filled with values that refers to the keys of the data-array. $this->fieldArray[0] is the title column.
-	var $addElement_tdParams = array(); // Keys are fieldnames and values are td-parameters to add in addElement(), please use $addElement_tdCSSClass for CSS-classes;
-	var $addElement_tdCssClass = array(); // Keys are fieldnames and values are td-css-classes to add in addElement();
+	public $iLimit = 10; // default Max items shown
+	public $leftMargin = 0; // OBSOLETE - NOT USED ANYMORE. leftMargin
+	public $showIcon = 1;
+	public $no_noWrap = 0;
+	public $oddColumnsTDParams = ''; // Deprecated since TYPO3 4.2, remove in 4.4. If set this is <td>-params for odd columns in addElement. Used with db_layout / pages section
+	public $oddColumnsCssClass = ''; // If set this is <td> CSS-classname for odd columns in addElement. Used with db_layout / pages section
+	public $backPath = '';
+	public $fieldArray = Array(); // Decides the columns shown. Filled with values that refers to the keys of the data-array. $this->fieldArray[0] is the title column.
+	public $addElement_tdParams = array(); // Keys are fieldnames and values are td-parameters to add in addElement(), please use $addElement_tdCSSClass for CSS-classes;
+	public $addElement_tdCssClass = array(); // Keys are fieldnames and values are td-css-classes to add in addElement();
 
 		// Not used in this class - but maybe extension classes...
-	var $fixedL = 30; // Max length of strings
-	var $script = '';
-	var $thumbScript = 'thumbs.php';
-	var $setLMargin = 1; // Set to zero, if you don't want a left-margin with addElement function
+	public $fixedL = 30; // Max length of strings
+	public $script = '';
+	public $thumbScript = 'thumbs.php';
+	public $setLMargin = 1; // Set to zero, if you don't want a left-margin with addElement function
 
-	var $counter = 0; // Counter increased for each element. Used to index elements for the JavaScript-code that transfers to the clipboard
-	var $totalItems = ''; // This could be set to the total number of items. Used by the fwd_rew_navigation...
+	public $counter = 0; // Counter increased for each element. Used to index elements for the JavaScript-code that transfers to the clipboard
+	public $totalItems = ''; // This could be set to the total number of items. Used by the fwd_rew_navigation...
 
 		// Internal (used in this class.)
-	var $firstElementNumber = 0;
-	var $eCounter = 0;
-	var $HTMLcode = ''; // String with accumulated HTML content
+	protected $firstElementNumber = 0;
+	protected $eCounter = 0;
+	protected $HTMLcode = ''; // String with accumulated HTML content
 
-	var $pageOverlays = array(); // Contains page translation languages
-	var $languageIconTitles = array(); // Contains sys language icons and titles
-	var $translateTools; // translateTools object
+	protected $pageOverlays = array(); // Contains page translation languages
+	protected $languageIconTitles = array(); // Contains sys language icons and titles
+	protected $translateTools; // translateTools object
 
 	/**
 	 * constructor for t3lib_recordList
@@ -119,7 +119,7 @@ class t3lib_recordList {
 	 * @param	string		$altLine is the HTML <img>-tag for an alternative 'gfx/ol/line.gif'-icon (used in the top)
 	 * @return	string		HTML content for the table row
 	 */
-	function addElement($h, $icon, $data, $trParams = '', $lMargin = '', $altLine = '') {
+	protected function addElement($h, $icon, $data, $trParams = '', $lMargin = '', $altLine = '') {
 		$noWrap = ($this->no_noWrap) ? '' : ' nowrap="nowrap"';
 
 			// Start up:
@@ -208,7 +208,7 @@ class t3lib_recordList {
 	 *
 	 * @return	void
 	 */
-	function writeTop() {
+	public function writeTop() {
 	}
 
 	/**
@@ -216,7 +216,7 @@ class t3lib_recordList {
 	 *
 	 * @return	void
 	 */
-	function writeBottom() {
+	public function writeBottom() {
 		$this->HTMLcode .= '
 
 		<!--
@@ -235,7 +235,7 @@ class t3lib_recordList {
 	 * @param	string		Table name
 	 * @return	array		array([boolean], [HTML]) where [boolean] is 1 for reverse element, [HTML] is the table-row code for the element
 	 */
-	function fwd_rwd_nav($table = '') {
+	protected function fwd_rwd_nav($table = '') {
 		$code = '';
 		if ($this->eCounter >= $this->firstElementNumber && $this->eCounter < $this->firstElementNumber + $this->iLimit) {
 			if ($this->firstElementNumber && $this->eCounter == $this->firstElementNumber) {
@@ -268,7 +268,7 @@ class t3lib_recordList {
 	 * @return	string
 	 * @access private
 	 */
-	function fwd_rwd_HTML($type, $pointer, $table = '') {
+	protected function fwd_rwd_HTML($type, $pointer, $table = '') {
 		$content = '';
 		$tParam = $table ? '&table=' . rawurlencode($table) : '';
 		switch ($type) {
@@ -294,7 +294,7 @@ class t3lib_recordList {
 	 * @param	string		Alternative id value. Enter blank string for the current id ($this->id)
 	 * @return	string		URL
 	 */
-	function listURL($altId = '') {
+	protected function listURL($altId = '') {
 		return $this->script .
 			   '?id=' . (strcmp($altId, '') ? $altId : $this->id);
 	}
@@ -304,7 +304,7 @@ class t3lib_recordList {
 	 *
 	 * @return	string
 	 */
-	function CBfunctions() {
+	public function CBfunctions() {
 		return '
 		// checkOffCB()
 	function checkOffCB(listOfCBnames, link)	{	//
@@ -342,7 +342,7 @@ class t3lib_recordList {
 	 *
 	 * @return	void
 	 */
-	function initializeLanguages() {
+	public function initializeLanguages() {
 		global $TCA, $LANG;
 
 			// Look up page overlays:
@@ -367,7 +367,7 @@ class t3lib_recordList {
 	 * @param	integer		Sys language uid
 	 * @return	string		Language icon
 	 */
-	function languageFlag($sys_language_uid) {
+	protected function languageFlag($sys_language_uid) {
 		$out = '';
 		if ($this->languageIconTitles[$sys_language_uid]['flagIcon']) {
 			$out .= t3lib_iconWorks::getSpriteIcon($this->languageIconTitles[$sys_language_uid]['flagIcon']);

@@ -65,31 +65,31 @@
  * @see tx_belog_webinfo, SC_mod_tools_log_index
  */
 class t3lib_BEDisplayLog {
-	var $lastTimeLabel = '';
-	var $lastUserLabel = '';
-	var $lastTypeLabel = '';
-	var $lastActionLabel = '';
+	protected $lastTimeLabel = '';
+	protected $lastUserLabel = '';
+	protected $lastTypeLabel = '';
+	protected $lastActionLabel = '';
 
-	var $detailsOn = 1; // If detailsOn, %s is substituted with values from the data-array (see getDetails())
-	var $stripPath = 1; // This strips the path from any value in the data-array when the data-array is parsed through stripPath()
-	var $errorSign = Array(
+	protected $detailsOn = 1; // If detailsOn, %s is substituted with values from the data-array (see getDetails())
+	protected $stripPath = 1; // This strips the path from any value in the data-array when the data-array is parsed through stripPath()
+	public $errorSign = Array(
 		1 => '!',
 		2 => 'Sys!',
 		3 => 'Security!'
 	);
-	var $wsArray = array(
+	public $wsArray = array(
 		0 => 'LIVE',
 		-1 => 'Draft',
 	);
 
-	var $be_user_Array = array(); // Username array (set externally)
+	public $be_user_Array = array(); // Username array (set externally)
 
 	/**
 	 * Initialize the log table array with header labels.
 	 *
 	 * @return	array
 	 */
-	function initArray() {
+	public function initArray() {
 		$codeArr = array();
 		$codeArr[0][] = 'Time'; // Time
 		$codeArr[0][] = 'User';
@@ -106,7 +106,7 @@ class t3lib_BEDisplayLog {
 	 * @param	integer		Timestamp to display
 	 * @return	string		If the timestamp was also shown last time, then "." is returned. Otherwise the new timestamp formatted with ->doc->formatTime()
 	 */
-	function getTimeLabel($code) {
+	public function getTimeLabel($code) {
 		#$t=$GLOBALS['SOBE']->doc->formatTime($code,1);
 		$t = date('H:i:s', $code);
 
@@ -126,7 +126,7 @@ class t3lib_BEDisplayLog {
 	 * @param	integer		Workspace ID
 	 * @return	string		If username is different from last username then the username, otherwise "."
 	 */
-	function getUserLabel($code, $workspace = 0) {
+	public function getUserLabel($code, $workspace = 0) {
 		if ($this->lastUserLabel != $code . '_' . $workspace) {
 			$this->lastUserLabel = $code . '_' . $workspace;
 			$label = $this->be_user_Array[$code]['username'];
@@ -143,7 +143,7 @@ class t3lib_BEDisplayLog {
 	 * @param	string		Key for the type label in locallang
 	 * @return	string		If labe is different from last type label then the label is returned, otherwise "."
 	 */
-	function getTypeLabel($code) {
+	public function getTypeLabel($code) {
 		if ($this->lastTypeLabel != $code) {
 			$this->lastTypeLabel = $code;
 			$label = $GLOBALS['LANG']->getLL('type_' . $code);
@@ -159,7 +159,7 @@ class t3lib_BEDisplayLog {
 	 * @param	string		Key for the action label in locallang
 	 * @return	string		If label is different from last action label then the label is returned, otherwise "."
 	 */
-	function getActionLabel($code) {
+	public function getActionLabel($code) {
 		if ($this->lastActionLabel != $code) {
 			$this->lastActionLabel = $code;
 			$label = $GLOBALS['LANG']->getLL('action_' . $code);
@@ -179,7 +179,7 @@ class t3lib_BEDisplayLog {
 	 * @return	string		Text string
 	 * @see formatDetailsForList()
 	 */
-	function getDetails($code, $text, $data, $sys_log_uid = 0) {
+	public function getDetails($code, $text, $data, $sys_log_uid = 0) {
 			// $code is used later on to substitute errormessages with language-corrected values...
 		if (is_array($data)) {
 			if ($this->detailsOn) {
@@ -220,7 +220,7 @@ class t3lib_BEDisplayLog {
 	 *
 	 * @return	void
 	 */
-	function reset() {
+	public function reset() {
 		$this->lastTimeLabel = '';
 		$this->lastUserLabel = '';
 		$this->lastTypeLabel = '';
@@ -234,7 +234,7 @@ class t3lib_BEDisplayLog {
 	 * @param	integer		Error value
 	 * @return	string		Input wrapped in red font-tag and bold
 	 */
-	function getErrorFormatting($sign, $error = 0) {
+	public function getErrorFormatting($sign, $error = 0) {
 		return $GLOBALS['SOBE']->doc->icons($error >= 2 ? 3 : 2) . ' ' . $sign;
 	}
 
@@ -244,7 +244,7 @@ class t3lib_BEDisplayLog {
 	 * @param	array		sys_log row
 	 * @return	string		Details string
 	 */
-	function formatDetailsForList($row) {
+	public function formatDetailsForList($row) {
 		$data = unserialize($row['log_data']);
 		if ($row['type'] == 2) {
 			$data = $this->stripPath($data);
@@ -261,7 +261,7 @@ class t3lib_BEDisplayLog {
 	 * @return	array
 	 * @see formatDetailsForList()
 	 */
-	function stripPath($inArr) {
+	protected function stripPath($inArr) {
 		if ($this->stripPath && is_array($inArr)) {
 			foreach ($inArr as $key => $val) {
 				$inArr[$key] = basename($val);

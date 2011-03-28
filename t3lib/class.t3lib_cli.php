@@ -59,13 +59,13 @@
  */
 class t3lib_cli {
 
-	var $cli_args = array(); // Command line arguments, exploded into key => value-array pairs
-	var $cli_options = array(
+	protected $cli_args = array(); // Command line arguments, exploded into key => value-array pairs
+	protected $cli_options = array(
 		array('-s', 'Silent operation, will only output errors and important messages.'),
 		array('--silent', 'Same as -s'),
 		array('-ss', 'Super silent, will not even output errors or important messages.'),
 	);
-	var $cli_help = array(
+	protected $cli_help = array(
 		'name' => 'CLI base class (overwrite this...)',
 		'synopsis' => '###OPTIONS###',
 		'description' => 'Class with basic functionality for CLI scripts (overwrite this...)',
@@ -74,7 +74,7 @@ class t3lib_cli {
 		'license' => 'GNU GPL - free software!',
 		'author' => '[Author name]',
 	);
-	var $stdin = NULL;
+	protected $stdin = NULL;
 
 
 	/**
@@ -83,7 +83,7 @@ class t3lib_cli {
 	 *
 	 * @return	void
 	 */
-	function t3lib_cli() {
+	public function __construct() {
 			// Loads the cli_args array with command line arguments
 		$this->cli_args = $this->cli_getArgIndex();
 	}
@@ -96,7 +96,7 @@ class t3lib_cli {
 	 * @param	array		Input argv array
 	 * @return	array		Output argv array with all options AFTER the found option.
 	 */
-	function cli_getArgArray($option, $argv) {
+	protected function cli_getArgArray($option, $argv) {
 		while (count($argv) && strcmp($argv[0], $option)) {
 			array_shift($argv);
 		}
@@ -113,7 +113,7 @@ class t3lib_cli {
 	 * @param	string		Option string, eg. "-s"
 	 * @return	boolean		TRUE if option found
 	 */
-	function cli_isArg($option) {
+	protected function cli_isArg($option) {
 		return isset($this->cli_args[$option]);
 	}
 
@@ -124,7 +124,7 @@ class t3lib_cli {
 	 * @param	integer		Value index, default is 0 (zero) = the first one...
 	 * @return	boolean		TRUE if option found
 	 */
-	function cli_argValue($option, $idx = 0) {
+	protected function cli_argValue($option, $idx = 0) {
 		return is_array($this->cli_args[$option]) ? $this->cli_args[$option][$idx] : '';
 	}
 
@@ -135,7 +135,7 @@ class t3lib_cli {
 	 *
 	 * @return	array
 	 */
-	function cli_getArgIndex() {
+	protected function cli_getArgIndex() {
 		$cli_options = array();
 		$index = '_DEFAULT';
 		foreach ($_SERVER['argv'] as $token) {
@@ -160,7 +160,7 @@ class t3lib_cli {
 	/**
 	 * Validates if the input arguments in this->cli_args are all listed in this->cli_options and if not, will exit with an error.
 	 */
-	function cli_validateArgs() {
+	protected function cli_validateArgs() {
 		$cli_args_copy = $this->cli_args;
 		unset($cli_args_copy['_DEFAULT']);
 		$allOptions = array();
@@ -201,7 +201,7 @@ class t3lib_cli {
 	 *
 	 * @return	string
 	 */
-	function cli_keyboardInput() {
+	protected function cli_keyboardInput() {
 
 			// Have to open the stdin stream only ONCE! otherwise I cannot read multiple lines from it... :
 		if (!$this->stdin) {
@@ -220,7 +220,7 @@ class t3lib_cli {
 	 * @param	string		String to ask before...
 	 * @return	boolean		TRUE if "y" or "yes" is the input (case insensitive)
 	 */
-	function cli_keyboardInput_yes($msg = '') {
+	protected function cli_keyboardInput_yes($msg = '') {
 		echo $msg . ' (Yes/No + return): '; // ONLY makes sense to echo it out since we are awaiting keyboard input - that cannot be silenced...
 
 		return t3lib_div::inList('y,yes', strtolower($this->cli_keyboardInput()));
@@ -233,7 +233,7 @@ class t3lib_cli {
 	 * @param	boolean		If string should be written even if -s is set (-ss will subdue it!)
 	 * @return	boolean		Returns TRUE if string was outputted.
 	 */
-	function cli_echo($string = '', $force = FALSE) {
+	protected function cli_echo($string = '', $force = FALSE) {
 		if (isset($this->cli_args['-ss'])) {
 			// Nothing to do...
 		} elseif (isset($this->cli_args['-s']) || isset($this->cli_args['--silent'])) {
@@ -254,7 +254,7 @@ class t3lib_cli {
 	 *
 	 * @return	void
 	 */
-	function cli_help() {
+	protected function cli_help() {
 		foreach ($this->cli_help as $key => $value) {
 			$this->cli_echo(strtoupper($key) . ":\n");
 			switch ($key) {
@@ -294,7 +294,7 @@ class t3lib_cli {
 	 * @param	integer		Number of space chars to indent.
 	 * @return	string		Result
 	 */
-	function cli_indent($str, $indent) {
+	protected function cli_indent($str, $indent) {
 		$lines = explode(LF, wordwrap($str, 75 - $indent));
 		$indentStr = str_pad('', $indent, ' ');
 		foreach ($lines as $k => $v) {

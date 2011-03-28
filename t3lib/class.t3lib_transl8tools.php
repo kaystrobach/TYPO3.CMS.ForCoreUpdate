@@ -68,7 +68,7 @@ class t3lib_transl8tools {
 	 * @param	string		Backpath for flags
 	 * @return	array		Array with languages (title, uid, flagIcon)
 	 */
-	function getSystemLanguages($page_id = 0, $backPath = '') {
+	public function getSystemLanguages($page_id = 0, $backPath = '') {
 		global $TCA, $LANG;
 
 		$modSharedTSconfig = t3lib_BEfunc::getModTSconfig($page_id, 'mod.SHARED');
@@ -128,7 +128,7 @@ class t3lib_transl8tools {
 	 * @param	array		select fields for the query which fetches the translations of the current record
 	 * @return	array		Array with information. Errors will return string with message.
 	 */
-	function translationInfo($table, $uid, $sys_language_uid = 0, $row = NULL, $selFieldList = '') {
+	public function translationInfo($table, $uid, $sys_language_uid = 0, $row = NULL, $selFieldList = '') {
 		global $TCA;
 
 		if ($TCA[$table] && $uid) {
@@ -197,7 +197,7 @@ class t3lib_transl8tools {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function getTranslationTable($table) {
+	public function getTranslationTable($table) {
 		return $this->isTranslationInOwnTable($table) ? $table : $this->foreignTranslationTable($table);
 	}
 
@@ -207,7 +207,7 @@ class t3lib_transl8tools {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function isTranslationInOwnTable($table) {
+	protected function isTranslationInOwnTable($table) {
 		global $TCA;
 
 		return $TCA[$table]['ctrl']['languageField'] && $TCA[$table]['ctrl']['transOrigPointerField'] && !$TCA[$table]['ctrl']['transOrigPointerTable'];
@@ -219,7 +219,7 @@ class t3lib_transl8tools {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function foreignTranslationTable($table) {
+	protected function foreignTranslationTable($table) {
 		global $TCA;
 
 		$trTable = $TCA[$table]['ctrl']['transForeignTable'];

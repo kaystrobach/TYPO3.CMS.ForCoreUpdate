@@ -124,36 +124,36 @@ class t3lib_modSettings {
 	 * If type is set 'ses' then the module data will be stored into the session and will be lost with logout.
 	 * Type 'perm' will store the data permanently.
 	 */
-	var $type = 'perm';
+	protected $type = 'perm';
 
 	/**
 	 * prefix of MOD_SETTING array keys that should be stored
 	 */
-	var $prefix = '';
+	public $prefix = '';
 
 	/**
 	 * Names of keys of the MOD_SETTING array which should be stored
 	 */
-	var $storeList = array();
+	protected $storeList = array();
 
 	/**
 	 * The stored settings array
 	 */
-	var $storedSettings = array();
+	public $storedSettings = array();
 
 	/**
 	 * Message from the last storage command
 	 */
-	var $msg = '';
+	public $msg = '';
 
 
 	/**
 	 * Name of the form. Needed for JS
 	 */
-	var $formName = 'storeControl';
+	public $formName = 'storeControl';
 
 
-	var $writeDevLog = 0; // write messages into the devlog?
+	public $writeDevLog = 0; // write messages into the devlog?
 
 
 	/********************************
@@ -170,7 +170,7 @@ class t3lib_modSettings {
 	 * @param	array		additional names of keys of the MOD_SETTING array which should be stored (array or comma list)
 	 * @return	void
 	 */
-	function init($prefix = '', $storeList = '') {
+	public function init($prefix = '', $storeList = '') {
 		$this->prefix = $prefix;
 		$this->setStoreList($storeList);
 		$this->type = 'perm';
@@ -190,7 +190,7 @@ class t3lib_modSettings {
 	 * @param	string		Default is 'ses'
 	 * @return	void
 	 */
-	function setSessionType($type = 'ses') {
+	public function setSessionType($type = 'ses') {
 		$this->type = $type;
 	}
 
@@ -208,7 +208,7 @@ class t3lib_modSettings {
 	 * @param	mixed		array or string (,) - set additional names of keys of the MOD_SETTING array which should be stored
 	 * @return	void
 	 */
-	function setStoreList($storeList) {
+	public function setStoreList($storeList) {
 		$this->storeList = is_array($storeList) ? $storeList : t3lib_div::trimExplode(',', $storeList, 1);
 
 		if ($this->writeDevLog) {
@@ -223,7 +223,7 @@ class t3lib_modSettings {
 	 * @param	mixed		array or string (,) - add names of keys of the MOD_SETTING array which should be stored
 	 * @return	void
 	 */
-	function addToStoreList($storeList) {
+	public function addToStoreList($storeList) {
 		$storeList = is_array($storeList) ? $storeList : t3lib_div::trimExplode(',', $storeList, 1);
 		$this->storeList = array_merge($this->storeList, $storeList);
 
@@ -239,7 +239,7 @@ class t3lib_modSettings {
 	 * @param	string		prefix of MOD_SETTING array keys that should be stored
 	 * @return	void
 	 */
-	function addToStoreListFromPrefix($prefix = '') {
+	public function addToStoreListFromPrefix($prefix = '') {
 		global $SOBE;
 
 		$prefix = $prefix ? $prefix : $this->prefix;
@@ -270,7 +270,7 @@ class t3lib_modSettings {
 	 *
 	 * @return	void
 	 */
-	function initStorage() {
+	protected function initStorage() {
 		global $SOBE;
 
 		$storedSettings = unserialize($SOBE->MOD_SETTINGS[$this->prefix . '_storedSettings']);
@@ -284,7 +284,7 @@ class t3lib_modSettings {
 	 * @param	array		$storedSettings
 	 * @return	array		$storedSettings
 	 */
-	function cleanupStorageArray($storedSettings) {
+	protected function cleanupStorageArray($storedSettings) {
 
 		$storedSettings = is_array($storedSettings) ? $storedSettings : array();
 
@@ -312,7 +312,7 @@ class t3lib_modSettings {
 	 * @param	array		Should work with data from _GP('storeControl'). This is ['title']: Title for the entry. ['desc']: A description text. Currently not used by this class
 	 * @return	array		$storageArr: entry for the stored settings array
 	 */
-	function compileEntry($data) {
+	protected function compileEntry($data) {
 		global $SOBE;
 
 		$storageData = array();
@@ -339,7 +339,7 @@ class t3lib_modSettings {
 	 * @param	array		Preset data array. Will be overwritten by copied values.
 	 * @return	array		Data array
 	 */
-	function getStoredData($storeIndex, $writeArray = array()) {
+	protected function getStoredData($storeIndex, $writeArray = array()) {
 		if ($this->storedSettings[$storeIndex]) {
 			foreach ($this->storeList as $k) {
 				$writeArray[$k] = $this->storedSettings[$storeIndex]['data'][$k];
@@ -355,7 +355,7 @@ class t3lib_modSettings {
 	 * @param	string		Name of the module to store the settings for. Default: $GLOBALS['SOBE']->MCONF['name'] (current module)
 	 * @return	string		Storage message. Also set in $this->msg
 	 */
-	function processStoreControl($mconfName = '') {
+	public function processStoreControl($mconfName = '') {
 
 		$this->initStorage();
 
@@ -436,7 +436,7 @@ class t3lib_modSettings {
 	 * @param	string		Name of the module to store the settings for. Default: $GLOBALS['SOBE']->MCONF['name'] (current module)
 	 * @return	void
 	 */
-	function writeStoredSetting($writeArray = array(), $mconfName = '') {
+	protected function writeStoredSetting($writeArray = array(), $mconfName = '') {
 		global $SOBE;
 
 			// for debugging: just removes all module data from user settings
@@ -468,7 +468,7 @@ class t3lib_modSettings {
 	 * @param	boolean		If set the box is wrapped with own form tag
 	 * @return	string		HTML code
 	 */
-	function getStoreControl($showElements = 'load,remove,save', $useOwnForm = TRUE) {
+	public function getStoreControl($showElements = 'load,remove,save', $useOwnForm = TRUE) {
 		global $TYPO3_CONF_VARS;
 
 		$showElements = t3lib_div::trimExplode(',', $showElements, 1);
@@ -567,7 +567,7 @@ class t3lib_modSettings {
 	 * @param	array		$storageData: entry for the stored settings array
 	 * @return	array		$storageData: entry for the stored settings array
 	 */
-	function processEntry($storageArr) {
+	protected function processEntry($storageArr) {
 		return $storageArr;
 	}
 }

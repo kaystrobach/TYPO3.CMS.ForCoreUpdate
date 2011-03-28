@@ -67,11 +67,9 @@
 class t3lib_folderTree extends t3lib_treeView {
 
 	/**
-	 * Constructor function of the class
-	 *
-	 * @return	void
+	 * Constructor
 	 */
-	function t3lib_folderTree() {
+	public function __construct() {
 		parent::init();
 
 		$this->MOUNTS = $GLOBALS['FILEMOUNTS'];
@@ -87,9 +85,8 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @param	string		The image tag for the icon
 	 * @param	array		The row for the current element
 	 * @return	string		The processed icon input value.
-	 * @access private
 	 */
-	function wrapIcon($icon, $row) {
+	protected function wrapIcon($icon, $row) {
 			// Add title attribute to input icon tag
 		$theFolderIcon = $this->addTagAttributes($icon, ($this->titleAttrib ? $this->titleAttrib . '="' . $this->getTitleAttrib($row) . '"' : ''));
 
@@ -110,9 +107,8 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @param	string		Item record
 	 * @param	integer		Bank pointer (which mount point number)
 	 * @return	string
-	 * @access private
 	 */
-	function wrapTitle($title, $row, $bank = 0) {
+	protected function wrapTitle($title, $row, $bank = 0) {
 		$aOnClick = 'return jumpTo(\'' . $this->getJumpToParam($row) . '\',this,\'' . $this->domIdPrefix . $this->getId($row) . '\',' . $bank . ');';
 		$CSM = '';
 		if ($GLOBALS['TYPO3_CONF_VARS']['BE']['useOnContextMenuHandler']) {
@@ -127,7 +123,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @param	array		Record array
 	 * @return	integer		The "uid" field value.
 	 */
-	function getId($v) {
+	public function getId($v) {
 		return t3lib_div::md5Int($v['path']);
 	}
 
@@ -137,7 +133,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @param	array		The record array.
 	 * @return	string		The jump-url parameter.
 	 */
-	function getJumpToParam($v) {
+	public function getJumpToParam($v) {
 		return rawurlencode($v['path']);
 	}
 
@@ -149,7 +145,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @param	integer		Title length (30)
 	 * @return	string		The title.
 	 */
-	function getTitleStr($row, $titleLen = 30) {
+	public function getTitleStr($row, $titleLen = 30) {
 		return $row['_title'] ? $row['_title'] : parent::getTitleStr($row, $titleLen);
 	}
 
@@ -159,7 +155,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 *
 	 * @return	string		HTML code for the browsable tree
 	 */
-	function getBrowsableTree() {
+	public function getBrowsableTree() {
 
 			// Get stored tree structure AND updating it if needed according to incoming PM GET var.
 		$this->initializePositionSaving();
@@ -231,7 +227,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @return	integer		The count of items on the level
 	 * @see getBrowsableTree()
 	 */
-	function getFolderTree($files_path, $depth = 999, $depthData = '', $type = '') {
+	public function getFolderTree($files_path, $depth = 999, $depthData = '', $type = '') {
 
 			// This generates the directory tree
 		$dirs = t3lib_div::get_dirs($files_path);
@@ -312,7 +308,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @param	string		File path.
 	 * @return	integer
 	 */
-	function getCount($files_path) {
+	protected function getCount($files_path) {
 			// This generates the directory tree
 		$dirs = t3lib_div::get_dirs($files_path);
 		$c = 0;
@@ -328,7 +324,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @return	void
 	 * @access private
 	 */
-	function initializePositionSaving() {
+	protected function initializePositionSaving() {
 			// Get stored tree structure:
 		$this->stored = unserialize($this->BE_USER->uc['browseTrees'][$this->treeName]);
 

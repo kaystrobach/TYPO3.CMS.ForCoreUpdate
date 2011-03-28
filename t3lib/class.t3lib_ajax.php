@@ -56,7 +56,7 @@ class t3lib_ajax {
 	 * @param	boolean		If set to 1, the returned XML data is outputted as text in an alert window - useful for debugging, PHP errors are shown there, ...
 	 * @return	string		JavaScript code needed to make and handle an XMLHTTP request
 	 */
-	function getJScode($handlerFunction, $fallback = '', $debug = 0) {
+	public function getJScode($handlerFunction, $fallback = '', $debug = 0) {
 			// Init the XMLHTTP request object
 		$code = '
 		function ajax_initObject()	{
@@ -114,7 +114,7 @@ class t3lib_ajax {
 	 * @param	string		$innerXML	XML data which will be sent to the browser
 	 * @return	void
 	 */
-	function outputXMLreply($innerXML) {
+	public function outputXMLreply($innerXML) {
 			// AJAX needs some XML data
 		header('Content-Type: text/xml');
 		$xml = '<?xml version="1.0"?>

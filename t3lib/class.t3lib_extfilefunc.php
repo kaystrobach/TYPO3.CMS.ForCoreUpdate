@@ -94,13 +94,13 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 
 		// External static variables:
 		// Notice; some of these are overridden in the start() method with values from $GLOBALS['TYPO3_CONF_VARS']['BE']
-	var $maxCopyFileSize = 10000; // max copy size (kb) for files
-	var $maxMoveFileSize = 10000; // max move size (kb) for files
-	var $maxUploadFileSize = 10000; // max upload size (kb) for files. Remember that PHP has an inner limit often set to 2 MB
-	var $unzipPath = ''; // Path to unzip-program (with trailing '/')
-	var $dontCheckForUnique = 0; // If set, the uploaded files will overwrite existing files.
+	public $maxCopyFileSize = 10000; // max copy size (kb) for files
+	public $maxMoveFileSize = 10000; // max move size (kb) for files
+	public $maxUploadFileSize = 10000; // max upload size (kb) for files. Remember that PHP has an inner limit often set to 2 MB
+	public $unzipPath = ''; // Path to unzip-program (with trailing '/')
+	public $dontCheckForUnique = 0; // If set, the uploaded files will overwrite existing files.
 
-	var $actionPerms = Array( // This array is self-explaning (look in the class below). It grants access to the functions. This could be set from outside in order to enabled functions to users. See also the function init_actionPerms() which takes input directly from the user-record
+	public $actionPerms = Array( // This array is self-explaning (look in the class below). It grants access to the functions. This could be set from outside in order to enabled functions to users. See also the function init_actionPerms() which takes input directly from the user-record
 		'deleteFile' => 0, // Deleting files physically
 		'deleteFolder' => 0, // Deleting foldes physically
 		'deleteFolderRecursively' => 0, // normally folders are deleted by the PHP-function rmdir(), but with this option a user deletes with 'rm -Rf ....' which is pretty wild!
@@ -117,17 +117,18 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		'renameFolder' => 0
 	);
 
-	var $recyclerFN = '_recycler_'; // This is regarded to be the recycler folder
-	var $useRecycler = 1; // 0 = no, 1 = if available, 2 = always
+	public $recyclerFN = '_recycler_'; // This is regarded to be the recycler folder
+	public $useRecycler = 1; // 0 = no, 1 = if available, 2 = always
 
 		// Internal, static:
-	var $PHPFileFunctions = 0; // If set, all fileoperations are done by the default PHP-functions. This is necessary under windows! On UNIX the system commands by exec() can be used unless safe_mode is enabled
-	var $dont_use_exec_commands = 0; // This is necessary under windows!
+	protected $PHPFileFunctions = 0; // If set, all fileoperations are done by the default PHP-functions. This is necessary under windows! On UNIX the system commands by exec() can be used unless safe_mode is enabled
+	protected $dont_use_exec_commands = 0; // This is necessary under windows!
+	protected $fileCmdMap;
 
 		// Internal, dynamic:
-	var $internalUploadMap = array(); // Will contain map between upload ID and the final filename
+	protected $internalUploadMap = array(); // Will contain map between upload ID and the final filename
 
-	var $lastError = '';
+	protected $lastError = '';
 
 
 	/**
@@ -136,7 +137,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		The $file array with the commands to execute. See "TYPO3 Core API" document
 	 * @return	void
 	 */
-	function start($fileCmds) {
+	public function start(array $fileCmds) {
 
 			// Configure settings from TYPO3_CONF_VARS:
 		if (TYPO3_OS == 'WIN' || $GLOBALS['TYPO3_CONF_VARS']['BE']['disable_exec_function']) {
@@ -171,7 +172,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	integer		File permission integer from BE_USER OR'ed with permissions of back-end groups this user is a member of
 	 * @return	void
 	 */
-	function init_actionPerms($setup) {
+	public function init_actionPerms($setup) {
 		if (($setup & 1) == 1) { // Files: Upload,Copy,Move,Delete,Rename
 			$this->actionPerms['uploadFile'] = 1;
 			$this->actionPerms['copyFile'] = 1;
@@ -205,7 +206,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 *					otherwise returns an array of all the results that are returned
 	 *					from each command, separated in each action.
 	 */
-	function processData() {
+	public function processData() {
 		$result = array();
 		if (!$this->isInit) {
 			return FALSE;
@@ -293,7 +294,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	string		Redirect URL (for creating link in message)
 	 * @return	void
 	 */
-	function printLogErrorMessages($redirect = '') {
+	public function printLogErrorMessages($redirect = '') {
 		$this->getErrorMessages();
 	}
 
@@ -304,7 +305,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 *
 	 * @return	void
 	 */
-	function getErrorMessages() {
+	public function getErrorMessages() {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'*',
 			'sys_log',
@@ -335,7 +336,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	string		Takes a valid Path ($theFile)
 	 * @return	string		Returns the path (without trailing slash) of the closest recycle-folder if found. Else false.
 	 */
-	function findRecycler($theFile) {
+	protected function findRecycler($theFile) {
 		if ($this->isPathValid($theFile)) {
 			$theFile = $this->cleanDirectoryName($theFile);
 			$fI = t3lib_div::split_fileref($theFile);
@@ -364,7 +365,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @return	void
 	 * @see	class.t3lib_userauthgroup.php
 	 */
-	function writeLog($action, $error, $details_nr, $details, $data) {
+	protected function writeLog($action, $error, $details_nr, $details, $data) {
 		$type = 2; // Type value for tce_file.php
 		if (is_object($GLOBALS['BE_USER'])) {
 			$GLOBALS['BE_USER']->writelog($type, $action, $error, $details_nr, $details, $data);
@@ -385,7 +386,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the file/folder to delete
 	 * @return	boolean		Returns true upon success
 	 */
-	function func_delete($cmds) {
+	protected function func_delete($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -470,7 +471,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the file/folder to copy. $cmds['target'] is the path where to copy to. $cmds['altName'] (boolean): If set, another filename is found in case the target already exists
 	 * @return	string		Returns the new filename upon success
 	 */
-	function func_copy($cmds) {
+	protected function func_copy($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -589,7 +590,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the file/folder to move. $cmds['target'] is the path where to move to. $cmds['altName'] (boolean): If set, another filename is found in case the target already exists
 	 * @return	string		Returns the new filename upon success
 	 */
-	function func_move($cmds) {
+	protected function func_move($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -711,7 +712,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the new name. $cmds['target'] is the target (file or dir).
 	 * @return	string		Returns the new filename upon success
 	 */
-	function func_rename($cmds) {
+	protected function func_rename($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -779,7 +780,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the foldername. $cmds['target'] is the path where to create it.
 	 * @return	string		Returns the new foldername upon success
 	 */
-	function func_newfolder($cmds) {
+	protected function func_newfolder($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -823,7 +824,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the new filename. $cmds['target'] is the path where to create it
 	 * @return	string		Returns the new filename upon success
 	 */
-	function func_newfile($cmds) {
+	protected function func_newfile($cmds) {
 		$extList = $GLOBALS['TYPO3_CONF_VARS']['SYS']['textfile_ext'];
 		if (!$this->isInit) {
 			return FALSE;
@@ -878,7 +879,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the new content. $cmds['target'] is the target (file or dir)
 	 * @return	boolean		Returns true on success
 	 */
-	function func_edit($cmds) {
+	protected function func_edit($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -924,7 +925,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the ID-number (points to the global var that holds the filename-ref  ($_FILES['upload_'.$id]['name']). $cmds['target'] is the target directory, $cmds['charset'] is the the character set of the file name (utf-8 is needed for JS-interaction)
 	 * @return	string		Returns the new filename upon success
 	 */
-	function func_upload($cmds) {
+	protected function func_upload($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
@@ -981,7 +982,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @param	array		$cmds['data'] is the zip-file. $cmds['target'] is the target directory. If not set we'll default to the same directory as the file is in.
 	 * @return	boolean		Returns true on success
 	 */
-	function func_unzip($cmds) {
+	protected function func_unzip($cmds) {
 		if (!$this->isInit || $this->dont_use_exec_commands) {
 			return FALSE;
 		}

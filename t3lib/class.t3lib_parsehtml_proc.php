@@ -89,22 +89,22 @@
 class t3lib_parsehtml_proc extends t3lib_parsehtml {
 
 		// Static:
-	var $blockElementList = 'PRE,UL,OL,H1,H2,H3,H4,H5,H6,ADDRESS,DL,DD'; // List of tags for these elements
+	public $blockElementList = 'PRE,UL,OL,H1,H2,H3,H4,H5,H6,ADDRESS,DL,DD'; // List of tags for these elements
+	public $tsConfig = array(); // Current Page TSConfig
 
 		// Internal, static:
-	var $recPid = 0; // Set this to the pid of the record manipulated by the class.
-	var $elRef = ''; // Element reference [table]:[field], eg. "tt_content:bodytext"
-	var $relPath = ''; // Relative path
-	var $relBackPath = ''; // Relative back-path
-	public $tsConfig = array(); // Current Page TSConfig
-	var $procOptions = ''; // Set to the TSconfig options coming from Page TSconfig
+	protected $recPid = 0; // Set this to the pid of the record manipulated by the class.
+	protected $elRef = ''; // Element reference [table]:[field], eg. "tt_content:bodytext"
+	protected $relPath = ''; // Relative path
+	protected $relBackPath = ''; // Relative back-path
+	protected $procOptions = ''; // Set to the TSconfig options coming from Page TSconfig
 
 		// Internal, dynamic
-	var $TS_transform_db_safecounter = 100; // Run-away brake for recursive calls.
-	var $rte_p = ''; // Parameters from TCA types configuration related to the RTE
-	var $getKeepTags_cache = array(); // Data caching for processing function
-	var $allowedClasses = array(); // Storage of the allowed CSS class names in the RTE
-	var $preserveTags = ''; // Set to tags to preserve from Page TSconfig configuration
+	protected $TS_transform_db_safecounter = 100; // Run-away brake for recursive calls.
+	protected $rte_p = ''; // Parameters from TCA types configuration related to the RTE
+	protected $getKeepTags_cache = array(); // Data caching for processing function
+	protected $allowedClasses = array(); // Storage of the allowed CSS class names in the RTE
+	protected $preserveTags = ''; // Set to tags to preserve from Page TSconfig configuration
 
 
 	/**
@@ -114,7 +114,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	integer		PID of the record (page id)
 	 * @return	void
 	 */
-	function init($elRef = '', $recPid = 0) {
+	public function init($elRef = '', $recPid = 0) {
 		$this->recPid = $recPid;
 		$this->elRef = $elRef;
 	}
@@ -126,7 +126,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		The relative path from PATH_site to the place where the file being edited is. Eg. "fileadmin/static".
 	 * @return	void		There is no output, it is set in internal variables. With the above example of "fileadmin/static" as input this will yield ->relPath to be "fileadmin/static/" and ->relBackPath to be "../../"
 	 */
-	function setRelPath($path) {
+	public function setRelPath($path) {
 		$path = trim($path);
 		$path = preg_replace('/^\//', '', $path);
 		$path = preg_replace('/\/$/', '', $path);
@@ -150,7 +150,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	mixed		On success an array with various information is returned, otherwise a string with an error message
 	 * @see t3lib_TCEmain, t3lib_transferData
 	 */
-	function evalWriteFile($pArr, $currentRecord) {
+	public static function evalWriteFile($pArr, $currentRecord) {
 
 			// Write file configuration:
 		if (is_array($pArr)) {
@@ -203,7 +203,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Output value
 	 * @see t3lib_TCEmain::fillInFieldArray(), t3lib_transferData::renderRecord_typesProc()
 	 */
-	function RTE_transform($value, $specConf, $direction = 'rte', $thisConfig = array()) {
+	public function RTE_transform($value, $specConf, $direction = 'rte', $thisConfig = array()) {
 
 			// Init:
 		$this->tsConfig = $thisConfig;
@@ -361,7 +361,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		The content from RTE going to Database
 	 * @return	string		Processed content
 	 */
-	function TS_images_db($value) {
+	protected function TS_images_db($value) {
 
 			// Split content by <img> tags and traverse the resulting array for processing:
 		$imgSplit = $this->splitTags('img', $value);
@@ -520,7 +520,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Content input
 	 * @return	string		Content output
 	 */
-	function TS_images_rte($value) {
+	protected function TS_images_rte($value) {
 
 		$siteUrl = $this->siteUrl();
 		$sitePath = str_replace(t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST'), '', $siteUrl);
@@ -561,7 +561,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Direction of conversion; "rte" (from database to RTE) or "db" (from RTE to database)
 	 * @return	string		Content output
 	 */
-	function TS_reglinks($value, $direction) {
+	protected function TS_reglinks($value, $direction) {
 		$retVal = '';
 
 		switch ($direction) {
@@ -597,7 +597,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Content output
 	 * @see TS_links_rte()
 	 */
-	function TS_links_db($value) {
+	protected function TS_links_db($value) {
 
 			// Split content into <a> tag blocks and process:
 		$blockSplit = $this->splitIntoBlock('A', $value);
@@ -655,7 +655,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Content output
 	 * @see TS_links_rte()
 	 */
-	function TS_links_rte($value) {
+	protected function TS_links_rte($value) {
 		$value = $this->TS_AtagToAbs($value);
 
 			// Split content by the TYPO3 pseudo tag "<link>":
@@ -744,7 +744,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Content input
 	 * @return	string		Content output
 	 */
-	function TS_preserve_db($value) {
+	protected function TS_preserve_db($value) {
 		if (!$this->preserveTags) {
 			return $value;
 		}
@@ -770,7 +770,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Content input
 	 * @return	string		Content output
 	 */
-	function TS_preserve_rte($value) {
+	protected function TS_preserve_rte($value) {
 		if (!$this->preserveTags) {
 			return $value;
 		}
@@ -793,7 +793,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Content output
 	 * @see TS_transform_rte()
 	 */
-	function TS_transform_db($value, $css = FALSE) {
+	protected function TS_transform_db($value, $css = FALSE) {
 
 			// safety... so forever loops are avoided (they should not occur, but an error would potentially do this...)
 		$this->TS_transform_db_safecounter--;
@@ -924,7 +924,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Content input
 	 * @return	string		Content output
 	 */
-	function transformStyledATags($value) {
+	protected function transformStyledATags($value) {
 		$blockSplit = $this->splitIntoBlock('A', $value);
 		foreach ($blockSplit as $k => $v) {
 			if ($k % 2) { // If an A-tag was found:
@@ -950,7 +950,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Content output
 	 * @see TS_transform_db()
 	 */
-	function TS_transform_rte($value, $css = 0) {
+	protected function TS_transform_rte($value, $css = 0) {
 
 			// Split the content from Database by the occurence of these blocks:
 		$blockSplit = $this->splitIntoBlock('TABLE,BLOCKQUOTE,TYPOLIST,TYPOHEAD,' . ($this->procOptions['preserveDIVSections'] ? 'DIV,' : '') . $this->blockElementList, $value);
@@ -1025,7 +1025,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Content input
 	 * @return	string		Content output
 	 */
-	function TS_strip_db($value) {
+	protected function TS_strip_db($value) {
 		$value = strip_tags($value, '<' . implode('><', explode(',', 'b,i,u,a,img,br,div,center,pre,font,hr,sub,sup,p,strong,em,li,ul,ol,blockquote')) . '>');
 		return $value;
 	}
@@ -1044,7 +1044,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		The content from the resource given as input.
 	 * @see t3lib_div::getURL()
 	 */
-	function getURL($url) {
+	protected function getURL($url) {
 		return t3lib_div::getURL($url);
 	}
 
@@ -1058,7 +1058,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Clean content
 	 * @see getKeepTags()
 	 */
-	function HTMLcleaner_db($content, $tagList = '') {
+	protected function HTMLcleaner_db($content, $tagList = '') {
 		if (!$tagList) {
 			$keepTags = $this->getKeepTags('db');
 		} else {
@@ -1085,7 +1085,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	array		Configuration array
 	 * @see HTMLcleaner_db()
 	 */
-	function getKeepTags($direction = 'rte', $tagList = '') {
+	protected function getKeepTags($direction = 'rte', $tagList = '') {
 		if (!is_array($this->getKeepTags_cache[$direction]) || $tagList) {
 
 				// Setting up allowed tags:
@@ -1216,7 +1216,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Processed input value.
 	 * @see setDivTags()
 	 */
-	function divideIntoLines($value, $count = 5, $returnArray = FALSE) {
+	protected function divideIntoLines($value, $count = 5, $returnArray = FALSE) {
 
 			// Internalize font tags (move them from OUTSIDE p/div to inside it that is the case):
 		if ($this->procOptions['internalizeFontTags']) {
@@ -1352,7 +1352,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Processed value.
 	 * @see divideIntoLines()
 	 */
-	function setDivTags($value, $dT = 'p') {
+	protected function setDivTags($value, $dT = 'p') {
 
 			// First, setting configuration for the HTMLcleaner function. This will process each line between the <div>/<p> section on their way to the RTE
 		$keepTags = $this->getKeepTags('rte');
@@ -1401,7 +1401,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Output content
 	 * @see divideIntoLines()
 	 */
-	function internalizeFontTags($value) {
+	protected function internalizeFontTags($value) {
 
 			// Splitting into font tag blocks:
 		$fontSplit = $this->splitIntoBlock('font', $value);
@@ -1437,7 +1437,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @return	string		Value of t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 	 * @see t3lib_div::getIndpEnv()
 	 */
-	function siteUrl() {
+	protected function siteUrl() {
 		return t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 	}
 
@@ -1447,7 +1447,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 *
 	 * @return	string
 	 */
-	function rteImageStorageDir() {
+	protected function rteImageStorageDir() {
 		return $this->rte_p['imgpath'] ? $this->rte_p['imgpath'] : $GLOBALS['TYPO3_CONF_VARS']['BE']['RTE_imageStorageDir'];
 	}
 
@@ -1459,7 +1459,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Break character to use for linebreaks.
 	 * @return	string		Output value
 	 */
-	function removeTables($value, $breakChar = '<br />') {
+	protected function removeTables($value, $breakChar = '<br />') {
 
 			// Splitting value into table blocks:
 		$tableSplit = $this->splitIntoBlock('table', $value);
@@ -1491,7 +1491,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		Direction To databsae (db) or from database to RTE (rte)
 	 * @return	string		Processed value
 	 */
-	function defaultTStagMapping($code, $direction = 'rte') {
+	protected function defaultTStagMapping($code, $direction = 'rte') {
 		if ($direction == 'db') {
 			$code = $this->mapTags($code, array( // Map tags
 											   'strong' => 'b',
@@ -1514,7 +1514,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	array		Array of attributes from tag in which to search. More specifically the content of the key "style" is used to extract "width:xxx / height:xxx" information
 	 * @return	array		Integer w/h in key 0/1. Zero is returned if not found.
 	 */
-	function getWHFromAttribs($attribArray) {
+	protected function getWHFromAttribs($attribArray) {
 		$style = trim($attribArray['style']);
 		if ($style) {
 			$regex = '[[:space:]]*:[[:space:]]*([0-9]*)[[:space:]]*px';
@@ -1541,7 +1541,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	string		URL to analyse.
 	 * @return	array		Information in an array about the URL
 	 */
-	function urlInfoForLinkTags($url) {
+	protected function urlInfoForLinkTags($url) {
 		$info = array();
 		$url = trim($url);
 		if (substr(strtolower($url), 0, 7) == 'mailto:') {
@@ -1604,7 +1604,7 @@ class t3lib_parsehtml_proc extends t3lib_parsehtml {
 	 * @param	boolean		If true, then the "rtekeep" attribute will not be set.
 	 * @return	string		Content output
 	 */
-	function TS_AtagToAbs($value, $dontSetRTEKEEP = FALSE) {
+	protected function TS_AtagToAbs($value, $dontSetRTEKEEP = FALSE) {
 		$blockSplit = $this->splitIntoBlock('A', $value);
 		foreach ($blockSplit as $k => $v) {
 			if ($k % 2) { // block:

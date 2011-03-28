@@ -129,30 +129,30 @@ function debug($p1, $p2 = '') {
 class t3lib_superadmin {
 
 		// External, static:
-	var $targetWindow = 'superAdminWindow';
-	var $targetWindowAdmin = 'superAdminWindowAdmin';
-	var $targetWindowInstall = 'superAdminWindowInstall';
-	var $scriptName = 'superadmin.php';
+	public $targetWindow = 'superAdminWindow';
+	public $targetWindowAdmin = 'superAdminWindowAdmin';
+	public $targetWindowInstall = 'superAdminWindowInstall';
+	public $scriptName = 'superadmin.php';
 
 		// GP vars:
-	var $show; // "menu", "all", "admin", "info", "rmTempCached", "localext"
-	var $type; // "phpinfo", "page" - default renders a frameset
-	var $exp; // Additional parameter, typically a md5-hash pointing to an installation of TYPO3
+	public $show; // "menu", "all", "admin", "info", "rmTempCached", "localext"
+	public $type; // "phpinfo", "page" - default renders a frameset
+	public $exp; // Additional parameter, typically a md5-hash pointing to an installation of TYPO3
 
 		// Internal, static:
-	var $parentDirs = array(); // Configured directories to search
-	var $globalSiteInfo = array(); // Array with information about found TYPO3 installations
+	protected $parentDirs = array(); // Configured directories to search
+	protected $globalSiteInfo = array(); // Array with information about found TYPO3 installations
 
-	var $currentUrl = '';
-	var $mapDBtoKey = array();
-	var $collectAdminPasswords = array();
-	var $changeAdminPasswords = array();
-	var $collectInstallPasswords = array();
+	protected $currentUrl = '';
+	protected $mapDBtoKey = array();
+	protected $collectAdminPasswords = array();
+	protected $changeAdminPasswords = array();
+	protected $collectInstallPasswords = array();
 
 		// Control:
-	var $full = 0; // If set, the full information array per site is printed.
+	public $full = 0; // If set, the full information array per site is printed.
 
-	var $noCVS = 0; // See tools/em/index.php....
+	public $noCVS = 0; // See tools/em/index.php....
 
 
 	/**********************************
@@ -162,11 +162,9 @@ class t3lib_superadmin {
 	 **********************************/
 
 	/**
-	 * Constructor, setting GP vars
-	 *
-	 * @return	void
+	 * Constructor
 	 */
-	function t3lib_superadmin() {
+	function __construct() {
 		$this->show = t3lib_div::_GP('show');
 		$this->type = t3lib_div::_GP('type');
 		$this->exp = t3lib_div::_GP('exp');
@@ -178,7 +176,7 @@ class t3lib_superadmin {
 	 * @param	array		Numerical array with arrays having two keys, 'dir' and 'url' where 'dir' is the absolute path to a directory with TYPO3 installations inside.
 	 * @return	void
 	 */
-	function init($parentDirs) {
+	public function init($parentDirs) {
 		$this->parentDirs = $parentDirs;
 	}
 
@@ -195,7 +193,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	void
 	 */
-	function defaultSet() {
+	public function defaultSet() {
 
 			// Creating content based on "type" variable:
 		switch ($this->type) {
@@ -287,7 +285,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	string		HTML content.
 	 */
-	function make() {
+	protected function make() {
 
 		$retVal = '';
 
@@ -384,7 +382,7 @@ class t3lib_superadmin {
 	 * @param	string		The label
 	 * @return	string		Wrapped value
 	 */
-	function setMenuItem($code, $label) {
+	protected function setMenuItem($code, $label) {
 		$out = '<a href="' . htmlspecialchars($this->scriptName . '?type=page&show=menu&exp=' . $code) . '" target="TSAmenu">' . htmlspecialchars($label) . '</a>';
 		if ($code == $this->exp) {
 			$out = '<span style="color:red;">&gt;&gt;</span>' . $out;
@@ -398,7 +396,7 @@ class t3lib_superadmin {
 	 * @param	string		Input string
 	 * @return	string		Output string
 	 */
-	function error($str) {
+	protected function error($str) {
 		$out = '<span style="color:red; font-size: 14px; font-weight: bold;">' . htmlspecialchars($str) . '</span>';
 		return $out;
 	}
@@ -409,7 +407,7 @@ class t3lib_superadmin {
 	 * @param	string		Input string
 	 * @return	string		Output string, wrapped in <h2>
 	 */
-	function headerParentDir($str) {
+	protected function headerParentDir($str) {
 		$out = '<h2>' . htmlspecialchars($str) . '</h2>';
 		return $out;
 	}
@@ -420,7 +418,7 @@ class t3lib_superadmin {
 	 * @param	string		Input string
 	 * @return	string		Output string, wrapped in <h3>
 	 */
-	function headerSiteDir($str) {
+	protected function headerSiteDir($str) {
 		$out = '<h3>' . htmlspecialchars($str) . '</h3>';
 		return $out;
 	}
@@ -437,7 +435,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	string		HTML content (The default view seen when starting the superadmin.php script)
 	 */
-	function initProcess() {
+	protected function initProcess() {
 		$content = '';
 
 		foreach ($this->parentDirs as $k => $v) {
@@ -474,7 +472,7 @@ class t3lib_superadmin {
 	 * @access private
 	 * @see initProcess()
 	 */
-	function processSiteDir($path, $dir) {
+	protected function processSiteDir($path, $dir) {
 		$out = '';
 		if (@is_dir($path)) {
 			$localconf = $path . '/typo3conf/localconf.php';
@@ -521,7 +519,7 @@ class t3lib_superadmin {
 	 * @access private
 	 * @see processSiteDir()
 	 */
-	function includeLocalconf($localconf) {
+	protected function includeLocalconf($localconf) {
 		$TYPO3_CONF_VARS = array();
 		$typo_db = '';
 		$typo_db_username = '';
@@ -551,7 +549,7 @@ class t3lib_superadmin {
 	 * @param	array		$siteInfo array, containing username/password/host/database values.
 	 * @return	string		Array message if any
 	 */
-	function connectToDatabase($siteInfo) {
+	protected function connectToDatabase($siteInfo) {
 		if (@mysql_pconnect($siteInfo['TYPO3_db_host'], $siteInfo['TYPO3_db_username'], $siteInfo['TYPO3_db_password'])) {
 			if (!$siteInfo['TYPO3_db']) {
 				return $this->error('No database selected');
@@ -573,7 +571,7 @@ class t3lib_superadmin {
 	 * @access private
 	 * @see processSiteDir()
 	 */
-	function getDBInfo($key) {
+	protected function getDBInfo($key) {
 		$DB = $this->globalSiteInfo[$key]['siteInfo']['TYPO3_db'];
 
 			// Non-admin users
@@ -608,7 +606,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	string		HTML table
 	 */
-	function makeTable() {
+	protected function makeTable() {
 
 			// Header row
 		$info = array();
@@ -699,7 +697,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	string		HTML
 	 */
-	function localExtensions() {
+	protected function localExtensions() {
 		$this->extensionInfoArray = array();
 
 			// Traverse $this->globalSiteInfo for local extensions:
@@ -873,7 +871,7 @@ class t3lib_superadmin {
 	 * @param	string		Key to globalSiteInformation array
 	 * @return	array		Information array (unless an error occured)
 	 */
-	function getExtensionInfo($path, $extKey, $k) {
+	protected function getExtensionInfo($path, $extKey, $k) {
 		$file = $path . $extKey . '/ext_emconf.php';
 		if (@is_file($file)) {
 			$_EXTKEY = $extKey;
@@ -931,7 +929,7 @@ class t3lib_superadmin {
 	 * @param	boolean		If set, directories are included as well.
 	 * @return	array		$fileArr with new entries added.
 	 */
-	function getAllFilesAndFoldersInPath($fileArr, $extPath, $extList = '', $regDirs = 0) {
+	protected function getAllFilesAndFoldersInPath($fileArr, $extPath, $extList = '', $regDirs = 0) {
 		if ($regDirs) {
 			$fileArr[] = $extPath;
 		}
@@ -955,7 +953,7 @@ class t3lib_superadmin {
 	 * @param	string		Abs path prefix for files.
 	 * @return	array		Array with modification times of files (filenames are keys)
 	 */
-	function findMostRecent($fileArr, $extPath) {
+	protected function findMostRecent($fileArr, $extPath) {
 		$mtimeArray = array();
 		foreach ($fileArr as $fN) {
 			if ($fN != 'ext_emconf.php') {
@@ -973,7 +971,7 @@ class t3lib_superadmin {
 	 * @param	string		Prefix to remove
 	 * @return	array		Modified file array (or error string)
 	 */
-	function removePrefixPathFromList($fileArr, $extPath) {
+	protected function removePrefixPathFromList($fileArr, $extPath) {
 		foreach ($fileArr as $k => $absFileRef) {
 			if (t3lib_div::isFirstPartOfStr($absFileRef, $extPath)) {
 				$fileArr[$k] = substr($absFileRef, strlen($extPath));
@@ -997,7 +995,7 @@ class t3lib_superadmin {
 	 * @param	string		KEY pointing to installation
 	 * @return	string		HTML content
 	 */
-	function singleSite($exp) {
+	protected function singleSite($exp) {
 		$all = $this->globalSiteInfo[$exp];
 
 			// General information:
@@ -1028,7 +1026,7 @@ class t3lib_superadmin {
 	 * @param	string		Database
 	 * @return	string		HTML
 	 */
-	function loginLog($DB) {
+	protected function loginLog($DB) {
 			// Non-admin users
 			//1=login, 2=logout, 3=failed login (+ errorcode 3), 4=failure_warning_email sent
 		$query = $GLOBALS['TYPO3_DB']->SELECTquery(
@@ -1064,7 +1062,7 @@ class t3lib_superadmin {
 	 * @param	array		Data array to insert in log message
 	 * @return	string		Log details.
 	 */
-	function log_getDetails($text, $data) {
+	protected function log_getDetails($text, $data) {
 			// $code is used later on to substitute errormessages with language-corrected values...
 		if (is_array($data)) {
 			return sprintf($text, $data[0], $data[1], $data[2], $data[3], $data[4]);
@@ -1080,7 +1078,7 @@ class t3lib_superadmin {
 	 * @param	string		KEY pointing to installation
 	 * @return	string		HTML content
 	 */
-	function rmCachedFiles($exp) {
+	protected function rmCachedFiles($exp) {
 		$all = $this->globalSiteInfo[$exp];
 		$content = '
 			<h2>' . htmlspecialchars($all['siteInfo']['sitename'] . ' (DB: ' . $all['siteInfo']['TYPO3_db']) . ')</h2>
@@ -1115,7 +1113,7 @@ class t3lib_superadmin {
 	 * @param	string		Action key "update" or "info"
 	 * @return	string		HTML output.
 	 */
-	function menuContent($exp) {
+	protected function menuContent($exp) {
 		if ($exp) {
 
 				// Initialize:
@@ -1187,7 +1185,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	string		HTML table
 	 */
-	function makeAdminLogin() {
+	protected function makeAdminLogin() {
 
 			// Initialize:
 		$lines = array();
@@ -1263,7 +1261,7 @@ class t3lib_superadmin {
 	 *
 	 * @return	string		Form content.
 	 */
-	function changeAdminPasswordsForm() {
+	protected function changeAdminPasswordsForm() {
 		$content = '';
 
 		foreach ($this->changeAdminPasswords as $k => $p) {
@@ -1298,7 +1296,7 @@ class t3lib_superadmin {
 	 * @return	string		Status
 	 * @see changeAdminPasswordsForm()
 	 */
-	function setNewPasswords() {
+	protected function setNewPasswords() {
 		$whichFields = t3lib_div::_POST('SETFIELDS');
 		$pass = trim(t3lib_div::_POST('NEWPASS'));
 		$passMD5 = t3lib_div::_POST('NEWPASS_md5');

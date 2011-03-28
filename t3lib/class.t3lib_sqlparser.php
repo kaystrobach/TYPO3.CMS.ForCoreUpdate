@@ -99,8 +99,8 @@
 class t3lib_sqlparser {
 
 		// Parser:
-	var $parse_error = ''; // Parsing error string
-	var $lastStopKeyWord = ''; // Last stop keyword used.
+	public $parse_error = ''; // Parsing error string
+	public $lastStopKeyWord = ''; // Last stop keyword used.
 
 
 	/*************************************

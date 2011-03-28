@@ -74,29 +74,27 @@ class t3lib_install {
 
 
 		// External, Static
-	var $updateIdentity = ''; // Set to string which identifies the script using this class.
-	var $deletedPrefixKey = 'zzz_deleted_'; // Prefix used for tables/fields when deleted/renamed.
-	var $dbUpdateCheckboxPrefix = 'TYPO3_INSTALL[database_update]'; // Prefix for checkbox fields when updating database.
-	var $localconf_addLinesOnly = 0; // If this is set, modifications to localconf.php is done by adding new lines to the array only. If unset, existing values are recognized and changed.
-	var $localconf_editPointToken = 'INSTALL SCRIPT EDIT POINT TOKEN - all lines after this points may be changed by the install script!'; // If set and addLinesOnly is disabled, lines will be change only if they are after this token (on a single line!) in the file
-	var $allowUpdateLocalConf = 0; // If true, this class will allow the user to update the localconf.php file. Is set true in the init.php file.
-	var $backPath = '../'; // Backpath (used for icons etc.)
+	public $updateIdentity = ''; // Set to string which identifies the script using this class.
+	public $deletedPrefixKey = 'zzz_deleted_'; // Prefix used for tables/fields when deleted/renamed.
+	public $dbUpdateCheckboxPrefix = 'TYPO3_INSTALL[database_update]'; // Prefix for checkbox fields when updating database.
+	public $localconf_addLinesOnly = 0; // If this is set, modifications to localconf.php is done by adding new lines to the array only. If unset, existing values are recognized and changed.
+	public $localconf_editPointToken = 'INSTALL SCRIPT EDIT POINT TOKEN - all lines after this points may be changed by the install script!'; // If set and addLinesOnly is disabled, lines will be change only if they are after this token (on a single line!) in the file
+	public $allowUpdateLocalConf = 0; // If true, this class will allow the user to update the localconf.php file. Is set true in the init.php file.
+	public $backPath = '../'; // Backpath (used for icons etc.)
 
-	var $multiplySize = 1; // Multiplier of SQL field size (for char, varchar and text fields)
-	var $character_sets = array(); // Caching output of $GLOBALS['TYPO3_DB']->admin_get_charsets()
+	public $multiplySize = 1; // Multiplier of SQL field size (for char, varchar and text fields)
+	public $character_sets = array(); // Caching output of $GLOBALS['TYPO3_DB']->admin_get_charsets()
 
 		// Internal, dynamic:
-	var $setLocalconf = 0; // Used to indicate that a value is change in the line-array of localconf and that it should be written.
-	var $messages = array(); // Used to set (error)messages from the executing functions like mail-sending, writing Localconf and such
-	var $touchedLine = 0; // updated with line in localconf.php file that was changed.
+	protected $setLocalconf = 0; // Used to indicate that a value is change in the line-array of localconf and that it should be written.
+	protected $messages = array(); // Used to set (error)messages from the executing functions like mail-sending, writing Localconf and such
+	protected $touchedLine = 0; // updated with line in localconf.php file that was changed.
 
 
 	/**
-	 * Constructor function
-	 *
-	 * @return	void
+	 * Constructor
 	 */
-	function t3lib_install() {
+	function __construct() {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['multiplyDBfieldSize'] >= 1 && $GLOBALS['TYPO3_CONF_VARS']['SYS']['multiplyDBfieldSize'] <= 5) {
 			$this->multiplySize = (double) $GLOBALS['TYPO3_CONF_VARS']['SYS']['multiplyDBfieldSize'];
 		}
@@ -426,7 +424,7 @@ class t3lib_install {
 	 * @return	boolean		Returns TRUE if string is OK
 	 * @see setValueInLocalconfFile()
 	 */
-	function checkForBadString($string) {
+	protected function checkForBadString($string) {
 		return preg_match('/[' . LF . CR . ']/', $string) ? FALSE : TRUE;
 	}
 
@@ -437,7 +435,7 @@ class t3lib_install {
 	 * @return	string		Output value
 	 * @see setValueInLocalconfFile()
 	 */
-	function slashValueForSingleDashes($value) {
+	protected function slashValueForSingleDashes($value) {
 		$value = str_replace("'.LF.'", '###INSTALL_TOOL_LINEBREAK###', $value);
 		$value = str_replace("'", "\'", str_replace('\\', '\\\\', $value));
 		$value = str_replace('###INSTALL_TOOL_LINEBREAK###', "'.LF.'", $value);
@@ -458,7 +456,7 @@ class t3lib_install {
 	 * @param	string		Should be a string read from an SQL-file made with 'mysqldump [database_name] -d'
 	 * @return	array		Array with information about table.
 	 */
-	function getFieldDefinitions_fileContent($fileContent) {
+	protected function getFieldDefinitions_fileContent($fileContent) {
 		$lines = t3lib_div::trimExplode(LF, $fileContent, 1);
 		$table = '';
 		$total = array();
@@ -558,7 +556,7 @@ class t3lib_install {
 	 * @access private
 	 * @see getFieldDefinitions_fileContent()
 	 */
-	function getFieldDefinitions_sqlContent_parseTypes(&$total) {
+	protected function getFieldDefinitions_sqlContent_parseTypes(&$total) {
 
 		$mSize = (double) $this->multiplySize;
 		if ($mSize > 1) {
@@ -628,7 +626,7 @@ class t3lib_install {
 	 * @param	string		Character set
 	 * @return	string		Corresponding default collation
 	 */
-	function getCollationForCharset($charset) {
+	protected function getCollationForCharset($charset) {
 			// Load character sets, if not cached already
 		if (!count($this->character_sets)) {
 			if (method_exists($GLOBALS['TYPO3_DB'], 'admin_get_charsets')) {
@@ -651,7 +649,7 @@ class t3lib_install {
 	 *
 	 * @return	array		Array with information about table.
 	 */
-	function getFieldDefinitions_database() {
+	public function getFieldDefinitions_database() {
 		$total = array();
 		$tempKeys = array();
 		$tempKeysPrefix = array();
@@ -731,7 +729,7 @@ class t3lib_install {
 	 * @param	boolean		If set, this function ignores NOT NULL statements of the SQL file field definition when comparing current field definition from database with field definition from SQL file. This way, NOT NULL statements will be executed when the field is initially created, but the SQL parser will never complain about missing NOT NULL statements afterwards.
 	 * @return	array		Returns an array with 1) all elements from $FDsrc that is not in $FDcomp (in key 'extra') and 2) all elements from $FDsrc that is different from the ones in $FDcomp
 	 */
-	function getDatabaseExtra($FDsrc, $FDcomp, $onlyTableList = '', $ignoreNotNullWhenComparing = TRUE) {
+	public function getDatabaseExtra($FDsrc, $FDcomp, $onlyTableList = '', $ignoreNotNullWhenComparing = TRUE) {
 		$extraArr = array();
 		$diffArr = array();
 
@@ -788,7 +786,7 @@ class t3lib_install {
 	 * @param	string		List of fields in diff array to take notice of.
 	 * @return	array		Array of SQL statements (organized in keys depending on type)
 	 */
-	function getUpdateSuggestions($diffArr, $keyList = 'extra,diff') {
+	public function getUpdateSuggestions($diffArr, $keyList = 'extra,diff') {
 		$statements = array();
 		$deletedPrefixKey = $this->deletedPrefixKey;
 		$remove = 0;
@@ -934,7 +932,7 @@ class t3lib_install {
 	 * @param	array		MySQL result row
 	 * @return	string		Field definition
 	 */
-	function assembleFieldDefinition($row) {
+	protected function assembleFieldDefinition($row) {
 		$field = array($row['Type']);
 
 		if ($row['Null'] == 'NO') {
@@ -961,7 +959,7 @@ class t3lib_install {
 	 * @param	string		Regex to filter SQL lines to include
 	 * @return	array		Array of SQL statements
 	 */
-	function getStatementArray($sqlcode, $removeNonSQL = 0, $query_regex = '') {
+	protected function getStatementArray($sqlcode, $removeNonSQL = 0, $query_regex = '') {
 		$sqlcodeArr = explode(LF, $sqlcode);
 
 			// Based on the assumption that the sql-dump has
@@ -1003,7 +1001,7 @@ class t3lib_install {
 	 * @param	boolean		If set, will count number of INSERT INTO statements following that table definition
 	 * @return	array		Array with table definitions in index 0 and count in index 1
 	 */
-	function getCreateTables($statements, $insertCountFlag = 0) {
+	protected function getCreateTables($statements, $insertCountFlag = 0) {
 		$crTables = array();
 		$insertCount = array();
 		foreach ($statements as $line => $lineContent) {
@@ -1040,7 +1038,7 @@ class t3lib_install {
 	 * @param	string		Table name
 	 * @return	array		Array of INSERT INTO statements where table match $table
 	 */
-	function getTableInsertStatements($statements, $table) {
+	protected function getTableInsertStatements($statements, $table) {
 		$outStatements = array();
 		foreach ($statements as $line => $lineContent) {
 			$reg = array();
@@ -1061,7 +1059,7 @@ class t3lib_install {
 	 * @param	array		Array with keys that must match keys in $arr. Only where a key in this array is set and true will the query be executed (meant to be passed from a form checkbox)
 	 * @return	mixed		Array with error message from database if any occured. Otherwise true if everything was executed successfully.
 	 */
-	function performUpdateQueries($arr, $keyArr) {
+	public function performUpdateQueries($arr, $keyArr) {
 		$result = array();
 		if (is_array($arr)) {
 			foreach ($arr as $key => $string) {
@@ -1088,7 +1086,7 @@ class t3lib_install {
 	 * @return	array		List of tables.
 	 * @see t3lib_db::admin_get_tables()
 	 */
-	function getListOfTables() {
+	public function getListOfTables() {
 		$whichTables = $GLOBALS['TYPO3_DB']->admin_get_tables(TYPO3_db);
 		foreach ($whichTables as $key => &$value) {
 			$value = $key;
@@ -1107,7 +1105,7 @@ class t3lib_install {
 	 * @param	boolean		If set, will show the prefix "Current value" if $currentValue is given.
 	 * @return	string		HTML table with checkboxes for update. Must be wrapped in a form.
 	 */
-	function generateUpdateDatabaseForm_checkboxes($arr, $label, $checked = 1, $iconDis = 0, $currentValue = array(), $cVfullMsg = 0) {
+	public function generateUpdateDatabaseForm_checkboxes($arr, $label, $checked = 1, $iconDis = 0, $currentValue = array(), $cVfullMsg = 0) {
 		$out = array();
 		if (is_array($arr)) {
 			$tableId = uniqid('table');

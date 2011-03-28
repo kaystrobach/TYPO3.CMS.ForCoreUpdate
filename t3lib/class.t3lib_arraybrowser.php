@@ -61,14 +61,14 @@
  * @see SC_mod_tools_config_index::main()
  */
 class t3lib_arrayBrowser {
-	var $expAll = FALSE; // If set, will expand all (depthKeys is obsolete then) (and no links are applied)
-	var $dontLinkVar = FALSE; // If set, the variable keys are not linked.
-	var $depthKeys = array(); // Array defining which keys to expand. Typically set from outside from some session variable - otherwise the array will collapse.
-	var $searchKeys = array(); // After calling the getSearchKeys function this array is populated with the key-positions in the array which contains values matching the search.
-	var $fixedLgd = 1; // If set, the values are truncated with "..." appended if longer than a certain length.
-	var $regexMode = 0; // If set, search for string with regex, otherwise stristr()
-	var $searchKeysToo = FALSE; // If set, array keys are subject to the search too.
-	var $varName = ''; // Set var name here if you want links to the variable name.
+	protected $expAll = FALSE; // If set, will expand all (depthKeys is obsolete then) (and no links are applied)
+	protected $dontLinkVar = FALSE; // If set, the variable keys are not linked.
+	protected $depthKeys = array(); // Array defining which keys to expand. Typically set from outside from some session variable - otherwise the array will collapse.
+	protected $searchKeys = array(); // After calling the getSearchKeys function this array is populated with the key-positions in the array which contains values matching the search.
+	protected $fixedLgd = 1; // If set, the values are truncated with "..." appended if longer than a certain length.
+	protected $regexMode = 0; // If set, search for string with regex, otherwise stristr()
+	protected $searchKeysToo = FALSE; // If set, array keys are subject to the search too.
+	protected $varName = ''; // Set var name here if you want links to the variable name.
 
 	/**
 	 * Make browsable tree
@@ -80,7 +80,7 @@ class t3lib_arrayBrowser {
 	 * @return	string		HTML for the tree
 	 * @see SC_mod_tools_config_index::main()
 	 */
-	function tree($arr, $depth_in, $depthData) {
+	public function tree($arr, $depth_in, $depthData) {
 		$HTML = '';
 		$a = 0;
 
@@ -149,7 +149,7 @@ class t3lib_arrayBrowser {
 	 * @param	string		Depth path
 	 * @return	string		Title string, htmlspecialchars()'ed
 	 */
-	function wrapValue($theValue, $depth) {
+	protected function wrapValue($theValue, $depth) {
 		$wrappedValue = '';
 		if (strlen($theValue) > 0) {
 			$wrappedValue = '<strong>' . htmlspecialchars($theValue) . '</strong>';
@@ -165,7 +165,7 @@ class t3lib_arrayBrowser {
 	 * @param	string		The value for the array entry.
 	 * @return	string		Title string, htmlspecialchars()'ed
 	 */
-	function wrapArrayKey($label, $depth, $theValue) {
+	protected function wrapArrayKey($label, $depth, $theValue) {
 
 			// Protect label:
 		$label = htmlspecialchars($label);
@@ -190,7 +190,7 @@ class t3lib_arrayBrowser {
 	 * @param	array		Key array, for first call pass empty array
 	 * @return	array
 	 */
-	function getSearchKeys($keyArr, $depth_in, $searchString, $keyArray) {
+	protected function getSearchKeys($keyArr, $depth_in, $searchString, $keyArray) {
 		$c = count($keyArr);
 		if ($depth_in) {
 			$depth_in = $depth_in . '.';
@@ -227,7 +227,7 @@ class t3lib_arrayBrowser {
 	 * @param	integer		Max number of chars
 	 * @return	string		Processed string
 	 */
-	function fixed_lgd($string, $chars) {
+	protected function fixed_lgd($string, $chars) {
 		if ($chars >= 4) {
 			if (strlen($string) > $chars) {
 				return substr($string, 0, $chars - 3) . '...';
@@ -244,7 +244,7 @@ class t3lib_arrayBrowser {
 	 * @return	array		Output depth_key array with entries added/removed based on $arr
 	 * @see SC_mod_tools_config_index::main()
 	 */
-	function depthKeys($arr, $settings) {
+	protected function depthKeys($arr, $settings) {
 		$tsbrArray = array();
 		foreach ($arr as $theK => $theV) {
 			$theKeyParts = explode('.', $theK);

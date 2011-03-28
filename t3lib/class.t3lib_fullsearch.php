@@ -72,10 +72,10 @@
  * @subpackage t3lib
  */
 class t3lib_fullsearch {
-	var $storeList = 'search_query_smallparts,search_result_labels,labels_noprefix,show_deleted,queryConfig,queryTable,queryFields,queryLimit,queryOrder,queryOrderDesc,queryOrder2,queryOrder2Desc,queryGroup,search_query_makeQuery';
-	var $downloadScript = 'index.php';
-	var $formW = 48;
-	var $noDownloadB = 0;
+	public $storeList = 'search_query_smallparts,search_result_labels,labels_noprefix,show_deleted,queryConfig,queryTable,queryFields,queryLimit,queryOrder,queryOrderDesc,queryOrder2,queryOrder2Desc,queryGroup,search_query_makeQuery';
+	public $downloadScript = 'index.php';
+	public $formW = 48;
+	public $noDownloadB = 0;
 
 	protected $formName = '';
 
@@ -92,7 +92,7 @@ class t3lib_fullsearch {
 	 *
 	 * @return	[type]		...
 	 */
-	function form() {
+	public function form() {
 		$out = '
 		Search Word:<BR>
 		<input type="text" name="SET[sword]" value="' . htmlspecialchars($GLOBALS['SOBE']->MOD_SETTINGS['sword']) . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(20) . '><input type="submit" name="submit" value="Search All Records">
@@ -106,7 +106,7 @@ class t3lib_fullsearch {
 	 *
 	 * @return	[type]		...
 	 */
-	function makeStoreControl() {
+	protected function makeStoreControl() {
 			// Load/Save
 		$storeArray = $this->initStoreArray();
 		$cur = '';
@@ -144,7 +144,7 @@ class t3lib_fullsearch {
 	 *
 	 * @return	[type]		...
 	 */
-	function initStoreArray() {
+	protected function initStoreArray() {
 		$storeArray = array(
 			'0' => '[New]'
 		);
@@ -164,7 +164,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$storeArray: ...
 	 * @return	[type]		...
 	 */
-	function cleanStoreQueryConfigs($storeQueryConfigs, $storeArray) {
+	protected function cleanStoreQueryConfigs($storeQueryConfigs, $storeArray) {
 		if (is_array($storeQueryConfigs)) {
 			foreach ($storeQueryConfigs as $k => $v) {
 				if (!isset($storeArray[$k])) {
@@ -182,7 +182,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$index: ...
 	 * @return	[type]		...
 	 */
-	function addToStoreQueryConfigs($storeQueryConfigs, $index) {
+	protected function addToStoreQueryConfigs($storeQueryConfigs, $index) {
 		$keyArr = explode(',', $this->storeList);
 		$storeQueryConfigs[$index] = array();
 		foreach ($keyArr as $k) {
@@ -197,7 +197,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$uid: ...
 	 * @return	[type]		...
 	 */
-	function saveQueryInAction($uid) {
+	protected function saveQueryInAction($uid) {
 		if (t3lib_extMgm::isLoaded('sys_action')) {
 			$keyArr = explode(',', $this->storeList);
 			$saveArr = array();
@@ -208,7 +208,7 @@ class t3lib_fullsearch {
 			$qOK = 0;
 				// Show query
 			if ($saveArr['queryTable']) {
-				/* @var t3lib_queryGenerator */
+				/* @var $qGen t3lib_queryGenerator */
 				$qGen = t3lib_div::makeInstance('t3lib_queryGenerator');
 				$qGen->init('queryConfig', $saveArr['queryTable']);
 				$qGen->makeSelectorTable($saveArr);
@@ -245,7 +245,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$writeArray: ...
 	 * @return	[type]		...
 	 */
-	function loadStoreQueryConfigs($storeQueryConfigs, $storeIndex, $writeArray) {
+	protected function loadStoreQueryConfigs($storeQueryConfigs, $storeIndex, $writeArray) {
 		if ($storeQueryConfigs[$storeIndex]) {
 			$keyArr = explode(',', $this->storeList);
 			foreach ($keyArr as $k) {
@@ -260,7 +260,7 @@ class t3lib_fullsearch {
 	 *
 	 * @return	[type]		...
 	 */
-	function procesStoreControl() {
+	protected function procesStoreControl() {
 		$storeArray = $this->initStoreArray();
 		$storeQueryConfigs = unserialize($GLOBALS['SOBE']->MOD_SETTINGS['storeQueryConfigs']);
 
@@ -356,7 +356,7 @@ class t3lib_fullsearch {
 	 *
 	 * @return	[type]		...
 	 */
-	function queryMaker() {
+	public function queryMaker() {
 		global $TCA;
 
 		$output = '';
@@ -375,6 +375,7 @@ class t3lib_fullsearch {
 
 
 			// Query Maker:
+		/** @var $qGen t3lib_queryGenerator */
 		$qGen = t3lib_div::makeInstance('t3lib_queryGenerator');
 		$qGen->init('queryConfig', $GLOBALS['SOBE']->MOD_SETTINGS['queryTable']);
 		if ($this->formName) {
@@ -431,7 +432,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function getQueryResultCode($mQ, $res, $table) {
+	protected function getQueryResultCode($mQ, $res, $table) {
 		global $TCA;
 		$out = '';
 		$cPR = array();
@@ -555,7 +556,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function csvValues($row, $delim = ',', $quote = '"', $conf = array(), $table = '') {
+	protected function csvValues($row, $delim = ',', $quote = '"', $conf = array(), $table = '') {
 		$valueArray = $row;
 		if ($GLOBALS['SOBE']->MOD_SETTINGS['search_result_labels'] && $table) {
 			foreach ($valueArray as $key => $val) {
@@ -571,7 +572,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$str: ...
 	 * @return	[type]		...
 	 */
-	function tableWrap($str) {
+	protected function tableWrap($str) {
 		return '<table border="0" cellpadding="10" cellspacing="0" class="bgColor4"><tr><td nowrap><pre>' . $str . '</pre></td></tr></table>';
 	}
 
@@ -580,7 +581,7 @@ class t3lib_fullsearch {
 	 *
 	 * @return	[type]		...
 	 */
-	function search() {
+	public function search() {
 		global $TCA;
 		$SET = $GLOBALS['SOBE']->MOD_SETTINGS;
 		$swords = $SET['sword'];
@@ -636,7 +637,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function resultRowDisplay($row, $conf, $table) {
+	protected function resultRowDisplay($row, $conf, $table) {
 		static $even = FALSE;
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$SET = $GLOBALS['SOBE']->MOD_SETTINGS;
@@ -698,7 +699,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$splitString: ...
 	 * @return	[type]		...
 	 */
-	function getProcessedValueExtra($table, $fN, $fV, $conf, $splitString) {
+	protected function getProcessedValueExtra($table, $fN, $fV, $conf, $splitString) {
 		global $TCA;
 			// Analysing the fields in the table.
 		if (is_array($TCA[$table])) {
@@ -817,7 +818,7 @@ class t3lib_fullsearch {
 	* @param	[type]		$perms_clause: ...
 	* @return	[type]		...
 	*/
-	function getTreeList($id, $depth, $begin = 0, $perms_clause) {
+	protected function getTreeList($id, $depth, $begin = 0, $perms_clause) {
 		$depth = intval($depth);
 		$begin = intval($begin);
 		$id = intval($id);
@@ -855,7 +856,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$splitString: ...
 	 * @return	[type]		...
 	 */
-	function makeValueList($fN, $fV, $conf, $table, $splitString) {
+	protected function makeValueList($fN, $fV, $conf, $table, $splitString) {
 		$fieldSetup = $conf;
 		$out = '';
 		if ($fieldSetup['type'] == 'files') {
@@ -1069,7 +1070,7 @@ class t3lib_fullsearch {
 	 * @param	string		table: Table name
 	 * @return	string		HTML of table header
 	 */
-	function resultRowTitles($row, $conf, $table) {
+	protected function resultRowTitles($row, $conf, $table) {
 		$SET = $GLOBALS['SOBE']->MOD_SETTINGS;
 
 		$tableHeader = array();
@@ -1108,7 +1109,7 @@ class t3lib_fullsearch {
 	 * @param	[type]		$table: ...
 	 * @return	[type]		...
 	 */
-	function csvRowTitles($row, $conf, $table) {
+	protected function csvRowTitles($row, $conf, $table) {
 		$out = '';
 		$SET = $GLOBALS['SOBE']->MOD_SETTINGS;
 		foreach ($row as $fN => $fV) {
