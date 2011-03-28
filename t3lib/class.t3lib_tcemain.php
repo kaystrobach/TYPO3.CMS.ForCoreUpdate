@@ -278,9 +278,9 @@ class t3lib_TCEmain {
 	 *
 	 * @var t3lib_beUserAuth
 	 */
-	protected $BE_USER;
-	protected $userid; // will be set to uid of be_user executing this script
-	protected $username; // will be set to username of be_user executing this script
+	public $BE_USER;
+	public $userid; // will be set to uid of be_user executing this script
+	public $username; // will be set to username of be_user executing this script
 	public $admin; // will be set if user is admin
 
 	protected $defaultPermissions = array( // Can be overridden from $TYPO3_CONF_VARS
@@ -289,9 +289,9 @@ class t3lib_TCEmain {
 		'everybody' => ''
 	);
 
-	protected $exclude_array; // The list of <table>-<fields> that cannot be edited by user. This is compiled from TCA/exclude-flag combined with non_exclude_fields for the user.
-	protected $datamap = array(); // Set with incoming data array
-	protected $cmdmap = array(); // Set with incoming cmd array
+	public $exclude_array; // The list of <table>-<fields> that cannot be edited by user. This is compiled from TCA/exclude-flag combined with non_exclude_fields for the user.
+	public $datamap = array(); // Set with incoming data array
+	public $cmdmap = array(); // Set with incoming cmd array
 
 		// Internal static:
 	protected $pMap = array( // Permission mapping

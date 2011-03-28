@@ -456,7 +456,7 @@ class t3lib_TSparser {
 	 * @param	array		Global setup code if $string points to a global object path. But if string is prefixed with "." then its the local setup array.
 	 * @return	array		An array with keys 0/1 being value/property respectively
 	 */
-	protected function getVal($string, $setup) {
+	public function getVal($string, $setup) {
 		if ((string) $string != '') {
 			$keyLen = strcspn($string, '.');
 			if ($keyLen == strlen($string)) {
@@ -486,7 +486,7 @@ class t3lib_TSparser {
 	 * @param	boolean		If set, then both value and property is wiped out when a copy is made of another value.
 	 * @return	void
 	 */
-	protected function setVal($string, &$setup, $value, $wipeOut = 0) {
+	public function setVal($string, &$setup, $value, $wipeOut = 0) {
 		if ((string) $string != '') {
 			$keyLen = strcspn($string, '.');
 			if ($keyLen == strlen($string)) {
