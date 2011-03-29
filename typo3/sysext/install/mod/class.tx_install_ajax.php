@@ -130,7 +130,7 @@ class tx_install_ajax {
 			header("Content-type: text/plain");
 		}
 
-		return t3lib_div::getRandomHexString($keyLength);
+		return t3lib_div::makeInstance('t3lib_security_Randomizer')->getRandomHexString($keyLength);
 	}
 
 	/**

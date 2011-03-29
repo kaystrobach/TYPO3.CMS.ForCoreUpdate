@@ -132,7 +132,7 @@ class tx_saltedpasswords_salts_md5Test extends tx_phpunit_testcase {
 		$password = 'password';
 
 			// custom salt without setting
-		$randomBytes = t3lib_div::generateRandomBytes($this->objectInstance->getSaltLength());
+		$randomBytes = t3lib_div::makeInstance('t3lib_security_Randomizer')->generateRandomBytes($this->objectInstance->getSaltLength());
 		$salt = $this->objectInstance->base64Encode($randomBytes, $this->objectInstance->getSaltLength());
 		$this->assertTrue($this->objectInstance->isValidSalt($salt), $this->getWarningWhenMethodUnavailable());
 

@@ -237,7 +237,7 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 * @return	string		a character string containing settings and a random salt
 	 */
 	protected function getGeneratedSalt() {
-		$randomBytes = t3lib_div::generateRandomBytes($this->getSaltLength());
+		$randomBytes = t3lib_div::makeInstance('t3lib_security_Randomizer')->generateRandomBytes($this->getSaltLength());
 
 		return $this->base64Encode($randomBytes, $this->getSaltLength());
 	}

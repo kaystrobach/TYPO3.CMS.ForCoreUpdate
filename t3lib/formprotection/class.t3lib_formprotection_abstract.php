@@ -158,7 +158,7 @@ abstract class t3lib_formprotection_Abstract {
 	 * @return string
 	 */
 	protected function generateSessionToken() {
-		return bin2hex(t3lib_div::generateRandomBytes(32));
+		return bin2hex(t3lib_div::makeInstance('t3lib_security_Randomizer')->generateRandomBytes(32));
 	}
 
 	/**

@@ -688,7 +688,7 @@ abstract class t3lib_userAuth {
 	 * @return	string		The new session ID
 	 */
 	public function createSessionId() {
-		return t3lib_div::getRandomHexString($this->hash_length);
+		return t3lib_div::makeInstance('t3lib_security_Randomizer')->getRandomHexString($this->hash_length);
 	}
 
 

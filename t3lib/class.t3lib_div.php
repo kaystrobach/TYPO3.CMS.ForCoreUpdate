@@ -1348,54 +1348,18 @@ final class t3lib_div {
 	/**
 	 * Returns a string of highly randomized bytes (over the full 8-bit range).
 	 *
-	 * @copyright Drupal CMS
-	 * @license GNU General Public License version 2
+	 * Note: Returned values are not guaranteed to be crypto-safe,
+	 * most likely they are not, depending on the used retrieval method.
+	 *
 	 * @param integer $count Number of characters (bytes) to return
 	 * @return string Random Bytes
+	 * @see http://bugs.php.net/bug.php?id=52523
+	 * @see http://www.php-security.org/2010/05/09/mops-submission-04-generating-unpredictable-session-ids-and-hashes/index.html
+	 * @deprecated since TYPO3 4.6, will be removed in TYPO3 4.8 - Use self::makeInstance('t3lib_security_Randomizer')->generateRandomBytes() instead
 	 */
 	public static function generateRandomBytes($count) {
-		$output = '';
-			// /dev/urandom is available on many *nix systems and is considered
-			// the best commonly available pseudo-random source.
-		if (TYPO3_OS != 'WIN' && ($fh = @fopen('/dev/urandom', 'rb'))) {
-			$output = fread($fh, $count);
-			fclose($fh);
-		} elseif (TYPO3_OS == 'WIN') {
-			if (class_exists('COM')) {
-				try {
-					$com = new COM('CAPICOM.Utilities.1');
-					$output = base64_decode($com->GetRandom($count, 0));
-				} catch (Exception $e) {
-					// CAPICOM not installed
-				}
-			}
-			if ($output === '') {
-				if (function_exists('mcrypt_create_iv')) {
-					$output = mcrypt_create_iv($count, MCRYPT_DEV_URANDOM);
-				} elseif (function_exists('openssl_random_pseudo_bytes')) {
-					$isStrong = NULL;
-					$output = openssl_random_pseudo_bytes($count, $isStrong);
-						// skip ssl since it wasn't using the strong algo
-					if ($isStrong !== TRUE) {
-						$output = '';
-					}
-				}
-			}
-		}
-
-			// fallback if other random byte generation failed until now
-		if (!isset($output{$count - 1})) {
-				// We initialize with the somewhat random.
-			$randomState = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']
-					. base_convert(memory_get_usage() % pow(10, 6), 10, 2)
-					. microtime() . uniqid('') . getmypid();
-			while (!isset($output{$count - 1})) {
-				$randomState = sha1(microtime() . mt_rand() . $randomState);
-				$output .= sha1(mt_rand() . $randomState, TRUE);
-			}
-			$output = substr($output, strlen($output) - $count, $count);
-		}
-		return $output;
+		self::logDeprecatedFunction();
+		return self::makeInstance('t3lib_security_Randomizer')->generateRandomBytes($count);
 	}
 
 	/**
@@ -1403,9 +1367,11 @@ final class t3lib_div {
 	 *
 	 * @param integer $count Number of hex characters to return
 	 * @return string Random Bytes
+	 * @deprecated since TYPO3 4.6, will be removed in TYPO3 4.8 - Use t3lib_div::makeInstance('t3lib_security_Randomizer')->generateRandomBytes() instead
 	 */
 	public static function getRandomHexString($count) {
-		return substr(bin2hex(self::generateRandomBytes(intval(($count + 1) / 2))), 0, $count);
+		self::logDeprecatedFunction();
+		return self::makeInstance('t3lib_security_Randomizer')->getRandomHexString($count);
 	}
 
 	/**

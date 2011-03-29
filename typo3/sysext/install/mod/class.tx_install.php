@@ -8309,7 +8309,7 @@ $out="
 	 * @return string The encryption key
 	 */
 	public function createEncryptionKey($keyLength = 96) {
-		$bytes = t3lib_div::generateRandomBytes($keyLength);
+		$bytes = t3lib_div::makeInstance('t3lib_security_Randomizer')->generateRandomBytes($keyLength);
 		return substr(bin2hex($bytes), -96);
 	}
 
