@@ -62,4 +62,20 @@ $TYPO3_CONF_VARS['EXTCONF']['indexed_search']['pi1_hooks'] = array (
 /*
 	$TYPO3_CONF_VARS['EXTCONF']['indexed_search']['crawler']['tx_myext_example1'] = 'EXT:indexed_search/example/class.crawlerhook.php:&tx_indexedsearch_crawlerhook';
 */
+
+
+/**
+ * Configure the Extbase Plugin to call the right combination of Controller and Action
+ *  according to the user input (default settings, FlexForm, URL etc.)
+ */
+Tx_Extbase_Utility_Extension::configurePlugin(
+	$_EXTKEY, 'Pi2',
+		// An array holding the controller-action-combinations that are accessible 
+		// The first controller and its first action will be the default
+	array('Search' => 'form,search'),
+		// An array of non-cachable controller-action-combinations (they must already be enabled)
+	array('Search' => 'form,search')
+);
+
+
 ?>

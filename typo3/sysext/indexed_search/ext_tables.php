@@ -57,4 +57,24 @@ if (t3lib_extMgm::isLoaded('crawler'))	{
 	$TCA['index_config']['types']['tx_myext_example1'] = $TCA['index_config']['types']['0'];
 */
 
+
+
+
+$extensionName = t3lib_div::underscoredToUpperCamelCase($_EXTKEY);
+t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'Indexed Search');
+
+/**
+ * Registers a Plugin to be listed in the Backend.
+ * You also have to configure the Dispatcher in ext_localconf.php.
+ */
+Tx_Extbase_Utility_Extension::registerPlugin(
+	$_EXTKEY,			// The extension name (in UpperCamelCase) or the extension key (in lower_underscore)
+	'Pi2',				// A unique name of the plugin in UpperCamelCase
+	'Indexed Search with Extbase'	// A title shown in the backend dropdown field
+);
+
+$pluginSignature = strtolower($extensionName) . '_pi2';
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$pluginSignature] = 'layout,select_key,pages,recursive';
+
+
 ?>
