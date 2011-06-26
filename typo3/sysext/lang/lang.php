@@ -354,10 +354,12 @@ class language {
 	 */
 	public function getLLL($index, $localLanguage, $hsc = FALSE) {
 			// Get Local Language
-		if ($localLanguage[$this->lang][$index][0]['target'] !== '') {
+		if (isset($localLanguage[$this->lang][$index][0]['target']) && $localLanguage[$this->lang][$index][0]['target'] !== '') {
 			$output = $this->hscAndCharConv($localLanguage[$this->lang][$index][0]['target'], $hsc);
 		} else {
-			$output = $this->hscAndCharConv($localLanguage['default'][$index][0]['target'], $hsc);
+			if (isset($localLanguage['default'][$index][0]['target'])) {
+				$output = $this->hscAndCharConv($localLanguage['default'][$index][0]['target'], $hsc);
+			}
 		}
 		return $output . $this->debugLL($index);
 	}
