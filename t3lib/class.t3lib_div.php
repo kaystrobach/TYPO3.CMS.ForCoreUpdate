@@ -1003,12 +1003,12 @@ final class t3lib_div {
 	 *
 	 * @param mixed Any input variable to test
 	 * @return boolean Returns TRUE if string is an integer
+	 * @deprecated since TYPO3 4.6, will be removed in TYPO3 4.8 - Use t3lib_utility_Math::canBeInterpretedAsInteger() instead
 	 */
 	public static function testInt($var) {
-		if ($var === '') {
-			return FALSE;
-		}
-		return (string) intval($var) === (string) $var;
+		self::logDeprecatedFunction();
+
+		return t3lib_utility_Math::canBeInterpretedAsInteger($var);
 	}
 
 	/**

@@ -420,6 +420,8 @@ class t3lib_divTest extends tx_phpunit_testcase {
 			'three operands with power' => array(14, '5 + 3 ^ 2'),
 			'three operads with modulus' => array(4, '5 % 2 + 3'),
 			'four operands' => array(3, '2 + 6 / 2 - 2'),
+			'division by zero when dividing' => array('ERROR: dividing by zero', '2 / 0'),
+			'division by zero with modulus' => array('ERROR: dividing by zero', '2 % 0')
 		);
 	}
 

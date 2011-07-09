@@ -71,6 +71,19 @@ final class t3lib_utility_Math {
 		}
 		return $theInt;
 	}
+
+	/**
+	 * Tests if the input can be interpreted as integer.
+	 *
+	 * @param $var mixed Any input variable to test
+	 * @return boolean Returns TRUE if string is an integer
+	 */
+	public static function canBeInterpretedAsInteger($var) {
+		if ($var === '') {
+			return FALSE;
+		}
+		return (string) intval($var) === (string) $var;
+	}
 }
 
 ?>
