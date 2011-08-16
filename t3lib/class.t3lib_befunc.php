@@ -2081,7 +2081,29 @@ final class t3lib_BEfunc {
 					}
 					break;
 				case 'group':
-					$l = implode(', ', t3lib_div::trimExplode(',', $value, 1));
+					// Creating string showing allowed types:
+					$allowedFieldTypes = t3lib_div::trimExplode(',', $theColConf['allowed'], TRUE);
+					$onlySingleTableAllowed = FALSE;
+					if (!strcmp(trim($allowedFieldTypes[0]), '*')) {
+						$onlySingleTableAllowed = FALSE;
+					} elseif ($allowedFieldTypes) {
+						$onlySingleTableAllowed = (count($allowedFieldTypes) == 1);
+					}
+					$items = array();
+					$originalValues = t3lib_div::trimExplode(',', $value, 1);
+					foreach ($originalValues as $originalValue) {
+						$recordParts = explode('|', $originalValue);
+						list($lookupTable, $lookupUid) = t3lib_BEfunc::splitTable_Uid($recordParts[0]);
+							// For the case that no table was found and only a single table is defined to be allowed, use that one:
+						if (!$lookupTable && $onlySingleTableAllowed) {
+							$lookupTable = $theColConf['allowed'];
+						}
+						$recordRow = t3lib_BEfunc::getRecordWSOL($lookupTable, $lookupUid);
+						if(is_array($recordRow)) {
+							$items[] = t3lib_BEfunc::getRecordTitle($lookupTable, $recordRow, TRUE);
+						}
+					}
+					$l = implode(', ', $items);
 					break;
 				case 'check':
 					if (!is_array($theColConf['items']) || count($theColConf['items']) == 1) {
