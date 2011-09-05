@@ -177,6 +177,15 @@ class t3lib_Compressor {
 	 * @return array CSS files
 	 */
 	public function concatenateCssFiles(array $cssFiles, array $options = array()) {
+
+		$cacheIdentifier = sha1(TYPO3_MODE . TYPO3_version . 't3lib_compressor::concatenateCssFiles' . serialize($cssFiles));
+
+		$cssFilesFromCache = $GLOBALS['typo3CacheManager']->getCache('cache_hash')->get($cacheIdentifier);
+		if (is_array($cssFilesFromCache)) {
+			return $cssFilesFromCache;
+		}
+
+			// do the magic
 		$filesToInclude = array();
 		foreach ($cssFiles as $key => $fileOptions) {
 				// no concatenation allowed for this file, so continue
@@ -208,6 +217,12 @@ class t3lib_Compressor {
 				// place the merged stylesheet on top of the stylesheets
 			$cssFiles = array_merge(array($targetFileRelative => $concatenatedOptions), $cssFiles);
 		}
+
+			// save cache entry, also if nothing is changed
+		$GLOBALS['typo3CacheManager']->getCache('cache_hash')->set(
+			$cacheIdentifier,
+			$cssFiles
+		);
 		return $cssFiles;
 	}
 
