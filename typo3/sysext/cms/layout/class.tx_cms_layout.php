@@ -1711,7 +1711,7 @@ class tx_cms_layout extends recordList {
 				$hiddenHeaderNote = ' <em>[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.hidden', TRUE) . ']</em>';
 			}
 			$outHeader = ($row['date'] ? htmlspecialchars($this->itemLabels['date'] . ' ' . t3lib_BEfunc::date($row['date'])) . '<br />' : '') .
-					'<strong>' . $this->linkEditContent($this->renderText($row['header']), $row) . $hiddenHeaderNote . '</strong><br />';
+					'<strong>' . $this->linkEditContent($this->renderRawText($row['header']), $row) . $hiddenHeaderNote . '</strong><br />';
 		}
 
 		// Make content:
@@ -2193,6 +2193,19 @@ class tx_cms_layout extends recordList {
 		$input = strip_tags($input);
 		$input = t3lib_div::fixed_lgd_cs($input, 1500);
 		return nl2br(htmlspecialchars(trim($this->wordWrapper($input))));
+	}
+
+	/**
+	 * Processing of larger amounts of text (usually from RTE/bodytext fields) with word wrapping etc.
+	 * Contrary to renderText(), the output gets *not* escaped using htmlspecialchars() before!
+	 *
+	 * @param string $input Text
+	 * @return string
+	 */
+	protected function renderRawText($input) {
+		$input = strip_tags($input);
+		$input = t3lib_div::fixed_lgd_cs($input, 1500);
+		return nl2br(trim($this->wordWrapper($input)));
 	}
 
 	/**
