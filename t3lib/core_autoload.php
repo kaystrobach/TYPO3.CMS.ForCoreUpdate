@@ -235,6 +235,14 @@ $t3libClasses = array(
 	't3lib_tree_pagetree_indicatorprovider' => PATH_t3lib . 'tree/pagetree/interfaces/interface.t3lib_tree_pagetree_interfaces_indicatorprovider.php',
 	't3lib_tree_pagetree_interfaces_collectionprocessor' => PATH_t3lib . 'tree/pagetree/interfaces/interface.t3lib_tree_pagetree_interfaces_collectionprocessor.php',
 	't3lib_http_request' => PATH_t3lib . 'http/class.t3lib_http_request.php',
+	't3lib_error_webservice_earlyexitexception' => PATH_t3lib . 'error/webservice/class.t3lib_error_webservice_earlyexitexception.php',
+	't3lib_webservice_dispatcher' => PATH_t3lib . 'webservice/class.t3lib_webservice_dispatcher.php',
+	't3lib_webservice_router' => PATH_t3lib . 'webservice/class.t3lib_webservice_router.php',
+	't3lib_webservice_webserviceinterface' => PATH_t3lib . 'webservice/interface.t3lib_webservice_webserviceinterface.php',
+	't3lib_webservice_uri' => PATH_t3lib . 'webservice/class.t3lib_webservice_uri.php',
+	't3lib_webservice_request' => PATH_t3lib . 'webservice/class.t3lib_webservice_request.php',
+	't3lib_webservice_requestbuilder' => PATH_t3lib . 'webservice/class.t3lib_webservice_RequestBuilder.php',
+	't3lib_webservice_response' => PATH_t3lib . 'webservice/class.t3lib_webservice_response.php'
 );
 
 $tslibClasses = require(PATH_typo3 . 'sysext/cms/ext_autoload.php');

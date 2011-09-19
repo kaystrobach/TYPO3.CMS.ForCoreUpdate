@@ -177,6 +177,20 @@ if (!get_magic_quotes_gpc())	{
 }
 
 
+// *********************
+// Check for enabled webservice dispatcher and try to dispatch, otherwise continue
+// *********************
+if ($TYPO3_CONF_VARS['SYS']['enableWebserviceDispatcher']) {
+	try {
+		/** @var t3lib_webservice_Dispatcher $dispatcher */
+		$dispatcher = t3lib_div::makeInstance('t3lib_webservice_Dispatcher');
+		$dispatcher->dispatch(t3lib_div::getIndpEnv('REQUEST_URI'));
+	} catch (t3lib_error_webservice_EarlyExitException $e) {
+		exit;
+	}
+}
+
+
 // Hook to preprocess the current request:
 if (is_array($TYPO3_CONF_VARS['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'])) {
 	foreach ($TYPO3_CONF_VARS['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'] as $hookFunction) {
