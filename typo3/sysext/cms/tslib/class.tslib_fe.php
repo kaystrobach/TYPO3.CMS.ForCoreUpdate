@@ -226,14 +226,14 @@
 	/**
 	 * Locking object
 	 *
-	 * @var t3lib_lock
+	 * @var t3lib_lock_AbstractLock
 	 */
 	var $pagesection_lockObj;				// Locking object for accessing "cache_pagesection"
 
 	/**
 	 * Locking object
 	 *
-	 * @var t3lib_lock
+	 * @var t3lib_lock_AbstractLock
 	 */
 	var $pages_lockObj;					// Locking object for accessing "cache_pages"
 
@@ -2928,12 +2928,12 @@
 	 * Lock the page generation process
 	 * The lock is used to queue page requests until this page is successfully stored in the cache.
 	 *
-	 * @param	t3lib_lock	Reference to a locking object
+	 * @param	t3lib_lock_AbstractLock	Reference to a locking object
 	 * @param	string		String to identify the lock in the system
 	 * @return	boolean		Returns TRUE if the lock could be obtained, FALSE otherwise (= process had to wait for existing lock to be released)
 	 * @see releasePageGenerationLock()
 	 */
-	function acquirePageGenerationLock(&$lockObj, $key)	{
+	function acquirePageGenerationLock($lockObj, $key)	{
 		if ($this->no_cache || $this->headerNoCache()) {
 			t3lib_div::sysLog('Locking: Page is not cached, no locking required', 'cms', t3lib_div::SYSLOG_SEVERITY_INFO);
 			return TRUE;	// No locking is needed if caching is disabled
@@ -2941,7 +2941,8 @@
 
 		try {
 			if (!is_object($lockObj)) {
-				$lockObj = t3lib_div::makeInstance('t3lib_lock', $key, $this->TYPO3_CONF_VARS['SYS']['lockingMode']);
+				/** @var $lockObj t3lib_lock_AbstractLock */
+				$lockObj = t3lib_div::makeInstance('t3lib_lockManager')->getLock('cms', $key);
 			}
 
 			$success = FALSE;
@@ -2949,9 +2950,6 @@
 					// TRUE = Page could get locked without blocking
 					// FALSE = Page could get locked but process was blocked before
 				$success = $lockObj->acquire();
-				if ($lockObj->getLockStatus()) {
-					$lockObj->sysLog('Acquired lock');
-				}
 			}
 		} catch (Exception $e) {
 			t3lib_div::sysLog('Locking: Failed to acquire lock: '.$e->getMessage(), 'cms', t3lib_div::SYSLOG_SEVERITY_ERROR);
@@ -2964,16 +2962,14 @@
 	/**
 	 * Release the page generation lock
 	 *
-	 * @param	t3lib_lock	Reference to a locking object
-	 * @return	boolean		Returns TRUE on success, FALSE otherwise
-	 * @see acquirePageGenerationLock()
+	 * @param t3lib_lock_AbstractLock $lockObj Reference to a locking object
+	 * @return bool TRUE on success, FALSE otherwise
 	 */
-	function releasePageGenerationLock(&$lockObj) {
+	function releasePageGenerationLock($lockObj) {
 		$success = FALSE;
 			// If lock object is set and was acquired (may also happen if no_cache was enabled during runtime), release it:
-		if (is_object($lockObj) && $lockObj instanceof t3lib_lock && $lockObj->getLockStatus()) {
+		if (is_object($lockObj) && $lockObj instanceof t3lib_lock_AbstractLock && $lockObj->getLockStatus()) {
 			$success = $lockObj->release();
-			$lockObj->sysLog('Released lock');
 			$lockObj = NULL;
 			// Otherwise, if caching is disabled, no locking is required:
 		} elseif ($this->no_cache || $this->headerNoCache()) {

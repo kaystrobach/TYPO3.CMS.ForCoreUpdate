@@ -117,7 +117,7 @@ $TYPO3_CONF_VARS = array(
 		'maxFileNameLength' => 60,				// Integer: This is the maximum file name length. The value will be taken into account by basic file operations like renaming or creation of files and folders.
 		'UTF8filesystem' => FALSE,				// Boolean: If TRUE and <a href="#BE-forceCharset">[BE][forceCharset]</a> is set to utf-8, then TYPO3 uses utf-8 to store file names. This allows for accented Latin letters as well as any other non-latin characters like Cyrillic and Chinese.
 		'systemLocale' => '',					// String: locale used for certain system related functions, e.g. escaping shell commands. If problems with filenames containing special characters occur, the value of this option is probably wrong. See <a href="http://php.net/manual/en/function.setlocale.php" target="_blank">setlocale()</a>.
-		'lockingMode' => 'simple',					// String: Define which locking mode is used to control requests to pages being generated. Can be one of either "disable" (no locking), "simple" (checks for file existance), "flock" (using PHPs <a href="http://php.net/flock" target="_blank">flock()</a> function), "semaphore" (using PHPs <a href="http://php.net/sem-acquire" target="_blank">sem_acquire()</a> function). Default is "disable".
+		'lockingMode' => 'simple',					// String: Define which locking mode is used to control requests to pages being generated. Can be one of either "disable" (no locking), "simple" (checks for file existance), "flock" (using PHPs <a href="http://php.net/flock" target="_blank">flock()</a> function), "semaphore" (using PHPs <a href="http://php.net/sem-acquire" target="_blank">sem_acquire()</a> function). You can also add a class name here. The class must implement the t3lib_lock_Interface and must be registered in the autoloader.  Default is "simple".
 		'reverseProxyIP' => '',					// String: list of IP addresses. If TYPO3 is behind one or more (intransparent) reverese proxies the IP addresses must be added here.
 		'reverseProxyHeaderMultiValue' => 'none',		// String: "none","first","last": defines which values of a proxy header (eg HTTP_X_FORWARDED_FOR) to use, if more than one is found. "none" discards the value, "first" and "last" use the first/last of the values in the list.
 		'reverseProxyPrefix' => '',				// String: optional prefix to be added to the internal URL (SCRIPT_NAME and REQUEST_URI).
@@ -707,6 +707,25 @@ if (TYPO3_MODE === 'BE') {
 		PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_state.php:extDirect_DataProvider_State'
 	);
 }
+$TYPO3_CONF_VARS['SYS']['locking'] = array(
+	'simple' => array(
+		'className' => 't3lib_lock_FileLock',
+		'options' => array (
+			'loops' => 149,
+			'step' => 199,
+		)
+	),
+	'flock' => array(
+		'className' => 't3lib_lock_FlockLock',
+	),
+	'semaphore' => array(
+		'className' => 't3lib_lock_SemaphoreLock',
+	),
+	'disable' => array(
+		'className' => 't3lib_lock_DisabledLock',
+	),
+);
+
 
 $T3_VAR = array();	// Initialize.
 
@@ -1070,6 +1089,9 @@ if ($TYPO3_LOADED_EXT['_CACHEFILE'])	{
 	// Extensions may register new caches, so we set the
 	// global cache array to the manager again at this point
 $GLOBALS['typo3CacheManager']->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
+
+	// Set the configuration options for the cms scope
+$TYPO3_CONF_VARS['SYS']['locking']['cms'] = $TYPO3_CONF_VARS['SYS']['locking'][$TYPO3_CONF_VARS['SYS']['lockingMode']];
 
 require_once(t3lib_extMgm::extPath('lang') . 'lang.php');
 
