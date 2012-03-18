@@ -491,7 +491,7 @@ class ShortcutMenu implements backend_toolbarItem {
 		$shortcutName        = 'Shortcut'; // default name
 		$shortcutNamePrepend = '';
 
-		$url             = rawurldecode(t3lib_div::_POST('url'));
+		$url             = t3lib_div::_POST('url');
 		$module          = t3lib_div::_POST('module');
 		$motherModule    = t3lib_div::_POST('motherModName');
 

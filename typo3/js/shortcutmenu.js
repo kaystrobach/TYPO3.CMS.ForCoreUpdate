@@ -35,11 +35,10 @@ var TYPO3BackendShortcutMenu = {
 	 */
 	initialize: function() {
 		jQuery(window).resize(function() {
-				TYPO3BackendToolbarManager.positionMenu('clear-cache-actions-menu');
+				TYPO3BackendToolbarManager.positionMenu('shortcut-menu');
 			}
 		);
 		TYPO3BackendToolbarManager.positionMenu('shortcut-menu');
-		TYPO3BackendShortcutMenu.toolbarItemIcon = jQuery('#shortcut-menu .toolbar-item span.t3-icon')[0];
 		jQuery('#shortcut-menu .toolbar-item').first().click(function(){
 			TYPO3BackendShortcutMenu.toggleMenu();
 		})
@@ -116,8 +115,6 @@ var TYPO3BackendShortcutMenu = {
 		container.css({
 			height: 'auto'
 		});
-
-		//this.initControls();
 	},
 
 	/**
@@ -139,7 +136,7 @@ var TYPO3BackendShortcutMenu = {
 			type: 'POST',
 			data: {
 				'module': moduleName,
-				'url': url
+				'url': decodeURIComponent(url)
 			},
 			success: function(result) {
 				TYPO3BackendShortcutMenu.reRenderMenu();
