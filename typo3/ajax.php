@@ -58,7 +58,6 @@ require('classes/class.typo3ajax.php');
 	// finding the script path from the variable
 $ajaxScript = $TYPO3_CONF_VARS['BE']['AJAX'][$ajaxID];
 
-
 	// instantiating the AJAX object
 $ajaxObj    = t3lib_div::makeInstance('TYPO3AJAX', $ajaxID);
 $ajaxParams = array();
@@ -75,7 +74,6 @@ if (empty($ajaxID)) {
 		$ajaxObj->setError('Registered backend function for ajaxID "'.$ajaxID.'" was not found.');
 	}
 }
-
 	// outputting the content (and setting the X-JSON-Header)
 $ajaxObj->render();
 

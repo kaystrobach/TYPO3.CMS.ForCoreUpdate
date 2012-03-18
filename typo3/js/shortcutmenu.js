@@ -28,24 +28,22 @@
 /**
  * class to handle the shortcut menu
  */
-var ShortcutMenu = Class.create({
+var TYPO3BackendShortcutMenu = {
 
 	/**
 	 * registers for resize event listener and executes on DOM ready
 	 */
 	initialize: function() {
-		Ext.onReady(function() {
-			Event.observe(
-				window, 'resize',
-				function() { TYPO3BackendToolbarManager.positionMenu('shortcut-menu'); }
-			);
-			TYPO3BackendToolbarManager.positionMenu('shortcut-menu');
-			
-			this.toolbarItemIcon = $$('#shortcut-menu .toolbar-item span.t3-icon')[0];
-
-			Event.observe($$('#shortcut-menu .toolbar-item')[0], 'click', this.toggleMenu);
-			this.initControls();
-		}, this);
+		jQuery(window).resize(function() {
+				TYPO3BackendToolbarManager.positionMenu('clear-cache-actions-menu');
+			}
+		);
+		TYPO3BackendToolbarManager.positionMenu('shortcut-menu');
+		TYPO3BackendShortcutMenu.toolbarItemIcon = jQuery('#shortcut-menu .toolbar-item span.t3-icon')[0];
+		jQuery('#shortcut-menu .toolbar-item').first().click(function(){
+			TYPO3BackendShortcutMenu.toggleMenu();
+		})
+		TYPO3BackendShortcutMenu.initControls();
 	},
 
 	/**
@@ -53,135 +51,42 @@ var ShortcutMenu = Class.create({
 	 *
 	 */
 	initControls: function() {
-
-		$$('.shortcut-label a').each(function(element) {
-			var shortcutId = element.up('tr.shortcut').identify().slice(9);
-
-				// map InPlaceEditor to edit icons
-			var edit = new Ajax.InPlaceEditor('shortcut-label-' + shortcutId, 'ajax.php?ajaxID=ShortcutMenu::saveShortcut', {
-				externalControl     : 'shortcut-edit-' + shortcutId,
-				externalControlOnly : true,
-				highlightcolor      : '#f9f9f9',
-				highlightendcolor   : '#f9f9f9',
-				onFormCustomization : this.addGroupSelect,
-				onComplete          : this.reRenderMenu.bind(this),
-				callback            : function(form, nameInputFieldValue) {
-					var params = form.serialize();
-					params += '&shortcutId=' + shortcutId;
-
-					return params;
-				},
-				textBetweenControls : ' ',
-				cancelControl       : 'button',
-				clickToEditText     : '',
-				htmlResponse        : true
-			});
-
-				// follow/execute shortcuts
-			element.observe('click', function(event) {
-				this.toggleMenu();
-			}.bind(this));
-
-		}.bind(this));
+		jQuery('.shortcut-label a').each(function() {
+			jQuery(this).click(function(){
+				TYPO3BackendShortcutMenu.toggleMenu();
+			})
+		});
 
 			// activate delete icon
-		$$('.shortcut-delete img').each(function(element) {
-			element.observe('click', function(event) {
+		jQuery('.shortcut-delete img').each(function() {
+			jQuery(this).click(function() {
 				if (confirm('Do you really want to remove this bookmark?')) {
-					var deleteControl = event.element();
-					var shortcutId = deleteControl.up('tr.shortcut').identify().slice(9);
+					var shortcutId = jQuery(this).parents('.shortcut').attr('id').slice(9);
+					var del = jQuery.get('ajax.php?ajaxID=ShortcutMenu::delete&shortcutId=' + shortcutId, function(){
+						TYPO3BackendShortcutMenu.reRenderMenu();
 
-					var del = new Ajax.Request('ajax.php', {
-						parameters : 'ajaxID=ShortcutMenu::delete&shortcutId=' + shortcutId,
-						onComplete : this.reRenderMenu.bind(this)
 					});
 				}
-			}.bind(this));
-		}.bind(this));
-
+			});
+		});
 	},
 
 	/**
 	 * toggles the visibility of the menu and places it under the toolbar icon
 	 */
 	toggleMenu: function(event) {
-		var toolbarItem = $$('#shortcut-menu > a')[0];
-		var menu        = $$('#shortcut-menu .toolbar-item-menu')[0];
+		var toolbarItem = jQuery('#shortcut-menu > a').first();
+		var menu        = jQuery('#shortcut-menu .toolbar-item-menu').first();
 		toolbarItem.blur();
 
-		if (!toolbarItem.hasClassName('toolbar-item-active')) {
-			toolbarItem.addClassName('toolbar-item-active');
-			Effect.Appear(menu, {duration: 0.2});
+		if (!toolbarItem.hasClass('toolbar-item-active')) {
+			toolbarItem.addClass('toolbar-item-active');
+			menu.fadeIn(200);
 			TYPO3BackendToolbarManager.hideOthers(toolbarItem);
 		} else {
-			toolbarItem.removeClassName('toolbar-item-active');
-			Effect.Fade(menu, {duration: 0.1});
+			toolbarItem.removeClass('toolbar-item-active');
+			menu.fadeOut(200);
 		}
-	},
-
-	/**
-	 * adds a select field for the groups
-	 */
-	addGroupSelect: function(inPlaceEditor, inPlaceEditorForm) {
-		var selectField = $(document.createElement('select'));
-
-			// determine the shortcut id
-		var shortcutId  = inPlaceEditorForm.identify().slice(9, -14);
-
-			// now determine the shortcut's group id
-		var shortcut        = $('shortcut-' + shortcutId).up('tr.shortcut');
-		var firstInGroup    = null;
-		var shortcutGroupId = 0;
-
-		if (shortcut.hasClassName('first-row')) {
-			firstInGroup = shortcut;
-		} else {
-			firstInGroup = shortcut.previous('.first-row');
-		}
-
-		if (undefined !== firstInGroup) {
-			shortcutGroupId = firstInGroup.previous().identify().slice(15);
-		}
-
-		selectField.name = 'shortcut-group';
-		selectField.id = 'shortcut-group-select-' + shortcutId;
-		selectField.size = 1;
-		selectField.setStyle({marginBottom: '5px'});
-
-			// create options
-		var option;
-			// first create an option for "no group"
-		option = document.createElement('option');
-		option.value = 0;
-		option.selected = (shortcutGroupId === 0 ? true : false);
-		option.appendChild(document.createTextNode('No Group'));
-		selectField.appendChild(option);
-
-			// get the groups
-		var getGroups = new Ajax.Request('ajax.php', {
-			method: 'get',
-			parameters: 'ajaxID=ShortcutMenu::getGroups',
-			asynchronous: false, // needs to be synchronous to build the options before adding the selectfield
-			requestHeaders: {Accept: 'application/json'},
-			onSuccess: function(transport, json) {
-				var shortcutGroups = transport.responseText.evalJSON(true);
-
-					// explicitly make the object a Hash
-				shortcutGroups = $H(json.shortcutGroups);
-				shortcutGroups.each(function(group) {
-					option = document.createElement('option');
-					option.value = group.key
-					option.selected = (shortcutGroupId === group.key ? true : false);
-					option.appendChild(document.createTextNode(group.value));
-					selectField.appendChild(option);
-				});
-
-			}
-		});
-
-		inPlaceEditor._form.appendChild(document.createElement('br'));
-		inPlaceEditor._form.appendChild(selectField);
-		inPlaceEditor._form.appendChild(document.createElement('br'));
 	},
 
 	/**
@@ -189,31 +94,30 @@ var ShortcutMenu = Class.create({
 	 * honor changes in group assignments
 	 */
 	reRenderMenu: function(transport, element, backPath) {
-		var container = $$('#shortcut-menu .toolbar-item-menu')[0];
+		var container = jQuery('#shortcut-menu .toolbar-item-menu').first();
 		if (!backPath) {
 			var backPath = '';
 		}
 
-
-		container.setStyle({
-			height: container.getHeight() + 'px'
+		container.css({
+			height: container.height() + 'px'
 		});
-		container.update('LOADING');
+		container.html('LOADING');
 
-		var render = new Ajax.Updater(
-			container,
-			backPath + 'ajax.php',
-			{
-				parameters : 'ajaxID=ShortcutMenu::render',
-				asynchronous : false
-			}
-		);
+		var render = jQuery.ajax({
+			url: backPath + 'ajax.php?ajaxID=ShortcutMenu::render',
+			success: function(result) {
+				container.html(result);
+				TYPO3BackendShortcutMenu.initControls();
+			},
+			async: false
+		});
 
-		container.setStyle({
+		container.css({
 			height: 'auto'
 		});
 
-		this.initControls();
+		//this.initControls();
 	},
 
 	/**
@@ -221,23 +125,34 @@ var ShortcutMenu = Class.create({
 	 * when finished it reloads the menu
 	 */
 	createShortcut: function(backPath, moduleName, url) {
-		var toolbarItemIcon = $$('#shortcut-menu .toolbar-item span.t3-icon')[0];
+		var toolbarItemIcon = jQuery('#shortcut-menu .toolbar-item span.t3-icon').first();
 
-		var parent = Element.up(toolbarItemIcon);
-		var spinner = new Element('span').addClassName('spinner');
-		var oldIcon = toolbarItemIcon.replace(spinner);
-
+		// activate the spinner
+		var toolbarItemParent = toolbarItemIcon.parent();
+		toolbarItemParent.data('originalHtml', toolbarItemIcon.parent().html());
+		var spinner = '<span class="spinner"></span>';
+		toolbarItemParent.html(spinner);
 			// synchrous call to wait for it to complete and call the render
 			// method with backpath _afterwards_
-		var call = new Ajax.Request(backPath + 'ajax.php', {
-			parameters : 'ajaxID=ShortcutMenu::create&module=' + moduleName + '&url=' + url,
-			asynchronous : false
+		var call = jQuery.ajax({
+			url: backPath + 'ajax.php?ajaxID=ShortcutMenu::create',
+			type: 'POST',
+			data: {
+				'module': moduleName,
+				'url': url
+			},
+			success: function(result) {
+				TYPO3BackendShortcutMenu.reRenderMenu();
+				toolbarItemParent.html(toolbarItemParent.data('originalHtml'));
+				TYPO3BackendShortcutMenu.initControls();
+			},
+			async: true
 		});
 
-		this.reRenderMenu(null, null, backPath);
-		spinner.replace(oldIcon);
 	}
 
-});
+};
 
-var TYPO3BackendShortcutMenu = new ShortcutMenu();
+jQuery(document).ready(function() {
+	TYPO3BackendShortcutMenu.initialize();
+});

@@ -1481,7 +1481,6 @@ $str.=$this->docBodyTagBegin().
 	 *			Please just call this function without expecting a return value for future calls
 	 */
 	function getContextMenuCode()   {
-	       $this->pageRenderer->loadPrototype();
 	       $this->loadJavascriptLib('js/clickmenu.js');
 
 	       $this->JScodeArray['clickmenu'] = '
@@ -1497,7 +1496,6 @@ $str.=$this->docBodyTagBegin().
 	 * @return	array		If values are present: [0] = A <script> section for the HTML page header, [1] = onmousemove/onload handler for HTML tag or alike, [2] = One empty <div> layer for the follow-mouse drag element
 	 */
 	function getDragDropCode($table)	{
-		$this->pageRenderer->loadPrototype();
 		$this->loadJavascriptLib('js/common.js');
 		$this->loadJavascriptLib('js/tree.js');
 
@@ -1819,7 +1817,6 @@ $str.=$this->docBodyTagBegin().
 	 */
 	public function setModuleTemplate($filename) {
 			// Load Prototype lib for IE event
-		$this->pageRenderer->loadPrototype();
 		$this->loadJavascriptLib('js/iecompatibility.js');
 		$this->moduleTemplate = $this->getHtmlTemplate($filename);
 	}

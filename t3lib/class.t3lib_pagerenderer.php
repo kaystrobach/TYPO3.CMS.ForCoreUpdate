@@ -95,8 +95,6 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 
 	protected $templateFile;
 
-	protected $jsLibraryNames = array('prototype', 'scriptaculous', 'extjs');
-
 	const PART_COMPLETE = 0;
 	const PART_HEADER = 1;
 	const PART_FOOTER = 2;
@@ -107,6 +105,7 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 	protected $extCorePath = 'contrib/extjs/';
 	protected $extJsPath = 'contrib/extjs/';
 	protected $svgPath = 'contrib/websvg/';
+	protected $jqueryPath = 'contrib/jquery/';
 
 
 		// internal flags for JS-libraries
@@ -117,6 +116,8 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 	protected $addExtCore = FALSE;
 	protected $extJSadapter = 'ext/ext-base.js';
 	protected $extDirectCodeAdded = FALSE;
+	protected $addJquery = FALSE;
+	protected $jqueryVersion = '1.7.1';
 
 	protected $enableExtJsDebug = FALSE;
 	protected $enableExtCoreDebug = FALSE;
@@ -383,6 +384,27 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 	 */
 	public function setExtJsPath($path) {
 		$this->extJsPath = $path;
+	}
+
+	/**
+	 * Sets Path for jquery library (relative to typo3 directory)
+	 *
+	 * @param string $path
+	 * @return void
+	 */
+	public function setJqueryPath($path) {
+		$this->jqueryPath = $path;
+	}
+
+	/**
+	 * Sets version for jquery library (relative to typo3 directory)
+	 * Version separator is '-'
+	 *
+	 * @param string $version
+	 * @return void
+	 */
+	public function setJqueryVersion($version) {
+		$this->jqueryVersion = $version;
 	}
 
 	/**
@@ -771,6 +793,24 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 	 */
 	public function getExtJsPath() {
 		return $this->extJsPath;
+	}
+
+	/**
+	 * Gets Path for jquery library (relative to typo3 directory)
+	 *
+	 * @return string
+	 */
+	public function getJqueryPath() {
+		return $this->jqueryPath;
+	}
+
+	/**
+	 * Gets version for jquery library
+	 *
+	 * @return string
+	 */
+	public function getJqueryVersion() {
+		return $this->jqueryVersion;
 	}
 
 	/**
@@ -1232,6 +1272,15 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 	 */
 	public function loadPrototype() {
 		$this->addPrototype = TRUE;
+	}
+
+	/**
+	 *  call function if you need the jquery library
+	 *
+	 * @return void
+	 */
+	public function loadJquery() {
+		$this->addJquery = TRUE;
 	}
 
 	/**
@@ -1824,6 +1873,11 @@ class t3lib_PageRenderer implements t3lib_Singleton {
 			$this->jsFiles[$this->backPath . $this->extJsPath . 'ext-all.js'],
 			$this->jsFiles[$this->backPath . $this->extJsPath . 'ext-all-debug.js']
 			);
+		}
+
+		if ($this->addJquery) {
+			$jqueryFileName = 'jquery-' . $this->getJqueryVersion() . '.min.js';
+			$out .= '<script src="' . $this->processJsFile($this->backPath . $this->jqueryPath . $jqueryFileName) .'"></script>';
 		}
 
 		if (count($this->inlineLanguageLabelFiles)) {

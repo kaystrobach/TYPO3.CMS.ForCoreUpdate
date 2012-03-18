@@ -147,7 +147,6 @@ class ShortcutMenu implements backend_toolbarItem {
 				<td class="shortcut-label">
 					<a id="shortcut-label-' . $shortcut['raw']['uid'] . '" href="#" onclick="' . $shortcut['action'] . '; return false;">' . htmlspecialchars($shortcut['label']) . '</a>
 				</td>
-				<td class="shortcut-edit">'.$editIcon.' id="shortcut-edit-'.$shortcut['raw']['uid'].'" /></td>
 				<td class="shortcut-delete">'.$deleteIcon.'</td>
 			</tr>';
 		}
@@ -180,7 +179,6 @@ class ShortcutMenu implements backend_toolbarItem {
 						<td class="shortcut-label">
 							<a id="shortcut-label-' . $shortcut['raw']['uid'] . '" href="#" onclick="' . $shortcut['action'] . '; return false;">' . htmlspecialchars($shortcut['label']) . '</a>
 						</td>
-						<td class="shortcut-edit">'.$editIcon.' id="shortcut-edit-'.$shortcut['raw']['uid'].'" /></td>
 						<td class="shortcut-delete">'.$deleteIcon.'</td>
 					</tr>';
 				}
@@ -463,7 +461,7 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * @return	void
 	 */
 	public function deleteAjaxShortcut($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
-		$shortcutId   = (int) t3lib_div::_POST('shortcutId');
+		$shortcutId   = (int) t3lib_div::_GP('shortcutId');
 		$fullShortcut = $this->getShortcutById($shortcutId);
 		$ajaxReturn   = 'failed';
 
@@ -493,7 +491,7 @@ class ShortcutMenu implements backend_toolbarItem {
 		$shortcutName        = 'Shortcut'; // default name
 		$shortcutNamePrepend = '';
 
-		$url             = t3lib_div::_POST('url');
+		$url             = rawurldecode(t3lib_div::_POST('url'));
 		$module          = t3lib_div::_POST('module');
 		$motherModule    = t3lib_div::_POST('motherModName');
 

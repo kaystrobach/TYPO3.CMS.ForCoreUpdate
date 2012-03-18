@@ -24,20 +24,18 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
-var ToolbarManager = Class.create({
-
+var ToolbarManager = {
 	/**
 	 * hides all toolbar item menus except for the which was clicked
 	 */
 	hideOthers: function(toolbarItem) {
 		var sibling = toolbarItem.next();
 
-			// check whether it is a toolbar item with menu
-		if (sibling.hasClassName('toolbar-item-menu')) {
-			this.hideAll();
-				// show toolbarItem
-			toolbarItem.addClassName('toolbar-item-active');
+		// check whether it is a toolbar item with menu
+		if (sibling.hasClass('toolbar-item-menu')) {
+			jQuery(this).hide();
+			// show toolbarItem
+			toolbarItem.addClass('toolbar-item-active');
 		}
 	},
 
@@ -45,9 +43,9 @@ var ToolbarManager = Class.create({
 	 * Hide all expanded toolbar menus
 	 */
 	hideAll: function() {
-		$$('#typo3-toolbar a.toolbar-item + .toolbar-item-menu').invoke('hide');
-		$$('#typo3-toolbar a.toolbar-item').each(function(element) {
-			element.removeClassName('toolbar-item-active');
+		jQuery('#typo3-toolbar a.toolbar-item + .toolbar-item-menu').hide();
+		jQuery('#typo3-toolbar a.toolbar-item').each(function(element) {
+			jQuery(this).removeClass('toolbar-item-active');
 		});
 	},
 
@@ -63,9 +61,8 @@ var ToolbarManager = Class.create({
 	 */
 	positionMenu: function(elementId) {
 	}
+}
 
-});
-
-var TYPO3BackendToolbarManager = new ToolbarManager();
+var TYPO3BackendToolbarManager = ToolbarManager;
 
 

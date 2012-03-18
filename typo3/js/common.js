@@ -21,49 +21,6 @@
 *
 ***************************************************************/
 
-// Please make sure that prototype.js is loaded before loading this
-// file in your script, the responder is only added if prototype was loaded
-
-if (Prototype) {
-	// adding generic a responder to use when a AJAX request is done
-	Ajax.Responders.register({
-		onCreate: function(request, transport) {
-
-			// if the TYPO3 AJAX backend is used,
-			// the onSuccess & onComplete callbacks are hooked
-			if (request.url.indexOf("ajax.php") === -1) {
-				return;
-			}
-
-			var origSuccess = request.options.onSuccess, origComplete = request.options.onComplete;
-
-			// hooking "onSuccess"
-			if (origSuccess) {
-				request.options.onSuccess = function(xhr, json) {
-					if (!json) {
-						T3AJAX.showError(xhr);
-					} else {
-						origSuccess(xhr, json);
-					}
-				}
-			}
-
-			// hooking "onComplete", using T3Error handler if available
-			if (origComplete) {
-				request.options.onComplete = function(xhr, json) {
-					if (!json && request.options.onT3Error) {
-						request.options.onT3Error(xhr, json);
-					} else if (!json) {
-						T3AJAX.showError(xhr);
-					} else {
-						origComplete(xhr, json);
-					}
-				};
-			}
-		}
-	});
-}
-
 var T3AJAX = {};
 T3AJAX.showError = function(xhr, json) {
 	if (typeof xhr.responseText !== undefined && xhr.responseText) {

@@ -27,49 +27,47 @@
 /**
  * class to handle the clear cache menu
  */
-var ClearCacheMenu = Class.create({
+var TYPO3BackendClearCacheMenu = {
 
 	/**
 	 * registers for resize event listener and executes on DOM ready
 	 */
 	initialize: function() {
-
-		Ext.onReady(function() {
-			Event.observe(
-				window, 'resize',
-				function() { TYPO3BackendToolbarManager.positionMenu('clear-cache-actions-menu'); }
-			);
+		jQuery(window).resize(function() {
 			TYPO3BackendToolbarManager.positionMenu('clear-cache-actions-menu');
-			this.toolbarItemIcon = $$('#clear-cache-actions-menu .toolbar-item span.t3-icon')[0];
+			}
+		);
+		TYPO3BackendToolbarManager.positionMenu('clear-cache-actions-menu');
 
-			Event.observe('clear-cache-actions-menu', 'click', this.toggleMenu)
+		jQuery('#clear-cache-actions-menu').click(function(){
+			TYPO3BackendClearCacheMenu.toggleMenu();
+		});
 
-				// observe all clicks on clear cache actions in the menu
-			$$('#clear-cache-actions-menu li a').each(function(element) {
-				Event.observe(element, 'click', this.clearCache.bind(this));
-			}.bindAsEventListener(this));
-		}, this);
+			// observe all clicks on clear cache actions in the menu
+		jQuery('#clear-cache-actions-menu li a').each(function(element) {
+			jQuery(this).data('href', jQuery(this).attr('href'));
+			jQuery(this).attr('href','javascript:void(0);');
+			jQuery(this).click(function() {
+				TYPO3BackendClearCacheMenu.clearCache(jQuery(this));
+			});
+		});
 	},
 
 	/**
 	 * toggles the visibility of the menu and places it under the toolbar icon
 	 */
 	toggleMenu: function(event) {
-		var toolbarItem = $$('#clear-cache-actions-menu > a')[0];
-		var menu        = $$('#clear-cache-actions-menu .toolbar-item-menu')[0];
+		var toolbarItem = jQuery('#clear-cache-actions-menu > a').first();
+		var menu        = jQuery('#clear-cache-actions-menu .toolbar-item-menu').first();
 		toolbarItem.blur();
 
-		if (!toolbarItem.hasClassName('toolbar-item-active')) {
-			toolbarItem.addClassName('toolbar-item-active');
-			Effect.Appear(menu, {duration: 0.2});
+		if (!toolbarItem.hasClass('toolbar-item-active')) {
+			toolbarItem.addClass('toolbar-item-active');
+			menu.fadeIn(200);
 			TYPO3BackendToolbarManager.hideOthers(toolbarItem);
 		} else {
-			toolbarItem.removeClassName('toolbar-item-active');
-			Effect.Fade(menu, {duration: 0.1});
-		}
-
-		if (event) {
-			Event.stop(event);
+			toolbarItem.removeClass('toolbar-item-active');
+			menu.fadeOut(200);
 		}
 	},
 
@@ -78,33 +76,24 @@ var ClearCacheMenu = Class.create({
 	 *
 	 * @param	Event	prototype event object
 	 */
-	clearCache: function(event) {
-		var toolbarItemIcon = $$('#clear-cache-actions-menu .toolbar-item span.t3-icon')[0];
-		var url             = '';
-		var clickedElement  = Event.element(event);
+	clearCache: function(clickedElement) {
+		var toolbarItemIcon = jQuery('#clear-cache-actions-menu .toolbar-item span.t3-icon').first();
 
 			// activate the spinner
-		var parent = Element.up(toolbarItemIcon);
-		var spinner = new Element('span').addClassName('spinner');
-		var oldIcon = toolbarItemIcon.replace(spinner);
+		var toolbarItemParent = toolbarItemIcon.parent();
+		toolbarItemParent.data('originalHtml', toolbarItemIcon.parent().html());
+		var spinner = '<span class="spinner"></span>';
+		toolbarItemParent.html(spinner);
 
-		if (clickedElement.tagName === 'SPAN') {
-			link =  clickedElement.up('a');
-		} else {
-			link =  clickedElement;
-		}
-
-		if (link.href) {
-			var call = new Ajax.Request(link.href, {
-				'method': 'get',
-				'onComplete': function(result) {
-					spinner.replace(oldIcon);
-				}.bind(this)
+		if (jQuery(clickedElement).data('href')) {
+			jQuery.get(jQuery(clickedElement).data('href'), function() {
+				toolbarItemParent.html(toolbarItemParent.data('originalHtml'));
 			});
 		}
-
-		this.toggleMenu(event);
 	}
+};
+
+jQuery(document).ready(function() {
+	TYPO3BackendClearCacheMenu.initialize();
 });
 
-var TYPO3BackendClearCacheMenu = new ClearCacheMenu();

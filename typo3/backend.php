@@ -97,8 +97,8 @@ class TYPO3backend {
 		$this->moduleMenu = t3lib_div::makeInstance('ModuleMenu');
 
 		$this->pageRenderer = $GLOBALS['TBE_TEMPLATE']->getPageRenderer();
-		$this->pageRenderer->loadScriptaculous('builder,effects,controls,dragdrop');
 		$this->pageRenderer->loadExtJS();
+		$this->pageRenderer->loadJquery();
 		$this->pageRenderer->enableExtJSQuickTips();
 
 
