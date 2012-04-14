@@ -1,9 +1,11 @@
 jQuery(document).ready(function() {
-	if(jQuery('.ajax').length) {
-		jQuery('#terTable').dataTable({
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": jQuery('.ajax').attr('href')
-		})
-	}
+	jQuery('#terTable').dataTable({
+		"bJQueryUI":true,
+		"bLengthChange": false,
+		'iDisplayLength': 50,
+		"bStateSave": true,
+		"bInfo": false,
+		"bPaginate": false,
+		"bFilter": false
+	});
 });

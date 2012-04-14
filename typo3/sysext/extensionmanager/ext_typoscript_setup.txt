@@ -3,9 +3,19 @@ config.tx_extbase {
 		classes {
 			Tx_Extensionmanager_Domain_Model_Extension {
 				mapping {
-					tableName = tx_extensionmanager_extension
+					tableName = cache_extensions
 					columns {
-						lockToDomain.mapOnProperty = lockToDomain
+						extkey.mapOnProperty = extensionKey
+						version.mapOnProperty = version
+						title.mapOnProperty = title
+						description.mapOnProperty = description
+						state.mapOnProperty = state
+						category.mapOnProperty = category
+						lastuploaddate.mapOnProperty = lastUpdated
+						uploadcomment.mapOnProperty = updateComment
+						authorname.mapOnProperty = authorName
+						authoremail.mapOnProperty = authorEmail
+						lastversion.mapOnProperty = currentVersion
 					}
 				}
 			}

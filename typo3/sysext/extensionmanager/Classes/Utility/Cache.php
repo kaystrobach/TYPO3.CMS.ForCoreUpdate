@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -26,11 +26,11 @@
  ***************************************************************/
 
 /**
- * action controller.
+ * Extension Manager Cache Utility
  *
- * @author Susanne Moog <typo3@susannemoog.de>
+ * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage Utility
  */
 class Tx_Extensionmanager_Utility_Cache implements t3lib_Singleton {
 
@@ -54,14 +54,6 @@ class Tx_Extensionmanager_Utility_Cache implements t3lib_Singleton {
 				}
 			}
 		}
-	}
-
-	public function clearCacheOnLoad(){
-		/** @var $tce t3lib_TCEmain */
-		$tce = t3lib_div::makeInstance('t3lib_TCEmain'); //@todo: object manager?
-		$tce->stripslashes_values = 0;
-		$tce->start(array(), array());
-		$tce->clear_cacheCmd('all');
 	}
 }
 

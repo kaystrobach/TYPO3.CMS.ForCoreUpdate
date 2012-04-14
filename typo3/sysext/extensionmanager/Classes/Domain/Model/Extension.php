@@ -38,6 +38,39 @@
 class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
+	 * Contains default categories.
+	 *
+	 * @var  array
+	 */
+	protected static $defaultCategories = array(
+		0 => 'be',
+		1 => 'module',
+		2 => 'fe',
+		3 => 'plugin',
+		4 => 'misc',
+		5 => 'services',
+		6 => 'templates',
+		8 => 'doc',
+		9 => 'example'
+	);
+
+	/**
+	 * Contains default states.
+	 *
+	 * @var  array
+	 */
+	protected static $defaultStates = array(
+		0 => 'alpha',
+		1 => 'beta',
+		2 => 'stable',
+		3 => 'experimental',
+		4 => 'test',
+		5 => 'obsolete',
+		6 => 'excludeFromUpdates',
+		999 => 'n/a'
+	);
+
+	/**
 	 * @var string
 	 */
 	protected $extensionKey = '';
@@ -88,7 +121,13 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	protected $authorEmail = '';
 
 	/**
+	 * @var boolean
+	 */
+	protected $currentVersion = FALSE;
+
+	/**
 	 * @param string $authorEmail
+	 * @return void
 	 */
 	public function setAuthorEmail($authorEmail) {
 		$this->authorEmail = $authorEmail;
@@ -103,6 +142,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param string $authorName
+	 * @return void
 	 */
 	public function setAuthorName($authorName) {
 		$this->authorName = $authorName;
@@ -117,6 +157,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param int $category
+	 * @return void
 	 */
 	public function setCategory($category) {
 		$this->category = $category;
@@ -130,7 +171,19 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getCategoryString() {
+		if(isset(Tx_Extensionmanager_Domain_Model_Extension::$defaultCategories[$this->getCategory()])) {
+			return Tx_Extensionmanager_Domain_Model_Extension::$defaultCategories[$this->getCategory()];
+		} else {
+			return '';
+		}
+	}
+
+	/**
 	 * @param string $description
+	 * @return void
 	 */
 	public function setDescription($description) {
 		$this->description = $description;
@@ -145,6 +198,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param string $extensionKey
+	 * @return void
 	 */
 	public function setExtensionKey($extensionKey) {
 		$this->extensionKey = $extensionKey;
@@ -159,6 +213,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param DateTime $lastUpdated
+	 * @return void
 	 */
 	public function setLastUpdated(DateTime $lastUpdated) {
 		$this->lastUpdated = $lastUpdated;
@@ -173,6 +228,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param int $state
+	 * @return void
 	 */
 	public function setState($state) {
 		$this->state = $state;
@@ -186,7 +242,19 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getStateString() {
+		if(isset(Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()])) {
+			return Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()];
+		} else {
+			return '';
+		}
+	}
+
+	/**
 	 * @param string $title
+	 * @return void
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
@@ -201,6 +269,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param string $updateComment
+	 * @return void
 	 */
 	public function setUpdateComment($updateComment) {
 		$this->updateComment = $updateComment;
@@ -215,6 +284,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param string $version
+	 * @return void
 	 */
 	public function setVersion($version) {
 		$this->version = $version;
@@ -226,4 +296,20 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	public function getVersion() {
 		return $this->version;
 	}
+
+	/**
+	 * @param boolean $currentVersion
+	 * @return void
+	 */
+	public function setCurrentVersion($currentVersion) {
+		$this->currentVersion = $currentVersion;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getCurrentVersion() {
+		return $this->currentVersion;
+	}
+
 }

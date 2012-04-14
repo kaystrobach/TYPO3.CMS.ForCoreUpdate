@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -26,11 +26,11 @@
  ***************************************************************/
 
 /**
- * action controller.
+ * Extension Manager Install Utility
  *
- * @author Susanne Moog <typo3@susannemoog.de>
+ * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage Utility
  */
 class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 
@@ -50,7 +50,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$this->installToolSqlParser = $this->objectManager->get('t3lib_install_Sql');
 	}
 
-	public function toggleExtensionInstallationState($extension) {
+	/**
+	 * Toggle the installation state of an extension (install/uninstall)
+	 *
+	 * @param array $extension
+	 */
+	public function toggleExtensionInstallationState(array $extension) {
 		$installedExtensions = $GLOBALS['TYPO3_LOADED_EXT'];
 		if(array_key_exists($extension['key'], $installedExtensions)) {
 			// uninstall
@@ -60,20 +65,23 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 			$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
 			$this->processDatabaseUpdates($extension);
 			if($extension['clearcacheonload']) {
-				/** @var $cacheUtility Tx_Extensionmanager_Utility_Cache */
-				$cacheUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Cache');
-				$cacheUtility->clearCacheOnLoad();
+				$GLOBALS['typo3CacheManager']->flushCaches();
 			}
 		}
 		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
 		$this->writeNewExtensionList($newInstalledExtensionList);
 	}
 
+	/**
+	 * Gets the content of the ext_tables.sql and ext_tables_static+adt.sql files
+	 * Additionally adds the table definitions for the cache tables
+	 *
+	 * @param $extension
+	 */
 	public function processDatabaseUpdates($extension) {
 		$extTablesSqlFile = PATH_site . $extension['siteRelPath'] . '/ext_tables.sql';
 		if(file_exists($extTablesSqlFile)) {
 			$extTablesSqlContent = t3lib_div::getUrl($extTablesSqlFile);
-			/** Christian fragen!! */
 			$extTablesSqlContent .= t3lib_cache::getDatabaseTableDefinitions();
 			$this->updateDbWithExtTablesSql($extTablesSqlContent);
 		}
@@ -88,14 +96,14 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Writes the extension list to "localconf.php" file
 	 * Removes the temp_CACHED* files before return.
 	 *
-	 * @param string $newExtList List of extensions
+	 * @param $newExtList
+	 * @throws Exception
 	 * @return void
 	 */
 	public function writeNewExtensionList($newExtList) {
 		if(!t3lib_extMgm::isLocalconfWritable()) {
 			throw new Exception('localconf not writable');
 		}
-		$strippedExtensionList = $this->stripNonFrontendExtensionsFromExtensionList($newExtList);
 
 		// Instance of install tool
 		$instObj = new t3lib_install;
@@ -105,36 +113,18 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		// Get lines from localconf file
 		$lines = $instObj->writeToLocalconf_control();
 		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extList\']', $newExtList);
-		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extList_FE\']', $strippedExtensionList);
 		$instObj->writeToLocalconf_control($lines);
 
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $newExtList;
-		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList_FE'] = $strippedExtensionList;
 		t3lib_extMgm::removeCacheFiles();
 		$GLOBALS['typo3CacheManager']->getCache('cache_phpcode')->flushByTag('t3lib_autoloader');
 	}
 
 	/**
-	 * Removes unneeded extensions from the frontend based on
-	 * EMCONF doNotLoadInFE = 1
+	 * Update database / process db updates from ext_tables
 	 *
-	 * @param string $extList
-	 * @return string
+	 * @param string $rawDefinitions The raw SQL statements from ext_tables.sql
 	 */
-	public function stripNonFrontendExtensionsFromExtensionList($extList) {
-		/** @var $listUtility Tx_Extensionmanager_Utility_List */
-		$listUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_List');
-		$fullExtList = $listUtility->enrichExtensionsWithEmConfInformation($listUtility->getAvailableExtensions());
-		$extListArray = t3lib_div::trimExplode(',', $extList);
-		foreach($extListArray as $arrayKey => $extKey) {
-			if($fullExtList[$extKey]['doNotLoadInFE'] == 1) {
-				unset($extListArray[$arrayKey]);
-			}
-		}
-		$nonFEList = implode(',', $extListArray);
-		return $nonFEList;
-	}
-
 	public function updateDbWithExtTablesSql($rawDefinitions) {
 		$fieldDefinitionsFromFile = $this->installToolSqlParser->getFieldDefinitions_fileContent($rawDefinitions);
 
@@ -155,6 +145,11 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 	}
 
+	/**
+	 * Import static SQL data (normally used for ext_tables_static+adt.sql)
+	 *
+	 * @param string $rawDefinitions
+	 */
 	public function importStaticSql($rawDefinitions) {
 		$statements = $this->installToolSqlParser->getStatementarray($rawDefinitions, 1);
 		list($statementsPerTable, $insertCount) = $this->installToolSqlParser->getCreateTables($statements, 1);
@@ -178,9 +173,9 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Writes the TSstyleconf values to "localconf.php"
 	 * Removes the temp_CACHED* files before return.
 	 *
-	 * @param	string		Extension key
-	 * @param	array		Configuration array to write back
-	 * @return	void
+	 * @param string $extensionKey Extension key
+	 * @param array $newConfiguration Configuration array to write back
+	 * @return void
 	 */
 	function writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $newConfiguration) {
 			// Instance of install tool

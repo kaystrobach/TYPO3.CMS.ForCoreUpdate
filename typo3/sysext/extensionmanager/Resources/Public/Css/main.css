@@ -2,14 +2,14 @@
 	margin: 30px;
 }
 
-#typo3-extension-list_wrapper .ui-corner-tl {
+.contentWrapper .ui-corner-tl {
 	-moz-border-radius-topleft: 0;
 	-webkit-border-top-left-radius: 0;
 	-khtml-border-top-left-radius: 0;
 	border-top-left-radius: 0;
 }
 
-#typo3-extension-list_wrapper .ui-widget-header {
+.contentWrapper .ui-widget-header {
 	background: none;
 	border: none;
 	font-weight: normal;
@@ -41,7 +41,7 @@
 	float: right;
 }
 
-.dataTables_wrapper .ui-toolbar {
+.contentWrapper .ui-toolbar {
 	padding: 5px;
 }
 
@@ -50,18 +50,18 @@
 }
 
 
-#typo3-extension-list tr:hover,
+.typo3-extension-list tr:hover,
 .ui-state-default:hover { border: 1px solid #999999; background: #f6af23 url(images/ui-bg_glass_75_f6af23_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121; }
 
-#typo3-extension-list {
+.typo3-extension-list {
 	width: 100%;
 }
 
-#typo3-extension-list tr.odd {
+.typo3-extension-list tr.odd {
 	background-color: #eee;
 }
 
-#typo3-extension-list td {
+.typo3-extension-list td {
 	padding: 10px;
 }
 
@@ -121,7 +121,7 @@
 	background: #ffffff;
 	color: #000;
 }
-#typo3-extension-list_wrapper,
+.contentWrapper,
 #typo3-extension-configuration-forms .category {
 	background-color: #ececec;
 	background-image: linear-gradient(bottom, rgb(236,236,236) 36%, rgb(255,255,255) 100%);
@@ -164,6 +164,22 @@
 
 	-moz-box-shadow:0 0 6px #ddd;
 	-webkit-box-shadow:0 0 6px #ddd;
+}
+
+.obsolete {
+	background-color: #a3a3a3;
+}
+
+.stable {
+	background-color: #b7ff97;
+}
+
+.alpha {
+	background-color: #ffb1e0;
+}
+
+.beta {
+	background-color: #aaffcb;
 }
 
 #typo3-extension-configuration-forms .info {

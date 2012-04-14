@@ -42,17 +42,22 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		$this->objectManager = $objectManager;
 	}
 
-	public function findByExtension($extension) {
+	/**
+	 * Find configuration options by extension
+	 *
+	 * @param array $extension
+	 * @return null|SplObjectStorage
+	 */
+	public function findByExtension(array $extension) {
 		$configRaw = t3lib_div::getUrl(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt');
 		$configurationObjectStorage = NULL;
 		if ($configRaw) {
-			$theConstants = $this->createArrayFromConstants($configRaw, $extension);
-			$metaInformation = $theConstants['__meta__'] ? $theConstants['__meta__'] : array();
-			unset($theConstants['__meta__']);
-			$theConstants = $this->mergeWithExistingConfiguration($theConstants, $extension);
-			$configuration = array();
-
-			foreach($theConstants as $configurationOption) {
+			$configuration = $this->createArrayFromConstants($configRaw, $extension);
+			$metaInformation = $configuration['__meta__'] ? $configuration['__meta__'] : array();
+			unset($configuration['__meta__']);
+			$configuration = $this->mergeWithExistingConfiguration($configuration, $extension);
+			$hierarchicConfiguration = array();
+			foreach($configuration as $configurationOption) {
 				if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'user')) {
 					preg_match('/user\[(.*)\]/is', $configurationOption['type'], $matches);
 					$configurationOption['generic'] = $matches[1];
@@ -77,14 +82,22 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 				);
 				$configurationOption['subcat_name'] = $configurationOption['subcat_name'] ? $configurationOption['subcat_name'] : '__default';
 					// build temporary hierarchy
-				$configuration[$configurationOption['cat']][$configurationOption['subcat_name']][$configurationOption['name']] = $configurationOption;
+				$hierarchicConfiguration[$configurationOption['cat']][$configurationOption['subcat_name']][$configurationOption['name']] = $configurationOption;
 			}
-			$configurationObjectStorage = $this->convertHierarchicArrayToObject(t3lib_div::array_merge_recursive_overrule($configuration, $metaInformation));
+			$configurationObjectStorage = $this->convertHierarchicArrayToObject(t3lib_div::array_merge_recursive_overrule($hierarchicConfiguration, $metaInformation));
 		}
 		return $configurationObjectStorage;
 	}
 
-	public function createArrayFromConstants($configRaw, $extension) { // Load tsStyleConfig class and parse configuration template:
+	/**
+	 * Generate an array from the typoscript style constants
+	 * Add meta data like TSConstantEditor comments
+	 *
+	 * @param string $configRaw
+	 * @param array $extension
+	 * @return array
+	 */
+	public function createArrayFromConstants($configRaw, array $extension) {
 		/** @var $tsStyleConfig t3lib_tsStyleConfig */
 		$tsStyleConfig = t3lib_div::makeInstance('t3lib_tsStyleConfig');
 		$tsStyleConfig->doNotSortCategoriesBeforeMakingForm = TRUE;
@@ -105,13 +118,28 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		return $theConstants;
 	}
 
-	protected function mergeWithExistingConfiguration($theConstants, $extension) {
+	/**
+	 * Merge new configuration with existing configuration
+	 *
+	 * @param array $configuration the new configuration array
+	 * @param array $extension the extension information
+	 * @return array
+	 */
+	protected function mergeWithExistingConfiguration(array $configuration, array $extension) {
 		$currentExtensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extension['key']]);
-		$currentExtensionConfig = is_array($currentExtensionConfig) ? $currentExtensionConfig : array();
-		return t3lib_div::array_merge_recursive_overrule($theConstants, $currentExtensionConfig);;
+		if(is_array($currentExtensionConfig)) {
+			$configuration =  t3lib_div::array_merge_recursive_overrule($configuration, $currentExtensionConfig);
+		}
+		return $configuration;
 	}
 
-	protected function convertHierarchicArrayToObject($configuration) {
+	/**
+	 * Converts a hierarchic configuration array to an hierarchic object storage structure
+	 *
+	 * @param array $configuration
+	 * @return SplObjectStorage
+	 */
+	protected function convertHierarchicArrayToObject(array $configuration) {
 		$configurationObjectStorage = new SplObjectStorage();
 		foreach($configuration as $category => $subcategory) {
 			/** @var $configurationCategoryObject Tx_Extensionmanager_Domain_Model_ConfigurationCategory */

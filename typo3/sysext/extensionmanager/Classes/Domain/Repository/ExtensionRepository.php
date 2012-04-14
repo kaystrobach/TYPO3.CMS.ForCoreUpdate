@@ -27,10 +27,21 @@
  */
 class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persistence_Repository {
 
+	public function countAll() {
+		$query = $this->createQuery();
+		$query = $this->addDefaultConstraints($query);
+		return $query->execute()->count();
+	}
+
+	public function findAll() {
+		$query = $this->createQuery();
+		$query = $this->addDefaultConstraints($query);
+		return $query->execute();
+	}
+
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
 		$searchString = '%' . $searchString . '%';
 		$query = $this->createQuery();
-		$query->setLimit(120);
 		$query->matching(
 			$query->logicalOr(
 				$query->like('extensionKey', $searchString),
@@ -38,7 +49,24 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 				$query->like('authorName', $searchString)
 			)
 		);
+		$query = $this->addDefaultConstraints($query);
 		return $query->execute();
+	}
+
+	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {
+		if($query->getConstraint()) {
+			$query->matching(
+				$query->logicalAnd(
+					$query->getConstraint(),
+					$query->equals('lastversion', TRUE)
+				)
+			);
+		} else {
+			$query->matching(
+				$query->equals('lastversion', TRUE)
+			);
+		}
+		return $query;
 	}
 }
 ?>

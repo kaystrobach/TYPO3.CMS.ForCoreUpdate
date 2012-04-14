@@ -60,36 +60,37 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	}
 
 	public function terAction() {
-	}
+		$search = '';
+		if ($this->request->hasArgument('search') && is_string($this->request->getArgument('search'))) {
+			$search = $this->request->getArgument('search');
+		}
 
-	public function terAjaxAction() {
-		$jsonData = array();
-		if(t3lib_div::_GET('sSearch')) {
-			$data = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey(t3lib_div::_GET('sSearch'));
+			// is a search param present in the session?
+		if(empty($search)) {
+			$moduleData = json_decode($GLOBALS['BE_USER']->getModuleData(get_class($this)));
+			if (isset($moduleData->search)) {
+				$search = $moduleData->search;
+			}
+		}
+
+		if(is_string($search) && !empty($search)) {
+			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
+			$GLOBALS['BE_USER']->pushModuleData(
+				get_class($this),
+				json_encode(
+					array('search' => $search)
+				)
+			);
 		} else {
-			$data = array(
-				$this->extensionRepository->findByUid(20379)
+			$extensions = $this->extensionRepository->findAll();
+			$GLOBALS['BE_USER']->pushModuleData(
+				get_class($this),
+				json_encode(
+					array('search' => '')
+				)
 			);
 		}
-		foreach($data as $extension) {
-			$cleanedData[$extension->getExtensionKey()] = array(
-				$extension->getAuthorName(),
-				$extension->getExtensionKey()
-			);
-		}
-
-		foreach($cleanedData as $cleanExtension) {
-			$jsonData[] = $cleanExtension;
-		}
-		echo json_encode(
-			array(
-				'sEcho' => intval($_GET['sEcho']),
-				'iTotalRecords' => count($jsonData),
-				'iTotalDisplayRecords' => 10,
-				'aaData' => $jsonData
-			)
-		);
-		exit();
+		$this->view->assign('extensions', $extensions);
 	}
 
 	/**
