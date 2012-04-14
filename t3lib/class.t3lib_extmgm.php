@@ -2081,6 +2081,12 @@ tt_content.' . $key . $prefix . ' {
 		return $loadedExtensions;
 	}
 
+	public static function getInstalledAndLoadedExtensions() {
+		$currentExtListExtensions = array_flip(explode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList']));
+		$installedExtensions = array_intersect_key($GLOBALS['TYPO3_LOADED_EXT'], $currentExtListExtensions);
+		return $installedExtensions;
+	}
+
 	/**
 	 * Gets list of required extensions.
 	 * This is the list of extensions from constant REQUIRED_EXTENSIONS defined
