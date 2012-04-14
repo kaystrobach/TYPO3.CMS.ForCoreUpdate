@@ -46,11 +46,23 @@ class Tx_Extensionmanager_Controller_InstallController extends Tx_Extensionmanag
 		$installUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Install');
 
 		$extension = $this->request->getArgument('extension');
-		$installUtility->toggleExtensionInstallationState($extension);
-		$cacheUtility->refreshGlobalExtList();
+		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
 
-		$this->redirect('index','List');
+		if (array_key_exists($extension['key'], $installedExtensions)) {
+			// uninstall
+			$installUtility->uninstall($extension['key']);
+		} else {
+			// install
+			$installUtility->install($extension);
+			$cacheUtility->refreshGlobalExtList();
+			/** @var $configUtility Tx_Extensionmanager_Utility_Configuration */
+			$configUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
+			$configUtility->saveDefaultConfiguration($extension['key']);
+		}
+
+		$this->redirect('index', 'List');
 	}
 
 }
+
 ?>

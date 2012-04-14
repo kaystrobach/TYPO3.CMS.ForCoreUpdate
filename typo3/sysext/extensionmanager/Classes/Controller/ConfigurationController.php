@@ -42,6 +42,7 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 
 	/**
 	 * @param Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
+	 * @return void
 	 */
 	public function injectConfigurationItemRepository(Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository){
 		$this->configurationItemRepository = $configurationItemRepository;
@@ -59,13 +60,12 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 	/**
 	 * @param array $config
 	 * @param string $extensionKey
+	 * @return void
 	 */
 	public function saveAction(array $config, $extensionKey) {
-		$extension = $GLOBALS['TYPO3_LOADED_EXT'][$extensionKey];
-		$defaultConfig = $this->configurationItemRepository->createArrayFromConstants($configRaw = t3lib_div::getUrl(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt'), $extension);
-		$currentExtensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extension['key']]);
-		$currentExtensionConfig = is_array($currentExtensionConfig) ? $currentExtensionConfig : array();
-		$currentFullConfiguration = t3lib_div::array_merge_recursive_overrule($defaultConfig, $currentExtensionConfig);
+		/** @var $configurationUtility Tx_Extensionmanager_Utility_Configuration */
+		$configurationUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
+		$currentFullConfiguration = $configurationUtility->getCurrentConfiguration($extensionKey);
 		$newConfiguration = t3lib_div::array_merge_recursive_overrule($currentFullConfiguration, $config);
 
 		$strippedConfiguration = array();
@@ -73,11 +73,10 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 			$strippedConfiguration[$configurationKey]['value'] = $configurationValue['value'];
 		}
 
-		/** @var $installUtility Tx_Extensionmanager_Utility_Install */
-		$installUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Install');
-		$installUtility->writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $strippedConfiguration);
+		$configurationUtility->writeConfiguration($strippedConfiguration, $extensionKey);
 		$this->redirect('showConfigurationForm', NULL, NULL, array('extension' => array('key' => $extensionKey)));
 	}
+
 
 }
 ?>

@@ -166,7 +166,7 @@
 	-webkit-box-shadow:0 0 6px #ddd;
 }
 
-.obsolete {
+.obsolete, .test, .experimental {
 	background-color: #a3a3a3;
 }
 

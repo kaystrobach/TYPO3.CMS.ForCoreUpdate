@@ -50,23 +50,20 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$this->installToolSqlParser = $this->objectManager->get('t3lib_install_Sql');
 	}
 
-	/**
-	 * Toggle the installation state of an extension (install/uninstall)
-	 *
-	 * @param array $extension
-	 */
-	public function toggleExtensionInstallationState(array $extension) {
-		$installedExtensions = $GLOBALS['TYPO3_LOADED_EXT'];
-		if(array_key_exists($extension['key'], $installedExtensions)) {
-			// uninstall
-			unset($installedExtensions[$extension['key']]);
-		} else {
-			// install
-			$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
-			$this->processDatabaseUpdates($extension);
-			if($extension['clearcacheonload']) {
-				$GLOBALS['typo3CacheManager']->flushCaches();
-			}
+
+	public function uninstall($extensionKey) {
+		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
+		unset($installedExtensions[$extensionKey]);
+		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
+		$this->writeNewExtensionList($newInstalledExtensionList);
+	}
+
+	public function install($extension) {
+		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
+		$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
+		$this->processDatabaseUpdates($extension);
+		if($extension['clearcacheonload']) {
+			$GLOBALS['typo3CacheManager']->flushCaches();
 		}
 		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
 		$this->writeNewExtensionList($newInstalledExtensionList);
