@@ -736,7 +736,7 @@ class browse_links {
 		$this->doc = t3lib_div::makeInstance('template');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 			// Load the Prototype library and browse_links.js
-		$this->doc->getPageRenderer()->loadPrototype();
+		$this->doc->getPageRenderer()->loadJquery();
 		$this->doc->loadJavascriptLib('js/browse_links.js');
 
 			// init hook objects:

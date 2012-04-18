@@ -158,8 +158,7 @@ class SC_index {
 		$GLOBALS['TBE_TEMPLATE']->moduleTemplate = $GLOBALS['TBE_TEMPLATE']->getHtmlTemplate('templates/login.html');
 
 		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->loadExtJS();
-		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->loadPrototype();
-		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->loadScriptaculous();
+		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->loadJquery();
 
 			// Set JavaScript for creating a MD5 hash of the password:
 		$GLOBALS['TBE_TEMPLATE']->JScode.= $this->getJScode();

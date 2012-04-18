@@ -122,7 +122,6 @@ class TYPO3backend {
 			'md5'                   => 'md5.js',
 			'toolbarmanager'        => 'js/toolbarmanager.js',
 			'modulemenu'            => 'js/modulemenu.js',
-			'iecompatibility'       => 'js/iecompatibility.js',
 			'flashupload'           => 'js/flashupload.js',
 			'evalfield'             => '../t3lib/jsfunc.evalfield.js',
 			'flashmessages'         => '../t3lib/js/extjs/ux/flashmessages.js',

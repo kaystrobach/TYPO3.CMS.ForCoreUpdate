@@ -147,7 +147,7 @@ class SC_file_list {
 		$this->doc = t3lib_div::makeInstance('template');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/file_list.html');
-		$this->doc->getPageRenderer()->loadPrototype();
+		$this->doc->getPageRenderer()->loadJquery();
 
 			// Validating the input "id" (the path, directory!) and checking it against the mounts of the user.
 		$this->id = $this->basicFF->is_directory($this->id);

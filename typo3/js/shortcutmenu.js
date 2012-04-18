@@ -79,6 +79,8 @@ var TYPO3BackendShortcutMenu = {
 		toolbarItem.blur();
 
 		if (!toolbarItem.hasClass('toolbar-item-active')) {
+			jQuery('#typo3-toolbar .toolbar-item-menu').fadeOut(200);
+			jQuery('#typo3-toolbar .toolbar-item-active').removeClass('toolbar-item-active');
 			toolbarItem.addClass('toolbar-item-active');
 			menu.fadeIn(200);
 			TYPO3BackendToolbarManager.hideOthers(toolbarItem);

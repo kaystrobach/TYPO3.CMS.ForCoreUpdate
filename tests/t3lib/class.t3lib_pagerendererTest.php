@@ -406,10 +406,10 @@ class t3lib_PageRendererTest extends tx_phpunit_testcase {
 	 * test load prototype
 	 *
 	 */
-	public function testLoadPrototype() {
+	public function testLoadJquery() {
 
-		$expectedRegExp = '#<script src="contrib/prototype/prototype\.(js|\d+\.js|js\?\d+)" type="text/javascript"></script>#';
-		$this->fixture->loadPrototype();
+		$expectedRegExp = '#<script src="contrib/jquery/jquery\.(js|\d+\.js|js\?\d+)" type="text/javascript"></script>#';
+		$this->fixture->loadJquery();
 		$out = $this->fixture->render();
 
 		$this->assertRegExp(

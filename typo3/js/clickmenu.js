@@ -125,44 +125,6 @@ var Clickmenu = {
 			obj.style.top  = y + 'px';
 			Element.show(obj);
 		}
-		if (/MSIE5/.test(navigator.userAgent)) {
-			this._toggleSelectorBoxes('hidden');
-		}
-	},
-
-
-	/**
-	 * event handler function that saves the actual position of the mouse
-	 * in the Clickmenu object
-	 * @param	event	the event object
-	 */
-	calcMousePosEvent: function(event) {
-		if (!event) {
-			event = window.event;
-		}
-		this.mousePos.X = Event.pointerX(event);
-		this.mousePos.Y = Event.pointerY(event);
-		this.mouseOutFromMenu('contentMenu0');
-		this.mouseOutFromMenu('contentMenu1');
-	},
-
-
-	/**
-	 * hides a visible menu if the mouse has moved outside
-	 * of the object
-	 * @param	obj	the object to hide
-	 * @result	nothing
-	 */
-	mouseOutFromMenu: function(obj) {
-		obj = $(obj);
-		if (obj && Element.visible(obj) && !Position.within(obj, this.mousePos.X, this.mousePos.Y)) {
-			this.hide(obj);
-			if (/MSIE5/.test(navigator.userAgent) && obj.id === 'contentMenu0') {
-				this._toggleSelectorBoxes('visible');
-			}
-		} else if (obj && Element.visible(obj)) {
-			this.delayClickMenuHide = true;
-		}
 	},
 
 	/**
@@ -190,24 +152,6 @@ var Clickmenu = {
 
 
 	/**
-	 * hides / displays all selector boxes in a page, fixes an IE 5 selector problem
-	 * originally by Michiel van Leening
-	 *
-	 * @param	action 	hide (= "hidden") or show (= "visible")
-	 * @result	nothing
-	 */
-	_toggleSelectorBoxes: function(action) {
-		for (var i = 0; i < document.forms.length; i++) {
-			for (var j = 0; j < document.forms[i].elements.length; j++) {
-				if (document.forms[i].elements[j].type == 'select-one') {
-					document.forms[i].elements[j].style.visibility = action;
-				}
-			}
-		}
-	},
-
-
-	/**
 	 * manipulates the DOM to add the divs needed for clickmenu at the bottom of the <body>-tag
 	 *
 	 * @return	nothing
@@ -217,45 +161,3 @@ var Clickmenu = {
 		var insert = new Insertion.Bottom(document.getElementsByTagName('body')[0], code);
 	}
 }
-
-// register mouse movement inside the document
-Event.observe(document, 'mousemove', Clickmenu.calcMousePosEvent.bindAsEventListener(Clickmenu), true);
-
-
-// @deprecated: Deprecated functions since 4.2, here for compatibility, remove in 4.4+
-// ## BEGIN ##
-
-// Still used in Core: typo3/template.php::wrapClickMenuOnIcon()
-function showClickmenu(table, uid, listFr, enDisItems, backPath, addParams)	{
-	Clickmenu.show(table, uid, listFr, enDisItems, backPath, addParams);
-}
-
-// Still used in Core: typo3/alt_clickmenu.php::linkItem()
-function showClickmenu_raw(url) {
-	var parts = url.split('?');
-	if (parts.length === 2) {
-		Clickmenu.clickURL = parts[0];
-		Clickmenu.callURL(parts[1]);
-	} else {
-		Clickmenu.callURL(url);
-	}
-}
-function showClickmenu_noajax(url) {
-	Clickmenu.ajax = false; showClickmenu_raw(url);
-}
-function setLayerObj(tableData, cmLevel) {
-	Clickmenu.populateData(tableData, cmLevel);
-}
-function hideEmpty() {
-	Clickmenu.hideAll();
-	return false;
-}
-function hideSpecific(level) {
-	if (level === 0 || level === 1)	{
-		Clickmenu.hide('contentMenu'+level);
-	}
-} 
-function showHideSelectorBoxes(action) {
-	toggleSelectorBoxes(action);
-}
-// ## END ##
