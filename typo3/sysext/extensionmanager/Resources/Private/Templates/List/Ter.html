@@ -5,7 +5,7 @@
 </f:section>
 <f:section name="Content">
 	<f:form action="ter">
-		<f:form.textfield name="search" value="" />
+		<f:form.textfield name="search" value="{search}" />
 		<f:form.submit value="Submit"/>
 	</f:form>
 	<f:widget.paginate objects="{extensions}" as="paginatedExtensions" configuration="{itemsPerPage: 15, maximumNumberOfLinks: 2}">

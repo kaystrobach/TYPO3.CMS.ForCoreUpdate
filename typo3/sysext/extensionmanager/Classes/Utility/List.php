@@ -60,16 +60,12 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	/**
 	 * Returns the list of available (installed) extensions
 	 *
-	 * @return array Array with two arrays, list array (all extensions with info) and category index
+	 * @return array Array with two sub-arrays, list array (all extensions with info) and category index
 	 * @see getInstExtList()
 	 */
 	public function getAvailableExtensions() {
 		$extensions = array();
-		$paths = array(
-			'System' => PATH_typo3 . 'sysext/',
-			'Global' => PATH_typo3 . 'ext/',
-			'Local' => PATH_typo3conf . 'ext/'
-		);
+		$paths = Tx_Extensionmanager_Domain_Model_Extension::returnInstallPaths();
 		foreach($paths as $installationType => $path) {
 			try {
 				if(is_dir($path)) {

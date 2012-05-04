@@ -90,7 +90,9 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 				)
 			);
 		}
-		$this->view->assign('extensions', $extensions);
+		$this->view
+			->assign('extensions', $extensions)
+			->assign('search', $search);
 	}
 
 	/**

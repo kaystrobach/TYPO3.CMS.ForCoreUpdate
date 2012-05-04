@@ -70,6 +70,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 		999 => 'n/a'
 	);
 
+
 	/**
 	 * @var string
 	 */
@@ -330,6 +331,14 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function getMd5hash() {
 		return $this->md5hash;
+	}
+
+	public static function returnInstallPaths() {
+		return array(
+			'System' => PATH_typo3 . 'sysext/',
+			'Global' => PATH_typo3 . 'ext/',
+			'Local' => PATH_typo3conf . 'ext/'
+		);
 	}
 
 }
