@@ -44,8 +44,9 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 		$_EXTKEY = $extension['key'];
 		$path = PATH_site . $extension['siteRelPath'] . '/ext_emconf.php';
 		$EM_CONF = NULL;
+
 		if(file_exists($path)) {
-		include_once($path);
+			include($path);
 			if (is_array($EM_CONF[$_EXTKEY])) {
 				return $EM_CONF[$_EXTKEY];
 			}

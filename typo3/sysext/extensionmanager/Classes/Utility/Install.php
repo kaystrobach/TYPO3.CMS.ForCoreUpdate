@@ -74,7 +74,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
 		$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
 		$this->processDatabaseUpdates($extension);
-		if($extension['clearcacheonload']) {
+		if ($extension['clearcacheonload']) {
 			$GLOBALS['typo3CacheManager']->flushCaches();
 		}
 		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
@@ -89,13 +89,13 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function processDatabaseUpdates($extension) {
 		$extTablesSqlFile = PATH_site . $extension['siteRelPath'] . '/ext_tables.sql';
-		if(file_exists($extTablesSqlFile)) {
+		if (file_exists($extTablesSqlFile)) {
 			$extTablesSqlContent = t3lib_div::getUrl($extTablesSqlFile);
 			$extTablesSqlContent .= t3lib_cache::getDatabaseTableDefinitions();
 			$this->updateDbWithExtTablesSql($extTablesSqlContent);
 		}
 		$extTablesStaticSqlFile = PATH_site . $extension['siteRelPath'] .  '/ext_tables_static+adt.sql';
-		if(file_exists($extTablesStaticSqlFile)) {
+		if (file_exists($extTablesStaticSqlFile)) {
 			$extTablesStaticSqlContent = t3lib_div::getUrl($extTablesStaticSqlFile);
 			$this->importStaticSql($extTablesStaticSqlContent);
 		}
@@ -115,7 +115,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 
 		// Instance of install tool
-		$instObj = new t3lib_install;
+		$instObj = $this->getT3libInstallInstance();
 		$instObj->allowUpdateLocalConf = 1;
 		$instObj->updateIdentity = 'TYPO3 Extension Manager';
 
@@ -127,6 +127,16 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $newExtList;
 		t3lib_extMgm::removeCacheFiles();
 		$GLOBALS['typo3CacheManager']->getCache('cache_phpcode')->flushByTag('t3lib_autoloader');
+	}
+
+	/**
+	 * Wrapper for make instance to make
+	 * mocking possible
+	 *
+	 * @return t3lib_install
+	 */
+	protected function getT3libInstallInstance() {
+		return t3lib_div::makeInstance('t3lib_install');
 	}
 
 	/**
@@ -153,6 +163,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 			}
 		}
 	}
+
 
 	/**
 	 * Import static SQL data (normally used for ext_tables_static+adt.sql)

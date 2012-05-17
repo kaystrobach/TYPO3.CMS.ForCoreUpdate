@@ -52,41 +52,67 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		$configRaw = t3lib_div::getUrl(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt');
 		$configurationObjectStorage = NULL;
 		if ($configRaw) {
-			$configuration = $this->createArrayFromConstants($configRaw, $extension);
-			$metaInformation = $configuration['__meta__'] ? $configuration['__meta__'] : array();
-			unset($configuration['__meta__']);
-			$configuration = $this->mergeWithExistingConfiguration($configuration, $extension);
-			$hierarchicConfiguration = array();
-			foreach($configuration as $configurationOption) {
-				if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'user')) {
-					preg_match('/user\[(.*)\]/is', $configurationOption['type'], $matches);
-					$configurationOption['generic'] = $matches[1];
-					$configurationOption['type'] = 'user';
-				} else if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'options')) {
-					preg_match('/options\[(.*)\]/is', $configurationOption['type'], $typeMatches);
-					preg_match('/options\[(.*)\]/is', $configurationOption['label'], $labelMatches);
-					$optionValues = explode(',', $typeMatches[1]);
-					$optionLabels = explode(',', $labelMatches[1]);
-					$configurationOption['generic'] = $labelMatches ? array_combine($optionLabels, $optionValues) :  array_combine($optionValues, $optionValues);
-					$configurationOption['type'] = 'options';
-					$configurationOption['label'] = str_replace($labelMatches[0], '', $configurationOption['label']);
-				}
-				if(Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key'])) {
-					$configurationOption['label'] = Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key']);
-				}
-				$configurationOption['labels'] = t3lib_div::trimExplode(
-					':',
-					$configurationOption['label'],
-					FALSE,
-					2
-				);
-				$configurationOption['subcat_name'] = $configurationOption['subcat_name'] ? $configurationOption['subcat_name'] : '__default';
-					// build temporary hierarchy
-				$hierarchicConfiguration[$configurationOption['cat']][$configurationOption['subcat_name']][$configurationOption['name']] = $configurationOption;
-			}
-			$configurationObjectStorage = $this->convertHierarchicArrayToObject(t3lib_div::array_merge_recursive_overrule($hierarchicConfiguration, $metaInformation));
+			$configurationObjectStorage = $this->convertRawConfigurationToObject($configRaw, $extension);
 		}
 		return $configurationObjectStorage;
+	}
+
+	protected function convertRawConfigurationToObject($configRaw, $extension) {
+		$defaultConfiguration = $this->createArrayFromConstants($configRaw, $extension);
+		$metaInformation = $this->addMetaInformation($defaultConfiguration);
+		$configuration = $this->mergeWithExistingConfiguration($defaultConfiguration, $extension);
+		$hierarchicConfiguration = array();
+
+		foreach($configuration as $configurationOption) {
+			$hierarchicConfiguration = t3lib_div::array_merge_recursive_overrule($this->buildConfigurationArray($configurationOption, $extension), $hierarchicConfiguration);
+		}
+		$configurationObjectStorage = $this->convertHierarchicArrayToObject(t3lib_div::array_merge_recursive_overrule($hierarchicConfiguration, $metaInformation));
+		return $configurationObjectStorage;
+	}
+
+	protected function buildConfigurationArray($configurationOption, $extension) {
+		$hierarchicConfiguration = array();
+		if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'user')) {
+			$configurationOption = $this->extractInformationForConfigFieldsOfTypeUser($configurationOption);
+		} else if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'options')) {
+			$configurationOption = $this->extractInformationForConfigFieldsOfTypeOptions($configurationOption);
+		}
+		if(Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key'])) {
+			$configurationOption['label'] = Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key']);
+		}
+		$configurationOption['labels'] = t3lib_div::trimExplode(
+			':',
+			$configurationOption['label'],
+			FALSE,
+			2
+		);
+		$configurationOption['subcat_name'] = $configurationOption['subcat_name'] ? $configurationOption['subcat_name'] : '__default';
+		$hierarchicConfiguration[$configurationOption['cat']][$configurationOption['subcat_name']][$configurationOption['name']] = $configurationOption;
+		return $hierarchicConfiguration;
+	}
+
+	protected function extractInformationForConfigFieldsOfTypeOptions($configurationOption) {
+		preg_match('/options\[(.*)\]/is', $configurationOption['type'], $typeMatches);
+		preg_match('/options\[(.*)\]/is', $configurationOption['label'], $labelMatches);
+		$optionValues = explode(',', $typeMatches[1]);
+		$optionLabels = explode(',', $labelMatches[1]);
+		$configurationOption['generic'] = $labelMatches ? array_combine($optionLabels, $optionValues) : array_combine($optionValues, $optionValues);
+		$configurationOption['type'] = 'options';
+		$configurationOption['label'] = str_replace($labelMatches[0], '', $configurationOption['label']);
+		return $configurationOption;
+	}
+
+	protected function extractInformationForConfigFieldsOfTypeUser($configurationOption) {
+		preg_match('/user\[(.*)\]/is', $configurationOption['type'], $matches);
+		$configurationOption['generic'] = $matches[1];
+		$configurationOption['type'] = 'user';
+		return $configurationOption;
+	}
+
+	protected function addMetaInformation(&$configuration) {
+		$metaInformation = $configuration['__meta__'] ? $configuration['__meta__'] : array();
+		unset($configuration['__meta__']);
+		return $metaInformation;
 	}
 
 	/**
@@ -98,8 +124,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	 * @return array
 	 */
 	public function createArrayFromConstants($configRaw, array $extension) {
-		/** @var $tsStyleConfig t3lib_tsStyleConfig */
-		$tsStyleConfig = t3lib_div::makeInstance('t3lib_tsStyleConfig');
+		$tsStyleConfig = $this->getT3libTsStyleConfig();
 		$tsStyleConfig->doNotSortCategoriesBeforeMakingForm = TRUE;
 		$theConstants = $tsStyleConfig->ext_initTSstyleConfig(
 			$configRaw,
@@ -116,6 +141,16 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 			}
 		}
 		return $theConstants;
+	}
+
+	/**
+	 * Wrapper for makeInstance to make it possible to mock
+	 * the class
+	 *
+	 * @return t3lib_tsStyleConfig
+	 */
+	protected function getT3libTsStyleConfig() {
+		return t3lib_div::makeInstance('t3lib_tsStyleConfig');
 	}
 
 	/**

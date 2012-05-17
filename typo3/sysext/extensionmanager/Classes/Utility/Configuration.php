@@ -35,7 +35,7 @@
 class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 
 	/**
-	 * @var Tx_Extbase_Object_Manager
+	 * @var Tx_Extbase_Object_ObjectManager
 	 */
 	protected $objectManager;
 
@@ -45,10 +45,10 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 	protected $configurationItemRepository;
 
 	/**
-	 * @param Tx_Extbase_Object_Manager $objectManager
+	 * @param Tx_Extbase_Object_ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_Manager $objectManager){
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager){
 		$this->objectManager = $objectManager;
 	}
 

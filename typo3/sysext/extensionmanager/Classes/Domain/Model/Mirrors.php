@@ -59,19 +59,6 @@ class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_A
 	protected $isRandomSelection = TRUE;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
-	 */
-	protected $objectManager;
-
-	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
-	 * @return Tx_Extbase_Object_ObjectManagerInterface
-	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
-		return $this->objectManager = $objectManager;
-	}
-
-	/**
 	 * Method selects one specific mirror to be used.
 	 *
 	 * @access  public
