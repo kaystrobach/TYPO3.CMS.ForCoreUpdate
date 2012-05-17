@@ -41,12 +41,25 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	protected $extensionRepository;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_FileHandling
+	 */
+	protected $fileHandlingUtility;
+
+	/**
 	 * Dependency injection of the Extension Repository
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
 	 * @return void
 	-	 */
 	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_FileHandling $fileHandlingUtility
+	 * @return void
+	 */
+	public function injectFileHandlingUtility(Tx_Extensionmanager_Utility_FileHandling $fileHandlingUtility) {
+		$this->fileHandlingUtility = $fileHandlingUtility;
 	}
 
 	public function terExtensionDownloadAction() {
@@ -60,62 +73,13 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		/** @var $terConnection Tx_Extensionmanager_Utility_Connection_Ter */
 		$terConnection = $this->objectManager->get('Tx_Extensionmanager_Utility_Connection_Ter');
 		$mirrorUrl = $repositoryHelper->getMirrors()->getMirrorUrl();
-		$fetchedExtensions = $terConnection->fetchExtension($extension->getExtensionKey(), $extension->getVersion(), $extension->getMd5hash(), $mirrorUrl);
-		foreach($fetchedExtensions as $fetchedExtension) {
+		$fetchedExtension = $terConnection->fetchExtension($extension->getExtensionKey(), $extension->getVersion(), $extension->getMd5hash(), $mirrorUrl);
+		if(isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey']) && is_string($fetchedExtension['extKey'])) {
+			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension);
 
 		}
 	}
 
-	/**
-	 * Removes the current extension of $type and creates the base folder for the new one (which is going to be imported)
-	 *
-	 * @param $extensionkey
-	 * @param string $type Extension installation scope (L,G,S)
-	 * @internal param array $importedData Data for imported extension
-	 * @return mixed Returns array on success (with extension directory), otherwise an error string.
-	 */
-	protected function makeAndClearExtensionDir($extensionkey, $type) {
-		// Setting install path (L, G, S or fileadmin/_temp_/)
-		$path = '';
-		$paths = Tx_Extensionmanager_Domain_Model_Extension::returnInstallPaths();
 
-		// If the install path is OK...
-		if ($path && @is_dir($path)) {
-
-			// Set extension directory:
-			$extDirPath = $path . $importedData['extKey'] . $suffix . '/';
-
-			// Install dir was found, remove it then:
-			if (@is_dir($extDirPath)) {
-				if ($dontDelete) {
-					return array($extDirPath);
-				}
-				$res = $this->removeExtDirectory($extDirPath);
-				if ($res) {
-					if (!$this->silentMode) {
-						$flashMessage = t3lib_div::makeInstance(
-							't3lib_FlashMessage',
-							nl2br($res),
-							sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_remove_dir'), $extDirPath),
-							t3lib_FlashMessage::ERROR
-						);
-						return $flashMessage->render();
-					}
-					return '';
-				}
-			}
-
-			// We go create...
-			t3lib_div::mkdir($extDirPath);
-			if (!is_dir($extDirPath)) {
-				return sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_create_dir'),
-					$extDirPath);
-			}
-			return array($extDirPath);
-		} else {
-			return sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_no_dir'),
-				$path);
-		}
-	}
 
 }

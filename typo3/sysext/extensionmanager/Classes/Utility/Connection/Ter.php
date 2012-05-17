@@ -126,7 +126,7 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 		if (md5($parts[2]) == $parts[0]) {
 			$output = unserialize($parts[2]);
 			if (is_array($output)) {
-				return array($output, '');
+				return $output;
 			} else {
 				return 'Error: Content could not be unserialized to an array. Strange (since MD5 hashes match!)';
 			}
