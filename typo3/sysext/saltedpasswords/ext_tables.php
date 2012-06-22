@@ -3,6 +3,7 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
+
 t3lib_div::loadTCA('fe_users');
 $GLOBALS['TCA']['fe_users']['columns']['password']['config']['max'] = 100;
 
@@ -45,5 +46,6 @@ if (tx_saltedpasswords_div::isUsageEnabled('BE')) {
 	$GLOBALS['TYPO3_USER_SETTINGS']['columns']['password']['eval'] = '';
 	$GLOBALS['TYPO3_USER_SETTINGS']['columns']['password2']['eval'] = '';
 }
+
 
 ?>
