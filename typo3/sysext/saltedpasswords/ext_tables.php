@@ -1,6 +1,6 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
+if (!defined('TYPO3_MODE')) {
+	die('Access denied.');
 }
 
 
@@ -48,4 +48,6 @@ if (tx_saltedpasswords_div::isUsageEnabled('BE')) {
 }
 
 
+		// Add context sensitive help (csh) for scheduler task
+	t3lib_extMgm::addLLrefForTCAdescr('_txsaltedpasswords', 'EXT:' . $_EXTKEY . '/locallang_csh_saltedpasswords.xml');
 ?>
