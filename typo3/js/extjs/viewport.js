@@ -25,7 +25,7 @@
  ***************************************************************/
 
 Ext.ns('TYPO3');
-
+/*
 	// override splitregion to fit the splitbars in our design
 Ext.override(Ext.layout.BorderLayout.SplitRegion, {
 	render : function(ct, p) {
@@ -79,12 +79,13 @@ Ext.override(Ext.layout.BorderLayout.SplitRegion, {
 		}
 	}
 });
+*/
 /**
  * Extends the viewport with some functionality for TYPO3.
  *
  * @author Stefan Galinski <stefan.galinski@gmail.com>
  */
-TYPO3.Viewport = Ext.extend(Ext.Viewport, {
+TYPO3.Viewport ={
 	/**
 	 * Contains the navigation widgets in a simple array and identified by an unique idea
 	 *
@@ -174,6 +175,6 @@ TYPO3.Viewport = Ext.extend(Ext.Viewport, {
 		this.DebugConsole = Ext.getCmp('typo3-debug-console');
 
 	}
-});
+};
 
 Ext.reg('typo3Viewport', TYPO3.Viewport);

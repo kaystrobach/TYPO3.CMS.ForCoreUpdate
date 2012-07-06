@@ -1,0 +1,4 @@
+<div id="username" class="toolbar-item {f:if(condition: BackendUser.user.ses_backuserid, then: 'su-user')}">
+	<f:Be.Icon icon="{f:if(condition: BackendUser.admin, then: 'status-user-admin', else: 'status-user-backend')}" title="{BackendUser.user.username}" />
+	<span title="{BackendUser.user.username}">{f:if(condition: BackendUser.user.realName, then:BackendUser.user.realName, else: BackendUser.user.username)}</span>
+</div>

@@ -1,0 +1,34 @@
+<div id="typo3-main-construct">
+	<div class="typo3-modulemenu-container">
+		<div id="typo3-logo"><f:format.raw>{logo}</f:format.raw></div>
+		<ul>
+			<f:for each="{ModuleMenu}" as="module">
+				<li>{module.title}</li>
+				<f:if condition="{module.children->f:count()} > 0">
+					<ul>
+						<f:for each="{module.children}" as="submodule">
+							<li><span class="t3-icon" style="background-image:url({submodule.icon.filename})"></span><span class="text">{submodule.title}</span>
+							</li>
+						</f:for>
+					</ul>
+				</f:if>
+			</f:for>
+		</ul>
+	</div>
+	<div class="typo3-backendcontent-container">
+		<div id="typo3-top" class="typo3-top-toolbar">
+			<ul id="typo3-toolbar">
+				<li><f:render partial="BackendUsername" arguments="{_all}" /></li>
+				<li class="separator"><div id="logout-button" class="toolbar-item no-separator"><f:format.raw>{logoutButton}</f:format.raw></div></li>
+			</ul>
+		</div>
+		<div class="typo3-backend-content-container-mainRow">
+			<div id="typo3-navigation-container">
+				PageTree
+			</div>
+			<div id="typo3-module-container">
+				CardCompononent
+			</div>
+		</div>
+	</div>
+</div>

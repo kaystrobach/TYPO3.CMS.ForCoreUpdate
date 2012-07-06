@@ -61,6 +61,7 @@ interface backend_toolbarItem {
 	 * @return string List item HTML attibutes
 	 */
 	public function getAdditionalAttributes();
+
 }
 
 ?>

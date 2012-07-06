@@ -123,7 +123,7 @@ TYPO3.ModuleMenu.App = {
 	},
 
 	renderMenu: function(records) {
-		TYPO3.Backend.ModuleMenuContainer.removeAll();
+		/*TYPO3.Backend.ModuleMenuContainer.removeAll();
 		TYPO3.Backend.ModuleMenuContainer.add({
 			xtype: 'dataview',
 			animCollapse: true,
@@ -183,7 +183,7 @@ TYPO3.ModuleMenu.App = {
 				scope: this
 			}
 		});
-		TYPO3.Backend.ModuleMenuContainer.doLayout();
+		TYPO3.Backend.ModuleMenuContainer.doLayout();*/
 	},
 
 	getRecordFromIndex: function(index) {
@@ -245,17 +245,17 @@ TYPO3.ModuleMenu.App = {
 		var mod = record.name;
 		if (record.navigationComponentId) {
 				this.loadNavigationComponent(record.navigationComponentId);
-				TYPO3.Backend.NavigationDummy.hide();
-				TYPO3.Backend.NavigationIframe.getEl().parent().setStyle('overflow', 'auto');
+				//TYPO3.Backend.NavigationDummy.hide();
+				//TYPO3.Backend.NavigationIframe.getEl().parent().setStyle('overflow', 'auto');
 			} else if (record.navframe || record.navigationFrameScript) {
-				TYPO3.Backend.NavigationDummy.hide();
-				TYPO3.Backend.NavigationContainer.show();
+				//TYPO3.Backend.NavigationDummy.hide();
+				//TYPO3.Backend.NavigationContainer.show();
 				this.loadNavigationComponent('typo3-navigationIframe');
 				this.openInNavFrame(record.navigationFrameScript || record.navframe, record.navigationFrameScriptParam);
-				TYPO3.Backend.NavigationIframe.getEl().parent().setStyle('overflow', 'hidden');
+				//TYPO3.Backend.NavigationIframe.getEl().parent().setStyle('overflow', 'hidden');
 			} else {
-				TYPO3.Backend.NavigationContainer.hide();
-				TYPO3.Backend.NavigationDummy.show();
+				//TYPO3.Backend.NavigationContainer.hide();
+				//TYPO3.Backend.NavigationDummy.show();
 			}
 
 			this.highlightModuleMenuItem(mod);
@@ -266,7 +266,7 @@ TYPO3.ModuleMenu.App = {
 			top.currentSubScript = record.originalLink;
 			top.currentModuleLoaded = mod;
 
-			TYPO3.Backend.doLayout();
+			//TYPO3.Backend.doLayout();
 	},
 
 	includeId: function(mod, params) {
@@ -281,9 +281,9 @@ TYPO3.ModuleMenu.App = {
 
 	loadNavigationComponent: function(navigationComponentId) {
 		if (navigationComponentId === this.loadedNavigationComponentId) {
-			if (TYPO3.Backend.NavigationContainer.hidden) {
+			/*if (TYPO3.Backend.NavigationContainer.hidden) {
 				TYPO3.Backend.NavigationContainer.show();
-			}
+			}*/
 
 			return;
 		}
@@ -300,15 +300,15 @@ TYPO3.ModuleMenu.App = {
 			}
 
 			component = this.availableNavigationComponents[navigationComponentId]();
-			TYPO3.Backend.NavigationContainer.add(component);
+			//TYPO3.Backend.NavigationContainer.add(component);
 		}
 
-		component.show()
+		//component.show()
 
 			// backwards compatibility
 		top.nav = component;
 		
-		TYPO3.Backend.NavigationContainer.show();
+		//TYPO3.Backend.NavigationContainer.show();
 		this.loadedNavigationComponentId = navigationComponentId;
 	},
 
@@ -318,26 +318,26 @@ TYPO3.ModuleMenu.App = {
 
 	openInNavFrame: function(url, params) {
 		var navUrl = url + (params ? (url.indexOf('?') !== -1 ? '&' : '?') + params : '');
-		var currentUrl = this.relativeUrl(TYPO3.Backend.NavigationIframe.getUrl());
+		//var currentUrl = this.relativeUrl(TYPO3.Backend.NavigationIframe.getUrl());
 		if (currentUrl !== navUrl) {
-			TYPO3.Backend.NavigationIframe.setUrl(navUrl);
+		//	TYPO3.Backend.NavigationIframe.setUrl(navUrl);
 		}
 	},
 
 	openInContentFrame: function(url, params) {
 		var urlToLoad;
 		if (top.nextLoadModuleUrl) {
-			TYPO3.Backend.ContentContainer.setUrl(top.nextLoadModuleUrl);
+		//	TYPO3.Backend.ContentContainer.setUrl(top.nextLoadModuleUrl);
 			top.nextLoadModuleUrl = '';
 		} else {
 			urlToLoad = url + (params ? (url.indexOf('?') !== -1 ? '&' : '?') + params : '')
-			TYPO3.Backend.ContentContainer.setUrl(urlToLoad);
+		//	TYPO3.Backend.ContentContainer.setUrl(urlToLoad);
 			return;
 		}
 	},
 
 	highlightModuleMenuItem: function(module, mainModule) {
-		TYPO3.Backend.ModuleMenuContainer.getComponent('modDataView').select(module, false, false);
+		//TYPO3.Backend.ModuleMenuContainer.getComponent('modDataView').select(module, false, false);
 	},
 
 	relativeUrl: function(url) {
@@ -357,8 +357,8 @@ TYPO3.ModuleMenu.App = {
 	},
 
 	reloadFrames: function() {
-		TYPO3.Backend.NavigationIframe.refresh();
-		TYPO3.Backend.ContentContainer.refresh();
+		//TYPO3.Backend.NavigationIframe.refresh();
+		//TYPO3.Backend.ContentContainer.refresh();
 	}
 
 };
@@ -369,17 +369,17 @@ Ext.onReady(function() {
 	TYPO3.ModuleMenu.App.init();
 
 		// keep backward compatibility
-	top.list = TYPO3.Backend.ContentContainer;
-	top.list_frame = top.list.getIframe();
-	top.nav_frame = TYPO3.Backend.NavigationContainer.PageTree;
+	//top.list = TYPO3.Backend.ContentContainer;
+	//top.list_frame = top.list.getIframe();
+	//top.nav_frame = TYPO3.Backend.NavigationContainer.PageTree;
 
 	top.TYPO3ModuleMenu = TYPO3.ModuleMenu.App;
-	top.content = {
+/*	top.content = {
 		nav_frame: TYPO3.Backend.NavigationContainer.PageTree,
 		list_frame: TYPO3.Backend.ContentContainer.getIframe(),
 		location: TYPO3.Backend.ContentContainer.getIframe().location,
 		document: TYPO3.Backend.ContentContainer.getIframe()
-	}
+	}*/
 });
 
 

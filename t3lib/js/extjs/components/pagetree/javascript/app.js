@@ -360,13 +360,13 @@ TYPO3.Components.PageTree.App = Ext.extend(Ext.Panel, {
 	 * @return {Boolean}
 	 */
 	select: function(pageId) {
-		TYPO3.Components.PageTree.Commands.addRootlineOfNodeToStateHash(
+		/*TYPO3.Components.PageTree.Commands.addRootlineOfNodeToStateHash(
 			TYPO3.Backend.NavigationContainer.PageTree.mainTree.stateId,
 			pageId, function(stateHash) {
 				TYPO3.Backend.NavigationContainer.PageTree.mainTree.stateHash = stateHash;
 				TYPO3.Backend.NavigationContainer.PageTree.mainTree.refreshTree();
 			}
-		);
+		);*/
 
 		return true;
 	},
@@ -388,14 +388,14 @@ TYPO3.Components.PageTree.App = Ext.extend(Ext.Panel, {
  * @return {TYPO3.Components.PageTree.App}
  */
 TYPO3.ModuleMenu.App.registerNavigationComponent('typo3-pagetree', function() {
-	TYPO3.Backend.NavigationContainer.PageTree = new TYPO3.Components.PageTree.App();
+	//TYPO3.Backend.NavigationContainer.PageTree = new TYPO3.Components.PageTree.App();
 
 		// compatibility code
-    top.nav = TYPO3.Backend.NavigationContainer.PageTree;
+    /*top.nav = TYPO3.Backend.NavigationContainer.PageTree;
     top.nav_frame = TYPO3.Backend.NavigationContainer.PageTree;
     top.content.nav_frame = TYPO3.Backend.NavigationContainer.PageTree;
-
-	return TYPO3.Backend.NavigationContainer.PageTree;
+*/
+	return null; //TYPO3.Backend.NavigationContainer.PageTree;
 });
 
 // XTYPE Registration

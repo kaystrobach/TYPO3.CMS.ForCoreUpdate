@@ -2,15 +2,57 @@
 body tags
 
 - - - - - - - - - - - - - - - - - - - - - */
-
-/* Set default values for bodytags: */
-body {
-	height: 100%;
-	margin: 0;
-/*	overflow: hidden;*/
-	padding: 0;
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
+body#typo3-backend-php {
+    overflow:hidden;
+}
+
+body#typo3-backend-php > div {
+    display:table !important;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+}
+body#typo3-backend-php > div > div {
+    display:table-cell !important;
+    background-color:white  !important;
+    width:auto !important;
+    height:100%;
+}
+
+body#typo3-backend-php div.typo3-backendcontent-container {
+    position: relative;
+}
+
+
+body#typo3-backend-php div.typo3-backendcontent-container > div {
+    background-color:blue;
+    position:relative !important;
+    width:100%;
+    height:10%;
+}
+
+body#typo3-backend-php div.typo3-backendcontent-container > div.typo3-backend-content-container-mainRow {
+    display:table !important;
+    background-color:green;
+    height:90%;
+}
+
+body#typo3-backend-php div.typo3-backendcontent-container > div.typo3-backend-content-container-mainRow > div {
+    display:table-cell;
+    height:100%;
+    background-color:red;
+}
+
+div#typo3-modulemenu-container > ul {
+    clear:both;
+}
 /* - - - - - - - - - - - - - - - - - - - - -
 specific wrappers
 
