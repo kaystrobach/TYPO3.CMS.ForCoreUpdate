@@ -136,10 +136,10 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 */
 	public function unpackExtensionFromExtensionDataArrayCreatesTheExtensionDirectory() {
 		$extensionData = array(
-			'key' => 'test'
+			'extKey' => 'test'
 		);
 		$fileHandlerMock = $this->getMock('Tx_Extensionmanager_Utility_FileHandling', array('makeAndClearExtensionDir'));
-		$fileHandlerMock->expects($this->once())->method('makeAndClearExtensionDir')->with($extensionData['key']);
+		$fileHandlerMock->expects($this->once())->method('makeAndClearExtensionDir')->with($extensionData['extKey']);
 		$fileHandlerMock->unpackExtensionFromExtensionDataArray($extensionData);
 	}
 

@@ -52,7 +52,10 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	public $emConfUtility;
 
 	/**
+	 * Inject emConfUtility
+	 *
 	 * @param Tx_Extensionmanager_Utility_EmConf $emConfUtility
+	 * @return void
 	 */
 	public function injectEmConfUtility(Tx_Extensionmanager_Utility_EmConf $emConfUtility) {
 		$this->emConfUtility = $emConfUtility;

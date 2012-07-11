@@ -44,6 +44,9 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public $installToolSqlParser;
 
+	/**
+	 * __construct
+	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		/** @var $installToolSqlParser t3lib_install_Sql */
@@ -79,13 +82,17 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
 		$this->writeNewExtensionList($newInstalledExtensionList);
+
+		$this->reloadCaches();
+		$this->saveDefaultConfiguration($extension['key']);
 	}
 
 	/**
 	 * Gets the content of the ext_tables.sql and ext_tables_static+adt.sql files
 	 * Additionally adds the table definitions for the cache tables
 	 *
-	 * @param $extension
+	 * @param string $extension
+	 * @return void
 	 */
 	public function processDatabaseUpdates($extension) {
 		$extTablesSqlFile = PATH_site . $extension['siteRelPath'] . '/ext_tables.sql';
@@ -105,7 +112,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Writes the extension list to "localconf.php" file
 	 * Removes the temp_CACHED* files before return.
 	 *
-	 * @param $newExtList
+	 * @param string $newExtList
 	 * @throws Exception
 	 * @return void
 	 */
@@ -114,12 +121,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 			throw new Exception('localconf not writable');
 		}
 
-		// Instance of install tool
+			// Instance of install tool
 		$instObj = $this->getT3libInstallInstance();
 		$instObj->allowUpdateLocalConf = 1;
 		$instObj->updateIdentity = 'TYPO3 Extension Manager';
 
-		// Get lines from localconf file
+			// Get lines from localconf file
 		$lines = $instObj->writeToLocalconf_control();
 		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extList\']', $newExtList);
 		$instObj->writeToLocalconf_control($lines);
@@ -139,10 +146,23 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		return t3lib_div::makeInstance('t3lib_install');
 	}
 
+	protected function reloadCaches() {
+		t3lib_extMgm::removeCacheFiles();
+		$bootstrap = Typo3_Bootstrap::getInstance();
+		$bootstrap->populateTypo3LoadedExtGlobal();
+	}
+
+	protected function saveDefaultConfiguration($extensionKey) {
+		/** @var $configUtility Tx_Extensionmanager_Utility_Configuration */
+		$configUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
+		$configUtility->saveDefaultConfiguration($extensionKey);
+	}
+
 	/**
 	 * Update database / process db updates from ext_tables
 	 *
 	 * @param string $rawDefinitions The raw SQL statements from ext_tables.sql
+	 * @return void
 	 */
 	public function updateDbWithExtTablesSql($rawDefinitions) {
 		$fieldDefinitionsFromFile = $this->installToolSqlParser->getFieldDefinitions_fileContent($rawDefinitions);
@@ -169,12 +189,13 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Import static SQL data (normally used for ext_tables_static+adt.sql)
 	 *
 	 * @param string $rawDefinitions
+	 * @return void
 	 */
 	public function importStaticSql($rawDefinitions) {
 		$statements = $this->installToolSqlParser->getStatementarray($rawDefinitions, 1);
 		list($statementsPerTable, $insertCount) = $this->installToolSqlParser->getCreateTables($statements, 1);
 
-		// Traverse the tables
+			// Traverse the tables
 		foreach($statementsPerTable as $table => $query) {
 			$GLOBALS['TYPO3_DB']->admin_query('DROP TABLE IF EXISTS ' . $table);
 			$GLOBALS['TYPO3_DB']->admin_query($query);
@@ -182,8 +203,8 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 			if($insertCount[$table]) {
 				$insertStatements = $this->installToolSqlParser->getTableInsertStatements($statements, $table);
 
-				foreach($insertStatements as $v) {
-					$GLOBALS['TYPO3_DB']->admin_query($v);
+				foreach($insertStatements as $statement) {
+					$GLOBALS['TYPO3_DB']->admin_query($statement);
 				}
 			}
 		}
@@ -205,7 +226,8 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 
 			// Get lines from localconf file
 		$lines = $instObj->writeToLocalconf_control();
-		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extConf\'][\'' . $extensionKey . '\']', serialize($newConfiguration)); // This will be saved only if there are no linebreaks in it !
+			// This will be saved only if there are no linebreaks in it !
+		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extConf\'][\'' . $extensionKey . '\']', serialize($newConfiguration));
 		$instObj->writeToLocalconf_control($lines);
 
 		t3lib_extMgm::removeCacheFiles();

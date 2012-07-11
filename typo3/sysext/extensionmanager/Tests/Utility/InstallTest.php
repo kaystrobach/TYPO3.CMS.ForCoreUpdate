@@ -34,9 +34,14 @@ class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
 	public $loadedExtGlobal;
 	public $extension;
 	public $fakedExtensions;
+	public $installMock;
 
 	public function setUp() {
 		$this->extension = array('key' => 'dummy');
+		$this->installMock = $this->getMock(
+			'Tx_Extensionmanager_Utility_Install',
+			array('writeNewExtensionList', 'processDatabaseUpdates', 'reloadCaches', 'saveDefaultConfiguration')
+		);
 	}
 
 	public function tearDown() {
@@ -68,37 +73,50 @@ class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function installCallsProcessDatabaseUpdates() {
-		$installMock = $this->getMock('Tx_Extensionmanager_Utility_Install', array('writeNewExtensionList', 'processDatabaseUpdates'));
-		$installMock->expects($this->once())->method('processDatabaseUpdates')->with($this->extension);
-		$installMock->install($this->extension);
+		$this->installMock->expects($this->once())->method('processDatabaseUpdates')->with($this->extension);
+		$this->installMock->install($this->extension);
 	}
 	/**
 	 * @test
 	 */
 	public function installCallsWriteNewExtensionList() {
-		$installMock = $this->getMock('Tx_Extensionmanager_Utility_Install', array('writeNewExtensionList', 'processDatabaseUpdates'));
-		$installMock->expects($this->once())->method('writeNewExtensionList');
-		$installMock->install($this->extension);
+		$this->installMock->expects($this->once())->method('writeNewExtensionList');
+		$this->installMock->install($this->extension);
 	}
 	/**
 	 * @test
 	 */
 	public function installCallsFlushCachesIfClearCacheOnLoadIsSet() {
 		$this->extension = array_merge($this->extension, array('clearcacheonload' => '1'));
-		$installMock = $this->getMock('Tx_Extensionmanager_Utility_Install', array('writeNewExtensionList', 'processDatabaseUpdates'));
 		$backupCacheManager = $GLOBALS['typo3CacheManager'];
 		$GLOBALS['typo3CacheManager'] = $this->getMock('t3lib_cache_manager');
 		$GLOBALS['typo3CacheManager']->expects($this->once())->method('flushCaches');
-		$installMock->install($this->extension);
+		$this->installMock->install($this->extension);
 		$GLOBALS['typo3CacheManager'] = $backupCacheManager;
 	}
+
+	/**
+	 * @test
+	 */
+	public function installCallsReloadCaches() {
+		$this->installMock->expects($this->once())->method('reloadCaches');
+		$this->installMock->install('dummy');
+	}
+
+	/**
+	 * @test
+	 */
+	public function installCallsSaveDefaultConfigurationWithExtensionKey() {
+		$this->installMock->expects($this->once())->method('saveDefaultConfiguration')->with('dummy');
+		$this->installMock->install(array('key' => 'dummy'));
+	}
+
 	/**
 	 * @test
 	 */
 	public function uninstallCallsWriteNewExtensionList() {
-		$installMock = $this->getMock('Tx_Extensionmanager_Utility_Install', array('writeNewExtensionList', 'processDatabaseUpdates'));
-		$installMock->expects($this->once())->method('writeNewExtensionList');
-		$installMock->uninstall('dummy');
+		$this->installMock->expects($this->once())->method('writeNewExtensionList');
+		$this->installMock->uninstall('dummy');
 	}
 
 	/**

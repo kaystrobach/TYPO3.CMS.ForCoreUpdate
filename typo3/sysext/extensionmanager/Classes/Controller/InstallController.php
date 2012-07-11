@@ -37,11 +37,12 @@ class Tx_Extensionmanager_Controller_InstallController extends Tx_Extensionmanag
 
 
 	/**
-	 * @return array
+	 * Toggle extension installation state action
+	 *
+	 * @return void
 	 */
 	protected function toggleExtensionInstallationStateAction() {
-		/** @var $cacheUtility Tx_Extensionmanager_Utility_Cache */
-		$cacheUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Cache');
+
 		/** @var $installUtility Tx_Extensionmanager_Utility_Install */
 		$installUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Install');
 
@@ -49,15 +50,12 @@ class Tx_Extensionmanager_Controller_InstallController extends Tx_Extensionmanag
 		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
 
 		if (array_key_exists($extension['key'], $installedExtensions)) {
-			// uninstall
+				// uninstall
 			$installUtility->uninstall($extension['key']);
 		} else {
-			// install
+				// install
 			$installUtility->install($extension);
-			$cacheUtility->refreshGlobalExtList();
-			/** @var $configUtility Tx_Extensionmanager_Utility_Configuration */
-			$configUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
-			$configUtility->saveDefaultConfiguration($extension['key']);
+
 		}
 
 		$this->redirect('index', 'List');
