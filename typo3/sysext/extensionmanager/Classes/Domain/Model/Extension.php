@@ -33,8 +33,6 @@
  * @package Extension Manager
  * @subpackage Model
  */
-
-
 class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
@@ -251,7 +249,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 * @return string
 	 */
 	public function getStateString() {
-		if(isset(Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()])) {
+		if (isset(Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()])) {
 			return Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()];
 		} else {
 			return '';

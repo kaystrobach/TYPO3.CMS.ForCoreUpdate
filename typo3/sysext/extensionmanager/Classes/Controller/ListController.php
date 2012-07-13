@@ -60,39 +60,61 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	}
 
 	public function terAction() {
+		$showVersionList = false;
+		$search = $this->getSearchParam();
+		if (
+			$this->request->hasArgument('allVersions') &&
+			$this->request->getArgument('allVersions') == 1 &&
+			$this->request->hasArgument('extensionKey') &&
+			is_string($this->request->getArgument('extensionKey'))
+		) {
+			$showVersionList = true;
+			$extensions = $this->extensionRepository->findByExtensionKey($this->request->getArgument('extensionKey'));
+		} elseif (is_string($search) && !empty($search)) {
+			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
+			$this->saveSearchParameters($search);
+		} else {
+			$extensions = $this->extensionRepository->findAll();
+			$this->resetStoredSearchParameters();
+		}
+		$this->view
+			->assign('extensions', $extensions)
+			->assign('search', $search)
+			->assign('showVersionList', $showVersionList);
+	}
+
+	public function resetStoredSearchParameters() {
+		$GLOBALS['BE_USER']->pushModuleData(
+			get_class($this),
+			json_encode(
+				array('search' => '')
+			)
+		);
+	}
+
+	public function saveSearchParameters($search) {
+		$GLOBALS['BE_USER']->pushModuleData(
+			get_class($this),
+			json_encode(
+				array('search' => $search)
+			)
+		);
+	}
+
+	public function getSearchParam() {
 		$search = '';
 		if ($this->request->hasArgument('search') && is_string($this->request->getArgument('search'))) {
 			$search = $this->request->getArgument('search');
 		}
 
 			// is a search param present in the session?
-		if(empty($search)) {
+		if (empty($search)) {
 			$moduleData = json_decode($GLOBALS['BE_USER']->getModuleData(get_class($this)));
 			if (isset($moduleData->search)) {
 				$search = $moduleData->search;
 			}
 		}
-
-		if(is_string($search) && !empty($search)) {
-			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
-			$GLOBALS['BE_USER']->pushModuleData(
-				get_class($this),
-				json_encode(
-					array('search' => $search)
-				)
-			);
-		} else {
-			$extensions = $this->extensionRepository->findAll();
-			$GLOBALS['BE_USER']->pushModuleData(
-				get_class($this),
-				json_encode(
-					array('search' => '')
-				)
-			);
-		}
-		$this->view
-			->assign('extensions', $extensions)
-			->assign('search', $search);
+		return $search;
 	}
 
 	/**
