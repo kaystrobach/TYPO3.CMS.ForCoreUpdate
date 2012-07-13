@@ -61,7 +61,14 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 
 	public function terAction() {
 		$showVersionList = false;
-		$search = $this->getSearchParam();
+
+		if ($this->request->hasArgument('reset') && $this->request->getArgument('reset') == 1) {
+			$this->resetStoredSearchParameters();
+			$search = '';
+		} else {
+			$search = $this->getSearchParam();
+		}
+
 		if (
 			$this->request->hasArgument('allVersions') &&
 			$this->request->getArgument('allVersions') == 1 &&
