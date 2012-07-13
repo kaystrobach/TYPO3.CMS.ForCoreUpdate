@@ -40,7 +40,7 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 	 * @param array $extension Extension information array
 	 * @return array EMconf array values.
 	 */
-	public function includeEmConf($extension) {
+	public function includeEmConf(array $extension) {
 		$_EXTKEY = $extension['key'];
 		$path = PATH_site . $extension['siteRelPath'] . '/ext_emconf.php';
 		$EM_CONF = NULL;
@@ -53,5 +53,34 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 		}
 		return FALSE;
 	}
+
+
+	/**
+	 * Generates the content for the ext_emconf.php file
+	 *
+	 * @internal
+	 * @param array $extensionData
+	 * @return string
+	 */
+	public function constructEmConf(array $extensionData) {
+		$emConf = var_export($extensionData['EM_CONF'], TRUE);
+		$code = '<?php
+
+/***************************************************************
+* Extension Manager/Repository config file for ext "' . $extensionData['extKey'] . '".
+*
+* Auto generated ' . date('d-m-Y H:i') . '
+*
+* Manual updates:
+* Only the data in the array - everything else is removed by next
+* writing. "version" and "dependencies" must not be touched!
+***************************************************************/
+
+$EM_CONF[$_EXTKEY] = ' . $emConf. ';
+
+?>';
+		return str_replace('  ', TAB, $code);
+	}
+
 }
 ?>
