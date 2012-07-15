@@ -64,6 +64,55 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		return $query->execute();
 	}
 
+	/**
+	 * @param string $extensionKey
+	 * @param integer $lowestVersion
+	 * @param integer $highestVersion
+	 * @return Tx_Extbase_Persistence_QueryResultInterface
+	 */
+	public function findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $lowestVersion = 0, $highestVersion = 0) {
+		$query = $this->createQuery();
+		$constraint = NULL;
+		if ($lowestVersion !== 0 && $highestVersion !== 0) {
+			$constraint = $query->logicalAnd(
+				$query->lessThan('integerVersion', $highestVersion),
+				$query->greaterThan('integerVersion', $lowestVersion),
+				$query->equals('extensionKey', $extensionKey)
+			);
+		} elseif ($lowestVersion === 0 && $highestVersion !== 0) {
+			$constraint = $query->logicalAnd(
+				$query->lessThan('integerVersion', $highestVersion),
+				$query->equals('extensionKey', $extensionKey)
+			);
+		} elseif ($lowestVersion !== 0 && $highestVersion === 0) {
+			$constraint = $query->logicalAnd(
+				$query->greaterThan('integerVersion', $lowestVersion),
+				$query->equals('extensionKey', $extensionKey)
+			);
+		} elseif ($lowestVersion === 0 && $highestVersion === 0) {
+			$constraint = $query->equals('extensionKey', $extensionKey);
+		}
+		if ($constraint instanceof Tx_Extbase_Persistence_QOM_Constraint) {
+			$query->matching($constraint);
+		}
+		$query->setOrderings(
+			array(
+				'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
+			)
+		);
+		return $query->execute();
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * @param integer $lowestVersion
+	 * @param integer $highestVersion
+	 * @return integer
+	 */
+	public function countByVersionRangeAndExtensionKey($extensionKey, $lowestVersion = 0, $highestVersion = 0) {
+		return $this->findByVersionRangeAndExtensionKey($extensionKey, $lowestVersion, $highestVersion)->count();
+	}
+
 	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {
 		if($query->getConstraint()) {
 			$query->matching(

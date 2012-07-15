@@ -85,6 +85,11 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	protected $version = '';
 
 	/**
+	 * @var int
+	 */
+	protected $integerVersion = 0;
+
+	/**
 	 * @var string
 	 */
 	protected $title = '';
@@ -403,5 +408,19 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function addDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
 		$this->dependencies->attach($dependency);
+	}
+
+	/**
+	 * @param int $integerVersion
+	 */
+	public function setIntegerVersion($integerVersion) {
+		$this->integerVersion = $integerVersion;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getIntegerVersion() {
+		return $this->integerVersion;
 	}
 }

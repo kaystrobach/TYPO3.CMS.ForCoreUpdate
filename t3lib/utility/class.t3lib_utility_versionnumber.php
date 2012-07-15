@@ -126,6 +126,30 @@ class t3lib_utility_VersionNumber {
 	protected static function getTypo3Version() {
 		return TYPO3_version;
 	}
+
+	/**
+	 * This function converts version range strings (like '4.2.0-4.4.99') to an array
+	 * (like array('4.2.0', '4.4.99'). It also forces each version part to be between
+	 * 0 and 99
+	 *
+	 * @param string $versionsString
+	 * @return array
+	 */
+	public static function convertVersionsStringToVersionNumbers($versionsString) {
+		$versions = t3lib_div::trimExplode('-', $versionsString);
+		for ($i = 0; $i < count($versions); $i++) {
+			$cleanedVersion = t3lib_div::trimExplode('.', $versions[$i]);
+			for ($j = 0; $j < count($cleanedVersion); $j++) {
+				$cleanedVersion[$j] = t3lib_utility_Math::forceIntegerInRange($cleanedVersion[$j], 0, 99);
+			}
+			$cleanedVersionString = implode('.', $cleanedVersion);
+			if (t3lib_utility_VersionNumber::convertVersionNumberToInteger($cleanedVersionString) === 0) {
+				$cleanedVersionString = '';
+			}
+			$versions[$i] = $cleanedVersionString;
+		}
+		return $versions;
+	}
 }
 
 ?>

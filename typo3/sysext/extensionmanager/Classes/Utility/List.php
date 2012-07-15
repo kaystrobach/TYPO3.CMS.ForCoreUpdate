@@ -69,12 +69,12 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	public function getAvailableExtensions() {
 		$extensions = array();
 		$paths = Tx_Extensionmanager_Domain_Model_Extension::returnInstallPaths();
-		foreach($paths as $installationType => $path) {
+		foreach ($paths as $installationType => $path) {
 			try {
-				if(is_dir($path)) {
+				if (is_dir($path)) {
 					$extList = t3lib_div::get_dirs($path);
-					if(is_array($extList)) {
-						foreach($extList as $extKey) {
+					if (is_array($extList)) {
+						foreach ($extList as $extKey) {
 							$extensions[$extKey] = array(
 								'siteRelPath' => str_replace(PATH_site, '', $path . $extKey),
 								'type' => $installationType,
@@ -83,7 +83,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 						}
 					}
 				}
-			} catch(Exception $e) {
+			} catch (Exception $e) {
 				t3lib_div::sysLog($e->getMessage(), 'extensionmanager');
 			}
 		}
@@ -97,9 +97,9 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getAvailableAndInstalledExtensions(array $availableExtensions) {
-		foreach($GLOBALS['TYPO3_LOADED_EXT'] as $extKey => $properties) {
-			if(array_key_exists($extKey, $availableExtensions)) {
-				$availableExtensions[$extKey]['installed'] = true;
+		foreach ($GLOBALS['TYPO3_LOADED_EXT'] as $extKey => $properties) {
+			if (array_key_exists($extKey, $availableExtensions)) {
+				$availableExtensions[$extKey]['installed'] = TRUE;
 			}
 		}
 		return $availableExtensions;
@@ -114,7 +114,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	public function enrichExtensionsWithEmConfInformation(array $extensions) {
 		foreach($extensions as $extensionKey => $properties) {
 			$emconf = $this->emConfUtility->includeEmConf($properties);
-			if($emconf) {
+			if ($emconf) {
 				$extensions[$extensionKey] = array_merge($emconf, $properties);
 			} else {
 				unset($extensions[$extensionKey]);

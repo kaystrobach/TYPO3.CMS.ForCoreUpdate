@@ -137,6 +137,45 @@ class t3lib_utility_VersionNumberTest extends tx_phpunit_testcase {
 		$version = $className::getNumericTypo3Version();
 		$this->assertEquals($expectedVersion, $version);
 	}
+
+	/**
+	 * data provider for convertVersionsStringToVersionNumbersForcesVersionNumberInRange
+	 * @return array
+	 */
+	public function convertVersionsStringToVersionNumbersForcesVersionNumberInRangeDataProvider() {
+		return array(
+			'everything ok' => array(
+				'4.2.0-4.4.99',
+				array(
+					'4.2.0',
+					'4.4.99'
+				)
+			),
+			'too high value' => array(
+				'4.2.0-4.4.299',
+				array(
+					'4.2.0',
+					'4.4.99'
+				)
+			),
+			'empty high value' => array(
+				'4.2.0-0.0.0',
+				array(
+					'4.2.0',
+					''
+				)
+			)
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider convertVersionsStringToVersionNumbersForcesVersionNumberInRangeDataProvider
+	 */
+	public function convertVersionsStringToVersionNumbersForcesVersionNumberInRange($versionString, $expectedResult) {
+		$versions = t3lib_utility_VersionNumber::convertVersionsStringToVersionNumbers($versionString);
+		$this->assertEquals($expectedResult, $versions);
+	}
 }
 
 ?>

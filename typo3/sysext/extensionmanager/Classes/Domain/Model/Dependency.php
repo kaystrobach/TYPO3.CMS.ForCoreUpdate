@@ -63,7 +63,7 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 		'conflicts'
 	);
 
-	protected static $specialDependencies = array(
+	public static $specialDependencies = array(
 		'typo3',
 		'php'
 	);
