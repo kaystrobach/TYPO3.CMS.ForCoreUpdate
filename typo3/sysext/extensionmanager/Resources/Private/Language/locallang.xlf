@@ -9,6 +9,9 @@
 			<trans-unit id="getExtensions" xml:space="preserve">
 				<source>Get Extensions</source>
 			</trans-unit>
+			<trans-unit id="showAllVersions" xml:space="preserve">
+				<source>Show all versions of</source>
+			</trans-unit>
 			<trans-unit id="extConfTemplate.headline" xml:space="preserve">
 				<source>Configure Extension</source>
 			</trans-unit>

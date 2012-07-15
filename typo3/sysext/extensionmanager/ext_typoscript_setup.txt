@@ -17,6 +17,7 @@ config.tx_extbase {
 						authoremail.mapOnProperty = authorEmail
 						lastversion.mapOnProperty = currentVersion
 						t3xfilemd5.mapOnProperty = md5hash
+						dependencies.mapOnProperty = serializedDependencies
 					}
 				}
 			}

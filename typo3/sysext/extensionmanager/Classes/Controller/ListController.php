@@ -50,6 +50,11 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$this->extensionRepository = $extensionRepository;
 	}
 
+	/**
+	 * Shows list of extensions present in the system
+	 *
+	 * @return void
+	 */
 	public function indexAction() {
 		/** @var $listUtility Tx_Extensionmanager_Utility_List */
 		$listUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_List');
@@ -59,9 +64,14 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$this->view->assign('extensions', $availableAndInstalledExtensions);
 	}
 
+	/**
+	 * Shows extensions from TER
+	 * Either all extensions or depending on a search param
+	 *
+	 * @todo handle / mark extensions already on the server
+	 * @return void
+	 */
 	public function terAction() {
-		$showVersionList = false;
-
 		if ($this->request->hasArgument('reset') && $this->request->getArgument('reset') == 1) {
 			$this->resetStoredSearchParameters();
 			$search = '';
@@ -69,15 +79,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 			$search = $this->getSearchParam();
 		}
 
-		if (
-			$this->request->hasArgument('allVersions') &&
-			$this->request->getArgument('allVersions') == 1 &&
-			$this->request->hasArgument('extensionKey') &&
-			is_string($this->request->getArgument('extensionKey'))
-		) {
-			$showVersionList = true;
-			$extensions = $this->extensionRepository->findByExtensionKey($this->request->getArgument('extensionKey'));
-		} elseif (is_string($search) && !empty($search)) {
+		if (is_string($search) && !empty($search)) {
 			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
 			$this->saveSearchParameters($search);
 		} else {
@@ -86,10 +88,39 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		}
 		$this->view
 			->assign('extensions', $extensions)
-			->assign('search', $search)
-			->assign('showVersionList', $showVersionList);
+			->assign('search', $search);
 	}
 
+	/**
+	 * Shows all versions of a specific extension
+	 *
+	 * @todo higher priority for exact extensionKey result
+	 * @return void
+	 */
+	public function showAllVersionsAction() {
+		$extensions = array();
+		$extensionKey = '';
+		if (
+			$this->request->hasArgument('allVersions') &&
+			$this->request->getArgument('allVersions') == 1 &&
+			$this->request->hasArgument('extensionKey') &&
+			is_string($this->request->getArgument('extensionKey'))
+		) {
+			$extensionKey = $this->request->getArgument('extensionKey');
+			$extensions = $this->extensionRepository->findByExtensionKeyOrderedByVersion($extensionKey);
+		} else {
+			$this->redirect('ter');
+		}
+		$this->view
+			->assign('extensions', $extensions)
+			->assign('extensionKey', $extensionKey);
+	}
+
+	/**
+	 * Resets session search param
+	 *
+	 * @return void
+	 */
 	public function resetStoredSearchParameters() {
 		$GLOBALS['BE_USER']->pushModuleData(
 			get_class($this),
@@ -99,6 +130,12 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		);
 	}
 
+	/**
+	 * Saves current search parameter in the session
+	 *
+	 * @param $search
+	 * @return void
+	 */
 	public function saveSearchParameters($search) {
 		$GLOBALS['BE_USER']->pushModuleData(
 			get_class($this),
@@ -108,6 +145,12 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		);
 	}
 
+	/**
+	 * Gets the search parameter either from the url or out
+	 * of the session if present
+	 *
+	 * @return string
+	 */
 	public function getSearchParam() {
 		$search = '';
 		if ($this->request->hasArgument('search') && is_string($this->request->getArgument('search'))) {

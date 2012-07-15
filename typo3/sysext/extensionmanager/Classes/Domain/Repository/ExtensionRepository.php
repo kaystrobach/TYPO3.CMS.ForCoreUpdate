@@ -39,6 +39,17 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		return $query->execute();
 	}
 
+	/**
+	 * @param string $extensionKey
+	 * @return Tx_Extbase_Persistence_QueryResultInterface
+	 */
+	public function findByExtensionKeyOrderedByVersion($extensionKey) {
+		$query = $this->createQuery();
+		$query->matching($query->equals('extensionKey', $extensionKey));
+		$query->setOrderings(array('version' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING));
+		return $query->execute();
+	}
+
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
 		$searchString = '%' . $searchString . '%';
 		$query = $this->createQuery();

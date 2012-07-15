@@ -244,3 +244,4 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	}
 }
 
+?>

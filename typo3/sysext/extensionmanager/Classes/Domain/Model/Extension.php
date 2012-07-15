@@ -70,6 +70,11 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 
 	/**
+	 * @var Tx_Extbase_Object_ObjectManager
+	 */
+	protected $objectManager;
+
+	/**
 	 * @var string
 	 */
 	protected $extensionKey = '';
@@ -128,6 +133,28 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 * @var string
 	 */
 	protected $md5hash = '';
+
+	/**
+	 * @var string
+	 */
+	protected $serializedDependencies = '';
+
+	/**
+	 * @var SplObjectStorage<Tx_Extensionmanager_Utility_Dependency>
+	 */
+	protected $dependencies = NULL;
+
+
+	/**
+	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager){
+		$this->objectManager = $objectManager;
+	}
+	public function initializeObject() {
+
+	}
 
 	/**
 	 * @param string $authorEmail
@@ -339,4 +366,42 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 		);
 	}
 
+	/**
+	 * @param string $dependencies
+	 */
+	public function setSerializedDependencies($dependencies) {
+		$this->serializedDependencies = $dependencies;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSerializedDependencies() {
+		return $this->serializedDependencies;
+	}
+
+	/**
+	 * @param SplObjectStorage $dependencies
+	 */
+	public function setDependencies($dependencies) {
+		$this->dependencies = $dependencies;
+	}
+
+	/**
+	 * @return SplObjectStorage
+	 */
+	public function getDependencies() {
+		if (!is_object($this->dependencies)) {
+			$dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
+			$this->setDependencies($dependencyUtility->convertDependenciesToObjects($this->getSerializedDependencies()));
+		}
+		return $this->dependencies;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 */
+	public function addDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+		$this->dependencies->attach($dependency);
+	}
 }

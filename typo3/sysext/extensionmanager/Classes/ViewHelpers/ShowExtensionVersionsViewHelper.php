@@ -48,7 +48,7 @@ class Tx_Extensionmanager_ViewHelpers_ShowExtensionVersionsViewHelper extends Tx
 	 */
 	public function render($extension) {
 		$uriBuilder = $this->controllerContext->getUriBuilder();
-		$action = 'ter';
+		$action = 'showAllVersions';
 		$uri = $uriBuilder
 			->reset()
 			->uriFor($action, array(

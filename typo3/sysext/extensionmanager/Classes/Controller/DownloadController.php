@@ -68,6 +68,11 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		}
 		$extensionUid = $this->request->getArgument('extension');
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
+
+		/** @var $dependencyUtility Tx_Extensionmanager_Utility_Dependency */
+		$dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
+		$dependencyUtility->getExtensionDependencies($extension);
+die();
 		/** @var $repositoryHelper Tx_Extensionmanager_Utility_Repository_Helper */
 		$repositoryHelper = $this->objectManager->get('Tx_Extensionmanager_Utility_Repository_Helper');
 		/** @var $terConnection Tx_Extensionmanager_Utility_Connection_Ter */
@@ -76,7 +81,6 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		$fetchedExtension = $terConnection->fetchExtension($extension->getExtensionKey(), $extension->getVersion(), $extension->getMd5hash(), $mirrorUrl);
 		if(isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey']) && is_string($fetchedExtension['extKey'])) {
 			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension);
-
 		}
 	}
 

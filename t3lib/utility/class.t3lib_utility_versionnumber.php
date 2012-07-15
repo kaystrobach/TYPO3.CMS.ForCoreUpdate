@@ -32,7 +32,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_utility_VersionNumber {
+class t3lib_utility_VersionNumber {
 
 	/**
 	 * Returns an integer from a three part version number, eg '4.12.3' -> 4012003
@@ -95,6 +95,36 @@ final class t3lib_utility_VersionNumber {
 		}
 
 		return $versionRange;
+	}
+
+	/**
+	 * Removes -dev -alpha -beta -RC states from a version number
+	 * and replaces them by .0
+	 *
+	 * @static
+	 * @return string
+	 */
+	public static function getNumericTypo3Version() {
+		$t3version = static::getTypo3Version();
+		if (stripos($t3version, '-dev')
+			|| stripos($t3version, '-alpha')
+			|| stripos($t3version, '-beta')
+			|| stripos($t3version, '-RC')) {
+				// find the last occurence of "-" and replace that part with a ".0"
+			$t3version = substr($t3version, 0, strrpos($t3version, '-')) . '.0';
+		}
+		return $t3version;
+	}
+
+	/**
+	 * Wrapper function for TYPO3_version constant to make functions using
+	 * the constant unit testable
+	 *
+	 * @static
+	 * @return string
+	 */
+	protected static function getTypo3Version() {
+		return TYPO3_version;
 	}
 }
 

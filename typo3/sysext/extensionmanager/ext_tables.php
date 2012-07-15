@@ -20,7 +20,7 @@ if(TYPO3_MODE === 'BE') {
 		'extensionmanager',
 		'',
 		array(
-			'List' => 'index,ter,terAjax',
+			'List' => 'index,ter,showAllVersions',
 			'Install' => 'toggleExtensionInstallationState',
 			'Configuration' => 'showConfigurationForm,save',
 			'Download' => 'terExtensionDownload'
