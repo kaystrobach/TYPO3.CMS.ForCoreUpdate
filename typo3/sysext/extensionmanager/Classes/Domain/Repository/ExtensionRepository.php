@@ -73,6 +73,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	public function findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $lowestVersion = 0, $highestVersion = 0) {
 		$query = $this->createQuery();
 		$constraint = NULL;
+
 		if ($lowestVersion !== 0 && $highestVersion !== 0) {
 			$constraint = $query->logicalAnd(
 				$query->lessThan('integerVersion', $highestVersion),
@@ -92,7 +93,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		} elseif ($lowestVersion === 0 && $highestVersion === 0) {
 			$constraint = $query->equals('extensionKey', $extensionKey);
 		}
-		if ($constraint instanceof Tx_Extbase_Persistence_QOM_Constraint) {
+		if ($constraint) {
 			$query->matching($constraint);
 		}
 		$query->setOrderings(
@@ -110,7 +111,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * @return integer
 	 */
 	public function countByVersionRangeAndExtensionKey($extensionKey, $lowestVersion = 0, $highestVersion = 0) {
-		return $this->findByVersionRangeAndExtensionKey($extensionKey, $lowestVersion, $highestVersion)->count();
+		return $this->findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $lowestVersion, $highestVersion)->count();
 	}
 
 	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {

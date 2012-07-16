@@ -34,13 +34,63 @@
  */
 class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 
+	/**
+	 * @var Tx_Extensionmanager_Domain_Model_DownloadQueue
+	 */
+	protected $downloadQueue;
+
+	/**
+	 * @var Tx_Extensionmanager_Utility_Dependency
+	 */
+	protected $dependencyUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Domain_Model_DownloadQueue $downloadQueue
+	 * @return void
+	 */
+	public function injectDownloadQueue(Tx_Extensionmanager_Domain_Model_DownloadQueue $downloadQueue) {
+		$this->downloadQueue = $downloadQueue;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Dependency $dependencyUtility
+	 * @return void
+	 */
+	public function injectDependencyUtility(Tx_Extensionmanager_Utility_Dependency $dependencyUtility) {
+		$this->dependencyUtility = $dependencyUtility;
+	}
+
+	/**
+	 * @var Tx_Extensionmanager_Utility_FileHandling
+	 */
+	protected $downloadUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Download $downloadUtility
+	 * @return void
+	 */
+	public function injectDownloadUtility(Tx_Extensionmanager_Utility_Download $downloadUtility) {
+		$this->downloadUtility = $downloadUtility;
+	}
+
+
 	public function markExtensionForInstallation($extensionKey) {
+		var_dump($extensionKey);
+		die();
 /*
  * add extensionKey to list of extensions to be installed
  */
 	}
 
+	/**
+	 * Mark an extension for download
+	 *
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @return void
+	 */
 	public function markExtensionForDownload(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+		$this->downloadQueue->addExtensionToQueue($extension);
+		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 /*
  * add extension to download queue
  */
@@ -51,6 +101,18 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 		/*
 		 * add extension to download queue and mark as update
 		 */
+		$this->downloadQueue->addExtensionToQueue($extension);
+		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
+	}
+
+	public function resolveDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
+		$downloads = $this->downloadQueue->getExtensionQueue();
+		foreach ($downloads as $extensionToDownload) {
+			$this->downloadUtility->download($extensionToDownload);
+			$this->downloadQueue->removeExtensionFromQueue($extensionToDownload);
+		}
+		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 	}
 }
 

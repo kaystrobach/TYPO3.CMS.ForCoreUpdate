@@ -64,11 +64,13 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 */
 	protected $availableExtensions = array();
 
+	protected $errors = array();
+
 	/**
 	 * @param Tx_Extbase_Object_ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager){
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -76,7 +78,7 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
 	 * @return void
 	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository){
+	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
 
@@ -111,25 +113,25 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * @return void
 	 */
 	protected function setAvailableExtensions() {
-		if (!(count($this->availableExtensions) > 0)) {
-			$this->availableExtensions = $this->listUtility->getAvailableExtensions();
-		}
+		$this->availableExtensions = $this->listUtility->getAvailableExtensions();
 	}
 
 	/**
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @return void
 	 */
-	public function getExtensionDependencies($extension) {
+	public function buildExtensionDependenciesTree($extension) {
 		$dependencies = $extension->getDependencies();
 		$this->checkDependencies($dependencies);
 	}
 
 	/**
 	 * @param string $dependencies
+	 * @return SplObjectStorage
 	 */
 	public function convertDependenciesToObjects($dependencies) {
 		$unserializedDependencies = unserialize($dependencies);
-		$dependencies = new SplObjectStorage();
+		$dependenciesObject = new SplObjectStorage();
 		foreach ($unserializedDependencies as $dependencyType => $dependencyValues) {
 			foreach ($dependencyValues as $dependency => $versions) {
 				list($highest, $lowest) = t3lib_utility_VersionNumber::convertVersionsStringToVersionNumbers($versions);
@@ -139,11 +141,11 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 				$dependencyObject->setIdentifier($dependency);
 				$dependencyObject->setLowestVersion($lowest);
 				$dependencyObject->setHighestVersion($highest);
-				$dependencies->attach($dependencyObject);
+				$dependenciesObject->attach($dependencyObject);
 				unset($dependencyObject);
 			}
 		}
-		return $dependencies;
+		return $dependenciesObject;
 	}
 
 	/**
@@ -153,16 +155,26 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * @return boolean
 	 */
 	protected function checkDependencies(SplObjectStorage $dependencies) {
+		$dependenciesToResolve = FALSE;
 		foreach ($dependencies as $dependency) {
 			$identifier = strtolower($dependency->getIdentifier());
 			if (in_array($identifier, Tx_Extensionmanager_Domain_Model_Dependency::$specialDependencies)) {
 				$methodname = 'check' .  ucfirst($identifier) . 'Dependency';
-				$this->{$methodname}($dependency);
+				try {
+					$this->{$methodname}($dependency);
+				} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
+					$this->errors[] = array(
+						'identifier' => $identifier,
+						'message' => $e->getMessage()
+					);
+				}
 			} else {
-				$this->checkExtensionDependency($dependency);
+				if ($dependency->getType() === 'depends') {
+					$dependenciesToResolve = !((bool)$this->checkExtensionDependency($dependency));
+				}
 			}
 		}
-		return TRUE;
+		return $dependenciesToResolve;
 	}
 
 	/**
@@ -175,22 +187,31 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	protected function checkTypo3Dependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
 		$lowerCaseIdentifier = strtolower($dependency->getIdentifier());
 		if ($lowerCaseIdentifier === 'typo3') {
-			if (!($dependency->getLowestVersion() === '') && version_compare(t3lib_utility_VersionNumber::getNumericTypo3Version(), $dependency->getLowestVersion()) === -1) {
+			if (
+				!($dependency->getLowestVersion() === '') &&
+				version_compare(t3lib_utility_VersionNumber::getNumericTypo3Version(), $dependency->getLowestVersion()) === -1
+			) {
 				throw new Tx_Extensionmanager_Exception_ExtensionManager(
-					'Your TYPO3 version is lower than necessary. You need at least TYPO3 version ' . $dependency->getLowestVersion()
+					'Your TYPO3 version is lower than necessary. You need at least TYPO3 version ' .
+						$dependency->getLowestVersion()
 				);
 			}
-			if (!($dependency->getHighestVersion() === '') && version_compare($dependency->getHighestVersion(), t3lib_utility_VersionNumber::getNumericTypo3Version()) === -1) {
+			if (
+				!($dependency->getHighestVersion() === '') &&
+				version_compare($dependency->getHighestVersion(), t3lib_utility_VersionNumber::getNumericTypo3Version()) === -1
+			) {
 				throw new Tx_Extensionmanager_Exception_ExtensionManager(
-					'Your TYPO3 version is higher than allowed. You can use TYPO3 versions ' . $dependency->getLowestVersion() . ' - ' . $dependency->getHighestVersion()
+					'Your TYPO3 version is higher than allowed. You can use TYPO3 versions ' .
+						$dependency->getLowestVersion() . ' - ' . $dependency->getHighestVersion()
 				);
 			}
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				'checkTypo3Dependency can only check TYPO3 dependencies. Found dependency with identifier "' . $dependency->getIdentifier() . '"'
+				'checkTypo3Dependency can only check TYPO3 dependencies. Found dependency with identifier "' .
+					$dependency->getIdentifier() . '"'
 			);
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -205,23 +226,32 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 		if ($lowerCaseIdentifier === 'php') {
 			if (!($dependency->getLowestVersion() === '') && version_compare(PHP_VERSION, $dependency->getLowestVersion()) === -1) {
 				throw new Tx_Extensionmanager_Exception_ExtensionManager(
-					'Your PHP version is lower than necessary. You need at least PHP version ' . $dependency->getLowestVersion()
+					'Your PHP version is lower than necessary. You need at least PHP version ' .
+						$dependency->getLowestVersion()
 				);
 			}
 			if (!($dependency->getHighestVersion() === '') && version_compare($dependency->getHighestVersion(), PHP_VERSION) === -1) {
 				throw new Tx_Extensionmanager_Exception_ExtensionManager(
-					'Your PHP version is higher than allowed. You can use PHP versions ' . $dependency->getLowestVersion() . ' - ' . $dependency->getHighestVersion()
+					'Your PHP version is higher than allowed. You can use PHP versions ' .
+						$dependency->getLowestVersion() . ' - ' . $dependency->getHighestVersion()
 				);
 			}
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				'checkPhpDependency can only check PHP dependencies. Found dependency with identifier "' . $dependency->getIdentifier() . '"'
+				'checkPhpDependency can only check PHP dependencies. Found dependency with identifier "' .
+					$dependency->getIdentifier() . '"'
 			);
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
+	 * Main controlling function for checking dependencies
+	 * Dependency check is done in the following way:
+	 * - installed extension in matching version ? - return true
+	 * - available extension in matching version ? - mark for installation
+	 * - remote (TER) extension in matching version? - mark for download
+	 *
 	 * @todo handle exceptions / markForUpload
 	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
 	 * @return boolean
@@ -249,6 +279,7 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 				$this->getExtensionFromTer($extensionKey, $dependency);
 			}
 		}
+		return FALSE;
 	}
 
 	/**
@@ -285,7 +316,7 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 			}
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				'The extension ' . $extensionKey . 'is not available from TER.'
+				'The extension ' . $extensionKey . ' is not available from TER.'
 			);
 		}
 	}
@@ -323,7 +354,8 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	}
 
 	/**
-	 * Checks whether the needed extension is available (not necessarily installed, but present in system)
+	 * Checks whether the needed extension is available
+	 * (not necessarily installed, but present in system)
 	 *
 	 * @param string $extensionKey
 	 * @return boolean
@@ -376,7 +408,8 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	}
 
 	/**
-	 * Get the latest compatible version of an extension that fulfills the given dependency from TER
+	 * Get the latest compatible version of an extension that
+	 * fulfills the given dependency from TER
 	 *
 	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
 	 * @return Tx_Extensionmanager_Domain_Model_Extension

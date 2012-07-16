@@ -47,9 +47,10 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 
 	/**
 	 * Dependency injection of the Extension Repository
+	 *
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
 	 * @return void
-	-	 */
+	 */
 	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
@@ -62,26 +63,23 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		$this->fileHandlingUtility = $fileHandlingUtility;
 	}
 
+	/**
+	 * @throws Exception
+	 * @return void
+	 */
 	public function terExtensionDownloadAction() {
-		if(!$this->request->hasArgument('extension')) {
+		if (!$this->request->hasArgument('extension')) {
 			throw new Exception('Required argument extension not set.', 1334433342);
 		}
 		$extensionUid = $this->request->getArgument('extension');
+		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
 
-		/** @var $dependencyUtility Tx_Extensionmanager_Utility_Dependency */
-		$dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
-		$dependencyUtility->getExtensionDependencies($extension);
+		/** @var $managementService Tx_Extensionmanager_Service_Management */
+		$managementService = $this->objectManager->get('Tx_Extensionmanager_Service_Management');
+		$managementService->resolveDependencies($extension);
 die();
-		/** @var $repositoryHelper Tx_Extensionmanager_Utility_Repository_Helper */
-		$repositoryHelper = $this->objectManager->get('Tx_Extensionmanager_Utility_Repository_Helper');
-		/** @var $terConnection Tx_Extensionmanager_Utility_Connection_Ter */
-		$terConnection = $this->objectManager->get('Tx_Extensionmanager_Utility_Connection_Ter');
-		$mirrorUrl = $repositoryHelper->getMirrors()->getMirrorUrl();
-		$fetchedExtension = $terConnection->fetchExtension($extension->getExtensionKey(), $extension->getVersion(), $extension->getMd5hash(), $mirrorUrl);
-		if(isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey']) && is_string($fetchedExtension['extKey'])) {
-			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension);
-		}
+
 	}
 
 

@@ -154,11 +154,8 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 * @param Tx_Extbase_Object_ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager){
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
-	}
-	public function initializeObject() {
-
 	}
 
 	/**
@@ -207,14 +204,16 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 	/**
+	 * Get Category String
+	 *
 	 * @return string
 	 */
 	public function getCategoryString() {
-		if(isset(Tx_Extensionmanager_Domain_Model_Extension::$defaultCategories[$this->getCategory()])) {
-			return Tx_Extensionmanager_Domain_Model_Extension::$defaultCategories[$this->getCategory()];
-		} else {
-			return '';
+		$categoryString = '';
+		if (isset(self::$defaultCategories[$this->getCategory()])) {
+			$categoryString = self::$defaultCategories[$this->getCategory()];
 		}
+		return $categoryString;
 	}
 
 	/**
@@ -278,14 +277,16 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 	/**
+	 * Get State string
+	 *
 	 * @return string
 	 */
 	public function getStateString() {
-		if (isset(Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()])) {
-			return Tx_Extensionmanager_Domain_Model_Extension::$defaultStates[$this->getState()];
-		} else {
-			return '';
+		$stateString = '';
+		if (isset(self::$defaultStates[$this->getState()])) {
+			$stateString = self::$defaultStates[$this->getState()];
 		}
+		return $stateString;
 	}
 
 	/**
@@ -373,6 +374,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param string $dependencies
+	 * @return void
 	 */
 	public function setSerializedDependencies($dependencies) {
 		$this->serializedDependencies = $dependencies;
@@ -387,6 +389,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param SplObjectStorage $dependencies
+	 * @return void
 	 */
 	public function setDependencies($dependencies) {
 		$this->dependencies = $dependencies;
@@ -397,6 +400,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function getDependencies() {
 		if (!is_object($this->dependencies)) {
+			/** @var $dependencyUtility Tx_Extensionmanager_Utility_Dependency */
 			$dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
 			$this->setDependencies($dependencyUtility->convertDependenciesToObjects($this->getSerializedDependencies()));
 		}
@@ -405,6 +409,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @return void
 	 */
 	public function addDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
 		$this->dependencies->attach($dependency);
@@ -412,6 +417,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param int $integerVersion
+	 * @return void
 	 */
 	public function setIntegerVersion($integerVersion) {
 		$this->integerVersion = $integerVersion;
@@ -424,3 +430,5 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 		return $this->integerVersion;
 	}
 }
+
+?>
