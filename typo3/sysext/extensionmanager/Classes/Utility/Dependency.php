@@ -134,15 +134,17 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 		$dependenciesObject = new SplObjectStorage();
 		foreach ($unserializedDependencies as $dependencyType => $dependencyValues) {
 			foreach ($dependencyValues as $dependency => $versions) {
-				list($highest, $lowest) = t3lib_utility_VersionNumber::convertVersionsStringToVersionNumbers($versions);
-				/** @var $dependencyObject Tx_Extensionmanager_Domain_Model_Dependency */
-				$dependencyObject = $this->objectManager->create('Tx_Extensionmanager_Domain_Model_Dependency');
-				$dependencyObject->setType($dependencyType);
-				$dependencyObject->setIdentifier($dependency);
-				$dependencyObject->setLowestVersion($lowest);
-				$dependencyObject->setHighestVersion($highest);
-				$dependenciesObject->attach($dependencyObject);
-				unset($dependencyObject);
+				if ($dependencyType && $dependency) {
+					list($highest, $lowest) = t3lib_utility_VersionNumber::convertVersionsStringToVersionNumbers($versions);
+					/** @var $dependencyObject Tx_Extensionmanager_Domain_Model_Dependency */
+					$dependencyObject = $this->objectManager->create('Tx_Extensionmanager_Domain_Model_Dependency');
+					$dependencyObject->setType($dependencyType);
+					$dependencyObject->setIdentifier($dependency);
+					$dependencyObject->setLowestVersion($lowest);
+					$dependencyObject->setHighestVersion($highest);
+					$dependenciesObject->attach($dependencyObject);
+					unset($dependencyObject);
+				}
 			}
 		}
 		return $dependenciesObject;

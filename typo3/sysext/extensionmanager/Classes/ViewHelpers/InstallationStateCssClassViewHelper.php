@@ -33,33 +33,27 @@
  * @package Extension Manager
  * @subpackage Controller
  */
+class Tx_Extensionmanager_ViewHelpers_InstallationStateCssClassViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
-class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
-
-	/**
-	 * @var string
-	 */
-	protected $tagName = 'a';
 
 	/**
-	 * Renders a download link
+	 * Returns string meant to be used as css class
+	 * 'installed' => if an extension is installed
+	 * 'available' => if an extension is available in the sytem
+	 * '' (empty string) => if neither installed nor available
 	 *
-	 * @param string $extension
+	 * @param string $needle
+	 * @param array $haystack
 	 * @return string the rendered a tag
 	 */
-	public function render($extension) {
-		$uriBuilder = $this->controllerContext->getUriBuilder();
-		$action = 'checkDependencies';
-		$uriBuilder->reset();
-		$uriBuilder->setFormat('json');
-		$uri = $uriBuilder->uriFor($action, array(
-			'extension' => $extension->getUid()
-		), 'Download');
-		$this->tag->addAttribute('href', $uri);
-		$label = 'Import and Install';
-		$this->tag->setContent($label);
-		$this->tag->addAttribute('class', 'download');
-
-		return $this->tag->render();
+	public function render($needle, array $haystack) {
+		if (array_key_exists($needle, $haystack)) {
+			if (isset($haystack[$needle]['installed']) && $haystack[$needle]['installed'] === TRUE) {
+				return 'installed';
+			} else {
+				return 'available';
+			}
+		}
+		return '';
 	}
 }

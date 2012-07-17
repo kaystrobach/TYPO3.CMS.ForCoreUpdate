@@ -50,18 +50,34 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		return $query->execute();
 	}
 
+	/**
+	 * @param $searchString
+	 * @return mixed
+	 */
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
-		$searchString = '%' . $searchString . '%';
+		$searchStringForLike = '%' . $searchString . '%';
+		$exactMatch = NULL;
 		$query = $this->createQuery();
 		$query->matching(
 			$query->logicalOr(
-				$query->like('extensionKey', $searchString),
-				$query->like('title', $searchString),
-				$query->like('authorName', $searchString)
+				$query->like('extensionKey', $searchStringForLike),
+				$query->like('title', $searchStringForLike),
+				$query->like('authorName', $searchStringForLike)
 			)
 		);
 		$query = $this->addDefaultConstraints($query);
-		return $query->execute();
+		$result = $query->execute();
+		$result = $result->toArray();
+		foreach ($result as $key => $extension) {
+			if ($searchString === $extension->getExtensionKey()) {
+				$exactMatch = $extension;
+				unset($result[$key]);
+			}
+		}
+		if (is_object($exactMatch)) {
+			$result = array_merge(array($exactMatch), $result);
+		}
+		return $result;
 	}
 
 	/**

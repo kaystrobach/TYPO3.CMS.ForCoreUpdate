@@ -150,8 +150,6 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 			$updatedDependencies = $this->uninstallDependenciesToBeUpdated($queue['update']);
 		}
 
-			// rebuild the dependency tree after downloading and uninstalling
-		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 			// add extension at the end of the download queue
 		$this->downloadQueue->addExtensionToInstallQueue($extension->getExtensionKey());
 
@@ -207,6 +205,7 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 			$this->downloadUtility->download($extensionToDownload);
 			$this->downloadQueue->removeExtensionFromQueue($extensionToDownload);
 			$resolvedDependencies['downloaded'][$extensionToDownload->getExtensionKey()] = $extensionToDownload;
+			$this->markExtensionForInstallation($extensionToDownload->getExtensionKey());
 		}
 		return $resolvedDependencies;
 	}

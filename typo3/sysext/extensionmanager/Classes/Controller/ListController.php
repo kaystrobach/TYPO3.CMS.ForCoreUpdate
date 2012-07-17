@@ -42,13 +42,26 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	protected $extensionRepository;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_List
+	 */
+	protected $listUtility;
+
+	/**
 	 * Dependency injection of the Extension Repository
 	 *
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
 	 * @return void
--	 */
+	 */
 	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @return void
+	 */
+	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+		$this->listUtility = $listUtility;
 	}
 
 	/**
@@ -70,11 +83,9 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * @return void
 	 */
 	public function indexAction() {
-		/** @var $listUtility Tx_Extensionmanager_Utility_List */
-		$listUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_List');
-		$availableExtensions = $listUtility->getAvailableExtensions();
-		$availableAndInstalledExtensions = $listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
+		$availableExtensions = $this->listUtility->getAvailableExtensions();
+		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
 		$this->view->assign('extensions', $availableAndInstalledExtensions);
 	}
 
@@ -87,23 +98,21 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 */
 	public function terAction() {
 		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
-		if ($this->request->hasArgument('reset') && $this->request->getArgument('reset') == 1) {
-			$this->resetStoredSearchParameters();
-			$search = '';
-		} else {
-			$search = $this->getSearchParam();
-		}
+		$search = $this->getSearchParam();
+
+		$availableExtensions = $this->listUtility->getAvailableExtensions();
+		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
 
 		if (is_string($search) && !empty($search)) {
 			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
-			$this->saveSearchParameters($search);
 		} else {
 			$extensions = $this->extensionRepository->findAll();
-			$this->resetStoredSearchParameters();
 		}
 		$this->view
 			->assign('extensions', $extensions)
-			->assign('search', $search);
+			->assign('search', $search)
+			->assign('availableAndInstalled', $availableAndInstalledExtensions);
 	}
 
 	/**
@@ -132,35 +141,6 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	}
 
 	/**
-	 * Resets session search param
-	 *
-	 * @return void
-	 */
-	public function resetStoredSearchParameters() {
-		$GLOBALS['BE_USER']->pushModuleData(
-			get_class($this),
-			json_encode(
-				array('search' => '')
-			)
-		);
-	}
-
-	/**
-	 * Saves current search parameter in the session
-	 *
-	 * @param $search
-	 * @return void
-	 */
-	public function saveSearchParameters($search) {
-		$GLOBALS['BE_USER']->pushModuleData(
-			get_class($this),
-			json_encode(
-				array('search' => $search)
-			)
-		);
-	}
-
-	/**
 	 * Gets the search parameter either from the url or out
 	 * of the session if present
 	 *
@@ -170,14 +150,6 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$search = '';
 		if ($this->request->hasArgument('search') && is_string($this->request->getArgument('search'))) {
 			$search = $this->request->getArgument('search');
-		}
-
-			// is a search param present in the session?
-		if (empty($search)) {
-			$moduleData = json_decode($GLOBALS['BE_USER']->getModuleData(get_class($this)));
-			if (isset($moduleData->search)) {
-				$search = $moduleData->search;
-			}
 		}
 		return $search;
 	}

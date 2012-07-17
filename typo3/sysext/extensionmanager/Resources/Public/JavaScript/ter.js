@@ -9,6 +9,17 @@ jQuery(document).ready(function() {
 		"bFilter": false
 	});
 
+	jQuery('#terSearchTable').dataTable({
+		"sPaginationType":"full_numbers",
+		"bJQueryUI":true,
+		"bLengthChange": false,
+		'iDisplayLength': 50,
+		"bStateSave": false,
+		"oLanguage": {
+			"sSearch": "Filter results:"
+		}
+	});
+
 	jQuery('.download').each(
 		function(){
 			jQuery(this).data('href', jQuery(this).attr('href'));
@@ -36,7 +47,6 @@ jQuery(document).ready(function() {
 										url: newUrl,
 										dataType: 'json',
 										success: function (data) {
-											console.log(data);
 											var successMessage = 'Your installation of ' + data.extension + ' was successfull. <br />';
 											successMessage += '<br /><h3>Log:</h3>';
 											jQuery.each(data.result, function(index, value) {

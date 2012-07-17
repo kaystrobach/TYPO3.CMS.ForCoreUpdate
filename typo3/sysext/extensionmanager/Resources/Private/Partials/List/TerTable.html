@@ -12,7 +12,7 @@
 <tbody>
 <f:for each="{paginatedExtensions}" as="extension">
 	<f:cycle values="{0: 'odd', 1: 'even'}" as="zebraClass">
-		<tr class="{zebraClass}">
+		<tr class="{zebraClass} {em:installationStateCssClass(needle:extension.extensionKey, haystack:availableAndInstalled)}">
 	</f:cycle>
 	<f:render partial="List/TerSingleLine" arguments="{extension:extension}" />
 	</tr>

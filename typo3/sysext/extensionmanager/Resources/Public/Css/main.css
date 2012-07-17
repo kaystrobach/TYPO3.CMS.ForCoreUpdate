@@ -49,16 +49,20 @@
 	width: auto;
 }
 
+.typo3-extension-list tr.odd td {
+	background-color: #eee;
+}
 
-.typo3-extension-list tr:hover,
-.ui-state-default:hover { border: 1px solid #999999; background: #f6af23 url(images/ui-bg_glass_75_f6af23_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121; }
+.typo3-extension-list tr:hover td,
+.typo3-extension-list tr.odd:hover td,
+.ui-state-default:hover {
+	background: #f6af23;
+	font-weight: normal;
+	color: #212121;
+}
 
 .typo3-extension-list {
 	width: 100%;
-}
-
-.typo3-extension-list tr.odd {
-	background-color: #eee;
 }
 
 .typo3-extension-list td {
@@ -186,4 +190,12 @@
 	font-size: 9px;
 	color: #666;
 	font-weight: normal;
+}
+
+.typo3-extension-list tr.installed td {
+	background-color: #c8ffaa;
+}
+
+.typo3-extension-list tr.available td {
+	background-color: #E1E1aa;
 }

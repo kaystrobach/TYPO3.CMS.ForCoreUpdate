@@ -56,7 +56,7 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 
 		$downloadQueueMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Domain_Model_DownloadQueue',
-			array('getExtensionQueue')
+			array('getExtensionQueue', 'addExtensionToInstallQueue')
 		);
 		$downloadQueueMock
 			->expects($this->atLeastOnce())
@@ -101,7 +101,7 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 
 		$downloadQueueMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Domain_Model_DownloadQueue',
-			array('getExtensionQueue')
+			array('getExtensionQueue', 'addExtensionToInstallQueue')
 		);
 		$downloadQueueMock
 			->expects($this->atLeastOnce())
@@ -144,7 +144,7 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 		);
 		$downloadQueueMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Domain_Model_DownloadQueue',
-			array('removeExtensionFromQueue')
+			array('removeExtensionFromQueue', 'addExtensionToInstallQueue')
 		);
 		$downloadUtilityMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Utility_Download',
@@ -178,7 +178,7 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 		);
 		$downloadQueueMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Domain_Model_DownloadQueue',
-			array('removeExtensionFromQueue')
+			array('removeExtensionFromQueue', 'addExtensionToInstallQueue')
 		);
 		$downloadUtilityMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Utility_Download',
@@ -212,14 +212,14 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 		);
 		$downloadQueueMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Domain_Model_DownloadQueue',
-			array('removeExtensionFromQueue')
+			array('removeExtensionFromQueue', 'addExtensionToInstallQueue')
 		);
 		$downloadUtilityMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Utility_Download',
 			array('download')
 		);
 
-		$extensionModelMock->expects($this->once())->method('getExtensionKey')->will($this->returnValue('foobar'));
+		$extensionModelMock->expects($this->atLeastOnce())->method('getExtensionKey')->will($this->returnValue('foobar'));
 		$managementMock->_set('downloadUtility', $downloadUtilityMock);
 		$managementMock->_set('downloadQueue', $downloadQueueMock);
 		$resolvedDependencies = $managementMock->_call('downloadDependencies', $downloadQueue);
