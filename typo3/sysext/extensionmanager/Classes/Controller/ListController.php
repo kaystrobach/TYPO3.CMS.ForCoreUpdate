@@ -43,11 +43,25 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 
 	/**
 	 * Dependency injection of the Extension Repository
+	 *
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
 	 * @return void
 -	 */
 	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
+	}
+
+	/**
+	 * @var t3lib_PageRenderer
+	 */
+	protected $pageRenderer;
+
+	/**
+	 * @param t3lib_PageRenderer $pageRenderer
+	 * @return void
+	 */
+	public function injectPageRenderer(t3lib_PageRenderer $pageRenderer) {
+		$this->pageRenderer = $pageRenderer;
 	}
 
 	/**
@@ -72,6 +86,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * @return void
 	 */
 	public function terAction() {
+		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
 		if ($this->request->hasArgument('reset') && $this->request->getArgument('reset') == 1) {
 			$this->resetStoredSearchParameters();
 			$search = '';

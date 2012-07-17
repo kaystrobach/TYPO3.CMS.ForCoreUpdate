@@ -45,6 +45,12 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	 */
 	protected $fileHandlingUtility;
 
+
+	/**
+	 * @var Tx_Extensionmanager_Service_Management
+	 */
+	protected $managementService;
+
 	/**
 	 * Dependency injection of the Extension Repository
 	 *
@@ -64,10 +70,18 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	}
 
 	/**
+	 * @param Tx_Extensionmanager_Service_Management $managementService
+	 * @return void
+	 */
+	public function injectManagementService(Tx_Extensionmanager_Service_Management $managementService) {
+		$this->managementService = $managementService;
+	}
+
+	/**
 	 * @throws Exception
 	 * @return void
 	 */
-	public function terExtensionDownloadAction() {
+	public function checkDependenciesAction() {
 		if (!$this->request->hasArgument('extension')) {
 			throw new Exception('Required argument extension not set.', 1334433342);
 		}
@@ -75,11 +89,25 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
 
-		/** @var $managementService Tx_Extensionmanager_Service_Management */
-		$managementService = $this->objectManager->get('Tx_Extensionmanager_Service_Management');
-		$managementService->resolveDependencies($extension);
-die();
+		$dependencies = $this->managementService->getDependencies($extension);
+		$this->view->assign('dependencies', $dependencies)
+			->assign('extension', $extension);
+	}
 
+	/**
+	 * @throws Exception
+	 * @return void
+	 */
+	public function installFromTerAction() {
+		if (!$this->request->hasArgument('extension')) {
+			throw new Exception('Required argument extension not set.', 1334433342);
+		}
+		$extensionUid = $this->request->getArgument('extension');
+		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
+		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
+		$result = $this->managementService->resolveDependencies($extension);
+		$this->view->assign('result', $result)
+			->assign('extension', $extension);
 	}
 
 

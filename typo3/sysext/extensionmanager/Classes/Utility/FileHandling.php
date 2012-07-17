@@ -64,7 +64,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 
 	protected function extractDirectoriesFromExtensionData($files) {
 		$directories = array();
-		foreach($files as $filePath => $file) {
+		foreach ($files as $filePath => $file) {
 			preg_match('/(.*)\//', $filePath, $matches);
 			$directories[] = $matches[0];
 		}
@@ -76,7 +76,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	}
 
 	protected function createDirectoriesForExtensionFiles($directories, $rootPath) {
-		foreach($directories as $directory) {
+		foreach ($directories as $directory) {
 			t3lib_div::mkdir_deep($rootPath . $directory);
 		}
 	}

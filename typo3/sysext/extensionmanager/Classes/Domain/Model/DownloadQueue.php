@@ -36,11 +36,31 @@
 class Tx_Extensionmanager_Domain_Model_DownloadQueue implements t3lib_Singleton {
 
 	/**
-	 * Storage for extensions to be installed
+	 * Storage for extensions to be downloaded
 	 *
 	 * @var array<Tx_Extensionmanager_Domain_Model_Extension>
 	 */
 	protected $extensionStorage = array();
+
+	/**
+	 * Storage for extensions to be installed
+	 *
+	 * @var array
+	 */
+	protected $extensionInstallStorage = array();
+
+	/**
+	 * @var Tx_Extensionmanager_Utility_List
+	 */
+	protected $listUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @return void
+	 */
+	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+		$this->listUtility = $listUtility;
+	}
 
 	/**
 	 * Adds an extension to the download queue.
@@ -48,10 +68,17 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueue implements t3lib_Singleton 
 	 * an exception is thrown.
 	 *
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param string $stack
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
-	public function addExtensionToQueue(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function addExtensionToQueue(Tx_Extensionmanager_Domain_Model_Extension $extension, $stack = 'download') {
+		if (!is_string($stack) || !in_array($stack, array('download', 'update'))) {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				'Stack has to be either "download" or "update"',
+				1342432103
+			);
+		}
 		if (array_key_exists($extension->getExtensionKey(), $this->extensionStorage)) {
 			if (!($this->extensionStorage[$extension->getExtensionKey()] === $extension)) {
 				throw new Tx_Extensionmanager_Exception_ExtensionManager(
@@ -60,7 +87,7 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueue implements t3lib_Singleton 
 				);
 			}
 		}
-		$this->extensionStorage[$extension->getExtensionKey()] = $extension;
+		$this->extensionStorage[$stack][$extension->getExtensionKey()] = $extension;
 	}
 
 	/**
@@ -74,12 +101,41 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueue implements t3lib_Singleton 
 	 * Remove an extension from download queue
 	 *
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param string Stack to remove extension from (download, update or install)
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
-	public function removeExtensionFromQueue(Tx_Extensionmanager_Domain_Model_Extension $extension) {
-		if (array_key_exists($extension->getExtensionKey(), $this->extensionStorage)) {
-			unset($this->extensionStorage[$extension->getExtensionKey()]);
+	public function removeExtensionFromQueue(Tx_Extensionmanager_Domain_Model_Extension $extension, $stack = 'download') {
+		if (!is_string($stack) || !in_array($stack, array('download', 'update'))) {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				'Stack has to be either "download" or "update"',
+				1342432103
+			);
 		}
+		if (array_key_exists($stack, $this->extensionStorage) && is_array($this->extensionStorage[$stack])) {
+			if (array_key_exists($extension->getExtensionKey(), $this->extensionStorage[$stack])) {
+				unset($this->extensionStorage[$stack][$extension->getExtensionKey()]);
+			}
+		}
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * return void
+	 */
+	public function addExtensionToInstallQueue($extensionKey) {
+		$availableExtensions = $this->listUtility->getAvailableExtensions();
+		$this->extensionInstallStorage[$extensionKey] = $availableExtensions[$extensionKey];
+	}
+
+	public function removeExtensionFromInstallQueue($extensionKey) {
+		if (array_key_exists($extensionKey, $this->extensionInstallStorage)) {
+			unset($this->extensionInstallStorage[$extensionKey]);
+		}
+	}
+
+	public function getExtensionInstallStorage() {
+		return $this->extensionInstallStorage;
 	}
 }
 

@@ -45,6 +45,16 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	protected $dependencyUtility;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Install
+	 */
+	protected $installUtility;
+
+	/**
+	 * @var Tx_Extensionmanager_Utility_List
+	 */
+	protected $listUtility;
+
+	/**
 	 * @param Tx_Extensionmanager_Domain_Model_DownloadQueue $downloadQueue
 	 * @return void
 	 */
@@ -61,7 +71,23 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	}
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_FileHandling
+	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @return void
+	 */
+	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+		$this->installUtility = $installUtility;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @return void
+	 */
+	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+		$this->listUtility = $listUtility;
+	}
+
+	/**
+	 * @var Tx_Extensionmanager_Utility_Download
 	 */
 	protected $downloadUtility;
 
@@ -73,13 +99,12 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 		$this->downloadUtility = $downloadUtility;
 	}
 
-
+	/**
+	 * @param string $extensionKey
+	 * @return void
+	 */
 	public function markExtensionForInstallation($extensionKey) {
-		var_dump($extensionKey);
-		die();
-/*
- * add extensionKey to list of extensions to be installed
- */
+		$this->downloadQueue->addExtensionToInstallQueue($extensionKey);
 	}
 
 	/**
@@ -91,28 +116,110 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	public function markExtensionForDownload(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->downloadQueue->addExtensionToQueue($extension);
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
-/*
- * add extension to download queue
- */
 	}
 
-
+	/**
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @return void
+	 */
 	public function markExtensionForUpdate(Tx_Extensionmanager_Domain_Model_Extension $extension) {
-		/*
-		 * add extension to download queue and mark as update
-		 */
-		$this->downloadQueue->addExtensionToQueue($extension);
+		$this->downloadQueue->addExtensionToQueue($extension, 'update');
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 	}
 
+	/**
+	 * @todo install handling
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @return array
+	 */
 	public function resolveDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
-		$downloads = $this->downloadQueue->getExtensionQueue();
-		foreach ($downloads as $extensionToDownload) {
+		$this->downloadQueue->addExtensionToQueue($extension);
+
+		$queue = $this->downloadQueue->getExtensionQueue();
+		$downloadedDependencies = array();
+		$updatedDependencies = array();
+		$installedDependencies = array();
+
+		if (array_key_exists('download', $queue)) {
+			$downloadedDependencies = $this->downloadDependencies($queue['download']);
+		}
+
+		if (array_key_exists('update', $queue)) {
+			$this->downloadDependencies($queue['update']);
+			$updatedDependencies = $this->uninstallDependenciesToBeUpdated($queue['update']);
+		}
+
+			// rebuild the dependency tree after downloading and uninstalling
+		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
+			// add extension at the end of the download queue
+		$this->downloadQueue->addExtensionToInstallQueue($extension->getExtensionKey());
+
+		$installQueue = $this->downloadQueue->getExtensionInstallStorage();
+		if (count($installQueue) > 0) {
+			$installedDependencies = $this->installDependencies($installQueue);
+		}
+
+		return array_merge($downloadedDependencies, $updatedDependencies, $installedDependencies);
+	}
+
+	/**
+	 * Uninstall extensions that will be updated
+	 * This is not strictly necessary but cleaner all in all
+	 *
+	 * @param array<Tx_Extensionmanager_Domain_Model_Extension> $updateQueue
+	 * @return array
+	 */
+	protected function uninstallDependenciesToBeUpdated(array $updateQueue) {
+		$resolvedDependencies = array();
+		foreach ($updateQueue as $extensionToUpdate) {
+			$this->installUtility->uninstall($extensionToUpdate->getExtensionKey());
+			$resolvedDependencies['updated'][$extensionToUpdate->getExtensionKey()] = $extensionToUpdate;
+		}
+		return $resolvedDependencies;
+	}
+
+	/**
+	 * Install dependent extensions
+	 *
+	 * @param array $installQueue
+	 * @return array
+	 */
+	protected function installDependencies(array $installQueue) {
+		$resolvedDependencies = array();
+		foreach ($installQueue as $extensionToInstall) {
+			$this->installUtility->install($extensionToInstall);
+			$resolvedDependencies['installed'][$extensionToInstall['key']] = $extensionToInstall;
+		}
+		return $resolvedDependencies;
+	}
+
+	/**
+	 * Download dependencies
+	 * expects an array of extension objects to download
+	 *
+	 * @param array<Tx_Extensionmanager_Domain_Model_Extension> $downloadQueue
+	 * @return array
+	 */
+	protected function downloadDependencies(array $downloadQueue) {
+		$resolvedDependencies = array();
+		foreach ($downloadQueue as $extensionToDownload) {
 			$this->downloadUtility->download($extensionToDownload);
 			$this->downloadQueue->removeExtensionFromQueue($extensionToDownload);
+			$resolvedDependencies['downloaded'][$extensionToDownload->getExtensionKey()] = $extensionToDownload;
 		}
+		return $resolvedDependencies;
+	}
+
+	/**
+	 *
+	 * @todo check naming and use
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @return array
+	 */
+	public function getDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
+		return $this->downloadQueue->getExtensionQueue();
 	}
 }
 

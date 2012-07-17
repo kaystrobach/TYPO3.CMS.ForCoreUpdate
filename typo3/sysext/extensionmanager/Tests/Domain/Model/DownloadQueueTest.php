@@ -34,15 +34,48 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueueTest extends Tx_Extbase_Test
 	 * @test
 	 * @return void
 	 */
-	public function addExtensionToQueueAddsExtensionToStorageArray() {
+	public function addExtensionToQueueAddsExtensionToDownloadStorageArray() {
 		$extensionModelMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_Extension', array('dummy'));
 		$extensionModelMock->_set('extensionKey', 'foobar');
 		$extensionModelMock->_set('version', '1.0.0');
 
 		$downloadQueueMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_DownloadQueue', array('dummy'));
 		$downloadQueueMock->addExtensionToQueue($extensionModelMock);
+		$extensionStorage = $downloadQueueMock->_get('extensionStorage');
 
-		$this->assertArrayHasKey('foobar', $downloadQueueMock->_get('extensionStorage'));
+		$this->assertArrayHasKey('foobar', $extensionStorage['download']);
+	}
+
+	/**
+	 * @test
+	 * @return void
+	 */
+	public function addExtensionToQueueAddsExtensionToUpdateStorageArray() {
+		$extensionModelMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_Extension', array('dummy'));
+		$extensionModelMock->_set('extensionKey', 'foobar');
+		$extensionModelMock->_set('version', '1.0.0');
+
+		$downloadQueueMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_DownloadQueue', array('dummy'));
+		$downloadQueueMock->addExtensionToQueue($extensionModelMock, 'update');
+		$extensionStorage = $downloadQueueMock->_get('extensionStorage');
+
+		$this->assertArrayHasKey('foobar', $extensionStorage['update']);
+	}
+
+	/**
+	 * @test
+	 * @return void
+	 */
+	public function addExtensionToQueueThrowsExceptionIfUnknownStackIsGiven() {
+		/** @var $extensionModelMock Tx_Extensionmanager_Domain_Model_Extension */
+		$extensionModelMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_Extension', array('dummy'));
+		$extensionModelMock->_set('extensionKey', 'foobar');
+		$extensionModelMock->_set('version', '1.0.0');
+
+		/** @var $downloadQueueMock Tx_Extensionmanager_Domain_Model_DownloadQueue */
+		$downloadQueueMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_DownloadQueue', array('dummy'));
+		$this->setExpectedException('Tx_Extensionmanager_Exception_ExtensionManager', $this->any(), 1342432103);
+		$downloadQueueMock->addExtensionToQueue($extensionModelMock, 'unknownStack');
 	}
 
 	/**
@@ -79,11 +112,19 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueueTest extends Tx_Extbase_Test
 		$extensionModelMock2->_set('version', '1.0.3');
 
 		$downloadQueueMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_DownloadQueue', array('dummy'));
-		$downloadQueueMock->_set('extensionStorage', array('foobar' => $extensionModelMock, 'foobarbaz' => $extensionModelMock2));
-
-		$this->assertTrue(array_key_exists('foobar', $downloadQueueMock->_get('extensionStorage')));
+		$downloadQueueMock->_set('extensionStorage',
+			array(
+				'download' => array(
+					'foobar' => $extensionModelMock,
+					'foobarbaz' => $extensionModelMock2
+				)
+			)
+		);
+		$extensionStorageBefore = $downloadQueueMock->_get('extensionStorage');
+		$this->assertTrue(array_key_exists('foobar', $extensionStorageBefore['download']));
 		$downloadQueueMock->removeExtensionFromQueue($extensionModelMock);
-		$this->assertFalse(array_key_exists('foobar', $downloadQueueMock->_get('extensionStorage')));
+		$extensionStorageAfter = $downloadQueueMock->_get('extensionStorage');
+		$this->assertFalse(array_key_exists('foobar', $extensionStorageAfter['download']));
 	}
 }
 ?>

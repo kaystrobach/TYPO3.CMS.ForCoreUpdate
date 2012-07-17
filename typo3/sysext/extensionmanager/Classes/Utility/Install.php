@@ -117,7 +117,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function writeNewExtensionList($newExtList) {
-		if(!t3lib_extMgm::isLocalconfWritable()) {
+		if (!t3lib_extMgm::isLocalconfWritable()) {
 			throw new Exception('localconf not writable');
 		}
 
@@ -167,18 +167,18 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	public function updateDbWithExtTablesSql($rawDefinitions) {
 		$fieldDefinitionsFromFile = $this->installToolSqlParser->getFieldDefinitions_fileContent($rawDefinitions);
 
-		if(count($fieldDefinitionsFromFile)) {
+		if (count($fieldDefinitionsFromFile)) {
 			$fieldDefinitionsFromCurrentDatabase = $this->installToolSqlParser->getFieldDefinitions_database(TYPO3_db);
 			$diff = $this->installToolSqlParser->getDatabaseExtra($fieldDefinitionsFromFile, $fieldDefinitionsFromCurrentDatabase);
 			$updateStatements = $this->installToolSqlParser->getUpdateSuggestions($diff);
 
-			foreach((array)$updateStatements['add'] as $string) {
+			foreach ((array)$updateStatements['add'] as $string) {
 				$GLOBALS['TYPO3_DB']->admin_query($string);
 			}
-			foreach((array)$updateStatements['change'] as $string) {
+			foreach ((array)$updateStatements['change'] as $string) {
 				$GLOBALS['TYPO3_DB']->admin_query($string);
 			}
-			foreach((array)$updateStatements['create_table'] as $string) {
+			foreach ((array)$updateStatements['create_table'] as $string) {
 				$GLOBALS['TYPO3_DB']->admin_query($string);
 			}
 		}
@@ -196,14 +196,14 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		list($statementsPerTable, $insertCount) = $this->installToolSqlParser->getCreateTables($statements, 1);
 
 			// Traverse the tables
-		foreach($statementsPerTable as $table => $query) {
+		foreach ($statementsPerTable as $table => $query) {
 			$GLOBALS['TYPO3_DB']->admin_query('DROP TABLE IF EXISTS ' . $table);
 			$GLOBALS['TYPO3_DB']->admin_query($query);
 
-			if($insertCount[$table]) {
+			if ($insertCount[$table]) {
 				$insertStatements = $this->installToolSqlParser->getTableInsertStatements($statements, $table);
 
-				foreach($insertStatements as $statement) {
+				foreach ($insertStatements as $statement) {
 					$GLOBALS['TYPO3_DB']->admin_query($statement);
 				}
 			}
@@ -218,7 +218,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @param array $newConfiguration Configuration array to write back
 	 * @return void
 	 */
-	function writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $newConfiguration) {
+	public function writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $newConfiguration) {
 			// Instance of install tool
 		$instObj = new t3lib_install;
 		$instObj->allowUpdateLocalConf = 1;

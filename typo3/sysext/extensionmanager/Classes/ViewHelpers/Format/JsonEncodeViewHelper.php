@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
+ *  (c) 2012 Susanne Moog <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,41 +25,46 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 /**
- * view helper
+ * Wrapper for PHPs json_encode function.
  *
- * @author Susanne Moog <susanne.moog@typo3.org>
- * @package Extension Manager
- * @subpackage Controller
+ * @see http://www.php.net/manual/en/function.json-encode.php
+ *
+ * = Examples =
+ *
+ * <code title="Example">
+ * <f:format.jsonEncode>{someArray}</f:format.jsonEncode>
+ * </code>
+ *
  */
-
-class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
-
-	/**
-	 * @var string
-	 */
-	protected $tagName = 'a';
+class Tx_Extensionmanager_ViewHelpers_Format_JsonEncodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
-	 * Renders a download link
+	 * Constructor
 	 *
-	 * @param string $extension
-	 * @return string the rendered a tag
+	 * @api
 	 */
-	public function render($extension) {
-		$uriBuilder = $this->controllerContext->getUriBuilder();
-		$action = 'checkDependencies';
-		$uriBuilder->reset();
-		$uriBuilder->setFormat('json');
-		$uri = $uriBuilder->uriFor($action, array(
-			'extension' => $extension->getUid()
-		), 'Download');
-		$this->tag->addAttribute('href', $uri);
-		$label = 'Download';
-		$this->tag->setContent($label);
-		$this->tag->addAttribute('class', 'download');
+	public function __construct() {
+		$this->registerArgument(
+			'additionalAttributes',
+			'array',
+			'Additional tag attributes. They will be added directly to the resulting HTML tag.',
+			FALSE
+		);
+	}
 
-		return $this->tag->render();
+	/**
+	 * Replaces newline characters by HTML line breaks.
+	 *
+	 * @return string the altered string.
+	 * @api
+	 */
+	public function render() {
+		if ($this->hasArgument('additionalAttributes') && is_array($this->arguments['additionalAttributes'])) {
+			return json_encode($this->arguments['additionalAttributes']);
+		}
+		$content = $this->renderChildren();
+		return json_encode($content);
 	}
 }
+?>
