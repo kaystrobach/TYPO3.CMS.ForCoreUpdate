@@ -45,7 +45,7 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 		$path = PATH_site . $extension['siteRelPath'] . '/ext_emconf.php';
 		$EM_CONF = NULL;
 
-		if(file_exists($path)) {
+		if (file_exists($path)) {
 			include($path);
 			if (is_array($EM_CONF[$_EXTKEY])) {
 				return $EM_CONF[$_EXTKEY];
@@ -54,16 +54,21 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 		return FALSE;
 	}
 
-
 	/**
 	 * Generates the content for the ext_emconf.php file
+	 * Sets dependencies from TER data if any
 	 *
 	 * @internal
 	 * @param array $extensionData
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension Extension object from TER data
 	 * @return string
 	 */
-	public function constructEmConf(array $extensionData) {
-		$emConf = var_export($extensionData['EM_CONF'], TRUE);
+	public function constructEmConf(array $extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
+		if (is_object($extension)) {
+			$extensionData['EM_CONF']['constraints'] = unserialize($extension->getSerializedDependencies());
+		}
+		$emConf = $this->fixEmConf($extensionData['EM_CONF']);
+		$emConf = var_export($emConf, TRUE);
 		$code = '<?php
 
 /***************************************************************
@@ -76,11 +81,97 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 * writing. "version" and "dependencies" must not be touched!
 ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = ' . $emConf. ';
+$EM_CONF[$_EXTKEY] = ' . $emConf . ';
 
 ?>';
 		return str_replace('  ', TAB, $code);
 	}
 
+	/**
+	 * @param array $emConf
+	 * @return array
+	 */
+	public function fixEmConf(array $emConf) {
+		if (!isset($emConf['constraints']) ||
+			!isset($emConf['constraints']['depends']) ||
+			!isset($emConf['constraints']['conflicts']) ||
+			!isset($emConf['constraints']['suggests'])
+		) {
+			if (!isset($emConf['constraints']) || !isset($emConf['constraints']['depends'])) {
+				$emConf['constraints']['depends'] = $this->stringToDependency($emConf['dependencies']);
+				if (strlen($emConf['PHP_version'])) {
+					$emConf['constraints']['depends']['php'] = $emConf['PHP_version'];
+				}
+				if (strlen($emConf['TYPO3_version'])) {
+					$emConf['constraints']['depends']['typo3'] = $emConf['TYPO3_version'];
+				}
+			}
+			if (!isset($emConf['constraints']) || !isset($emConf['constraints']['conflicts'])) {
+				$emConf['constraints']['conflicts'] = $this->dependencyToString($emConf['conflicts']);
+			}
+			if (!isset($emConf['constraints']) || !isset($emConf['constraints']['suggests'])) {
+				$emConf['constraints']['suggests'] = array();
+			}
+		} elseif (isset($emConf['constraints']) && isset($emConf['dependencies'])) {
+			$emConf['suggests'] = isset($emConf['suggests']) ? $emConf['suggests'] : array();
+			$emConf['dependencies'] = $this->dependencyToString($emConf['constraints']);
+			$emConf['conflicts'] = $this->dependencyToString($emConf['constraints'], 'conflicts');
+		}
+
+		unset($emConf['private']);
+		unset($emConf['download_password']);
+		unset($emConf['TYPO3_version']);
+		unset($emConf['PHP_version']);
+
+		return $emConf;
+	}
+
+	/**
+	 * Checks whether the passed dependency is TER2-style (array) and returns a
+	 * single string for displaying the dependencies.
+	 *
+	 * It leaves out all version numbers and the "php" and "typo3" dependencies,
+	 * as they are implicit and of no interest without the version number.
+	 *
+	 * @param mixed $dependency Either a string or an array listing dependencies.
+	 * @param string $type The dependency type to list if $dep is an array
+	 * @return string A simple dependency list for display
+	 */
+	public static function dependencyToString($dependency, $type = 'depends') {
+		if (is_array($dependency)) {
+			if (isset($dependency[$type]['php'])) {
+				unset($dependency[$type]['php']);
+			}
+			if (isset($dependency[$type]['typo3'])) {
+				unset($dependency[$type]['typo3']);
+			}
+			$dependencyString = (count($dependency[$type])) ? implode(',', array_keys($dependency[$type])) : '';
+			return $dependencyString;
+		}
+		return '';
+	}
+
+	/**
+	 * Checks whether the passed dependency is TER-style (string) or
+	 * TER2-style (array) and returns a single string for displaying the
+	 * dependencies.
+	 *
+	 * It leaves out all version numbers and the "php" and "typo3" dependencies,
+	 * as they are implicit and of no interest without the version number.
+	 *
+	 * @param mixed $dependency Either a string or an array listing dependencies.
+	 * @return string A simple dependency list for display
+	 */
+	public function stringToDependency($dependency) {
+		$constraint = array();
+		if (is_string($dependency) && strlen($dependency)) {
+			$dependency = explode(',', $dependency);
+			foreach ($dependency as $v) {
+				$constraint[$v] = '';
+			}
+		}
+		return $constraint;
+	}
 }
+
 ?>

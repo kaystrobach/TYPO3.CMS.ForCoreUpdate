@@ -53,13 +53,13 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @todo allow installation in different paths
 	 * @param $extensionData
 	 */
-	public function unpackExtensionFromExtensionDataArray($extensionData) {
+	public function unpackExtensionFromExtensionDataArray($extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
 		$extensionDir = $this->makeAndClearExtensionDir($extensionData['extKey']);
 		$files = $this->extractFilesArrayFromExtensionData($extensionData);
 		$directories = $this->extractDirectoriesFromExtensionData($files);
 		$this->createDirectoriesForExtensionFiles($directories, $extensionDir);
 		$this->writeExtensionFiles($files, $extensionDir);
-		$this->writeEmConfToFile($extensionData, $extensionDir);
+		$this->writeEmConfToFile($extensionData, $extensionDir, $extension);
 	}
 
 	protected function extractDirectoriesFromExtensionData($files) {
@@ -138,8 +138,8 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		}
 	}
 
-	protected function writeEmConfToFile(array $extensionData, $rootPath) {
-		$emConfContent = $this->emConfUtility->constructEmConf($extensionData);
+	protected function writeEmConfToFile(array $extensionData, $rootPath, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
+		$emConfContent = $this->emConfUtility->constructEmConf($extensionData, $extension);
 		t3lib_div::writeFile($rootPath . 'ext_emconf.php', $emConfContent);
 	}
 

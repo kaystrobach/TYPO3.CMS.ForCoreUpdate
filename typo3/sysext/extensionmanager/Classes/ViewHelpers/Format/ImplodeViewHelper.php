@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,44 +25,18 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
-/**
- * view helper
- *
- * @author Susanne Moog <typo3@susannemoog.de>
- * @package Extension Manager
- * @subpackage Controller
- */
-class Tx_Extensionmanager_ViewHelpers_InstallExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class Tx_Extensionmanager_ViewHelpers_Format_ImplodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
-	 * @var string
-	 */
-	protected $tagName = 'a';
-
-	/**
-	 * Renders an install link
+	 * Implodes a string
 	 *
-	 * @param string $extension
-	 * @return string the rendered a tag
+	 * @param array $implode
+	 * @param string $delimiter
+	 * @return string the altered string.
+	 * @api
 	 */
-	public function render($extension) {
-		$uriBuilder = $this->controllerContext->getUriBuilder();
-		$action = 'toggleExtensionInstallationState';
-		$uri = $uriBuilder
-			->reset()
-			->uriFor($action, array(
-				'extension' => array (
-					'key' => $extension['key'],
-					'type' => $extension['type'],
-					'siteRelPath' => $extension['siteRelPath'],
-					'clearcacheonload' => $extension['clearcacheonload']
-				)
-			), 'Install');
-		$this->tag->addAttribute('href', $uri);
-		$label = $extension['installed'] ? 'Deactivate' : 'Activate';
-		$this->tag->setContent($label);
-
-		return $this->tag->render();
+	public function render(array $implode, $delimiter = ', ') {
+		return implode($delimiter, $implode);
 	}
 }
+?>

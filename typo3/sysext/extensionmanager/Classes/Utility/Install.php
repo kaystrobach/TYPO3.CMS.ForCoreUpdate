@@ -45,12 +45,18 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	public $installToolSqlParser;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Dependency
+	 */
+	protected $dependencyUtility;
+
+	/**
 	 * __construct
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		/** @var $installToolSqlParser t3lib_install_Sql */
 		$this->installToolSqlParser = $this->objectManager->get('t3lib_install_Sql');
+		$this->dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
 	}
 
 	/**
@@ -60,10 +66,18 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function uninstall($extensionKey) {
-		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
-		unset($installedExtensions[$extensionKey]);
-		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
-		$this->writeNewExtensionList($newInstalledExtensionList);
+		$dependentExtensions = $this->dependencyUtility->findInstalledExtensionsThatDependOnMe($extensionKey);
+		if (is_array($dependentExtensions) && count($dependentExtensions) > 0) {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				'Cannot deactivate extension ' . $extensionKey . ' - The extension(s) ' . implode(',', $dependentExtensions) . ' depend on it',
+				1342554622
+			);
+		} else {
+			$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
+			unset($installedExtensions[$extensionKey]);
+			$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
+			$this->writeNewExtensionList($newInstalledExtensionList);
+		}
 	}
 
 	/**

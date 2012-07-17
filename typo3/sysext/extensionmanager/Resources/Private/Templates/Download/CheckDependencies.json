@@ -1,2 +1,4 @@
 {namespace em=Tx_Extensionmanager_ViewHelpers}
-<em:format.jsonEncode additionalAttributes="{dependencies:dependencies, url:'{f:uri.action(action:\"installFromTer\", controller:\"Download\", arguments:\"{extension:extension.uid, format:\'json\'}\")}'}" />
+<em:format.jsonEncode additionalAttributes="{dependencies:dependencies,
+url:'{f:uri.action(action:\"installFromTer\", controller:\"Download\", arguments:\"{extension:extension.uid, format:\'json\'}\")}'
+}" />

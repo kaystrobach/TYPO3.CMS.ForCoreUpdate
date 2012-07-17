@@ -88,7 +88,7 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 			$mirrorUrl
 		);
 		if (isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey']) && is_string($fetchedExtension['extKey'])) {
-			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension);
+			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension, $extension);
 		}
 	}
 }

@@ -6,7 +6,8 @@ jQuery(document).ready(function() {
 		"bStateSave": true,
 		"bInfo": false,
 		"bPaginate": false,
-		"bFilter": false
+		"bFilter": false,
+		"fnDrawCallback": bindDownload
 	});
 
 	jQuery('#terSearchTable').dataTable({
@@ -17,13 +18,18 @@ jQuery(document).ready(function() {
 		"bStateSave": false,
 		"oLanguage": {
 			"sSearch": "Filter results:"
-		}
+		},
+		"fnDrawCallback": bindDownload
 	});
+	bindDownload();
+});
 
-	jQuery('.download').each(
+function bindDownload() {
+	jQuery('.download').not('.transformed').each(
 		function(){
 			jQuery(this).data('href', jQuery(this).attr('href'));
 			jQuery(this).attr('href', 'javascript:void(0);');
+			jQuery(this).addClass('transformed');
 			jQuery(this).click(function() {
 				jQuery.ajax({
 					url: jQuery(this).data('href'),
@@ -70,4 +76,4 @@ jQuery(document).ready(function() {
 			})
 		}
 	);
-});
+}
