@@ -3,7 +3,7 @@
  *  Copyright notice
  *
  *  (c) 2010 Marcus Krause <marcus#exp2010@t3sec.info>
- *		   Steffen Kamper <info@sk-typo3.de>
+ *           Steffen Kamper <info@sk-typo3.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,22 +23,20 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 /**
- * class.tx_em_import_extensionlistimporter.php
- *
  * Module: Extension manager - Extension list importer
  *
- * @author  Marcus Krause <marcus#exp2010@t3sec.info>
- * @author  Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  */
 
 /**
  * Importer object for extension list
  *
- * @author	  Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	  Steffen Kamper <info@sk-typo3.de>
+ * @author      Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author      Steffen Kamper <info@sk-typo3.de>
  *
- * @since	   2010-02-10
- * @package	 TYPO3
+ * @since       2010-02-10
+ * @package     TYPO3
  * @subpackage  EM
  */
 class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver {
@@ -46,7 +44,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	/**
 	 * Keeps instance of a XML parser.
 	 *
-	 * @var tx_em_Parser_ExtensionXmlAbstractParser
+	 * @var Tx_Extensionmanager_Utility_Parser_ExtensionXmlAbstractParser
 	 */
 	protected $parser;
 
@@ -88,9 +86,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 		'category',
 		'description',
 		'dependencies',
-		'uploadcomment',
-		//'lastversion',
-		//'lastreviewedversion'
+		'uploadcomment'
 	);
 
 	/**
@@ -108,7 +104,47 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 *
 	 * @var  integer
 	 */
-	protected $repositoryUID = 1;
+	protected $repositoryUid = 1;
+
+	/**
+	 * @var Tx_Extensionmanager_Domain_Repository_RepositoryRepository
+	 */
+	protected $repositoryRepository;
+
+	/**
+	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 */
+	protected $extensionRepository;
+
+	/**
+	 * @var Tx_Extensionmanager_Domain_Model_Extension
+	 */
+	protected $extensionModel;
+
+	/**
+	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @return void
+	 * @todo does not work :(
+	 */
+	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+		$this->extensionRepository = $extensionRepository;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository
+	 * @todo does not work :(
+	 */
+	public function injectRepositoryRepository(Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository) {
+		$this->repositoryRepository = $repositoryRepository;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extensionModel
+	 * @todo does not work :(
+	 */
+	public function injectExtensionModel(Tx_Extensionmanager_Domain_Model_Extension $extensionModel) {
+		$this->extensionModel = $extensionModel;
+	}
 
 
 	/**
@@ -116,36 +152,38 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 *
 	 * Method retrieves and initializes extension XML parser instance.
 	 *
-	 * @access  public
-	 * @return  void
-	 * @throws  tx_em_XmlException in case no valid parser instance is available
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 */
 	function __construct() {
+		/** @var $objectManager Tx_Extbase_Object_ObjectManager */
+		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$this->repositoryRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_RepositoryRepository');
+		$this->extensionRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_ExtensionRepository');
+		$this->extensionModel = $this->objectManager->get('Tx_Extensionmanager_Domain_Model_Extension');
 			// TODO catch parser exception
-		$this->parser = tx_em_Parser_XmlParserFactory::getParserInstance('extension');
+		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('extension');
 		if (is_object($this->parser)) {
 			$this->parser->attach($this);
 		} else {
-			throw new tx_em_XmlException(get_class($this) . ': ' . 'No XML parser available.');
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(get_class($this) . ': No XML parser available.');
 		}
 	}
 
 	/**
 	 * Method initializes parsing of extension.xml.gz file.
 	 *
-	 * @access  public
-	 * @param   string   $localExtListFile  absolute path to (gzipped) local extension list xml file
-	 * @param   integer  $repositoryUID	 UID of repository to be used when inserting records into DB
-	 * @return  integer  total number of imported extension versions
+	 * @param string $localExtensionListFile absolute path to (gzipped) local extension list xml file
+	 * @param integer $repositoryUid UID of repository to be used when inserting records into DB
+	 * @return integer total number of imported extension versions
 	 */
-	public function import($localExtListFile, $repositoryUID = NULL) {
-		if (!is_null($repositoryUID) && is_int($repositoryUID)) {
-			$this->repositoryUID = $repositoryUID;
+	public function import($localExtensionListFile, $repositoryUid = NULL) {
+		if (!is_null($repositoryUid) && is_int($repositoryUid)) {
+			$this->repositoryUid = $repositoryUid;
 		}
 		$zlibStream = 'compress.zlib://';
 		$this->sumRecords = 0;
 
-		$this->parser->parseXML($zlibStream . $localExtListFile);
+		$this->parser->parseXML($zlibStream . $localExtensionListFile);
 
 			// flush last rows to database if existing
 		if (count($this->arrRows)) {
@@ -156,8 +194,8 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 				self::$fieldIndicesNoQuote
 			);
 		}
-		$extensions = tx_em_Database::insertLastVersion($this->repositoryUID);
-		tx_em_Database::updateRepositoryCount($extensions, $this->repositoryUID);
+		$extensions = $this->extensionRepository->insertLastVersion($this->repositoryUid);
+		$this->repositoryRepository->updateRepositoryCount($extensions, $this->repositoryUid);
 
 		return $this->sumRecords;
 	}
@@ -165,12 +203,11 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	/**
 	 * Method collects and stores extension version details into the database.
 	 *
-	 * @access  protected
-	 * @param   SplSubject  $subject  a subject notifying this observer
-	 * @return  void
+	 * @param SplSubject &$subject a subject notifying this observer
+	 * @return void
 	 */
-	protected function loadIntoDB(SplSubject &$subject) {
-		// flush every 50 rows to database
+	protected function loadIntoDatabase(SplSubject &$subject) {
+			// flush every 50 rows to database
 		if ($this->sumRecords !== 0 && $this->sumRecords % 50 === 0) {
 			$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows(
 				'cache_extensions',
@@ -180,11 +217,12 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 			);
 			$this->arrRows = array();
 		}
-		// order must match that of self::$fieldNamses!
+		$versionRepresentations = t3lib_utility_VersionNumber::convertVersionStringToArray($subject->getVersion());
+			// order must match that of self::$fieldNamses!
 		$this->arrRows[] = array(
 			$subject->getExtkey(),
 			$subject->getVersion(),
-			tx_em_Tools::makeVersion($subject->getVersion(), 'int'),
+			$versionRepresentations['version_int'],
 			intval($subject->getAlldownloadcounter()),
 			intval($subject->getDownloadcounter()),
 			!is_null($subject->getTitle()) ? $subject->getTitle() : '',
@@ -194,10 +232,10 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 			!is_null($subject->getAuthorcompany()) ? $subject->getAuthorcompany() : '',
 			intval($subject->getLastuploaddate()),
 			$subject->getT3xfilemd5(),
-			$this->repositoryUID,
-			tx_em_Tools::getDefaultState($subject->getState() ? $subject->getState() : ''),
+			$this->repositoryUid,
+			$this->extensionModel->getDefaultState($subject->getState() ? $subject->getState() : ''),
 			intval($subject->getReviewstate()),
-			tx_em_Tools::getDefaultCategory($subject->getCategory() ? $subject->getCategory() : ''),
+			$this->extensionModel->getDefaultCategory($subject->getCategory() ? $subject->getCategory() : ''),
 			$subject->getDescription() ? $subject->getDescription() : '',
 			$subject->getDependencies() ? $subject->getDependencies() : '',
 			$subject->getUploadcomment() ? $subject->getUploadcomment() : '',
@@ -208,14 +246,14 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	/**
 	 * Method receives an update from a subject.
 	 *
-	 * @access  public
-	 * @param   SplSubject  $subject  a subject notifying this observer
-	 * @return  void
+	 * @param SplSubject $subject a subject notifying this observer
+	 * @return void
 	 */
 	public function update(SplSubject $subject) {
-		if (is_subclass_of($subject, 'tx_em_Parser_ExtensionXmlAbstractParser')) {
-			$this->loadIntoDB($subject);
+		if (is_subclass_of($subject, 'Tx_Extensionmanager_Utility_Parser_ExtensionXmlAbstractParser')) {
+			$this->loadIntoDatabase($subject);
 		}
 	}
 }
+
 ?>

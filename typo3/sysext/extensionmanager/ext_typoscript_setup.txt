@@ -44,3 +44,7 @@ config.tx_extbase {
 		skipDefaultArguments = 0
 	}
 }
+
+module.tx_extensionmanager.settings {
+	repositoryUid = 1
+}

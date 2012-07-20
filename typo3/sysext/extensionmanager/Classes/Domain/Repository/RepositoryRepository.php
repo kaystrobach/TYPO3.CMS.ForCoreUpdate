@@ -27,5 +27,22 @@
  */
 class Tx_Extensionmanager_Domain_Repository_RepositoryRepository extends Tx_Extbase_Persistence_Repository {
 
+	/**
+	 * Updates ExtCount and lastUpdated in Repository eg after import
+	 *
+	 * @param int $extCount
+	 * @param int $uid
+	 * @return void
+	 */
+	public function updateRepositoryCount($extCount, $uid = 1) {
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+			'sys_ter',
+			'uid=' . intval($uid),
+			array (
+				'lastUpdated' => time(),
+				'extCount' => intval($extCount)
+			));
+	}
+
 }
 ?>

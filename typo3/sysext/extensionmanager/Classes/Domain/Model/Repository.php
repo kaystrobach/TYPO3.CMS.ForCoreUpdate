@@ -39,42 +39,42 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Keeps repository title.
 	 *
-	 * @var  string
+	 * @var string
 	 */
 	protected $title;
 
 	/**
 	 * Keeps repository description.
 	 *
-	 * @var  string
+	 * @var string
 	 */
 	protected $description;
 
 	/**
 	 * Keeps mirror list URL.
 	 *
-	 * @var  string
+	 * @var string
 	 */
 	protected $mirrorListUrl;
 
 	/**
 	 * Keeps repository mirrors object.
 	 *
-	 * @var  Tx_Extensionmanager_Domain_Model_Mirrors
+	 * @var Tx_Extensionmanager_Domain_Model_Mirrors
 	 */
 	protected $mirrors;
 
 	/**
 	 * Keeps wsdl URL.
 	 *
-	 * @var  string
+	 * @var string
 	 */
 	protected $wsdlUrl;
 
 	/**
 	 * Keeps last update.
 	 *
-	 * @var  string
+	 * @var DateTime
 	 */
 	protected $lastUpdate;
 

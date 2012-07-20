@@ -130,6 +130,45 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		return $this->findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $lowestVersion, $highestVersion)->count();
 	}
 
+	/**
+	 * Update the lastversion field after update
+	 * For performance reason "native" TYPO3_DB is
+	 * used here directly.
+	 *
+	 * @param int $repositoryUid
+	 * @return integer
+	 */
+	public function insertLastVersion($repositoryUid = 1) {
+		$groupedRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			'extkey, version, max(intversion) maxintversion',
+			'cache_extensions',
+			'repository=' . intval($repositoryUid),
+			'extkey'
+		);
+		$extensions = count($groupedRows);
+
+		if ($extensions > 0) {
+				// set all to 0
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				'cache_extensions',
+				'lastversion=1 AND repository=' . intval($repositoryUid),
+				array('lastversion' => 0)
+			);
+
+				// Find latest version of extensions and set lastversion to 1 for these
+			foreach ($groupedRows as $row) {
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					'cache_extensions',
+					'extkey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['extkey'], 'cache_extensions') . ' AND intversion=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['maxintversion'], 'cache_extensions') . ' AND repository=' . intval($repositoryUid),
+					array('lastversion' => 1)
+				);
+			}
+		}
+
+		return $extensions;
+	}
+
+
 	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {
 		if($query->getConstraint()) {
 			$query->matching(

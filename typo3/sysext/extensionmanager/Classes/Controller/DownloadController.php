@@ -78,6 +78,8 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	}
 
 	/**
+	 * Check extension dependencies
+	 *
 	 * @throws Exception
 	 * @return void
 	 */
@@ -89,12 +91,27 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
 
-		$dependencies = $this->managementService->getDependencies($extension);
-		$this->view->assign('dependencies', $dependencies)
-			->assign('extension', $extension);
+		$dependencyTypes = $this->managementService->getDependencies($extension);
+		$message = '';
+		if (count($dependencyTypes) > 0) {
+				// @todo translate and beautify
+			$message = 'The following dependencies have to be resolved before installation:<br /><br />';
+			foreach ($dependencyTypes as $dependencyType => $dependencies) {
+				$message .= '<h3>Extensions marked for ' . $dependencyType . ':</h3>';
+				foreach ($dependencies as $extensionKey => $dependency) {
+					$message .= $extensionKey . '<br />';
+				}
+				$message .= 'Shall these dependencies be resolved automatically?';
+			}
+		}
+		$this->view->assign('dependencies', $dependencyTypes)
+			->assign('extension', $extension)
+			->assign('message', $message);
 	}
 
 	/**
+	 * Install an extension from TER
+	 *
 	 * @throws Exception
 	 * @return void
 	 */

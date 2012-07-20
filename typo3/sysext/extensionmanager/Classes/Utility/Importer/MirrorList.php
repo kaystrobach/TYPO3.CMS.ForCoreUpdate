@@ -23,8 +23,6 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 /**
- * class.tx_em_import_mirrorlistimporter.php
- *
  * Module: Extension manager - Mirror list importer
  *
  * @author  Marcus Krause <marcus#exp2010@t3sec.info>
@@ -47,7 +45,7 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	/**
 	 * Keeps instance of a XML parser.
 	 *
-	 * @var  tx_em_Parser_MirrorXmlAbstractParser
+	 * @var  Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
 	 */
 	protected $parser;
 
@@ -64,32 +62,30 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 *
 	 * Method retrieves and initializes extension XML parser instance.
 	 *
-	 * @access  public
-	 * @return  void
-	 * @throws  tx_em_XmlException in case no valid parser instance is available
+	 * @throws tx_em_XmlException
 	 */
 	function __construct() {
 			// TODO catch parser exception
-		$this->parser = tx_em_Parser_XmlParserFactory::getParserInstance('mirror');
+		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('mirror');
 		if (is_object($this->parser)) {
 			$this->parser->attach($this);
 		} else {
-			throw new tx_em_XmlException(get_class($this) . ': ' . 'No XML parser available.');
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(get_class($this) . ': No XML parser available.',
+			1342640390);
 		}
 	}
 
 	/**
-	 * Method collects mirrors' details and returns instance of tx_em_Repository_Mirrors
-	 * with retrieved details.
+	 * Method collects mirrors' details and returns instance of
+	 * Tx_Extensionmanager_Domain_Model_Mirrors with retrieved details.
 	 *
-	 * @access  public
-	 * @param   string  $localMirrorListFile  absolute path to (gzipped) local mirror list xml file
-	 * @return  Tx_Extensionmanager_Domain_Model_Mirrors
+	 * @param string $localMirrorListFile absolute path to local mirror xml.gz file
+	 * @return Tx_Extensionmanager_Domain_Model_Mirrors
 	 */
 	public function getMirrors($localMirrorListFile) {
 		$zlibStream = 'compress.zlib://';
 
-		$this->parser->parseXML($zlibStream . $localMirrorListFile);
+		$this->parser->parseXml($zlibStream . $localMirrorListFile);
 		/** @var $objRepositoryMirrors Tx_Extensionmanager_Domain_Model_Mirrors */
 		$objRepositoryMirrors = t3lib_div::makeInstance('Tx_Extensionmanager_Domain_Model_Mirrors');
 		$objRepositoryMirrors->setMirrors($this->arrTmpMirrors);
@@ -100,13 +96,12 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	/**
 	 * Method receives an update from a subject.
 	 *
-	 * @access  public
-	 * @param   SplSubject  $subject  a subject notifying this observer
-	 * @return  void
+	 * @param SplSubject $subject  a subject notifying this observer
+	 * @return void
 	 */
 	public function update(SplSubject $subject) {
-		// TODO mirrorxml_abstract_parser
-		if (is_subclass_of($subject, 'tx_em_Parser_XmlAbstractParser')) {
+			// TODO mirrorxml_abstract_parser
+		if (is_subclass_of($subject, 'Tx_Extensionmanager_Utility_Parser_XmlAbstractParser')) {
 			$this->arrTmpMirrors[] = $subject->getAll();
 		}
 	}

@@ -217,6 +217,39 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 	/**
+	 * Returns either array with all default categories or index/title
+	 * of a category entry.
+	 *
+	 * @param mixed $cat category title or category index
+	 * @return mixed
+	 */
+	public function getDefaultCategory($cat = NULL) {
+		$return = '';
+		if (is_null($cat)) {
+			$return = self::$defaultCategories;
+		} else {
+			if (is_string($cat)) {
+					// default category
+				$catIndex = 4;
+				if (array_key_exists(strtolower($cat), self::$defaultCategories)) {
+					$catIndex = self::$defaultCategories[strtolower($cat)];
+				}
+				$return = $catIndex;
+			} else {
+				if (is_int($cat) && $cat >= 0) {
+					$catTitle = array_search($cat, self::$defaultCategories);
+						// default category
+					if (!$catTitle) {
+						$catTitle = 'misc';
+					}
+					$return = $catTitle;
+				}
+			}
+		}
+		return $return;
+	}
+
+	/**
 	 * @param string $description
 	 * @return void
 	 */
@@ -287,6 +320,37 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 			$stateString = self::$defaultStates[$this->getState()];
 		}
 		return $stateString;
+	}
+
+	/**
+	 * Returns either array with all default states or index/title
+	 * of a state entry.
+	 *
+	 * @param mixed $state state title or state index
+	 * @return mixed
+	 */
+	public function getDefaultState($state = NULL) {
+		if (is_null($state)) {
+			return self::$defaultStates;
+		} else {
+			if (is_string($state)) {
+					// default state
+				$stateIndex = 999;
+				if (array_key_exists(strtolower($state), self::$defaultStates)) {
+					$stateIndex = self::$defaultStates[strtolower($state)];
+				}
+				return $stateIndex;
+			} else {
+				if (is_int($state) && $state >= 0) {
+					$stateTitle = array_search($state, self::$defaultStates);
+						// default state
+					if (!$stateTitle) {
+						$stateTitle = 'n/a';
+					}
+					return $stateTitle;
+				}
+			}
+		}
 	}
 
 	/**

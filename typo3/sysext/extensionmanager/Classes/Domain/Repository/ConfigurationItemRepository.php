@@ -132,11 +132,13 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 			PATH_site . $extension['siteRelPath'],
 			$GLOBALS['BACK_PATH']
 		);
-		foreach($tsStyleConfig->setup['constants']['TSConstantEditor.'] as $category => $highlights) {
-			$theConstants['__meta__'][rtrim($category, '.')]['highlightText'] = $highlights['description'];
-			foreach($highlights as $highlightNumber => $value) {
-				if(rtrim($category, '.') == $theConstants[$value]['cat']) {
-					$theConstants[$value]['highlight'] = $highlightNumber;
+		if (isset($tsStyleConfig->setup['constants']['TSConstantEditor.'])) {
+			foreach($tsStyleConfig->setup['constants']['TSConstantEditor.'] as $category => $highlights) {
+				$theConstants['__meta__'][rtrim($category, '.')]['highlightText'] = $highlights['description'];
+				foreach($highlights as $highlightNumber => $value) {
+					if(rtrim($category, '.') == $theConstants[$value]['cat']) {
+						$theConstants[$value]['highlight'] = $highlightNumber;
+					}
 				}
 			}
 		}

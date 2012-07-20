@@ -218,7 +218,11 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	 */
 	public function getDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
-		return $this->downloadQueue->getExtensionQueue();
+		$installQueue = $this->downloadQueue->getExtensionInstallStorage();
+		if (is_array($installQueue) && count($installQueue) > 0) {
+			$installQueue = array('install' => $installQueue);
+		}
+		return array_merge($this->downloadQueue->getExtensionQueue(), $installQueue);
 	}
 }
 

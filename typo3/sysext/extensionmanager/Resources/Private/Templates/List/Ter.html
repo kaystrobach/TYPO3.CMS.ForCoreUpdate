@@ -6,16 +6,30 @@
 <f:section name="Content">
 	<f:if condition="{search}">
 		<f:then>
-			Your search: <f:link.action action="ter" controller="List"><span class="pill">x {search}</span></f:link.action>
+			<div class="headerRow">
+				<div class="typo3-extensionmanager-headerRowLeft">
+					Your search: <f:link.action action="ter" controller="List"><span class="pill">x {search}</span></f:link.action>
+				</div>
+				<div class="typo3-extensionmanager-headerRowRight">
+					<em:updateFromTer />
+				</div>
+			</div>
 			<table id="terSearchTable" class="typo3-extension-list">
 				<f:render partial="List/TerTable" arguments="{paginatedExtensions:extensions, availableAndInstalled:availableAndInstalled}" />
 			</table>
 		</f:then>
 		<f:else>
-			<f:form action="ter">
-				<f:form.textfield name="search" value="{search}" />
-				<f:form.submit value="Submit"/>
-			</f:form>
+			<div class="headerRow">
+				<div class="typo3-extensionmanager-headerRowLeft">
+					<f:form action="ter">
+						<f:form.textfield name="search" value="{search}" />
+						<f:form.submit value="Submit"/>
+					</f:form>
+				</div>
+				<div class="typo3-extensionmanager-headerRowRight">
+					<em:updateFromTer />
+				</div>
+			</div>
 			<f:widget.paginate objects="{extensions}" as="paginatedExtensions" configuration="{itemsPerPage: 15, maximumNumberOfLinks: 2}">
 				<table id="terTable" class="typo3-extension-list">
 					<f:if condition="{showVersionList}">
