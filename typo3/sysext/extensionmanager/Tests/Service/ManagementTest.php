@@ -326,26 +326,17 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 		);
 
 		$installQueue = array(
-			'foobar' => array(
-				'key' => 'foobar',
-				'siteRelPath' => 'path'
-			)
+			'foobar' => 'foobar'
 		);
 
 		$installUtility = $this->getAccessibleMock('Tx_Extensionmanager_Utility_Install', array('install'));
-		$installUtility->expects($this->once())->method('install')->with(array(
-			'key' => 'foobar',
-			'siteRelPath' => 'path'
-		));
+		$installUtility->expects($this->once())->method('install')->with('foobar');
 
 		$managementMock->_set('installUtility', $installUtility);
 		$resolvedDependencies = $managementMock->_call('installDependencies', $installQueue);
 		$this->assertEquals(
 			array('installed' => array(
-					'foobar' => array(
-						'key' => 'foobar',
-						'siteRelPath' => 'path'
-					)
+					'foobar' => 'foobar'
 				)
 			),
 			$resolvedDependencies

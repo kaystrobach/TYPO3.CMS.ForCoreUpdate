@@ -28,17 +28,19 @@
 	 * @package TYPO3
 	 * @subpackage extensionmanager
 	 */
-class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
+class Tx_Extensionmanager_Utility_InstallTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	public $extListGlobal;
 	public $loadedExtGlobal;
 	public $extension;
 	public $fakedExtensions;
 	public $installMock;
+	protected $listUtilityMock;
 
 	public function setUp() {
-		$this->extension = array('key' => 'dummy');
-		$this->installMock = $this->getMock(
+		$this->extension = 'dummy';
+		$this->listUtilityMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_List', array());
+		$this->installMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Utility_Install',
 			array('writeNewExtensionList', 'processDatabaseUpdates', 'reloadCaches', 'saveDefaultConfiguration')
 		);
@@ -73,13 +75,33 @@ class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function installCallsProcessDatabaseUpdates() {
-		$this->installMock->expects($this->once())->method('processDatabaseUpdates')->with($this->extension);
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableAndInstalledExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('enrichExtensionsWithEmConfInformation')
+			->will($this->returnValue(array($this->extension => array('key' => $this->extension))));
+		$this->installMock->_set('listUtility', $this->listUtilityMock);
+		$this->installMock->expects($this->once())->method('processDatabaseUpdates')->with(array('key' => $this->extension));
 		$this->installMock->install($this->extension);
 	}
 	/**
 	 * @test
 	 */
 	public function installCallsWriteNewExtensionList() {
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableAndInstalledExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('enrichExtensionsWithEmConfInformation')
+			->will($this->returnValue(array($this->extension => array('key' => $this->extension))));
+		$this->installMock->_set('listUtility', $this->listUtilityMock);
 		$this->installMock->expects($this->once())->method('writeNewExtensionList');
 		$this->installMock->install($this->extension);
 	}
@@ -87,7 +109,17 @@ class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function installCallsFlushCachesIfClearCacheOnLoadIsSet() {
-		$this->extension = array_merge($this->extension, array('clearcacheonload' => '1'));
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableAndInstalledExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('enrichExtensionsWithEmConfInformation')
+			->will($this->returnValue(array($this->extension => array('key' => $this->extension, 'clearcacheonload' => '1'))));
+
+		$this->installMock->_set('listUtility', $this->listUtilityMock);
 		$backupCacheManager = $GLOBALS['typo3CacheManager'];
 		$GLOBALS['typo3CacheManager'] = $this->getMock('t3lib_cache_manager');
 		$GLOBALS['typo3CacheManager']->expects($this->once())->method('flushCaches');
@@ -99,6 +131,17 @@ class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function installCallsReloadCaches() {
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableAndInstalledExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('enrichExtensionsWithEmConfInformation')
+			->will($this->returnValue(array($this->extension => array('key' => $this->extension, 'clearcacheonload' => '1'))));
+
+		$this->installMock->_set('listUtility', $this->listUtilityMock);
 		$this->installMock->expects($this->once())->method('reloadCaches');
 		$this->installMock->install('dummy');
 	}
@@ -107,8 +150,19 @@ class Tx_Extensionmanager_Utility_InstallTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function installCallsSaveDefaultConfigurationWithExtensionKey() {
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('getAvailableAndInstalledExtensions')
+			->will($this->returnValue(array($this->extension => $this->extension)));
+		$this->listUtilityMock
+			->expects($this->once())->method('enrichExtensionsWithEmConfInformation')
+			->will($this->returnValue(array($this->extension => array('key' => $this->extension, 'clearcacheonload' => '1'))));
+
+		$this->installMock->_set('listUtility', $this->listUtilityMock);
 		$this->installMock->expects($this->once())->method('saveDefaultConfiguration')->with('dummy');
-		$this->installMock->install(array('key' => 'dummy'));
+		$this->installMock->install('dummy');
 	}
 
 	/**
