@@ -4,6 +4,16 @@
 <f:section name="docHeaderRow2">
 </f:section>
 <f:section name="Content">
+	<div class="headerRow">
+		<div class="typo3-extensionmanager-headerRowLeft">
+
+		</div>
+		<div class="typo3-extensionmanager-headerRowRight">
+			<em:updateFromTer />
+			<f:link.action action="form" controller="UploadExtensionFile" class="uploadExtension">Upload Extension .t3x</f:link.action>
+			<div class="uploadForm" style="display:none;">Loading form...<span class="spinner"></span></div>
+		</div>
+	</div>
 	<table id="typo3-extension-list" class="typo3-extension-list">
 		<thead>
 			<tr>
@@ -20,7 +30,7 @@
 					<tr class="{zebraClass}">
 				</f:cycle>
 				<td>
-					<em:installExtension extension="{extension}" />
+					<em:toggleExtensionInstallationState extension="{extension}" />
 				</td>
 				<td>
 					{extension.title} ({extension.version})

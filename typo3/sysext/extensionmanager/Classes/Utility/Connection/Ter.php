@@ -45,66 +45,73 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 	 *
 	 * @param string $extensionKey Extension Key
 	 * @param string $version Version to install
-	 * @param string $expectedMD5 Expected MD5 hash of extension file
-	 * @param string $mirrorURL URL of mirror to use
-	 * @throws Exception
+	 * @param string $expectedMd5 Expected MD5 hash of extension file
+	 * @param string $mirrorUrl URL of mirror to use
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return array T3X data
 	 */
-	public function fetchExtension($extensionKey, $version, $expectedMD5, $mirrorURL) {
+	public function fetchExtension($extensionKey, $version, $expectedMd5, $mirrorUrl) {
 		$extensionPath = t3lib_div::strtolower($extensionKey);
-		$mirrorURL .= $extensionPath{0} . '/' . $extensionPath{1} . '/' . $extensionPath . '_' . $version . '.t3x';
-		$t3x = t3lib_div::getUrl($mirrorURL, 0, array(TYPO3_user_agent));
-		$MD5 = md5($t3x);
+		$mirrorUrl .= $extensionPath{0} . '/' . $extensionPath{1} . '/' . $extensionPath . '_' . $version . '.t3x';
+		$t3x = t3lib_div::getUrl($mirrorUrl, 0, array(TYPO3_user_agent));
+		$md5 = md5($t3x);
 
 		if ($t3x === FALSE) {
-			throw new Exception(
-				sprintf('The T3X file "%s" could not be fetched. Possible reasons: network problems, allow_url_fopen is off, cURL is not enabled in Install Tool.', $mirrorURL),
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				sprintf('The T3X file "%s" could not be fetched. Possible reasons: network problems, allow_url_fopen is off, cURL is not enabled in Install Tool.', $mirrorUrl),
 				1334426097
 			);
 		}
 
-		if ($MD5 == $expectedMD5) {
-			// Fetch and return:
-			return $this->decodeExchangeData($t3x);
+		if ($md5 == $expectedMd5) {
+				// Fetch and return:
+			$extensionData = $this->decodeExchangeData($t3x);
 		} else {
-			throw new Exception(
-				'Error: MD5 hash of downloaded file not as expected:<br />' . $MD5 . ' != ' . $expectedMD5,
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				'Error: MD5 hash of downloaded file not as expected:<br />' . $md5 . ' != ' . $expectedMd5,
 				1334426098
 			);
 		}
+
+		return $extensionData;
 	}
 
 
 	/**
 	 * Decode server data
-	 * This is information like the extension list, extension information etc., return data after uploads (new em_conf)
+	 * This is information like the extension list, extension
+	 * information etc., return data after uploads (new em_conf)
+	 * On success, returns an array with data array and stats
+	 * array as key 0 and 1.
 	 *
 	 * @param string $externalData Data stream from remove server
-	 * @return mixed $externalData On success, returns an array with data array and stats array as key 0 and 1. Otherwise returns error string
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return array $externalData
 	 * @see fetchServerData(), processRepositoryReturnData()
 	 */
-	function decodeServerData($externalData) {
+	public function decodeServerData($externalData) {
 		$parts = explode(':', $externalData, 4);
+		var_dump($parts);
 		$dat = base64_decode($parts[2]);
-		// compare hashes ignoring any leading whitespace. See bug #0000365.
+		gzuncompress($dat);
+			// compare hashes ignoring any leading whitespace. See bug #0000365.
 		if (ltrim($parts[0]) == md5($dat)) {
 			if ($parts[1] == 'gzcompress') {
 				if (function_exists('gzuncompress')) {
 					$dat = gzuncompress($dat);
 				} else {
-					return 'Decoding Error: No decompressor available for compressed content. gzuncompress() function is not available!';
+					throw new Tx_Extensionmanager_Exception_ExtensionManager('Decoding Error: No decompressor available for compressed content. gzuncompress() function is not available!', 1342859463);
 				}
 			}
 			$listArr = unserialize($dat);
 
-			if (is_array($listArr)) {
-				return $listArr;
-			} else {
-				return 'Error: Unserialized information was not an array - strange!';
+			if (!is_array($listArr)) {
+				throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: Unserialized information was not an array - strange!', 1342859489);
 			}
 		} else {
-			return 'Error: MD5 hashes in T3X data did not match!';
+			throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: MD5 hashes in T3X data did not match!', 1342859505);
 		}
+		return $listArr;
 	}
 
 	/**

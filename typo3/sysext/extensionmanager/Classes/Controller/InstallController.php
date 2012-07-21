@@ -49,15 +49,13 @@ class Tx_Extensionmanager_Controller_InstallController extends Tx_Extensionmanag
 		$extension = $this->request->getArgument('extension');
 		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
 
-		if (array_key_exists($extension['key'], $installedExtensions)) {
+		if (array_key_exists($extension, $installedExtensions)) {
 				// uninstall
-			$installUtility->uninstall($extension['key']);
+			$installUtility->uninstall($extension);
 		} else {
 				// install
 			$installUtility->install($extension);
-
 		}
-
 		$this->redirect('index', 'List');
 	}
 

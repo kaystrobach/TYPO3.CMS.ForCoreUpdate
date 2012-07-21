@@ -50,8 +50,11 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	}
 
 	/**
+	 * Unpack an extension in t3x data format and write files
+	 *
 	 * @todo allow installation in different paths
 	 * @param $extensionData
+	 * @return void
 	 */
 	public function unpackExtensionFromExtensionDataArray($extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
 		$extensionDir = $this->makeAndClearExtensionDir($extensionData['extKey']);

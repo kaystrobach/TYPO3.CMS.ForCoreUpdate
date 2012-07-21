@@ -33,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Controller
  */
-class Tx_Extensionmanager_ViewHelpers_InstallExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class Tx_Extensionmanager_ViewHelpers_ToggleExtensionInstallationStateViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
 	/**
 	 * @var string
@@ -52,12 +52,7 @@ class Tx_Extensionmanager_ViewHelpers_InstallExtensionViewHelper extends Tx_Flui
 		$uri = $uriBuilder
 			->reset()
 			->uriFor($action, array(
-				'extension' => array (
-					'key' => $extension['key'],
-					'type' => $extension['type'],
-					'siteRelPath' => $extension['siteRelPath'],
-					'clearcacheonload' => $extension['clearcacheonload']
-				)
+				'extension' => $extension['key']
 			), 'Install');
 		$this->tag->addAttribute('href', $uri);
 		$label = $extension['installed'] ? 'Deactivate' : 'Activate';

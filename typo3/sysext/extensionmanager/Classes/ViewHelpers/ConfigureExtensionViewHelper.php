@@ -33,7 +33,6 @@
  * @package Extension Manager
  * @subpackage Controller
  */
-
 class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
 	/**

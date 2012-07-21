@@ -187,7 +187,7 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 		$resolvedDependencies = array();
 		foreach ($installQueue as $extensionToInstall) {
 			$this->installUtility->install($extensionToInstall);
-			$resolvedDependencies['installed'][$extensionToInstall['key']] = $extensionToInstall;
+			$resolvedDependencies['installed'][$extensionToInstall] = $extensionToInstall;
 		}
 		return $resolvedDependencies;
 	}

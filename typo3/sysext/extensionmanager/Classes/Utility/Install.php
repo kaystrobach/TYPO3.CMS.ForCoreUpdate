@@ -49,6 +49,20 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	protected $dependencyUtility;
 
+
+	/**
+	 * @var Tx_Extensionmanager_Utility_List
+	 */
+	protected $listUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @return void
+	 */
+	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+		$this->listUtility = $listUtility;
+	}
+
 	/**
 	 * __construct
 	 */
@@ -84,10 +98,21 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Helper function to install an extension
 	 * also processes db updates and clears the cache if the extension asks for it
 	 *
-	 * @param array $extension
+	 * @param string $extensionKey
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
-	public function install($extension) {
+	public function install($extensionKey) {
+		$availableExtensions = $this->listUtility->getAvailableExtensions();
+		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
+
+		if (isset($availableAndInstalledExtensions[$extensionKey])) {
+			$extension = $availableAndInstalledExtensions[$extensionKey];
+		} else {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager('Extension ' . $extensionKey . ' is not available and cannot be installed', 1342864081);
+		}
+
 		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
 		$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
 		$this->processDatabaseUpdates($extension);

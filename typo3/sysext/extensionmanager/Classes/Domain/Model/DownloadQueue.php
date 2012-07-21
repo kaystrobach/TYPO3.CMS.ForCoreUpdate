@@ -124,8 +124,7 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueue implements t3lib_Singleton 
 	 * return void
 	 */
 	public function addExtensionToInstallQueue($extensionKey) {
-		$availableExtensions = $this->listUtility->getAvailableExtensions();
-		$this->extensionInstallStorage[$extensionKey] = $availableExtensions[$extensionKey];
+		$this->extensionInstallStorage[$extensionKey] = $extensionKey;
 	}
 
 	public function removeExtensionFromInstallQueue($extensionKey) {
