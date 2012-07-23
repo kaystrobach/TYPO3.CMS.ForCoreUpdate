@@ -124,6 +124,24 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 		$this->fileHandlingUtility->sendZipFileToBrowserAndDelete($fileName);
 	}
 
+	/**
+	 *
+	 */
+	protected function downloadExtensionDataAction() {
+		$error = NULL;
+		$extension = $this->request->getArgument('extension');
+		$sqlData = $this->installUtility->getExtensionSqlDataDump($extension);
+		$dump = $sqlData['extTables'] . $sqlData['staticSql'];
+		$fileName = $extension . '_sqlDump.sql';
+		$filePath = PATH_site . 'typo3temp/' . $fileName;
+		$error = t3lib_div::writeFileToTypo3tempDir($filePath, $dump);
+		if (is_string($error)) {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager($error, 1343048718);
+		}
+
+		$this->fileHandlingUtility->sendSqlDumpFileToBrowserAndDelete($filePath, $fileName);
+	}
+
 }
 
 ?>

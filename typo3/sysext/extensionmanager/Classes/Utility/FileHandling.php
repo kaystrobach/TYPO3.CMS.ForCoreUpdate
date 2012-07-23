@@ -238,4 +238,23 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		exit();
 	}
 
+	/**
+	 * @param string $fileName
+	 * @param string $downloadName
+	 */
+	public function sendSqlDumpFileToBrowserAndDelete($fileName, $downloadName = '') {
+		if ($downloadName === '') {
+			$downloadName = basename($fileName, '.sql');
+		} else {
+			$downloadName = basename($downloadName, '.sql');
+		}
+		header('Content-Type: text');
+		header('Content-Length: ' . filesize($fileName));
+		header('Content-Disposition: attachment; filename="' . $downloadName . '.sql"');
+		readfile($fileName);
+		unlink($fileName);
+		exit();
+	}
+
+
 }

@@ -60,6 +60,11 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	protected $listUtility;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Database
+	 */
+	protected $databaseUtility;
+
+	/**
 	 * @param Tx_Extensionmanager_Utility_List $listUtility
 	 * @return void
 	 */
@@ -82,6 +87,14 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function injectDependencyUtility(Tx_Extensionmanager_Utility_Dependency $dependencyUtility) {
 		$this->dependencyUtility = $dependencyUtility;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Database $databaseUtility
+	 * @return void
+	 */
+	public function injectDatabaseUtility(Tx_Extensionmanager_Utility_Database $databaseUtility) {
+		$this->databaseUtility = $databaseUtility;
 	}
 
 	/**
@@ -250,7 +263,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$fieldDefinitionsFromFile = $this->installToolSqlParser->getFieldDefinitions_fileContent($rawDefinitions);
 
 		if (count($fieldDefinitionsFromFile)) {
-			$fieldDefinitionsFromCurrentDatabase = $this->installToolSqlParser->getFieldDefinitions_database(TYPO3_db);
+			$fieldDefinitionsFromCurrentDatabase = $this->installToolSqlParser->getFieldDefinitions_database();
 			$diff = $this->installToolSqlParser->getDatabaseExtra($fieldDefinitionsFromFile, $fieldDefinitionsFromCurrentDatabase);
 			$updateStatements = $this->installToolSqlParser->getUpdateSuggestions($diff);
 
@@ -330,6 +343,25 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('No valid extension path given.', 1342875724);
 		}
 	}
+
+	public function getExtensionSqlDataDump($extension) {
+		$extension = $this->enrichExtensionWithDetails($extension);
+		$filePrefix = PATH_site . $extension['siteRelPath'];
+		$sqlData['extTables'] = $this->getSqlDataDumpForFile($filePrefix . '/ext_tables.sql');
+		$sqlData['staticSql'] = $this->getSqlDataDumpForFile($filePrefix . '/ext_tables_static+adt.sql');
+		return $sqlData;
+	}
+
+	protected function getSqlDataDumpForFile($sqlFile) {
+		$sqlData = '';
+		if (file_exists($sqlFile)) {
+			$sqlContent = t3lib_div::getUrl($sqlFile);
+			$fieldDefinitions = $this->installToolSqlParser->getFieldDefinitions_fileContent($sqlContent);
+			$sqlData = $this->databaseUtility->dumpStaticTables($fieldDefinitions);
+		}
+		return $sqlData;
+	}
+
 }
 
 ?>
