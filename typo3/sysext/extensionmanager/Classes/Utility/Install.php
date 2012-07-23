@@ -167,7 +167,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Extension ' . $extensionKey . ' is not available', 1342864081);
 		}
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation(array($extensionKey => $extension));
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(array($extensionKey => $extension));
 		return $availableAndInstalledExtensions[$extensionKey];
 	}
 

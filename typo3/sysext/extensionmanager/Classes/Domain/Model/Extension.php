@@ -140,6 +140,11 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	protected $md5hash = '';
 
 	/**
+	 * @var int
+	 */
+	protected $reviewState;
+
+	/**
 	 * @var string
 	 */
 	protected $serializedDependencies = '';
@@ -507,6 +512,20 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function getIntegerVersion() {
 		return $this->integerVersion;
+	}
+
+	/**
+	 * @param int $reviewState
+	 */
+	public function setReviewState($reviewState) {
+		$this->reviewState = $reviewState;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getReviewState() {
+		return $this->reviewState;
 	}
 }
 

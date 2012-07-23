@@ -60,6 +60,21 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	public function injectEmConfUtility(Tx_Extensionmanager_Utility_EmConf $emConfUtility) {
 		$this->emConfUtility = $emConfUtility;
 	}
+
+	/**
+	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 */
+	public $extensionRepository;
+
+	/**
+	 * Inject emConfUtility
+	 *
+	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @return void
+	 */
+	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+		$this->extensionRepository = $extensionRepository;
+	}
 	/**
 	 * Returns the list of available (installed) extensions
 	 *
@@ -111,11 +126,18 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	 * @param array $extensions
 	 * @return array
 	 */
-	public function enrichExtensionsWithEmConfInformation(array $extensions) {
+	public function enrichExtensionsWithEmConfAndTerInformation(array $extensions) {
 		foreach($extensions as $extensionKey => $properties) {
 			$emconf = $this->emConfUtility->includeEmConf($properties);
 			if ($emconf) {
 				$extensions[$extensionKey] = array_merge($emconf, $properties);
+				$terObject = $this->extensionRepository->findOneByExtensionKeyAndVersion(
+					$extensionKey,
+					$extensions[$extensionKey]['version']
+				);
+				if($terObject instanceof Tx_Extensionmanager_Domain_Model_Extension) {
+					$extensions[$extensionKey]['terObject'] = $terObject;
+				}
 			} else {
 				unset($extensions[$extensionKey]);
 			}

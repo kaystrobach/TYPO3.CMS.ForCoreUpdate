@@ -45,9 +45,32 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 */
 	public function findByExtensionKeyOrderedByVersion($extensionKey) {
 		$query = $this->createQuery();
-		$query->matching($query->equals('extensionKey', $extensionKey));
+		$query->matching(
+			$query->logicalAnd(
+				$query->equals('extensionKey', $extensionKey),
+				$query->greaterThanOrEqual('reviewState', 0)
+			)
+		);
 		$query->setOrderings(array('version' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING));
 		return $query->execute();
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * @param string $version (example: 4.3.10)
+	 * @return array|Tx_Extbase_Persistence_QueryResultInterface
+	 */
+	public function findOneByExtensionKeyAndVersion($extensionKey, $version) {
+		$query = $this->createQuery();
+		$query->matching(
+			$query->logicalAnd(
+				$query->equals('extensionKey', $extensionKey),
+				$query->equals('version', $version)
+			)
+		);
+		return $query->setLimit(1)
+			->execute()
+			->getFirst();
 	}
 
 	/**
@@ -110,7 +133,12 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 			$constraint = $query->equals('extensionKey', $extensionKey);
 		}
 		if ($constraint) {
-			$query->matching($constraint);
+			$query->matching(
+				$query->logicalAnd(
+					$constraint,
+					$query->greaterThanOrEqual('reviewState', 0)
+				)
+			);
 		}
 		$query->setOrderings(
 			array(

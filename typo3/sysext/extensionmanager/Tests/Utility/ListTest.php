@@ -175,7 +175,7 @@ class Tx_Extensionmanager_Utility_ListTest extends tx_phpunit_testcase {
 	public function enrichExtensionsWithEmConfInformation($extensions, $emConf, $expectedResult) {
 		$this->fixture->emConfUtility = $this->getMock('Tx_Extensionmanager_Utility_EmConf');
 		$this->fixture->emConfUtility->expects($this->any())->method('includeEmConf')->will($this->returnValue($emConf));
-		$this->assertEquals($expectedResult, $this->fixture->enrichExtensionsWithEmConfInformation($extensions));
+		$this->assertEquals($expectedResult, $this->fixture->enrichExtensionsWithEmConfAndTerInformation($extensions));
 	}
 }
 ?>

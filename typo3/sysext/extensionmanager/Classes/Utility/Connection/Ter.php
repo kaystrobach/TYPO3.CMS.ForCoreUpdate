@@ -91,7 +91,6 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 	 */
 	public function decodeServerData($externalData) {
 		$parts = explode(':', $externalData, 4);
-		var_dump($parts);
 		$dat = base64_decode($parts[2]);
 		gzuncompress($dat);
 			// compare hashes ignoring any leading whitespace. See bug #0000365.

@@ -86,7 +86,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
 		$this->view->assign('extensions', $availableAndInstalledExtensions);
 	}
 
@@ -95,6 +95,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * Either all extensions or depending on a search param
 	 *
 	 * @todo handle / mark extensions already on the server
+	 * @todo higher priority for exact extensionKey result
 	 * @return void
 	 */
 	public function terAction() {
@@ -103,7 +104,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
 
 		if (is_string($search) && !empty($search)) {
 			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
@@ -119,10 +120,10 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	/**
 	 * Shows all versions of a specific extension
 	 *
-	 * @todo higher priority for exact extensionKey result
 	 * @return void
 	 */
 	public function showAllVersionsAction() {
+		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
 		$extensions = array();
 		$extensionKey = '';
 		if (

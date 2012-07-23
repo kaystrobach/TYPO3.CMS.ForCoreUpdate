@@ -199,3 +199,7 @@
 .typo3-extension-list tr.available td {
 	background-color: #E1E1aa;
 }
+
+#typo3-extension-manager .insecure {
+	color: #ff2262;
+}

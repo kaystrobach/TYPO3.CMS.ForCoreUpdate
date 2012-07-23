@@ -1,6 +1,6 @@
 {namespace em=Tx_Extensionmanager_ViewHelpers}
 
-<f:layout name="main"/>
+<f:layout name="main" />
 <f:section name="docHeaderRow2">
 </f:section>
 <f:section name="Content">
@@ -26,7 +26,14 @@
 		</thead>
 		<tbody>
 			<f:for each="{extensions}" as="extension" key="extensionKey">
-				<tr id="{extensionKey}">
+				<f:if condition="{extension.terObject}">
+					<f:then>
+						<tr id="{extensionKey}" class="{f:if(condition:'{extension.terObject.reviewState} >= 0', then:'', else:'insecure')}">
+					</f:then>
+					<f:else>
+						<tr id="{extensionKey}">
+					</f:else>
+				</f:if>
 				<td>
 					<em:toggleExtensionInstallationState extension="{extension}" />
 				</td>

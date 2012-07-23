@@ -447,7 +447,7 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	public function findInstalledExtensionsThatDependOnMe($extensionKey) {
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
 		$dependentExtensions = array();
 		foreach ($availableAndInstalledExtensions as $availableAndInstalledExtensionKey => $availableAndInstalledExtension) {
 			if (
