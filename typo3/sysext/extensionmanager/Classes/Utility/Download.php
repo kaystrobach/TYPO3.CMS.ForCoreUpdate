@@ -76,7 +76,7 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	/**
 	 * Download an extension
 	 *
-	 * @param $extension
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
 	 * @return void
 	 */
 	public function download(Tx_Extensionmanager_Domain_Model_Extension $extension) {

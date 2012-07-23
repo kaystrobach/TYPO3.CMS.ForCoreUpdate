@@ -23,7 +23,7 @@ if(TYPO3_MODE === 'BE') {
 			'List' => 'index,ter,showAllVersions',
 			'Action' => 'toggleExtensionInstallationState,removeExtension,downloadExtensionZip,downloadExtensionData',
 			'Configuration' => 'showConfigurationForm,save',
-			'Download' => 'checkDependencies,installFromTer',
+			'Download' => 'checkDependencies,installFromTer,updateExtension,updateCommentForUpdatableVersions',
 			'UpdateFromTer' => 'updateExtensionListFromTer',
 			'UploadExtensionFile' => 'form,extract'
 		),

@@ -67,6 +67,19 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	public $extensionRepository;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Install
+	 */
+	protected $installUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @return void
+	 */
+	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+		$this->installUtility = $installUtility;
+	}
+
+	/**
 	 * Inject emConfUtility
 	 *
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
@@ -137,7 +150,9 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 				);
 				if($terObject instanceof Tx_Extensionmanager_Domain_Model_Extension) {
 					$extensions[$extensionKey]['terObject'] = $terObject;
+					$extensions[$extensionKey]['updateAvailable'] = $this->installUtility->isUpdateAvailable($terObject);
 				}
+
 			} else {
 				unset($extensions[$extensionKey]);
 			}

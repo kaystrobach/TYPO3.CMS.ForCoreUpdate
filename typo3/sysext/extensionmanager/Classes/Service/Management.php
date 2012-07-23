@@ -132,7 +132,7 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
 	 * @return array
 	 */
-	public function resolveDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function resolveDependenciesAndInstall(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 		$this->downloadQueue->addExtensionToQueue($extension);
 

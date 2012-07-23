@@ -125,7 +125,10 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 	}
 
 	/**
+	 * Download data of an extension as sql statements
 	 *
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
 	 */
 	protected function downloadExtensionDataAction() {
 		$error = NULL;

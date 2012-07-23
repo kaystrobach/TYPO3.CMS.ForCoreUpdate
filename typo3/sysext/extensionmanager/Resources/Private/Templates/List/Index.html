@@ -17,6 +17,7 @@
 	<table id="typo3-extension-list" class="typo3-extension-list">
 		<thead>
 			<tr>
+				<th>Update available</th>
 				<th>Activate / Deactivate</th>
 				<th>Extension</th>
 				<th>Key</th>
@@ -34,6 +35,17 @@
 						<tr id="{extensionKey}">
 					</f:else>
 				</f:if>
+				<td>
+					<f:if condition="{extension.updateAvailable}">
+						<f:link.action
+							action="updateCommentForUpdatableVersions"
+							controller="Download"
+							arguments="{extension:extension.key, integerVersion: extension.terObject.integerVersion}"
+							class="updateAvailable"
+							format="json"
+						>Update</f:link.action>
+					</f:if>
+				</td>
 				<td>
 					<em:toggleExtensionInstallationState extension="{extension}" />
 				</td>

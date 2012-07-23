@@ -52,6 +52,19 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	protected $managementService;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Install
+	 */
+	protected $installUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @return void
+	 */
+	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+		$this->installUtility = $installUtility;
+	}
+
+	/**
 	 * Dependency injection of the Extension Repository
 	 *
 	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
@@ -122,9 +135,43 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		$extensionUid = $this->request->getArgument('extension');
 		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
-		$result = $this->managementService->resolveDependencies($extension);
+		$result = $this->managementService->resolveDependenciesAndInstall($extension);
 		$this->view->assign('result', $result)
 			->assign('extension', $extension);
+	}
+
+	/**
+	 * Update an extension. Makes no sanity check but directly searches highest
+	 * available version from TER and updates. Update check is done by the list
+	 * already. This method should only be called if we are sure that there is
+	 * an update.
+	 *
+	 * @return void
+	 */
+	protected function updateExtensionAction() {
+		$extensionKey = $this->request->getArgument('extension');
+		/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
+		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionKey);
+		$result = $this->managementService->resolveDependenciesAndInstall($highestTerVersionExtension);
+		$this->view->assign('result', $result)
+			->assign('extension', $highestTerVersionExtension);
+	}
+
+	/**
+	 *
+	 */
+	protected function updateCommentForUpdatableVersionsAction() {
+		$extensionKey = $this->request->getArgument('extension');
+		$version = $this->request->getArgument('integerVersion');
+		$updateComments = array();
+		/** @var $updatableVersion Tx_Extensionmanager_Domain_Model_Extension */
+		$updatableVersions = $this->extensionRepository->findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $version);
+		foreach ($updatableVersions as $updatableVersion) {
+			$updateComments[$updatableVersion->getVersion()] = $updatableVersion->getUpdateComment();
+		}
+		$this->view
+			->assign('updateComments', $updateComments)
+			->assign('extensionKey', $extensionKey);
 	}
 
 

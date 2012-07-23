@@ -64,6 +64,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	protected $databaseUtility;
 
+
+	/**
+	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 */
+	public $extensionRepository;
+
 	/**
 	 * @param Tx_Extensionmanager_Utility_List $listUtility
 	 * @return void
@@ -95,6 +101,16 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function injectDatabaseUtility(Tx_Extensionmanager_Utility_Database $databaseUtility) {
 		$this->databaseUtility = $databaseUtility;
+	}
+
+	/**
+	 * Inject emConfUtility
+	 *
+	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @return void
+	 */
+	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+		$this->extensionRepository = $extensionRepository;
 	}
 
 	/**
@@ -360,6 +376,25 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 			$sqlData = $this->databaseUtility->dumpStaticTables($fieldDefinitions);
 		}
 		return $sqlData;
+	}
+
+	/**
+	 * @internal
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extensionData
+	 * @return boolean
+	 */
+	public function isUpdateAvailable(Tx_Extensionmanager_Domain_Model_Extension $extensionData) {
+			// Only check for update for TER extensions
+		$version = $extensionData->getIntegerVersion();
+			/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
+		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionData->getExtensionKey());
+		if ($highestTerVersionExtension instanceof Tx_Extensionmanager_Domain_Model_Extension) {
+			$highestVersion = $highestTerVersionExtension->getIntegerVersion();
+			if ($highestVersion > $version) {
+				return TRUE;
+			}
+		}
+		return FALSE;
 	}
 
 }

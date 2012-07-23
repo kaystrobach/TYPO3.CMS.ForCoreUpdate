@@ -159,6 +159,30 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 	/**
+	 * Find highest version available of an extension
+	 *
+	 * @param string $extensionKey
+	 * @return object
+	 */
+	public function findHighestAvailableVersion($extensionKey) {
+		$query = $this->createQuery();
+		$query->matching(
+			$query->logicalAnd(
+				$query->equals('extensionKey', $extensionKey),
+				$query->greaterThanOrEqual('reviewState', 0)
+			)
+		);
+		$query->setOrderings(
+			array(
+				'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
+			)
+		);
+		return $query->setLimit(1)
+			->execute()
+			->getFirst();
+	}
+
+	/**
 	 * Update the lastversion field after update
 	 * For performance reason "native" TYPO3_DB is
 	 * used here directly.

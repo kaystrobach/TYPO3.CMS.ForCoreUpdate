@@ -74,10 +74,7 @@ function getResolveDependenciesAndInstallResult(button, dummy, dialog) {
 					});
 					successMessage += '</ul>';
 				});
-				TYPO3.Dialog.InformationDialog({
-					title: data.extension + ' installed.',
-					msg: successMessage
-				});
+				TYPO3.Flashmessage.display(TYPO3.Severity.information, data.extension + ' installed.', successMessage, 15);
 			}
 		});
 	}
