@@ -83,6 +83,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * @return void
 	 */
 	public function indexAction() {
+		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
 		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);

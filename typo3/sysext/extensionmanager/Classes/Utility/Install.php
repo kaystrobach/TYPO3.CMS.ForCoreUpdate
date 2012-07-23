@@ -49,6 +49,10 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	protected $dependencyUtility;
 
+	/**
+	 * @var Tx_Extensionmanager_Utility_FileHandling
+	 */
+	protected $filehandlingUtility;
 
 	/**
 	 * @var Tx_Extensionmanager_Utility_List
@@ -61,6 +65,23 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
 		$this->listUtility = $listUtility;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_FileHandling $filehandlingUtility
+	 * @return void
+	 */
+	public function injectFilehandlingUtility(Tx_Extensionmanager_Utility_FileHandling $filehandlingUtility) {
+		$this->filehandlingUtility = $filehandlingUtility;
+	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Dependency $dependencyUtility
+	 * @todo does not work...
+	 * @return void
+	 */
+	public function injectDependencyUtility(Tx_Extensionmanager_Utility_Dependency $dependencyUtility) {
+		$this->dependencyUtility = $dependencyUtility;
 	}
 
 	/**
@@ -103,16 +124,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function install($extensionKey) {
-		$availableExtensions = $this->listUtility->getAvailableExtensions();
-		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation($availableAndInstalledExtensions);
-
-		if (isset($availableAndInstalledExtensions[$extensionKey])) {
-			$extension = $availableAndInstalledExtensions[$extensionKey];
-		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Extension ' . $extensionKey . ' is not available and cannot be installed', 1342864081);
-		}
-
+		$extension = $this->enrichExtensionWithDetails($extensionKey);
 		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
 		$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
 		$this->processDatabaseUpdates($extension);
@@ -124,6 +136,26 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 
 		$this->reloadCaches();
 		$this->saveDefaultConfiguration($extension['key']);
+	}
+
+	/**
+	 * Fetch additional information for an extension key
+	 *
+	 * @todo unit tests
+	 * @param string $extensionKey
+	 * @internal
+	 * @return mixed
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 */
+	public function enrichExtensionWithDetails($extensionKey) {
+		$availableExtensions = $this->listUtility->getAvailableExtensions();
+		if (isset($availableExtensions[$extensionKey])) {
+			$extension = $availableExtensions[$extensionKey];
+		} else {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager('Extension ' . $extensionKey . ' is not available', 1342864081);
+		}
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfInformation(array($extensionKey => $extension));
+		return $availableAndInstalledExtensions[$extensionKey];
 	}
 
 	/**
@@ -185,12 +217,23 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		return t3lib_div::makeInstance('t3lib_install');
 	}
 
+	/**
+	 * Reload Cache files and Typo3LoadedExtensions
+	 *
+	 * @return void
+	 */
 	protected function reloadCaches() {
 		t3lib_extMgm::removeCacheFiles();
 		$bootstrap = Typo3_Bootstrap::getInstance();
 		$bootstrap->populateTypo3LoadedExtGlobal();
 	}
 
+	/**
+	 * Save default configuration of an extension
+	 *
+	 * @param string $extensionKey
+	 * @return void
+	 */
 	protected function saveDefaultConfiguration($extensionKey) {
 		/** @var $configUtility Tx_Extensionmanager_Utility_Configuration */
 		$configUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
@@ -270,6 +313,22 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$instObj->writeToLocalconf_control($lines);
 
 		t3lib_extMgm::removeCacheFiles();
+	}
+
+	/**
+	 * Remove an extension (delete the directory)
+	 *
+	 * @param string $extension
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
+	 */
+	public function removeExtension($extension) {
+		$absolutePath = $this->filehandlingUtility->getAbsoluteExtensionPath($extension);
+		if ($this->filehandlingUtility->isValidExtensionPath($absolutePath)) {
+			$this->filehandlingUtility->removeDirectory($absolutePath);
+		} else {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager('No valid extension path given.', 1342875724);
+		}
 	}
 }
 

@@ -53,7 +53,7 @@ class Tx_Extensionmanager_ViewHelpers_ToggleExtensionInstallationStateViewHelper
 			->reset()
 			->uriFor($action, array(
 				'extension' => $extension['key']
-			), 'Install');
+			), 'Action');
 		$this->tag->addAttribute('href', $uri);
 		$label = $extension['installed'] ? 'Deactivate' : 'Activate';
 		$this->tag->setContent($label);

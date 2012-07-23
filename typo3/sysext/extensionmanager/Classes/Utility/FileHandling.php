@@ -50,6 +50,21 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	}
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Install
+	 */
+	protected $installUtility;
+
+	/**
+	 * Injector for Tx_Extensionmanager_Utility_Install
+	 *
+	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @return void
+	 */
+	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+		$this->installUtility = $installUtility;
+	}
+
+	/**
 	 * Unpack an extension in t3x data format and write files
 	 *
 	 * @todo allow installation in different paths
@@ -134,7 +149,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
-	protected function removeDirectory($extDirPath) {
+	public function removeDirectory($extDirPath) {
 		$res = t3lib_div::rmdir($extDirPath, TRUE);
 		if($res === FALSE) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_remove_dir'), $extDirPath), 1337280415);
@@ -144,6 +159,83 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	protected function writeEmConfToFile(array $extensionData, $rootPath, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
 		$emConfContent = $this->emConfUtility->constructEmConf($extensionData, $extension);
 		t3lib_div::writeFile($rootPath . 'ext_emconf.php', $emConfContent);
+	}
+
+	/**
+	 * Is the given path a valid path for extension installation
+	 *
+	 * @param string $path the absolute (!) path in question
+	 * @return boolean
+	 */
+	public function isValidExtensionPath($path) {
+		$allowedPaths = Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallPaths();
+		foreach ($allowedPaths as $allowedPath) {
+			if (t3lib_div::isFirstPartOfStr($path, $allowedPath)) {
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+
+	/**
+	 * Returns absolute path
+	 *
+	 * @param string $relativePath
+	 * @return string
+	 */
+	public function returnAbsolutePath($relativePath) {
+		return t3lib_div::resolveBackPath(PATH_site . $relativePath);
+	}
+
+	/**
+	 * Get extension path for an available or installed extension
+	 *
+	 * @param string $extension
+	 * @return string
+	 */
+	public function getAbsoluteExtensionPath($extension) {
+		$extension = $this->installUtility->enrichExtensionWithDetails($extension);
+		$absolutePath = $this->returnAbsolutePath($extension['siteRelPath']);
+		return $absolutePath;
+	}
+
+	public function createZipFileFromExtension($extension) {
+		$extensionPath = $this->getAbsoluteExtensionPath($extension);
+		$fileName = PATH_site . 'typo3temp/' . $extension . '.zip';
+		$zip = new ZipArchive;
+		$zip->open($fileName, ZipArchive::CREATE);
+		$relPath = t3lib_utility_Path::getRelativePathTo($extensionPath);
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($relPath)
+		);
+
+		foreach ($iterator as $key => $value) {
+			$archiveName = str_replace($relPath, '', $key);
+			if (t3lib_utility_String::isLastPartOfStr($key, '.')) {
+				continue;
+			} else {
+				$zip->addFile($key, $archiveName) or die ("ERROR: Could not add file: $key");
+			}
+		}
+
+		$zip->close();
+		return $fileName;
+	}
+
+	/**
+	 * @param string $fileName
+	 * @param string $downloadName
+	 */
+	public function sendZipFileToBrowserAndDelete($fileName, $downloadName = '') {
+		if ($downloadName === '') {
+			$downloadName = basename($fileName, '.zip');
+		}
+		header('Content-Type: application/zip');
+		header('Content-Length: ' . filesize($fileName));
+		header('Content-Disposition: attachment; filename="' . $downloadName . '.zip"');
+		readfile($fileName);
+		unlink($fileName);
+		exit();
 	}
 
 }

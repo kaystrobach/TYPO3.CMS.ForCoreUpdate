@@ -26,9 +26,7 @@
 		</thead>
 		<tbody>
 			<f:for each="{extensions}" as="extension" key="extensionKey">
-				<f:cycle values="{0: 'odd', 1: 'even'}" as="zebraClass">
-					<tr class="{zebraClass}">
-				</f:cycle>
+				<tr id="{extensionKey}">
 				<td>
 					<em:toggleExtensionInstallationState extension="{extension}" />
 				</td>
@@ -43,6 +41,8 @@
 				</td>
 				<td>
 					<em:configureExtension extension="{extension}" />
+					<em:removeExtension extension="{extension}" />
+					<f:link.action action="downloadExtensionZip" controller="Action" arguments="{extension:extension.key}">Download as zip</f:link.action>
 				</td>
 				</tr>
 			</f:for>

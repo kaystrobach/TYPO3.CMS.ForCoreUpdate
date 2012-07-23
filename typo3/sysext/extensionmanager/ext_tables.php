@@ -21,7 +21,7 @@ if(TYPO3_MODE === 'BE') {
 		'',
 		array(
 			'List' => 'index,ter,showAllVersions',
-			'Install' => 'toggleExtensionInstallationState',
+			'Action' => 'toggleExtensionInstallationState,removeExtension,downloadExtensionZip',
 			'Configuration' => 'showConfigurationForm,save',
 			'Download' => 'checkDependencies,installFromTer',
 			'UpdateFromTer' => 'updateExtensionListFromTer',

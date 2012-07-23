@@ -26,7 +26,7 @@
  ***************************************************************/
 
 /**
- * Utility for dealing with ext_emconf
+ * Utility for dealing with dependencies
  *
  * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager

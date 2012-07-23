@@ -27,38 +27,45 @@
 
 
 /**
- * action controller.
+ * view helper for displaying a remove extension link
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
  * @subpackage Controller
  */
-class Tx_Extensionmanager_Controller_InstallController extends Tx_Extensionmanager_Controller_AbstractController {
-
+class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
 	/**
-	 * Toggle extension installation state action
-	 *
-	 * @return void
+	 * @var string
 	 */
-	protected function toggleExtensionInstallationStateAction() {
+	protected $tagName = 'a';
 
-		/** @var $installUtility Tx_Extensionmanager_Utility_Install */
-		$installUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Install');
-
-		$extension = $this->request->getArgument('extension');
-		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
-
-		if (array_key_exists($extension, $installedExtensions)) {
-				// uninstall
-			$installUtility->uninstall($extension);
-		} else {
-				// install
-			$installUtility->install($extension);
+	/**
+	 * Renders an install link
+	 *
+	 * @param string $extension
+	 * @return string the rendered a tag
+	 */
+	public function render($extension) {
+		if (!in_array($extension['type'], Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallTypes())) {
+			return '';
 		}
-		$this->redirect('index', 'List');
+		$uriBuilder = $this->controllerContext->getUriBuilder();
+		$action = 'removeExtension';
+		$uriBuilder->reset();
+		$uriBuilder->setFormat('json');
+		$uri = $uriBuilder->uriFor($action, array(
+			'extension' => $extension['key']
+		), 'Action');
+		$this->tag->addAttribute('href', $uri);
+		$cssClass = 'removeExtension';
+		if (t3lib_extMgm::isLoaded($extension['key'])) {
+			$cssClass .= ' isLoadedWarning';
+		}
+		$this->tag->addAttribute('class', $cssClass);
+		$label = 'Remove';
+		$this->tag->setContent($label);
+
+		return $this->tag->render();
 	}
-
 }
-
-?>

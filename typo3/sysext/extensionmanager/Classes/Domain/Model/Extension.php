@@ -429,11 +429,26 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 	public static function returnInstallPaths() {
-		return array(
+		$installPaths = array(
 			'System' => PATH_typo3 . 'sysext/',
 			'Global' => PATH_typo3 . 'ext/',
 			'Local' => PATH_typo3conf . 'ext/'
 		);
+		return $installPaths;
+	}
+
+	public static function returnAllowedInstallPaths() {
+		$installPaths = self::returnInstallPaths();
+		if (!(isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['allowSystemInstall']) &&
+			$GLOBALS['TYPO3_CONF_VARS']['EXT']['allowSystemInstall'])) {
+			unset($installPaths['System']);
+		}
+		return $installPaths;
+	}
+
+	public static function returnAllowedInstallTypes() {
+		$installPaths = self::returnAllowedInstallPaths();
+		return array_keys($installPaths);
 	}
 
 	/**
