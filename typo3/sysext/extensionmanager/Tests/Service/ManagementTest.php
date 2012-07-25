@@ -73,7 +73,7 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 		$managementMock->_set('downloadQueue', $downloadQueueMock);
 
 		$managementMock->expects($this->once())->method('downloadDependencies')->with(array('foo' => $extensionModelMock));
-		$managementMock->_call('resolveDependencies', $extensionModelMock);
+		$managementMock->_call('resolveDependenciesAndInstall', $extensionModelMock);
 	}
 
 	/**
@@ -119,7 +119,7 @@ class Tx_Extensionmanager_Service_ManagementServiceTest extends Tx_Extbase_Tests
 
 		$managementMock->expects($this->once())->method('downloadDependencies')->with(array('foo' => $extensionModelMock));
 		$managementMock->expects($this->once())->method('uninstallDependenciesToBeUpdated')->with(array('foo' => $extensionModelMock));
-		$managementMock->_call('resolveDependencies', $extensionModelMock);
+		$managementMock->_call('resolveDependenciesAndInstall', $extensionModelMock);
 	}
 
 	/**

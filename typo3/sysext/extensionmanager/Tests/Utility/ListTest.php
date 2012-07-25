@@ -28,7 +28,7 @@
  * @package TYPO3
  * @subpackage extensionmanager
  */
-class Tx_Extensionmanager_Utility_ListTest extends tx_phpunit_testcase {
+class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	/**
 	 * @var Tx_Extensionmanager_Utility_List
 	 */
@@ -173,6 +173,7 @@ class Tx_Extensionmanager_Utility_ListTest extends tx_phpunit_testcase {
 	 * @dataProvider enrichExtensionsWithEmConfInformationDataProvider
 	 */
 	public function enrichExtensionsWithEmConfInformation($extensions, $emConf, $expectedResult) {
+		$this->fixture->extensionRepository = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Repository_ExtensionRepository', array('findOneByExtensionKeyAndVersion'));
 		$this->fixture->emConfUtility = $this->getMock('Tx_Extensionmanager_Utility_EmConf');
 		$this->fixture->emConfUtility->expects($this->any())->method('includeEmConf')->will($this->returnValue($emConf));
 		$this->assertEquals($expectedResult, $this->fixture->enrichExtensionsWithEmConfAndTerInformation($extensions));
