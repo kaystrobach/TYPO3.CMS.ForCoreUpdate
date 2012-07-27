@@ -695,7 +695,8 @@ return array(
 		'RequireJS' => array(
 			'core' => 'contrib',
 			'jquery' => 'contrib/jquery',
-			'modernizr' => 'contrib/modernizr'
+			'modernizr' => 'contrib/modernizr',
+			'requirejsPlugins' => 'contrib/requirejs/plugins',
 		),
 	),
 	'EXTCONF' => array(		// Here you may add manually set configuration options for your extensions. Eg. $TYPO3_CONF_VARS['EXTCONF']['my_extension_key']['my_option'] = 'my_value';
