@@ -137,8 +137,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 				1342554622
 			);
 		} else {
-			t3lib_extMgm::unloadExtension($extensionKey);
+			$this->unloadExtension($extensionKey);
 		}
+	}
+
+	protected function unloadExtension($extensionKey) {
+		t3lib_extMgm::unloadExtension($extensionKey);
 	}
 
 	/**
@@ -155,9 +159,13 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		if ($extension['clearcacheonload']) {
 			$GLOBALS['typo3CacheManager']->flushCaches();
 		}
-		t3lib_extMgm::loadExtension($extensionKey);
+		$this->loadExtension($extensionKey);
 		$this->reloadCaches();
 		$this->saveDefaultConfiguration($extension['key']);
+	}
+
+	protected function loadExtension($extensionKey) {
+		t3lib_extMgm::loadExtension($extensionKey);
 	}
 
 	/**

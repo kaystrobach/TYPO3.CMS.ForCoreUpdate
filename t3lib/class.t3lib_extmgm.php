@@ -2026,12 +2026,6 @@ tt_content.' . $key . $prefix . ' {
 		return implode(',', self::getLoadedExtensionListArray());
 	}
 
-	public static function getInstalledAndLoadedExtensions() {
-		$currentExtListExtensions = array_flip(explode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList']));
-		$installedExtensions = array_intersect_key($GLOBALS['TYPO3_LOADED_EXT'], $currentExtListExtensions);
-		return $installedExtensions;
-	}
-
 	/**
 	 * Gets the list of required extensions.
 	 *
@@ -2079,12 +2073,6 @@ tt_content.' . $key . $prefix . ' {
 		$loadedExtensions = array_unique($loadedExtensions);
 
 		return $loadedExtensions;
-	}
-
-	public static function getInstalledAndLoadedExtensions() {
-		$currentExtListExtensions = array_flip(explode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList']));
-		$installedExtensions = array_intersect_key($GLOBALS['TYPO3_LOADED_EXT'], $currentExtListExtensions);
-		return $installedExtensions;
 	}
 
 	/**

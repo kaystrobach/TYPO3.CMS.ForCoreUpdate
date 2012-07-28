@@ -34,6 +34,9 @@ class Tx_Extensionmanager_Utility_InstallTest extends Tx_Extbase_Tests_Unit_Base
 	public $loadedExtGlobal;
 	public $extension;
 	public $fakedExtensions;
+	/**
+	 * @var Tx_Extensionmanager_Utility_Install
+	 */
 	public $installMock;
 	protected $listUtilityMock;
 
@@ -41,7 +44,7 @@ class Tx_Extensionmanager_Utility_InstallTest extends Tx_Extbase_Tests_Unit_Base
 		$this->extension = 'dummy';
 		$this->installMock = $this->getAccessibleMock(
 			'Tx_Extensionmanager_Utility_Install',
-			array('writeNewExtensionList', 'processDatabaseUpdates', 'reloadCaches', 'saveDefaultConfiguration', 'enrichExtensionWithDetails')
+			array('loadExtension', 'unloadExtension', 'processDatabaseUpdates', 'reloadCaches', 'saveDefaultConfiguration', 'enrichExtensionWithDetails')
 		);
 	}
 
@@ -85,13 +88,13 @@ class Tx_Extensionmanager_Utility_InstallTest extends Tx_Extbase_Tests_Unit_Base
 	/**
 	 * @test
 	 */
-	public function installCallsWriteNewExtensionList() {
+	public function installCallsLoadExtenion() {
 		$this->installMock
 			->expects($this->once())
 			->method('enrichExtensionWithDetails')
 			->with($this->extension)
 			->will($this->returnValue(array('key' => $this->extension)));
-		$this->installMock->expects($this->once())->method('writeNewExtensionList');
+		$this->installMock->expects($this->once())->method('loadExtension');
 		$this->installMock->install($this->extension);
 	}
 	/**
@@ -139,8 +142,8 @@ class Tx_Extensionmanager_Utility_InstallTest extends Tx_Extbase_Tests_Unit_Base
 	/**
 	 * @test
 	 */
-	public function uninstallCallsWriteNewExtensionList() {
-		$this->installMock->expects($this->once())->method('writeNewExtensionList');
+	public function uninstallCallsUnloadExtension() {
+		$this->installMock->expects($this->once())->method('unloadExtension');
 		$this->installMock->uninstall('dummy');
 	}
 
@@ -189,28 +192,6 @@ class Tx_Extensionmanager_Utility_InstallTest extends Tx_Extbase_Tests_Unit_Base
 		$installMock->processDatabaseUpdates($this->fakedExtensions[$extKey]);
 	}
 
-	/**
-	 * @test
-	 */
-	public function writeNewExtensionListWritesToLocalconf(){
-		$backupExtlist = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'];
-		$localconfTestString = 'dummy1,dummy2';
-		$t3libInstallMock = $this->getMock('t3lib_install', array('writeToLocalconf_control','setValueInLocalconfFile'));
-
-		$installMock = $this->getMock('Tx_Extensionmanager_Utility_Install', array('getT3libInstallInstance'));
-		$installMock->expects($this->once())->method('getT3libInstallInstance')->will($this->returnValue($t3libInstallMock));
-
-		$t3libInstallMock->expects($this->exactly(2))->method('writeToLocalconf_control')->will($this->returnValue(array('dummyline')));
-		$t3libInstallMock->expects($this->once())->method('setValueInLocalconfFile')
-			->with(
-				array('dummyline'),
-				'$TYPO3_CONF_VARS[\'EXT\'][\'extList\']',
-				$localconfTestString
-			);
-		$installMock->writeNewExtensionList($localconfTestString);
-		$this->assertEquals('dummy1,dummy2', $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList']);
-		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $backupExtlist;
-	}
 }
 
 ?>
