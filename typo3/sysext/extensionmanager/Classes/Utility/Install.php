@@ -137,10 +137,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 				1342554622
 			);
 		} else {
-			$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
-			unset($installedExtensions[$extensionKey]);
-			$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
-			$this->writeNewExtensionList($newInstalledExtensionList);
+			t3lib_extMgm::unloadExtension($extensionKey);
 		}
 	}
 
@@ -154,17 +151,13 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function install($extensionKey) {
 		$extension = $this->enrichExtensionWithDetails($extensionKey);
-		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
-		$installedExtensions = array_merge($installedExtensions, array($extension['key'] => $extension['key']));
 		$this->processDatabaseUpdates($extension);
 		if ($extension['clearcacheonload']) {
 			$GLOBALS['typo3CacheManager']->flushCaches();
 		}
-		$newInstalledExtensionList = implode(',', array_keys($installedExtensions));
-		$this->writeNewExtensionList($newInstalledExtensionList);
-
+		t3lib_extMgm::loadExtension($extensionKey);
 		$this->reloadCaches();
-		$this->saveDefaultConfiguration($extension['key']);
+		//$this->saveDefaultConfiguration($extension['key']);
 	}
 
 	/**
@@ -209,34 +202,6 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	}
 
 	/**
-	 * Writes the extension list to "localconf.php" file
-	 * Removes the temp_CACHED* files before return.
-	 *
-	 * @param string $newExtList
-	 * @throws Exception
-	 * @return void
-	 */
-	public function writeNewExtensionList($newExtList) {
-		if (!t3lib_extMgm::isLocalconfWritable()) {
-			throw new Exception('localconf not writable');
-		}
-
-			// Instance of install tool
-		$instObj = $this->getT3libInstallInstance();
-		$instObj->allowUpdateLocalConf = 1;
-		$instObj->updateIdentity = 'TYPO3 Extension Manager';
-
-			// Get lines from localconf file
-		$lines = $instObj->writeToLocalconf_control();
-		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extList\']', $newExtList);
-		$instObj->writeToLocalconf_control($lines);
-
-		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $newExtList;
-		t3lib_extMgm::removeCacheFiles();
-		$GLOBALS['typo3CacheManager']->getCache('cache_phpcode')->flushByTag('t3lib_autoloader');
-	}
-
-	/**
 	 * Wrapper for make instance to make
 	 * mocking possible
 	 *
@@ -253,8 +218,15 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	protected function reloadCaches() {
 		t3lib_extMgm::removeCacheFiles();
-		$bootstrap = Typo3_Bootstrap::getInstance();
-		$bootstrap->populateTypo3LoadedExtGlobal();
+
+			// Set new extlist / extlistArray for extension load changes at runtime
+		$localConfiguration = t3lib_Configuration::getLocalConfiguration();
+		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $localConfiguration['EXT']['extList'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extListArray'] = $localConfiguration['EXT']['extListArray'];
+
+		Typo3_Bootstrap::getInstance()
+			->populateTypo3LoadedExtGlobal(FALSE)
+			->loadAdditionalConfigurationFromExtensions(FALSE);
 	}
 
 	/**
@@ -330,17 +302,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $newConfiguration) {
-			// Instance of install tool
-		$instObj = new t3lib_install;
-		$instObj->allowUpdateLocalConf = 1;
-		$instObj->updateIdentity = 'TYPO3 Extension Manager';
-
-			// Get lines from localconf file
-		$lines = $instObj->writeToLocalconf_control();
-			// This will be saved only if there are no linebreaks in it !
-		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extConf\'][\'' . $extensionKey . '\']', serialize($newConfiguration));
-		$instObj->writeToLocalconf_control($lines);
-
+		t3lib_Configuration::setLocalConfigurationValueByPath('EXT/extConf/' . $extensionKey, serialize($newConfiguration));
 		t3lib_extMgm::removeCacheFiles();
 	}
 
