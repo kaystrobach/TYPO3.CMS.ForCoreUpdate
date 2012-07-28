@@ -603,6 +603,7 @@
 			}
 
 			t3lib_cache::initPageSectionCache();
+			t3lib_cache::initRootlineCache();
 			t3lib_cache::initContentHashCache();
 
 			$GLOBALS['TT']->pull();

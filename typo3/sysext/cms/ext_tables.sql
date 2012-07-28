@@ -91,6 +91,33 @@ CREATE TABLE cachingframework_cache_pagesection_tags (
 
 
 #
+# Table structure for table 'cachingframework_cache_rootline'
+#
+CREATE TABLE cachingframework_cache_rootline (
+  id int(11) unsigned NOT NULL auto_increment,
+  identifier varchar(128) DEFAULT '' NOT NULL,
+  crdate int(11) unsigned DEFAULT '0' NOT NULL,
+  content mediumblob,
+  lifetime int(11) unsigned DEFAULT '0' NOT NULL,
+  PRIMARY KEY (id),
+  KEY cache_id (identifier)
+) ENGINE=InnoDB;
+
+
+#
+# Table structure for table 'cachingframework_cache_rootline_tags'
+#
+CREATE TABLE cachingframework_cache_rootline_tags (
+  id int(11) unsigned NOT NULL auto_increment,
+  identifier varchar(128) DEFAULT '' NOT NULL,
+  tag varchar(128) DEFAULT '' NOT NULL,
+  PRIMARY KEY (id),
+  KEY cache_id (identifier),
+  KEY cache_tag (tag)
+) ENGINE=InnoDB;
+
+
+#
 # Table structure for table 'cache_typo3temp_log'
 #
 CREATE TABLE cache_typo3temp_log (

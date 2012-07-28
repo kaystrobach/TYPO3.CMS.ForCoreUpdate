@@ -6281,7 +6281,7 @@ REMOTE_ADDR was '".t3lib_div::getIndpEnv('REMOTE_ADDR')."' (".t3lib_div::getIndp
 					}
 				break;
 				case 'cache':
-					$tableListArr = explode(',','cache_pages,cache_pagesection,cache_hash,cache_imagesizes,--div--,sys_log,sys_history,--div--,be_sessions,fe_sessions,fe_session_data'.
+					$tableListArr = explode(',','cache_pages,cache_pagesection,cache_rootline,cache_hash,cache_imagesizes,--div--,sys_log,sys_history,--div--,be_sessions,fe_sessions,fe_session_data'.
 						(t3lib_extMgm::isLoaded('indexed_search') ? ',--div--,index_words,index_rel,index_phash,index_grlist,index_section,index_fulltext' : '').
 						(t3lib_extMgm::isLoaded('tt_products') ? ',--div--,sys_products_orders,sys_products_orders_mm_tt_products' : '').
 						(t3lib_extMgm::isLoaded('direct_mail') ? ',--div--,sys_dmail_maillog' : '').
