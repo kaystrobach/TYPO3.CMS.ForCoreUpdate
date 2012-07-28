@@ -3,7 +3,7 @@ jQuery(document).ready(function() {
 		"bJQueryUI":true,
 		"bLengthChange": false,
 		'iDisplayLength': 50,
-		"bStateSave": true,
+		"bStateSave": false,
 		"bInfo": false,
 		"bPaginate": false,
 		"bFilter": false,

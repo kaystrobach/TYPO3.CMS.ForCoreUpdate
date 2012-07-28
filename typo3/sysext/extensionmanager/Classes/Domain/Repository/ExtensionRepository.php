@@ -27,6 +27,21 @@
  */
 class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persistence_Repository {
 
+	/**
+	 * @var Tx_Extbase_Persistence_Mapper_DataMapper
+	 */
+	protected $dataMapper;
+
+	/**
+	 * Injects the DataMapper to map records to objects
+	 *
+	 * @param Tx_Extbase_Persistence_Mapper_DataMapper $dataMapper
+	 * @return void
+	 */
+	public function injectDataMapper(Tx_Extbase_Persistence_Mapper_DataMapper $dataMapper) {
+		$this->dataMapper = $dataMapper;
+	}
+
 	public function countAll() {
 		$query = $this->createQuery();
 		$query = $this->addDefaultConstraints($query);
@@ -79,28 +94,30 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 */
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
 		$searchStringForLike = '%' . $searchString . '%';
-		$exactMatch = NULL;
-		$query = $this->createQuery();
-		$query->matching(
-			$query->logicalOr(
-				$query->like('extensionKey', $searchStringForLike),
-				$query->like('title', $searchStringForLike),
-				$query->like('authorName', $searchStringForLike)
-			)
-		);
-		$query = $this->addDefaultConstraints($query);
-		$result = $query->execute();
-		$result = $result->toArray();
-		foreach ($result as $key => $extension) {
-			if ($searchString === $extension->getExtensionKey()) {
-				$exactMatch = $extension;
-				unset($result[$key]);
-			}
-		}
-		if (is_object($exactMatch)) {
-			$result = array_merge(array($exactMatch), $result);
-		}
-		return $result;
+
+		$select = 'cache_extensions.*,
+			(
+ 				(extkey like "' . $searchString . '") * 8 +
+				(extkey like "' . $searchStringForLike . '") * 4 +
+				(title like "' . $searchStringForLike . '") * 2 +
+				(authorname like "' . $searchStringForLike . '")
+			) as rating';
+		$from = 'cache_extensions';
+		$where = '(
+					extkey = "' . $searchString . '"
+					OR
+					extkey LIKE "' . $searchStringForLike . '"
+					OR
+					description LIKE "' . $searchStringForLike . '"
+					OR
+					title LIKE "' . $searchStringForLike . '"
+				)
+				AND lastversion=1
+				HAVING rating > 0';
+		$order = 'rating desc';
+		$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $from, $where, '', $order);
+
+		return $this->dataMapper->map('Tx_Extensionmanager_Domain_Model_Extension', $result);
 	}
 
 	/**
