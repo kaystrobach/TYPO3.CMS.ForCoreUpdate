@@ -603,131 +603,24 @@ class t3lib_pageSelect {
 	 * Further: If any "recycler" page is found (doktype=255) then it will also block for the rootline)
 	 * If you want more fields in the rootline records than default such can be added by listing them in $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields']
 	 *
-	 * @param	integer		The page uid for which to seek back to the page tree root.
-	 * @param	string		Commalist of MountPoint parameters, eg. "1-2,3-4" etc. Normally this value comes from the GET var, MP
-	 * @param	boolean		If set, some errors related to Mount Points in root line are ignored.
-	 * @return	array		Array with page records from the root line as values. The array is ordered with the outer records first and root record in the bottom. The keys are numeric but in reverse order. So if you traverse/sort the array by the numeric keys order you will get the order from root and out. If an error is found (like eternal looping or invalid mountpoint) it will return an empty array.
+	 * @param integer $uid The page uid for which to seek back to the page tree root.
+	 * @param string $MP Commalist of MountPoint parameters, eg. "1-2,3-4" etc. Normally this value comes from the GET var, MP
+	 * @param boolean $ignoreMPerrors If set, some errors related to Mount Points in root line are ignored.
+	 * @return array Array with page records from the root line as values. The array is ordered with the outer records first and root record in the bottom. The keys are numeric but in reverse order. So if you traverse/sort the array by the numeric keys order you will get the order from root and out. If an error is found (like eternal looping or invalid mountpoint) it will return an empty array.
 	 * @see tslib_fe::getPageAndRootline()
 	 */
 	function getRootLine($uid, $MP = '', $ignoreMPerrors = FALSE) {
-		$cacheUid = $uid = intval($uid);
-		$cacheIgnoreMPerrors = ($ignoreMPerrors ? 1 : 0);
-
-		if (is_array($this->cache_getRootLine[$cacheUid][$this->sys_language_uid][$MP][$cacheIgnoreMPerrors])) {
-			return $this->cache_getRootLine[$cacheUid][$this->sys_language_uid][$MP][$cacheIgnoreMPerrors];
-		}
-
-			// Initialize:
-		$selFields = t3lib_div::uniqueList('pid,uid,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_swapmode,title,alias,nav_title,media,layout,hidden,starttime,endtime,fe_group,extendToSubpages,doktype,TSconfig,storage_pid,is_siteroot,mount_pid,mount_pid_ol,fe_login_mode,backend_layout_next_level,' . $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields']);
-		$this->error_getRootLine = '';
-		$this->error_getRootLine_failPid = 0;
-
-			// Splitting the $MP parameters if present
-		$MPA = array();
-		if ($MP) {
-			$MPA = explode(',', $MP);
-			foreach ($MPA as $MPAk => $v) {
-				$MPA[$MPAk] = explode('-', $MPA[$MPAk]);
+		$rootline = t3lib_div::makeInstance('t3lib_rootline', $uid, $MP, $GLOBALS['TSFE']->sys_language_uid, $GLOBALS['TSFE']->workspacePreview);
+		if ($ignoreMPerrors) {
+			try {
+				return $rootline->get();
+			} catch (Exception $e) {
+				$this->error_getRootLine = $e->getMessage();
+				return array();
 			}
+		} else {
+			return $rootline->get();
 		}
-
-		$loopCheck = 0;
-		$theRowArray = Array();
-
-		while ($uid != 0 && $loopCheck < 99) { // Max 99 levels in the page tree.
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($selFields, 'pages', 'uid=' . intval($uid) . ' AND pages.deleted=0 AND pages.doktype<>255');
-			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			$GLOBALS['TYPO3_DB']->sql_free_result($res);
-			if ($row) {
-				$this->versionOL('pages', $row, FALSE, TRUE);
-				$this->fixVersioningPid('pages', $row);
-
-				if (is_array($row)) {
-						// Mount Point page types are allowed ONLY a) if they are the outermost record in rootline and b) if the overlay flag is not set:
-					if ($GLOBALS['TYPO3_CONF_VARS']['FE']['enable_mount_pids'] && $row['doktype'] == t3lib_pageSelect::DOKTYPE_MOUNTPOINT && !$ignoreMPerrors) {
-						$mount_info = $this->getMountPointInfo($row['uid'], $row);
-						if ($loopCheck > 0 || $mount_info['overlay']) {
-							$this->error_getRootLine = 'Illegal Mount Point found in rootline';
-							return array();
-						}
-					}
-
-					$uid = $row['pid']; // Next uid
-
-					if (count($MPA) && $GLOBALS['TYPO3_CONF_VARS']['FE']['enable_mount_pids']) {
-						$curMP = end($MPA);
-						if (!strcmp($row['uid'], $curMP[0])) {
-
-							array_pop($MPA);
-							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($selFields, 'pages', 'uid=' . intval($curMP[1]) . ' AND pages.deleted=0 AND pages.doktype<>255');
-							$mp_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-							$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
-							$this->versionOL('pages', $mp_row, FALSE, TRUE);
-							$this->fixVersioningPid('pages', $mp_row);
-
-							if (is_array($mp_row)) {
-								$mount_info = $this->getMountPointInfo($mp_row['uid'], $mp_row);
-								if (is_array($mount_info) && $mount_info['mount_pid'] == $curMP[0]) {
-									$uid = $mp_row['pid']; // Setting next uid
-
-									if ($mount_info['overlay']) { // Symlink style: Keep mount point (current row).
-										$row['_MOUNT_OL'] = TRUE; // Set overlay mode:
-										$row['_MOUNT_PAGE'] = array(
-											'uid' => $mp_row['uid'],
-											'pid' => $mp_row['pid'],
-											'title' => $mp_row['title'],
-										);
-									} else { // Normal operation: Insert the mount page row in rootline instead mount point.
-										if ($loopCheck > 0) {
-											$row = $mp_row;
-										} else {
-											$this->error_getRootLine = 'Current Page Id is a mounted page of the overlay type and cannot be accessed directly!';
-											return array(); // Matching the page id (first run, $loopCheck = 0) with the MPvar is ONLY allowed if the mount point is the "overlay" type (otherwise it could be forged!)
-										}
-									}
-
-									$row['_MOUNTED_FROM'] = $curMP[0];
-									$row['_MP_PARAM'] = $mount_info['MPvar'];
-								} else {
-									$this->error_getRootLine = 'MP var was corrupted';
-									return array(); // The MP variables did NOT connect proper mount points:
-								}
-							} else {
-								$this->error_getRootLine = 'No moint point record found according to PID in MP var';
-								return array(); // The second PID in MP var was NOT a valid page.
-							}
-						}
-					}
-				}
-					// Add row to rootline with language overlaid:
-				$theRowArray[] = $this->getPageOverlay($row);
-			} else {
-				$this->error_getRootLine = 'Broken rootline (failed on page with uid ' . $uid . ')';
-				$this->error_getRootLine_failPid = $uid;
-				return array(); // broken rootline.
-			}
-
-			$loopCheck++;
-		}
-
-			// If the MPA array is NOT empty, we have to return an error; All MP elements were not resolved!
-		if (count($MPA)) {
-			$this->error_getRootLine = 'MP value remain!';
-			return array();
-		}
-
-			// Create output array (with reversed order of numeric keys):
-		$output = Array();
-		$c = count($theRowArray);
-		foreach ($theRowArray as $key => $val) {
-			$c--;
-			$output[$c] = $val;
-		}
-
-			// Note: rootline errors are not cached
-		$this->cache_getRootLine[$cacheUid][$this->sys_language_uid][$MP][$cacheIgnoreMPerrors] = $output;
-		return $output;
 	}
 
 	/**

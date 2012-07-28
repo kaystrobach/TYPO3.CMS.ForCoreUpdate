@@ -6871,23 +6871,9 @@ class t3lib_TCEmain {
 
 						// Delete cache for selected pages:
 					if (is_array($list_cache)) {
-						if (TYPO3_UseCachingFramework) {
-							$pageCache = $GLOBALS['typo3CacheManager']->getCache(
-								'cache_pages'
-							);
-							$pageSectionCache = $GLOBALS['typo3CacheManager']->getCache(
-								'cache_pagesection'
-							);
-
-							$pageIds = $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache);
-							foreach ($pageIds as $pageId) {
-								$pageCache->flushByTag('pageId_' . $pageId);
-								$pageSectionCache->flushByTag('pageId_' . $pageId);
-							}
-						} else {
-							$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pages', 'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')');
-							$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pagesection', 'page_id IN (' . implode(',', $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache)) . ')');
-
+						$pageIds = $GLOBALS['TYPO3_DB']->cleanIntArray($list_cache);
+						foreach ($pageIds as $pageId) {
+							$GLOBALS['typo3CacheManager']->flushCachesByTag('pageId_' . $pageId);
 						}
 					}
 				}
