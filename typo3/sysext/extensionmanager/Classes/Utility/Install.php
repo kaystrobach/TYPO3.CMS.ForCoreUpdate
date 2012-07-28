@@ -157,7 +157,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 		t3lib_extMgm::loadExtension($extensionKey);
 		$this->reloadCaches();
-		//$this->saveDefaultConfiguration($extension['key']);
+		$this->saveDefaultConfiguration($extension['key']);
 	}
 
 	/**

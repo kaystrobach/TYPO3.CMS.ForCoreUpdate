@@ -77,9 +77,9 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 	 * @return void
 	 */
 	protected function toggleExtensionInstallationStateAction() {
-		$installedExtensions = t3lib_extMgm::getInstalledAndLoadedExtensions();
+		$installedExtensions = t3lib_extMgm::getLoadedExtensionListArray();
 		$extension = $this->request->getArgument('extension');
-		if (array_key_exists($extension, $installedExtensions)) {
+		if (in_array($extension, $installedExtensions)) {
 				// uninstall
 			$this->installUtility->uninstall($extension);
 		} else {
