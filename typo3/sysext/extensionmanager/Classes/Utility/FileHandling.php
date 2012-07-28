@@ -199,18 +199,21 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		return $absolutePath;
 	}
 
+	/**
+	 * @param array $extension
+	 * @return string
+	 */
 	public function createZipFileFromExtension($extension) {
 		$extensionPath = $this->getAbsoluteExtensionPath($extension);
 		$fileName = PATH_site . 'typo3temp/' . $extension . '.zip';
 		$zip = new ZipArchive;
 		$zip->open($fileName, ZipArchive::CREATE);
-		$relPath = t3lib_utility_Path::getRelativePathTo($extensionPath);
 		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($relPath)
+			new RecursiveDirectoryIterator($extensionPath)
 		);
 
 		foreach ($iterator as $key => $value) {
-			$archiveName = str_replace($relPath, '', $key);
+			$archiveName = str_replace($extensionPath, '', $key);
 			if (t3lib_utility_String::isLastPartOfStr($key, '.')) {
 				continue;
 			} else {
