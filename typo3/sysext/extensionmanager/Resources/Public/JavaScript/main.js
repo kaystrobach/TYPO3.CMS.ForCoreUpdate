@@ -22,7 +22,8 @@ function manageExtensionListing() {
 		"bJQueryUI":true,
 		"bLengthChange":false,
 		'iDisplayLength':50,
-		"bStateSave":true
+		"bStateSave":true,
+		"fnDrawCallback": bindActions
 	});
 
 	var getVars = getUrlVars();
@@ -31,7 +32,9 @@ function manageExtensionListing() {
 	if(datatable.length && getVars['search']) {
 		datatable.fnFilter(getVars['search']);
 	}
+}
 
+function bindActions() {
 	jQuery('.removeExtension').each(function() {
 		jQuery(this).data('href', jQuery(this).attr('href'));
 		jQuery(this).attr('href', 'javascript:void(0);');

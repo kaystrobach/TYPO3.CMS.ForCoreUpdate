@@ -94,8 +94,6 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * Shows extensions from TER
 	 * Either all extensions or depending on a search param
 	 *
-	 * @todo handle / mark extensions already on the server
-	 * @todo higher priority for exact extensionKey result
 	 * @return void
 	 */
 	public function terAction() {

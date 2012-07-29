@@ -26,21 +26,8 @@ function handleUploadForm() {
 		var ret = frames['typo3-extensionmanager-upload-target'].document.getElementsByTagName("body")[0].innerHTML;
 		var data = eval("("+ret+")");
 		if (data.success) {
-			jQuery('.uploadForm').html(
-				'<div class="success">Successfully uploaded ' + data.extension + '</div>'
-			);
-			window.setTimeout(restoreUploadStartView, 3000);
+			TYPO3.Flashmessage.display(TYPO3.Severity.information, 'Extension Upload', data.extension + ' uploaded!', 15);
+			location.reload();
 		}
 	})
-}
-
-function restoreUploadStartView() {
-	console.log('restore');
-	jQuery('.uploadForm').fadeOut(1000);
-	window.setTimeout(restoreUploadFormContent, 1000);
-}
-
-function restoreUploadFormContent() {
-	jQuery('.uploadForm').html('Loading form...<span class="spinner"></span>')
-	jQuery('.uploadExtension').fadeIn(1000);
 }
