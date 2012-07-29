@@ -1,37 +1,37 @@
 <?php
 /***************************************************************
- *  Copyright notice
+ * Copyright notice
  *
- *  (c) 2010 Marcus Krause <marcus#exp2010@t3sec.info>
- *		   Steffen Kamper <info@sk-typo3.de>
- *  All rights reserved
+ * (c) 2010 Marcus Krause <marcus#exp2010@t3sec.info>
+ *		 Steffen Kamper <info@sk-typo3.de>
+ * All rights reserved
  *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This script is part of the TYPO3 project. The TYPO3 project is
+ * free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
+ * The GNU General Public License can be found at
+ * http://www.gnu.org/copyleft/gpl.html.
  *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This script is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- *  This copyright notice MUST APPEAR in all copies of the script!
+ * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
  * Repository object for extension manager.
  *
- * @author	  Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	  Steffen Kamper <info@sk-typo3.de>
+ * @author	 Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author	 Steffen Kamper <info@sk-typo3.de>
  *
- * @since	   2010-02-11
+ * @since	 2010-02-11
  * @package	 TYPO3
- * @subpackage  EM
+ * @subpackage EM
  */
 class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObject_AbstractEntity {
 
@@ -81,15 +81,15 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Keeps extension count.
 	 *
-	 * @var  string
+	 * @var string
 	 */
 	protected $extensionCount;
 
 	/**
 	 * Method returns title of a repository.
 	 *
-	 * @access  public
-	 * @return  string  title of repository
+	 * @access public
+	 * @return string title of repository
 	 * @see	 $title, setTitle()
 	 */
 	public function getTitle() {
@@ -99,9 +99,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method sets title of a repository.
 	 *
-	 * @access  public
-	 * @param   string  $title  title of repository to set
-	 * @return  void
+	 * @access public
+	 * @param string $title title of repository to set
+	 * @return void
 	 * @see	 $title, getTitle()
 	 */
 	public function setTitle($title) {
@@ -113,8 +113,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method returns description of a repository.
 	 *
-	 * @access  public
-	 * @return  string  title of repository
+	 * @access public
+	 * @return string title of repository
 	 * @see	 $title, setTitle()
 	 */
 	public function getDescription() {
@@ -124,9 +124,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method sets description of a repository.
 	 *
-	 * @access  public
-	 * @param   string  $description  title of repository to set
-	 * @return  void
+	 * @access public
+	 * @param string $description title of repository to set
+	 * @return void
 	 */
 	public function setDescription($description) {
 		if (!empty($description) && is_string($description)) {
@@ -137,8 +137,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method returns URL of a resource that contains repository mirrors.
 	 *
-	 * @access  public
-	 * @return  string  URL of file that contains repository mirros
+	 * @access public
+	 * @return string URL of file that contains repository mirros
 	 * @see	 $mirrorListUrl, getMirrorListUrl()
 	 */
 	public function getMirrorListUrl() {
@@ -150,9 +150,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 *
 	 * Parameter is typically a remote gzipped xml file.
 	 *
-	 * @access  public
-	 * @param   string  $url  URL of file that contains repository mirrors
-	 * @return  void
+	 * @access public
+	 * @param string $url URL of file that contains repository mirrors
+	 * @return void
 	 * @see	 $mirrorListUrl, getMirrorListUrl()
 	 */
 	public function setMirrorListUrl($url) {
@@ -164,9 +164,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method returns URL of repository WSDL.
 	 *
-	 * @access  public
-	 * @return  string  URL of repository WSDL
-	 * @see	 $wsdlUrl, setWsdlUrl()
+	 * @access public
+	 * @return string URL of repository WSDL
+	 * @see $wsdlUrl, setWsdlUrl()
 	 */
 	public function getWsdlUrl() {
 		return $this->wsdlUrl;
@@ -175,10 +175,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method sets URL of repository WSDL.
 	 *
-	 * @access  public
-	 * @param   string  $url  URL of repository WSDL
-	 * @return  void
-	 * @see	 $wsdlUrl, getWsdlUrl()
+	 * @param string $url URL of repository WSDL
+	 * @return void
+	 * @see $wsdlUrl, getWsdlUrl()
 	 */
 	public function setWsdlUrl($url) {
 		if (!empty($url) && t3lib_div::isValidUrl($url)) {
@@ -189,8 +188,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method returns LastUpdate.
 	 *
-	 * @access  public
-	 * @return  int  timestamp of last update
+	 * @access public
+	 * @return int timestamp of last update
 	 */
 	public function getLastUpdate() {
 		return $this->lastUpdate;
@@ -199,9 +198,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method sets LastUpdate.
 	 *
-	 * @access  public
-	 * @param   int  $time  URL of repository WSDL
-	 * @return  void
+	 * @access public
+	 * @param int $time URL of repository WSDL
+	 * @return void
 	 */
 	public function setLastUpdate($time) {
 		$this->lastUpdate = $time;
@@ -210,8 +209,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method returns extension count
 	 *
-	 * @access  public
-	 * @return  int count of read extensions
+	 * @access public
+	 * @return int count of read extensions
 	 */
 	public function getExtensionCount() {
 		return $this->extensionCount;
@@ -220,9 +219,9 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method sets extension count
 	 *
-	 * @access  public
-	 * @param   string  $count count of read extensions
-	 * @return  void
+	 * @access public
+	 * @param string $count count of read extensions
+	 * @return void
 	 */
 	public function setExtensionCount($count) {
 		$this->extensionCount = $count;
@@ -233,8 +232,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 *
 	 * Repository mirrors object is passed by reference.
 	 *
-	 * @access  public
-	 * @param Tx_Extensionmanager_Domain_Model_Mirrors  $mirrors  instance of Tx_Extensionmanager_Domain_Model_Mirrors
+	 * @access public
+	 * @param Tx_Extensionmanager_Domain_Model_Mirrors $mirrors instance of Tx_Extensionmanager_Domain_Model_Mirrors
 	 * @return void
 	 * @see	 $mirrors, getMirrors(), hasMirrors(), removeMirrors()
 	 */
@@ -246,8 +245,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 * Method returns information if a repository mirrors
 	 * object has been registered to this repository.
 	 *
-	 * @access  public
-	 * @return  boolean  TRUE, if a repository mirrors object has been registered, otherwise FALSE
+	 * @access public
+	 * @return boolean TRUE, if a repository mirrors object has been registered, otherwise FALSE
 	 * @see	 $mirrors, addMirrors(), getMirrors(), removeMirrors()
 	 */
 	public function hasMirrors() {
@@ -261,8 +260,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method returns a repository mirrors object.
 	 *
-	 * @access  public
-	 * @return  Tx_Extensionmanager_Domain_Model_Mirrors  registered instance of Tx_Extensionmanager_Domain_Model_Mirrors class or NULL
+	 * @access public
+	 * @return Tx_Extensionmanager_Domain_Model_Mirrors registered instance of Tx_Extensionmanager_Domain_Model_Mirrors class or NULL
 	 * @see	 $mirrors, addMirrors(), hasMirrors(), removeMirrors()
 	 */
 	public function getMirrors() {
@@ -272,8 +271,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	/**
 	 * Method unregisters a repository mirrors object.
 	 *
-	 * @access  public
-	 * @return  void
+	 * @access public
+	 * @return void
 	 * @see	 $mirrors, addMirrors(), getMirrors(), hasMirrors()
 	 */
 	public function removeMirrors() {

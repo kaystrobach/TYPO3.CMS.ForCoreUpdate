@@ -315,15 +315,14 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * Method updates TYPO3 database with up-to-date
 	 * extension version records.
 	 *
-	 * @access public
 	 * @return boolean TRUE if the extension list was successfully update, FALSE if no update necessary
 	 * @see isExtListUpdateNecessary()
 	 */
-	public function updateExtList() {
+	public function updateExtList()  {
 		$updated = FALSE;
 		$updateNecessity = $this->isExtListUpdateNecessary();
 
-		if ($updateNecessity !== 0) {
+		if ($updateNecessity !== 0 || $forceUpdate === TRUE) {
 				// retrieval of file necessary
 			$tmpBitmask = (self::PROBLEM_EXTENSION_FILE_NOT_EXISTING | self::PROBLEM_EXTENSION_HASH_CHANGED);
 			if (($tmpBitmask & $updateNecessity) > 0) {
