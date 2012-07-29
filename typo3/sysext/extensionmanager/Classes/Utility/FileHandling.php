@@ -71,8 +71,8 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @param $extensionData
 	 * @return void
 	 */
-	public function unpackExtensionFromExtensionDataArray($extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
-		$extensionDir = $this->makeAndClearExtensionDir($extensionData['extKey']);
+	public function unpackExtensionFromExtensionDataArray($extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL, $pathType = 'Local') {
+		$extensionDir = $this->makeAndClearExtensionDir($extensionData['extKey'], $pathType);
 		$files = $this->extractFilesArrayFromExtensionData($extensionData);
 		$directories = $this->extractDirectoriesFromExtensionData($files);
 		$this->createDirectoriesForExtensionFiles($directories, $extensionDir);

@@ -154,6 +154,12 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	protected $dependencies = NULL;
 
+	/**
+	 * @internal
+	 * @var int
+	 */
+	protected $position = 0;
+
 
 	/**
 	 * @param Tx_Extbase_Object_ObjectManager $objectManager
@@ -526,6 +532,20 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function getReviewState() {
 		return $this->reviewState;
+	}
+
+	/**
+	 * @param int $position
+	 */
+	public function setPosition($position) {
+		$this->position = $position;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPosition() {
+		return $this->position;
 	}
 }
 

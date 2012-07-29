@@ -128,7 +128,6 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	}
 
 	/**
-	 * @todo install handling
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
 	 * @return array
 	 */

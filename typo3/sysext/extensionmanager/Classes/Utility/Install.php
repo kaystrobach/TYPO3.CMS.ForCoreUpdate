@@ -224,7 +224,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 *
 	 * @return void
 	 */
-	protected function reloadCaches() {
+	public function reloadCaches() {
 		t3lib_extMgm::removeCacheFiles();
 
 			// Set new extlist / extlistArray for extension load changes at runtime

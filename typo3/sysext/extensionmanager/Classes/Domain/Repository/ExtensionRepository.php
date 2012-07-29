@@ -94,14 +94,13 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 */
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
 		$searchStringForLike = '%' . $searchString . '%';
-
 		$select = 'cache_extensions.*,
 			(
  				(extkey like "' . $searchString . '") * 8 +
 				(extkey like "' . $searchStringForLike . '") * 4 +
 				(title like "' . $searchStringForLike . '") * 2 +
 				(authorname like "' . $searchStringForLike . '")
-			) as rating';
+			) as position';
 		$from = 'cache_extensions';
 		$where = '(
 					extkey = "' . $searchString . '"
@@ -113,10 +112,9 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 					title LIKE "' . $searchStringForLike . '"
 				)
 				AND lastversion=1
-				HAVING rating > 0';
-		$order = 'rating desc';
+				HAVING position > 0';
+		$order = 'position desc';
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $from, $where, '', $order);
-
 		return $this->dataMapper->map('Tx_Extensionmanager_Domain_Model_Extension', $result);
 	}
 

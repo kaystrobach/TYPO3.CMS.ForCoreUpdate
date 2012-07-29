@@ -97,6 +97,23 @@ $TCA['tx_extensionmanager_extension'] = array(
 				'size' => '30',
 			)
 		),
+		'lastversion' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:extensionmanager/Resources/Private/locallang_db.xml:tx_extensionmanager_extension.lastversion',
+			'config' => array(
+				'type' => 'check',
+				'size' => '1',
+			)
+		),
+		'position' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:extensionmanager/Resources/Private/locallang_db.xml:tx_extensionmanager_extension.lastversion',
+			'config' => array(
+				'type' => 'input',
+				'size' => '10',
+				'eval' => 'int'
+			)
+		),
 	),
 	'types' => array(
 		'0' => array('showitem' => 'extensionkey;;;;1-1-1, version, title;;;;2-2-2, description;;;;3-3-3, state, category, lastupdated, updatecomment, authorname, authoremail')

@@ -45,6 +45,11 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	protected $repositoryHelper;
 
 	/**
+	 * @var string
+	 */
+	protected $downloadPath = 'Local';
+
+	/**
 	 * @param Tx_Extensionmanager_Utility_Connection_Ter $terUtility
 	 * @return void
 	 */
@@ -88,9 +93,25 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 			$mirrorUrl
 		);
 		if (isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey']) && is_string($fetchedExtension['extKey'])) {
-			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension, $extension);
+			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension, $extension, $this->getDownloadPath());
 		}
 	}
+
+	/**
+	 * @param string $downloadPath
+	 */
+	public function setDownloadPath($downloadPath) {
+		$this->downloadPath = $downloadPath;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDownloadPath() {
+		return $this->downloadPath;
+	}
+
+
 }
 
 ?>

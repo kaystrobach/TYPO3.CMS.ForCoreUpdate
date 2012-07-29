@@ -91,6 +91,19 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	}
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_Download
+	 */
+	protected $downloadUtility;
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_Download $downloadUtility
+	 * @return void
+	 */
+	public function injectDownloadUtility(Tx_Extensionmanager_Utility_Download $downloadUtility) {
+		$this->downloadUtility = $downloadUtility;
+	}
+
+	/**
 	 * Check extension dependencies
 	 *
 	 * @throws Exception
@@ -133,11 +146,23 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 			throw new Exception('Required argument extension not set.', 1334433342);
 		}
 		$extensionUid = $this->request->getArgument('extension');
+
+		if($this->request->hasArgument('downloadPath')) {
+			$this->downloadUtility->setDownloadPath($this->request->getArgument('downloadPath'));
+		}
 		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
+		$this->prepareExtensionForImport($extension);
 		$result = $this->managementService->resolveDependenciesAndInstall($extension);
 		$this->view->assign('result', $result)
 			->assign('extension', $extension);
+	}
+
+	protected function prepareExtensionForImport($extension) {
+		if (t3lib_extMgm::isLoaded($extension->getExtensionKey())) {
+			t3lib_extMgm::unloadExtension($extension->getExtensionKey());
+			$this->installUtility->reloadCaches();
+		}
 	}
 
 	/**
@@ -152,6 +177,7 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		$extensionKey = $this->request->getArgument('extension');
 		/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
 		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionKey);
+		$this->prepareExtensionForImport($highestTerVersionExtension);
 		$result = $this->managementService->resolveDependenciesAndInstall($highestTerVersionExtension);
 		$this->view->assign('result', $result)
 			->assign('extension', $highestTerVersionExtension);

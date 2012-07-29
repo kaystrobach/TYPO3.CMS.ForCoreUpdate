@@ -2,7 +2,7 @@ jQuery(document).ready(function() {
 	jQuery('#terTable').dataTable({
 		"bJQueryUI":true,
 		"bLengthChange": false,
-		'iDisplayLength': 50,
+		'iDisplayLength': 15,
 		"bStateSave": false,
 		"bInfo": false,
 		"bPaginate": false,
@@ -14,11 +14,12 @@ jQuery(document).ready(function() {
 		"sPaginationType":"full_numbers",
 		"bJQueryUI":true,
 		"bLengthChange": false,
-		'iDisplayLength': 50,
+		'iDisplayLength': 15,
 		"bStateSave": false,
 		"oLanguage": {
 			"sSearch": "Filter results:"
 		},
+		"aaSorting": [],
 		"fnDrawCallback": bindDownload
 	});
 	bindDownload();
@@ -31,6 +32,7 @@ function bindDownload() {
 			jQuery(this).attr('href', 'javascript:void(0);');
 			jQuery(this).addClass('transformed');
 			jQuery(this).click(function() {
+				jQuery('#typo3-extension-manager').mask();
 				jQuery.ajax({
 					url: jQuery(this).data('href'),
 					dataType: 'json',
@@ -65,6 +67,7 @@ function getResolveDependenciesAndInstallResult(button, dummy, dialog) {
 			url: newUrl,
 			dataType: 'json',
 			success: function (data) {
+				jQuery('#typo3-extension-manager').unmask();
 				var successMessage = 'Your installation of ' + data.extension + ' was successfull. <br />';
 				successMessage += '<br /><h3>Log:</h3>';
 				jQuery.each(data.result, function(index, value) {
@@ -77,5 +80,7 @@ function getResolveDependenciesAndInstallResult(button, dummy, dialog) {
 				TYPO3.Flashmessage.display(TYPO3.Severity.information, data.extension + ' installed.', successMessage, 15);
 			}
 		});
+	} else {
+		jQuery('#typo3-extension-manager').unmask();
 	}
 }
