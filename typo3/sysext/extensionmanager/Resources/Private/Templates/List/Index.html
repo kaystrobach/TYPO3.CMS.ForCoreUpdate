@@ -17,12 +17,13 @@
 	<table id="typo3-extension-list" class="typo3-extension-list">
 		<thead>
 			<tr>
-				<th>Update available</th>
-				<th>Activate / Deactivate</th>
+				<th title="Update">Upd.</th>
+				<th title="Activate / Deactivate">A/D</th>
 				<th>Extension</th>
 				<th>Key</th>
-				<th>State</th>
+				<th>Version</th>
 				<th>Actions</th>
+				<th>State</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -49,20 +50,23 @@
 				<td>
 					<em:toggleExtensionInstallationState extension="{extension}" />
 				</td>
-				<td>
-					{extension.title} ({extension.version})
+				<td title="{extension.description}">
+					<em:image src="../{extension.siteRelPath}/ext_icon.gif" alt="{extension.title}" />{extension.title}
 				</td>
 				<td>
 					{extensionKey}
 				</td>
-				<td class="{extension.state}">
-					{extension.state}
+				<td>
+					{extension.version}
 				</td>
 				<td>
 					<em:configureExtension extension="{extension}" />
 					<em:removeExtension extension="{extension}" />
-					<f:link.action action="downloadExtensionZip" controller="Action" arguments="{extension:extension.key}">Download as zip</f:link.action>
+					<f:link.action action="downloadExtensionZip" controller="Action" arguments="{extension:extension.key}" class="zipDownload">Download as zip</f:link.action>
 					<em:downloadExtensionData extension="{extension}" />
+				</td>
+				<td class="{extension.state}">
+					{extension.state}
 				</td>
 				</tr>
 			</f:for>

@@ -1,6 +1,7 @@
 jQuery(document).ready(function() {
 	manageExtensionListing();
-
+	jQuery('th[title]').tooltip({offset: [-10, -30], position: 'bottom right', tipClass: 'headerTooltip'})
+	jQuery('td[title]').tooltip({offset: [-10, -60], position: 'bottom right'});
 	jQuery("#typo3-extension-configuration-forms ul").tabs("div.category");
 
 });
@@ -35,6 +36,7 @@ function manageExtensionListing() {
 }
 
 function bindActions() {
+	jQuery('td[title], tr[title]').tooltip({offset: [-10, -60], position: 'bottom right'});
 	jQuery('.removeExtension').each(function() {
 		jQuery(this).data('href', jQuery(this).attr('href'));
 		jQuery(this).attr('href', 'javascript:void(0);');
