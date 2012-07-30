@@ -76,7 +76,8 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 		}
 		/** @var $repository Tx_Extensionmanager_Domain_Model_Repository */
 		$repository = $this->repositoryRepository->findOneByUid((int)$this->settings['repositoryUid']);
-		if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
+		//if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
+		if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60)) {
 			$updated = $this->repositoryHelper->updateExtList();
 		}
 		$this->view->assign('updated', $updated)

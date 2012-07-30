@@ -26,25 +26,26 @@ jQuery(document).ready(function() {
 });
 
 function bindDownload() {
-	jQuery('.download').not('.transformed').each(
-		function(){
-			jQuery(this).data('href', jQuery(this).attr('href'));
+	jQuery('.downloadFromTer form').each(function() {
+		jQuery(this).submit(function(){
+			var url = jQuery(this).attr('href');
+				// do this because else form gets send twice - why?
 			jQuery(this).attr('href', 'javascript:void(0);');
-			jQuery(this).addClass('transformed');
-			jQuery(this).click(function() {
-				jQuery('#typo3-extension-manager').mask();
-				jQuery.ajax({
-					url: jQuery(this).data('href'),
-					dataType: 'json',
-					success: getDependencies
-				});
-			})
-		}
-	);
+			var downloadPath = jQuery(this).find('input.downloadPath:checked').val();
+			jQuery.ajax({
+				type: 'POST',
+				url: url,
+				dataType: 'json',
+				data: 'downloadPath=' + downloadPath,
+				success: getDependencies
+			});
+			return false;
+		});
+	});
 }
 
 function getDependencies(data) {
-	if (data.dependencies.length) {
+	if (data.dependencies) {
 		TYPO3.Dialog.QuestionDialog({
 			title: 'Dependencies',
 			msg: data.message,
@@ -58,6 +59,7 @@ function getDependencies(data) {
 		dialog['url'] = data.url;
 		getResolveDependenciesAndInstallResult(button, dummy, dialog)
 	}
+	return false;
 }
 
 function getResolveDependenciesAndInstallResult(button, dummy, dialog) {

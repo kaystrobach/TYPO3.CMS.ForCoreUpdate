@@ -37,7 +37,7 @@ function manageExtensionListing() {
 
 function bindActions() {
 	jQuery('td[title], tr[title]').tooltip({offset: [-10, -60], position: 'bottom right'});
-	jQuery('.removeExtension').each(function() {
+	jQuery('.removeExtension').not('.transformed').each(function() {
 		jQuery(this).data('href', jQuery(this).attr('href'));
 		jQuery(this).attr('href', 'javascript:void(0);');
 		jQuery(this).addClass('transformed');

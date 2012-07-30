@@ -34,20 +34,30 @@
  * @subpackage Controller
  */
 
-class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_FormViewHelper {
 
 	/**
 	 * @var string
 	 */
-	protected $tagName = 'a';
+	protected $tagName = 'form';
 
 	/**
 	 * Renders a download link
 	 *
-	 * @param string $extension
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
 	 * @return string the rendered a tag
 	 */
-	public function render($extension) {
+	public function render(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+		$installPaths = Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallPaths();
+		$pathSelector = '<ul>';
+		foreach ($installPaths as $installPathType => $installPath) {
+			$pathSelector .= '<li>
+				<input type="radio" id="' . $extension->getExtensionKey() .'-downloadPath-' . $installPathType . '" name="' . $this->getFieldNamePrefix('downloadPath') . '[downloadPath]" class="downloadPath" value="' . $installPathType . '"' .
+				($installPathType == 'Local' ? 'checked="checked"' : '') . '/>
+				<label for="' . $extension->getExtensionKey() .'-downloadPath-' . $installPathType . '">' . $installPathType . '</label>
+			</li>';
+		}
+		$pathSelector .= '</ul>';
 		$uriBuilder = $this->controllerContext->getUriBuilder();
 		$action = 'checkDependencies';
 		$uriBuilder->reset();
@@ -56,10 +66,10 @@ class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Flu
 			'extension' => $extension->getUid()
 		), 'Download');
 		$this->tag->addAttribute('href', $uri);
-		$label = 'Import and Install';
-		$this->tag->setContent($label);
+		$label = '<input type="submit" value="Import and Install" />';
+		$this->tag->setContent($label . $pathSelector);
 		$this->tag->addAttribute('class', 'download');
 
-		return $this->tag->render();
+		return '<div id="' . $extension->getExtensionKey() . '-downloadFromTer" class="downloadFromTer">' . $this->tag->render() . '</div>';
 	}
 }
