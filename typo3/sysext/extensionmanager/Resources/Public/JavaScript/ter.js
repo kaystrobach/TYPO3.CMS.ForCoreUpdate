@@ -30,13 +30,11 @@ function bindDownload() {
 		jQuery(this).submit(function(){
 			var url = jQuery(this).attr('href');
 				// do this because else form gets send twice - why?
-			jQuery(this).attr('href', 'javascript:void(0);');
-			var downloadPath = jQuery(this).find('input.downloadPath:checked').val();
+			jQuery(this).attr('href', 'javascript:void();');
+			downloadPath = jQuery(this).find('input.downloadPath:checked').val();
 			jQuery.ajax({
-				type: 'POST',
 				url: url,
 				dataType: 'json',
-				data: 'downloadPath=' + downloadPath,
 				success: getDependencies
 			});
 			return false;
@@ -45,18 +43,18 @@ function bindDownload() {
 }
 
 function getDependencies(data) {
-	if (data.dependencies) {
+	if (data.dependencies.length) {
 		TYPO3.Dialog.QuestionDialog({
 			title: 'Dependencies',
 			msg: data.message,
-			url: data.url,
+			url: data.url + '&tx_extensionmanager_tools_extensionmanagerextensionmanager[downloadPath]=' + downloadPath,
 			fn: getResolveDependenciesAndInstallResult
 		});
 	} else {
 		var button = 'yes';
 		var dialog = new Array();
 		var dummy = '';
-		dialog['url'] = data.url;
+		dialog['url'] = data.url + '&tx_extensionmanager_tools_extensionmanagerextensionmanager[downloadPath]=' + downloadPath;
 		getResolveDependenciesAndInstallResult(button, dummy, dialog)
 	}
 	return false;
@@ -70,16 +68,20 @@ function getResolveDependenciesAndInstallResult(button, dummy, dialog) {
 			dataType: 'json',
 			success: function (data) {
 				jQuery('#typo3-extension-manager').unmask();
-				var successMessage = 'Your installation of ' + data.extension + ' was successfull. <br />';
-				successMessage += '<br /><h3>Log:</h3>';
-				jQuery.each(data.result, function(index, value) {
-					successMessage += 'Extensions ' + index + ':<br /><ul>';
-					jQuery.each(value, function(extkey, extdata) {
-						successMessage += '<li>' + extkey + '</li>';
+				if (data.errorMessage.length) {
+					TYPO3.Flashmessage.display(TYPO3.Severity.error, 'Download Error', data.errorMessage, 5);
+				} else {
+					var successMessage = 'Your installation of ' + data.extension + ' was successfull. <br />';
+					successMessage += '<br /><h3>Log:</h3>';
+					jQuery.each(data.result, function(index, value) {
+						successMessage += 'Extensions ' + index + ':<br /><ul>';
+						jQuery.each(value, function(extkey, extdata) {
+							successMessage += '<li>' + extkey + '</li>';
+						});
+						successMessage += '</ul>';
 					});
-					successMessage += '</ul>';
-				});
-				TYPO3.Flashmessage.display(TYPO3.Severity.information, data.extension + ' installed.', successMessage, 15);
+					TYPO3.Flashmessage.display(TYPO3.Severity.information, data.extension + ' installed.', successMessage, 15);
+				}
 			}
 		});
 	} else {

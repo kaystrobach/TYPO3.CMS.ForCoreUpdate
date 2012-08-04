@@ -71,17 +71,23 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 	public function updateExtensionListFromTerAction() {
 		$updated = FALSE;
 		$forceUpdateCheck = FALSE;
+		$errorMessage = '';
+
 		if ($this->request->hasArgument('forceUpdateCheck') && (int)$this->request->getArgument('forceUpdateCheck') == 1) {
 			$forceUpdateCheck = TRUE;
 		}
 		/** @var $repository Tx_Extensionmanager_Domain_Model_Repository */
 		$repository = $this->repositoryRepository->findOneByUid((int)$this->settings['repositoryUid']);
-		//if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
-		if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60)) {
-			$updated = $this->repositoryHelper->updateExtList();
+		if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
+			try {
+				$updated = $this->repositoryHelper->updateExtList();
+			} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
+				$errorMessage = $e->getMessage();
+			}
 		}
 		$this->view->assign('updated', $updated)
-			->assign('repository', $repository);
+			->assign('repository', $repository)
+			->assign('errorMessage', $errorMessage);
 	}
 
 

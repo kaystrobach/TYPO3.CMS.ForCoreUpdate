@@ -138,27 +138,42 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	/**
 	 * Install an extension from TER
 	 *
-	 * @throws Exception
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
 	public function installFromTerAction() {
-		if (!$this->request->hasArgument('extension')) {
-			throw new Exception('Required argument extension not set.', 1334433342);
-		}
-		$extensionUid = $this->request->getArgument('extension');
+		$result = FALSE;
+		$errorMessage = '';
+		try {
+			if (!$this->request->hasArgument('extension')) {
+				throw new Tx_Extensionmanager_Exception_ExtensionManager('Required argument extension not set.', 1334433342);
+			}
+			$extensionUid = $this->request->getArgument('extension');
 
-		if($this->request->hasArgument('downloadPath')) {
-			$this->downloadUtility->setDownloadPath($this->request->getArgument('downloadPath'));
+			if ($this->request->hasArgument('downloadPath')) {
+				$this->downloadUtility->setDownloadPath($this->request->getArgument('downloadPath'));
+			}
+
+			/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
+			$extension = $this->extensionRepository->findByUid(intval($extensionUid));
+			$this->prepareExtensionForImport($extension);
+			$result = $this->managementService->resolveDependenciesAndInstall($extension);
+		} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
+			$errorMessage = $e->getMessage();
 		}
-		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
-		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
-		$this->prepareExtensionForImport($extension);
-		$result = $this->managementService->resolveDependenciesAndInstall($extension);
 		$this->view->assign('result', $result)
-			->assign('extension', $extension);
+			->assign('extension', $extension)
+			->assign('errorMessage', $errorMessage);
 	}
 
-	protected function prepareExtensionForImport($extension) {
+	/**
+	 * Prepares an extension for import from TER
+	 * Uninstalls the extension if it is already loaded (case: update)
+	 * and reloads the caches.
+	 *
+	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 */
+	protected function prepareExtensionForImport(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		if (t3lib_extMgm::isLoaded($extension->getExtensionKey())) {
 			t3lib_extMgm::unloadExtension($extension->getExtensionKey());
 			$this->installUtility->reloadCaches();
