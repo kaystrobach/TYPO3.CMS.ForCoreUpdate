@@ -149,7 +149,15 @@ $TYPO3_CONF_VARS = array(
 						'cacheTable' => 'cachingframework_cache_pagesection',
 						'tagsTable' => 'cachingframework_cache_pagesection_tags',
 					)
-				)
+				),
+				'cache_rootline' => array(
+					'frontend' => 't3lib_cache_frontend_VariableFrontend',
+					'backend' => 't3lib_cache_backend_DbBackend',
+					'options' => array(
+						'cacheTable' => 'cachingframework_cache_pagesection',
+						'tagsTable' => 'cachingframework_cache_pagesection_tags',
+					)
+				),
 			)
 		),
 		'useCachingFramework' => FALSE,			// Boolean: Enable this if you want to use the caching framework by default for the core caches cache_pages, cache_pagesection and cache_hash.
