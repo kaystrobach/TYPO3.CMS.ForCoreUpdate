@@ -90,6 +90,25 @@ class t3lib_cache {
 	}
 
 	/**
+	 * initializes the cache_rootline cache
+	 *
+	 * @return	void
+	 * @author	Ingo Renner <ingo@typo3.org>
+	 */
+	public static function initRootlineCache() {
+		try {
+			$GLOBALS['typo3CacheFactory']->create(
+				'cache_rootline',
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cache_rootline']['frontend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cache_rootline']['backend'],
+				$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cache_rootline']['options']
+			);
+		} catch (t3lib_cache_exception_DuplicateIdentifier $e) {
+			// do nothing, a cache_pagesection cache already exists
+		}
+	}
+
+	/**
 	 * initializes the cache_hash cache
 	 *
 	 * @return	void

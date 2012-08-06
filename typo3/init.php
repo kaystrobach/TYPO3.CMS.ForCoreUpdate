@@ -240,6 +240,7 @@ if (TYPO3_UseCachingFramework) {
 
 	t3lib_cache::initPageCache();
 	t3lib_cache::initPageSectionCache();
+	t3lib_cache::initRootlineCache();
 	t3lib_cache::initContentHashCache();
 }
 // *************************
