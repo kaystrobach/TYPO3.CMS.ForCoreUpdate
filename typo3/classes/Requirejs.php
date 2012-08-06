@@ -45,17 +45,7 @@ class Typo3_Requirejs {
 	public function getConfigurationForAjaxRequest(array $params, TYPO3AJAX $ajaxObj) {
 		$allConfiguration = $this->getConfiguration();
 
-		$content = 'requirejs.config(' . json_encode($allConfiguration) . ');';
-
-		$content .= '
-
-	// ALWAYS include jQuery Core
-requirejs(["core/jquery/jquery-1.8b1", "core/modernizr/modernizr.min", "core/prototype/prototype"], function($, modernizr) {
-	//jQuery, canvas and the app/sub module are all
-	//loaded and can be used here now.
-});
-';
-
+		$content = 'var require = ' . json_encode($allConfiguration) . ';';
 		$ajaxObj->addContent('configuration', $content);
 		$ajaxObj->setContentFormat('plain');
 	}
@@ -70,13 +60,14 @@ requirejs(["core/jquery/jquery-1.8b1", "core/modernizr/modernizr.min", "core/pro
 
 			// add paths from extensions
 		foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['RequireJS'] as $prefix => $pathName) {
-			$fullPath = t3lib_div::getFileAbsFileName($pathName, TRUE, TRUE);
+			$fullPath = t3lib_div::getFileAbsFileName($pathName, FALSE, TRUE);
 			$fullPath = t3lib_utility_Path::getRelativePath(PATH_typo3, $fullPath);
-			$paths[$prefix] = $fullPath;
+			$paths[$prefix] = rtrim($fullPath, '/');
 		}
 
 
 		$allConfiguration = array(
+			'baseUrl' => t3lib_div::getIndpEnv('TYPO3_SITE_PATH') . TYPO3_mainDir,
 			'paths' => $paths,
 			'waitSeconds' => 15,	// seconds to wait until requirejs marks the request as a timeout
 			'locale' => 'en-gb'
