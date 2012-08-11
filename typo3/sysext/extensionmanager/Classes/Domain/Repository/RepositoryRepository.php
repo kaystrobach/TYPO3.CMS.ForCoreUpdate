@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
+ *  (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,6 +24,10 @@
 
 /**
  * A repository for extension repositories
+ *
+ * @author Susanne Moog <typo3@susannemoog.de>
+ * @package Extension Manager
+ * @subpackage Repository
  */
 class Tx_Extensionmanager_Domain_Repository_RepositoryRepository extends Tx_Extbase_Persistence_Repository {
 

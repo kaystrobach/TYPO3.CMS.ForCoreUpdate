@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -16,7 +16,6 @@
  *  A copy is found in the textfile GPL.txt and important notices to the license
  *  from the author is found in LICENSE.txt distributed with these scripts.
  *
- *
  *  This script is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,16 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 /**
- * Main extension model
+ * Main model for extension configuration categories
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
  * @subpackage Model
  */
-
-
 class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
@@ -62,6 +58,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 
 	/**
 	 * @param \Tx_Extbase_Persistence_ObjectStorage $subcategories
+	 * @return void
 	 */
 	public function setSubcategories($subcategories) {
 		$this->subcategories = $subcategories;
@@ -86,6 +83,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 
 	/**
 	 * @param string $name
+	 * @return void
 	 */
 	public function setName($name) {
 		$this->name = $name;
@@ -100,6 +98,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 
 	/**
 	 * @param string $highlightText
+	 * @return void
 	 */
 	public function setHighlightText($highlightText) {
 		$this->highlightText = $highlightText;
@@ -112,3 +111,4 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 		return $this->highlightText;
 	}
 }
+?>

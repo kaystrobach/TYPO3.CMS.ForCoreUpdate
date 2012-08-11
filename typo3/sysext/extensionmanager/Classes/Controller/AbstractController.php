@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,9 +25,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 /**
- * action controller.
+ * abstract action controller.
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
@@ -36,7 +35,7 @@
 class Tx_Extensionmanager_Controller_AbstractController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	/**
-	 * Resolve view and initialize som general view-variables
+	 * Resolve view and initialize some general view-variables
 	 *
 	 * @return Tx_Fluid_View_TemplateView
 	 */
@@ -44,7 +43,6 @@ class Tx_Extensionmanager_Controller_AbstractController extends Tx_Extbase_MVC_C
 		$view = parent::resolveView();
 		$view->assignMultiple(array(
 			'extensionName' => $this->request->getControllerExtensionName(),
-			'pluginName' => $this->request->getPluginName(),
 			'controllerName' => $this->request->getControllerName(),
 			'actionName' => $this->request->getControllerActionName(),
 		));

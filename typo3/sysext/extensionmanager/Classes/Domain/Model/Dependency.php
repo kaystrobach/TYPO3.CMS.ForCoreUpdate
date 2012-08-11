@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -84,6 +84,7 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 
 	/**
 	 * @param string $identifier
+	 * @return void
 	 */
 	public function setIdentifier($identifier) {
 		$this->identifier = $identifier;
@@ -98,6 +99,7 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 
 	/**
 	 * @param string $lowestVersion
+	 * @return void
 	 */
 	public function setLowestVersion($lowestVersion) {
 		$this->lowestVersion = $lowestVersion;
@@ -112,6 +114,8 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 
 	/**
 	 * @param string $type
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager if no valid dependency type was given
+	 * @return void
 	 */
 	public function setType($type) {
 		if (in_array($type, self::$dependencyTypes)) {

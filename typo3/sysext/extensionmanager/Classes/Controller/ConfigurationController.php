@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,7 +27,7 @@
 
 
 /**
- * action controller.
+ * Controller for configuration related actions.
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
@@ -44,10 +44,18 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 	 * @param Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
 	 * @return void
 	 */
-	public function injectConfigurationItemRepository(Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository){
+	public function injectConfigurationItemRepository(
+		Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
+	) {
 		$this->configurationItemRepository = $configurationItemRepository;
 	}
 
+	/**
+	 * Show the extension configuration form. The whole form field handling is done
+	 * in the corresponding view helper
+	 *
+	 * @return void
+	 */
 	public function showConfigurationFormAction() {
 		$extension = $this->request->getArgument('extension');
 		$extension = array_merge($extension, $GLOBALS['TYPO3_LOADED_EXT'][$extension['key']]);
@@ -58,8 +66,11 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 	}
 
 	/**
-	 * @param array $config
-	 * @param string $extensionKey
+	 * Save configuration to file
+	 * Merges existing with new configuration.
+	 *
+	 * @param array $config The new extension configuration
+	 * @param string $extensionKey The extension key
 	 * @return void
 	 */
 	public function saveAction(array $config, $extensionKey) {
@@ -69,7 +80,7 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 		$newConfiguration = t3lib_div::array_merge_recursive_overrule($currentFullConfiguration, $config);
 
 		$strippedConfiguration = array();
-		foreach($newConfiguration as $configurationKey => $configurationValue) {
+		foreach ($newConfiguration as $configurationKey => $configurationValue) {
 			$strippedConfiguration[$configurationKey]['value'] = $configurationValue['value'];
 		}
 

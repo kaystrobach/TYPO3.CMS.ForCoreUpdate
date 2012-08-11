@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,9 +27,9 @@
 
 
 /**
- * action controller.
+ * Controller for actions related to the TER download of an extension
  *
- * @author Susanne Moog <typo3@susannemoog.de>
+ * @author Susanne Moog, <typo3@susannemoog.de>
  * @package Extension Manager
  * @subpackage Controller
  */
@@ -172,6 +172,7 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	 * and reloads the caches.
 	 *
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @return void
 	 */
 	protected function prepareExtensionForImport(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		if (t3lib_extMgm::isLoaded($extension->getExtensionKey())) {
@@ -199,7 +200,11 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	}
 
 	/**
+	 * Show update comments for extensions that can be updated.
+	 * Fetches update comments for all versions between the current
+	 * installed and the highest version.
 	 *
+	 * @return void
 	 */
 	protected function updateCommentForUpdatableVersionsAction() {
 		$extensionKey = $this->request->getArgument('extension');
@@ -215,6 +220,5 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 			->assign('extensionKey', $extensionKey);
 	}
 
-
-
 }
+?>

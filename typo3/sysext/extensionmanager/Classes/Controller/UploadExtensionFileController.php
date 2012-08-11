@@ -26,7 +26,8 @@
  ***************************************************************/
 
 /**
- * action controller.
+ * Controller for handling upload of a local extension file
+ * Handles .t3x or .zip files
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
@@ -74,7 +75,7 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 	}
 
 	/**
-	 * Update extension list from TER
+	 * Render upload extension form
 	 *
 	 * @return void
 	 */
@@ -83,6 +84,8 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 	}
 
 	/**
+	 * Extract an uploaded file and install the matching extension
+	 *
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
@@ -105,15 +108,21 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		if ($fileExtension === 't3x') {
 			$extensionData = $this->getExtensionFromT3xFile($tempFile);
 		} else {
-
 			$extensionData = $this->getExtensionFromZipFile($tempFile, $fileName);
 		}
 
 		$this->view->assign('extensionKey', $extensionData['extKey']);
 	}
 
-	protected function getExtensionFromT3xFile($tempFile) {
-		$fileContent = t3lib_div::getUrl($tempFile);
+	/**
+	 * Extracts a given t3x file and installs the extension
+	 *
+	 * @param string $file
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return array
+	 */
+	protected function getExtensionFromT3xFile($file) {
+		$fileContent = t3lib_div::getUrl($file);
 		if (!$fileContent) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('File had no or wrong content.', 1342859339);
 		}
@@ -121,12 +130,22 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		if ($extensionData['extKey']) {
 			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($extensionData);
 			$this->installUtility->install($extensionData['extKey']);
-			return $extensionData;
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Decoding the file went wrong. No extension key found', 1342864309);
 		}
+		return $extensionData;
 	}
 
+	/**
+	 * Extracts a given zip file and installs the extension
+	 * As there is no information about the extension key in the zip
+	 * we have to use the file name to get that information
+	 * filename format is expected to be extensionkey_version.zip
+	 *
+	 * @param string $file path to uploaded file
+	 * @param string $fileName filename (basename) of uploaded file
+	 * @return array
+	 */
 	protected function getExtensionFromZipFile($file, $fileName) {
 		$fileNameParts = t3lib_div::revExplode('_', $fileName, 2);
 		$this->fileHandlingUtility->unzip($file, $fileNameParts[0]);

@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,16 +25,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 /**
- * Main extension model
+ * Model for configuration subcategories
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
  * @subpackage Model
  */
-
-
 class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
@@ -57,6 +54,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 
 	/**
 	 * @param Tx_Extbase_Persistence_ObjectStorage $items
+	 * @return void
 	 */
 	public function setItems($items) {
 		$this->items = $items;
@@ -81,6 +79,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 
 	/**
 	 * @param string $name
+	 * @return void
 	 */
 	public function setName($name) {
 		$this->name = $name;
@@ -93,3 +92,4 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 		return $this->name;
 	}
 }
+?>

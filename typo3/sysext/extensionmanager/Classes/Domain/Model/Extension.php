@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 
 /**
  * Main extension model
@@ -342,7 +341,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function getDefaultState($state = NULL) {
 		if (is_null($state)) {
-			return self::$defaultStates;
+			$defaultState = self::$defaultStates;
 		} else {
 			if (is_string($state)) {
 					// default state
@@ -350,7 +349,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 				if (array_key_exists(strtolower($state), self::$defaultStates)) {
 					$stateIndex = self::$defaultStates[strtolower($state)];
 				}
-				return $stateIndex;
+				$defaultState = $stateIndex;
 			} else {
 				if (is_int($state) && $state >= 0) {
 					$stateTitle = array_search($state, self::$defaultStates);
@@ -358,10 +357,11 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 					if (!$stateTitle) {
 						$stateTitle = 'n/a';
 					}
-					return $stateTitle;
+					$defaultState = $stateTitle;
 				}
 			}
 		}
+		return $defaultState;
 	}
 
 	/**
@@ -522,6 +522,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param int $reviewState
+	 * @return void
 	 */
 	public function setReviewState($reviewState) {
 		$this->reviewState = $reviewState;
@@ -536,6 +537,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 
 	/**
 	 * @param int $position
+	 * @return void
 	 */
 	public function setPosition($position) {
 		$this->position = $position;

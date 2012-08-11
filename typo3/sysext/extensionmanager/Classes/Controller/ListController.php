@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,7 +27,7 @@
 
 
 /**
- * action controller.
+ * Controller for extension listings (TER or local extensions)
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
@@ -83,10 +83,12 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * @return void
 	 */
 	public function indexAction() {
-		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
+		$this->pageRenderer->addJsFile('../t3lib/js/extjs/notifications.js');
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(
+			$availableAndInstalledExtensions
+		);
 		$this->view->assign('extensions', $availableAndInstalledExtensions);
 	}
 
@@ -97,7 +99,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	 * @return void
 	 */
 	public function terAction() {
-		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
+		$this->pageRenderer->addJsFile('../t3lib/js/extjs/notifications.js');
 		$search = $this->getSearchParam();
 
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensionsWithAdditionalInformation();

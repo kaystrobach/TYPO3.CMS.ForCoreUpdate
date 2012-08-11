@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,7 +23,11 @@
  ***************************************************************/
 
 /**
- * A repository for extensions
+ * A repository for extension configuration items
+ *
+ * @author Susanne Moog <typo3@susannemoog.de>
+ * @package Extension Manager
+ * @subpackage Repository
  */
 class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 
@@ -45,7 +49,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	/**
 	 * Find configuration options by extension
 	 *
-	 * @param array $extension
+	 * @param array $extension array with extension information
 	 * @return null|SplObjectStorage
 	 */
 	public function findByExtension(array $extension) {
@@ -57,27 +61,49 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		return $configurationObjectStorage;
 	}
 
-	protected function convertRawConfigurationToObject($configRaw, $extension) {
+	/**
+	 * Converts the raw configuration file content to an configuration object storage
+	 *
+	 * @param string $configRaw
+	 * @param array $extension array with extension information
+	 * @return SplObjectStorage
+	 */
+	protected function convertRawConfigurationToObject($configRaw, array $extension) {
 		$defaultConfiguration = $this->createArrayFromConstants($configRaw, $extension);
 		$metaInformation = $this->addMetaInformation($defaultConfiguration);
 		$configuration = $this->mergeWithExistingConfiguration($defaultConfiguration, $extension);
 		$hierarchicConfiguration = array();
 
-		foreach($configuration as $configurationOption) {
-			$hierarchicConfiguration = t3lib_div::array_merge_recursive_overrule($this->buildConfigurationArray($configurationOption, $extension), $hierarchicConfiguration);
+		foreach ($configuration as $configurationOption) {
+			$hierarchicConfiguration = t3lib_div::array_merge_recursive_overrule(
+				$this->buildConfigurationArray($configurationOption, $extension),
+				$hierarchicConfiguration
+			);
 		}
-		$configurationObjectStorage = $this->convertHierarchicArrayToObject(t3lib_div::array_merge_recursive_overrule($hierarchicConfiguration, $metaInformation));
+		$configurationObjectStorage = $this->convertHierarchicArrayToObject(
+			t3lib_div::array_merge_recursive_overrule(
+				$hierarchicConfiguration,
+				$metaInformation
+			)
+		);
 		return $configurationObjectStorage;
 	}
 
+	/**
+	 * Builds a configuration array from each line (option) of the config file
+	 *
+	 * @param string $configurationOption config file line representing one setting
+	 * @param $extension
+	 * @return array
+	 */
 	protected function buildConfigurationArray($configurationOption, $extension) {
 		$hierarchicConfiguration = array();
-		if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'user')) {
+		if (t3lib_div::isFirstPartOfStr($configurationOption['type'], 'user')) {
 			$configurationOption = $this->extractInformationForConfigFieldsOfTypeUser($configurationOption);
-		} else if(t3lib_div::isFirstPartOfStr($configurationOption['type'], 'options')) {
+		} elseif (t3lib_div::isFirstPartOfStr($configurationOption['type'], 'options')) {
 			$configurationOption = $this->extractInformationForConfigFieldsOfTypeOptions($configurationOption);
 		}
-		if(Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key'])) {
+		if (Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key'])) {
 			$configurationOption['label'] = Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key']);
 		}
 		$configurationOption['labels'] = t3lib_div::trimExplode(
@@ -91,7 +117,14 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		return $hierarchicConfiguration;
 	}
 
-	protected function extractInformationForConfigFieldsOfTypeOptions($configurationOption) {
+	/**
+	 * Extracts additional information for fields of type "options"
+	 * Extracts "type", "label" and values information
+	 *
+	 * @param array $configurationOption
+	 * @return array
+	 */
+	protected function extractInformationForConfigFieldsOfTypeOptions(array $configurationOption) {
 		preg_match('/options\[(.*)\]/is', $configurationOption['type'], $typeMatches);
 		preg_match('/options\[(.*)\]/is', $configurationOption['label'], $labelMatches);
 		$optionValues = explode(',', $typeMatches[1]);
@@ -102,13 +135,27 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		return $configurationOption;
 	}
 
-	protected function extractInformationForConfigFieldsOfTypeUser($configurationOption) {
+	/**
+	 * Extract additional information for fields of type "user"
+	 * Extracts "type" and the function to be called
+	 *
+	 * @param array $configurationOption
+	 * @return array
+	 */
+	protected function extractInformationForConfigFieldsOfTypeUser(array $configurationOption) {
 		preg_match('/user\[(.*)\]/is', $configurationOption['type'], $matches);
 		$configurationOption['generic'] = $matches[1];
 		$configurationOption['type'] = 'user';
 		return $configurationOption;
 	}
 
+	/**
+	 * Gets meta information from configuration array and
+	 * returns only the meta information
+	 *
+	 * @param array $configuration
+	 * @return array
+	 */
 	protected function addMetaInformation(&$configuration) {
 		$metaInformation = $configuration['__meta__'] ? $configuration['__meta__'] : array();
 		unset($configuration['__meta__']);
@@ -133,10 +180,10 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 			$GLOBALS['BACK_PATH']
 		);
 		if (isset($tsStyleConfig->setup['constants']['TSConstantEditor.'])) {
-			foreach($tsStyleConfig->setup['constants']['TSConstantEditor.'] as $category => $highlights) {
+			foreach ($tsStyleConfig->setup['constants']['TSConstantEditor.'] as $category => $highlights) {
 				$theConstants['__meta__'][rtrim($category, '.')]['highlightText'] = $highlights['description'];
-				foreach($highlights as $highlightNumber => $value) {
-					if(rtrim($category, '.') == $theConstants[$value]['cat']) {
+				foreach ($highlights as $highlightNumber => $value) {
+					if (rtrim($category, '.') == $theConstants[$value]['cat']) {
 						$theConstants[$value]['highlight'] = $highlightNumber;
 					}
 				}
@@ -164,60 +211,61 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	 */
 	protected function mergeWithExistingConfiguration(array $configuration, array $extension) {
 		$currentExtensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extension['key']]);
-		if(is_array($currentExtensionConfig)) {
+		if (is_array($currentExtensionConfig)) {
 			$configuration =  t3lib_div::array_merge_recursive_overrule($configuration, $currentExtensionConfig);
 		}
 		return $configuration;
 	}
 
 	/**
-	 * Converts a hierarchic configuration array to an hierarchic object storage structure
+	 * Converts a hierarchic configuration array to an
+	 * hierarchic object storage structure
 	 *
 	 * @param array $configuration
 	 * @return SplObjectStorage
 	 */
 	protected function convertHierarchicArrayToObject(array $configuration) {
 		$configurationObjectStorage = new SplObjectStorage();
-		foreach($configuration as $category => $subcategory) {
+		foreach ($configuration as $category => $subcategory) {
 			/** @var $configurationCategoryObject Tx_Extensionmanager_Domain_Model_ConfigurationCategory */
 			$configurationCategoryObject = $this->objectManager->get('Tx_Extensionmanager_Domain_Model_ConfigurationCategory');
 			$configurationCategoryObject->setName($category);
-			if($subcategory['highlightText']) {
+			if ($subcategory['highlightText']) {
 				$configurationCategoryObject->setHighlightText($subcategory['highlightText']);
 				unset($subcategory['highlightText']);
 			}
-			foreach($subcategory as $subcatName => $configurationItems) {
+			foreach ($subcategory as $subcatName => $configurationItems) {
 				/** @var $configurationSubcategoryObject Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory */
 				$configurationSubcategoryObject = $this->objectManager->get('Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory');
 				$configurationSubcategoryObject->setName($subcatName);
-				foreach($configurationItems as $configurationItem) {
+				foreach ($configurationItems as $configurationItem) {
 					/** @var $configurationObject Tx_Extensionmanager_Domain_Model_ConfigurationItem */
 					$configurationObject = $this->objectManager->get('Tx_Extensionmanager_Domain_Model_ConfigurationItem');
-					if(isset($configurationItem['generic'])) {
+					if (isset($configurationItem['generic'])) {
 						$configurationObject->setGeneric($configurationItem['generic']);
 					}
-					if(isset($configurationItem['cat'])) {
+					if (isset($configurationItem['cat'])) {
 						$configurationObject->setCategory($configurationItem['cat']);
 					}
-					if(isset($configurationItem['subcat_name'])) {
+					if (isset($configurationItem['subcat_name'])) {
 						$configurationObject->setSubCategory($configurationItem['subcat_name']);
 					}
-					if(isset($configurationItem['labels']) && isset($configurationItem['labels'][0])) {
+					if (isset($configurationItem['labels']) && isset($configurationItem['labels'][0])) {
 						$configurationObject->setLabelHeadline($configurationItem['labels'][0]);
 					}
-					if(isset($configurationItem['labels']) && isset($configurationItem['labels'][1])) {
+					if (isset($configurationItem['labels']) && isset($configurationItem['labels'][1])) {
 						$configurationObject->setLabelText($configurationItem['labels'][1]);
 					}
-					if(isset($configurationItem['type'])) {
+					if (isset($configurationItem['type'])) {
 						$configurationObject->setType($configurationItem['type']);
 					}
-					if(isset($configurationItem['name'])) {
+					if (isset($configurationItem['name'])) {
 						$configurationObject->setName($configurationItem['name']);
 					}
-					if(isset($configurationItem['value'])) {
+					if (isset($configurationItem['value'])) {
 						$configurationObject->setValue($configurationItem['value']);
 					}
-					if(isset($configurationItem['highlight'])) {
+					if (isset($configurationItem['highlight'])) {
 						$configurationObject->setHighlight($configurationItem['highlight']);
 					}
 					$configurationSubcategoryObject->addItem($configurationObject);

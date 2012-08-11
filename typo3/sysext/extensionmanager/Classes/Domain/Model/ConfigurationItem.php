@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,14 +27,12 @@
 
 
 /**
- * Main extension model
+ * Model for extension configuration items
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
  * @subpackage Model
  */
-
-
 class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
@@ -84,6 +82,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $category
+	 * @return void
 	 */
 	public function setCategory($category) {
 		$this->category = $category;
@@ -98,6 +97,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $labelHeadline
+	 * @return void
 	 */
 	public function setLabelHeadline($labelHeadline) {
 		$this->labelHeadline = $labelHeadline;
@@ -112,6 +112,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $labelText
+	 * @return void
 	 */
 	public function setLabelText($labelText) {
 		$this->labelText = $labelText;
@@ -126,6 +127,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $subCategory
+	 * @return void
 	 */
 	public function setSubCategory($subCategory) {
 		$this->subCategory = $subCategory;
@@ -140,6 +142,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $type
+	 * @return void
 	 */
 	public function setType($type) {
 		$this->type = $type;
@@ -154,6 +157,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param mixed $userFunc
+	 * @return void
 	 */
 	public function setGeneric($userFunc) {
 		$this->generic = $userFunc;
@@ -168,6 +172,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $name
+	 * @return void
 	 */
 	public function setName($name) {
 		$this->name = $name;
@@ -182,6 +187,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param string $value
+	 * @return void
 	 */
 	public function setValue($value) {
 		$this->value = $value;
@@ -196,6 +202,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 
 	/**
 	 * @param int $highlight
+	 * @return void
 	 */
 	public function setHighlight($highlight) {
 		$this->highlight = $highlight;
@@ -208,3 +215,4 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 		return $this->highlight;
 	}
 }
+?>

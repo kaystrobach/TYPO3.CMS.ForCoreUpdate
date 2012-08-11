@@ -3,7 +3,7 @@
  * Copyright notice
  *
  * (c) 2010 Marcus Krause <marcus#exp2010@t3sec.info>
- *		 Steffen Kamper <info@sk-typo3.de>
+ *          Steffen Kamper <info@sk-typo3.de>
  * All rights reserved
  *
  * This script is part of the TYPO3 project. The TYPO3 project is
@@ -26,12 +26,12 @@
 /**
  * Repository object for extension manager.
  *
- * @author	 Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	 Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  *
- * @since	 2010-02-11
- * @package	 TYPO3
- * @subpackage EM
+ * @since 2010-02-11
+ * @package Extension Manager
+ * @subpackage Model
  */
 class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObject_AbstractEntity {
 
@@ -233,7 +233,7 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 * Repository mirrors object is passed by reference.
 	 *
 	 * @access public
-	 * @param Tx_Extensionmanager_Domain_Model_Mirrors $mirrors instance of Tx_Extensionmanager_Domain_Model_Mirrors
+	 * @param Tx_Extensionmanager_Domain_Model_Mirrors $mirrors mirror list
 	 * @return void
 	 * @see	 $mirrors, getMirrors(), hasMirrors(), removeMirrors()
 	 */
@@ -247,7 +247,7 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 *
 	 * @access public
 	 * @return boolean TRUE, if a repository mirrors object has been registered, otherwise FALSE
-	 * @see	 $mirrors, addMirrors(), getMirrors(), removeMirrors()
+	 * @see $mirrors, addMirrors(), getMirrors(), removeMirrors()
 	 */
 	public function hasMirrors() {
 		$hasMirrors = FALSE;
@@ -261,8 +261,8 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 * Method returns a repository mirrors object.
 	 *
 	 * @access public
-	 * @return Tx_Extensionmanager_Domain_Model_Mirrors registered instance of Tx_Extensionmanager_Domain_Model_Mirrors class or NULL
-	 * @see	 $mirrors, addMirrors(), hasMirrors(), removeMirrors()
+	 * @return Tx_Extensionmanager_Domain_Model_Mirrors mirrors for repository
+	 * @see $mirrors, addMirrors(), hasMirrors(), removeMirrors()
 	 */
 	public function getMirrors() {
 		return $this->hasMirrors() ? $this->mirrors : NULL;
@@ -278,7 +278,6 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	public function removeMirrors() {
 		unset($this->mirrors);
 	}
-
 }
 
 ?>

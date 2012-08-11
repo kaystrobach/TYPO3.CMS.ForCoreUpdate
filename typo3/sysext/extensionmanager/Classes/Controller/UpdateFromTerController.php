@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,9 +25,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 /**
- * action controller.
+ * Controller for actions relating to update of full extension list from TER
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
@@ -50,12 +49,10 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 	 */
 	protected $listUtility;
 
-
 	/**
 	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
 	 */
 	protected $extensionRepository;
-
 
 	/**
 	 * Dependency injection of the Extension Repository
@@ -95,7 +92,6 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 		$this->listUtility = $listUtility;
 	}
 
-
 	/**
 	 * Update extension list from TER
 	 *
@@ -105,7 +101,6 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 		$updated = FALSE;
 		$forceUpdateCheck = FALSE;
 		$errorMessage = '';
-
 		if ($this->request->hasArgument('forceUpdateCheck') && (int)$this->request->getArgument('forceUpdateCheck') == 1) {
 			$forceUpdateCheck = TRUE;
 		}
@@ -118,7 +113,6 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 				$errorMessage = $e->getMessage();
 			}
 		}
-
 		$this->view->assign('updated', $updated)
 			->assign('repository', $repository)
 			->assign('errorMessage', $errorMessage);

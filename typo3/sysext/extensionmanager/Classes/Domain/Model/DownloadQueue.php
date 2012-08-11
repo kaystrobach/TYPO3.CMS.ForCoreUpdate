@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 
 /**
  * Download Queue - storage for extensions to be downloaded
@@ -120,19 +119,32 @@ class Tx_Extensionmanager_Domain_Model_DownloadQueue implements t3lib_Singleton 
 	}
 
 	/**
+	 * Adds an extension to the install queue for later installation
+	 *
 	 * @param string $extensionKey
-	 * return void
+	 * @return void
 	 */
 	public function addExtensionToInstallQueue($extensionKey) {
 		$this->extensionInstallStorage[$extensionKey] = $extensionKey;
 	}
 
+	/**
+	 * Removes an extension from the install queue
+	 *
+	 * @param string $extensionKey
+	 * @return void
+	 */
 	public function removeExtensionFromInstallQueue($extensionKey) {
 		if (array_key_exists($extensionKey, $this->extensionInstallStorage)) {
 			unset($this->extensionInstallStorage[$extensionKey]);
 		}
 	}
 
+	/**
+	 * Gets the extension installation queue
+	 *
+	 * @return array
+	 */
 	public function getExtensionInstallStorage() {
 		return $this->extensionInstallStorage;
 	}

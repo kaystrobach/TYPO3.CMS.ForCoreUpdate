@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,6 +24,10 @@
 
 /**
  * A repository for extensions
+ *
+ * @author Susanne Moog <typo3@susannemoog.de>
+ * @package Extension Manager
+ * @subpackage Repository
  */
 class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persistence_Repository {
 
@@ -42,12 +46,22 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		$this->dataMapper = $dataMapper;
 	}
 
+	/**
+	 * Count all extensions
+	 *
+	 * @return int
+	 */
 	public function countAll() {
 		$query = $this->createQuery();
 		$query = $this->addDefaultConstraints($query);
 		return $query->execute()->count();
 	}
 
+	/**
+	 * Finds all extensions
+	 *
+	 * @return array|Tx_Extbase_Persistence_QueryResultInterface
+	 */
 	public function findAll() {
 		$query = $this->createQuery();
 		$query = $this->addDefaultConstraints($query);
@@ -55,6 +69,8 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 	/**
+	 * Find an extension by extension key ordered by version
+	 *
 	 * @param string $extensionKey
 	 * @return Tx_Extbase_Persistence_QueryResultInterface
 	 */
@@ -71,6 +87,8 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 	/**
+	 * Find one extension by extension key and version
+	 *
 	 * @param string $extensionKey
 	 * @param string $version (example: 4.3.10)
 	 * @return array|Tx_Extbase_Persistence_QueryResultInterface
@@ -89,7 +107,12 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 	/**
-	 * @param $searchString
+	 * Find an extension by title, author name or extension key
+	 * This is the function used by the TER search. It is using a
+	 * scoring for the matches to sort the extension with an
+	 * exact key match on top
+	 *
+	 * @param $searchString the string to search for
 	 * @return mixed
 	 */
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
@@ -119,6 +142,8 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 	/**
+	 * Find an extension between a certain version range ordered by version number
+	 *
 	 * @param string $extensionKey
 	 * @param integer $lowestVersion
 	 * @param integer $highestVersion
@@ -164,6 +189,8 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 	/**
+	 * Count extensions with a certain key between a given version range
+	 *
 	 * @param string $extensionKey
 	 * @param integer $lowestVersion
 	 * @param integer $highestVersion
@@ -226,7 +253,9 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 			foreach ($groupedRows as $row) {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 					'cache_extensions',
-					'extkey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['extkey'], 'cache_extensions') . ' AND intversion=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['maxintversion'], 'cache_extensions') . ' AND repository=' . intval($repositoryUid),
+					'extkey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['extkey'], 'cache_extensions') .
+						' AND intversion=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['maxintversion'], 'cache_extensions') .
+						' AND repository=' . intval($repositoryUid),
 					array('lastversion' => 1)
 				);
 			}
@@ -235,7 +264,13 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		return $extensions;
 	}
 
-
+	/**
+	 * Adds default constraints to the query - in this case it
+	 * enables us to always just search for the latest version of an extension
+	 *
+	 * @param Tx_Extbase_Persistence_Query $query the query to adjust
+	 * @return Tx_Extbase_Persistence_Query
+	 */
 	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {
 		if($query->getConstraint()) {
 			$query->matching(

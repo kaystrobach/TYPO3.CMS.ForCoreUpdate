@@ -24,10 +24,10 @@
 
 
 /**
- * An exception when something is wrong with the file handling
+ * An exception when something is wrong within the extension manager
  *
- * @package TYPO3
- * @subpackage t3lib_file
+ * @package Extension Manager
+ * @subpackage Exception
  */
 class Tx_Extensionmanager_Exception_ExtensionManager extends t3lib_exception {
 
