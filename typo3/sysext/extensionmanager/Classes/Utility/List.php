@@ -159,6 +159,12 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 		}
 		return $extensions;
 	}
+
+	public function getAvailableAndInstalledExtensionsWithAdditionalInformation() {
+		$availableExtensions = $this->getAvailableExtensions();
+		$availableAndInstalledExtensions = $this->getAvailableAndInstalledExtensions($availableExtensions);
+		return $this->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
+	}
 }
 
 ?>

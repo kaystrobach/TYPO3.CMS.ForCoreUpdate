@@ -100,9 +100,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
 		$search = $this->getSearchParam();
 
-		$availableExtensions = $this->listUtility->getAvailableExtensions();
-		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensionsWithAdditionalInformation();
 
 		if (is_string($search) && !empty($search)) {
 			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);

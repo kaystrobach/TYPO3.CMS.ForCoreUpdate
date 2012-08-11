@@ -46,22 +46,55 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 	protected $repositoryRepository;
 
 	/**
+	 * @var Tx_Extensionmanager_Utility_List
+	 */
+	protected $listUtility;
+
+
+	/**
+	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 */
+	protected $extensionRepository;
+
+
+	/**
+	 * Dependency injection of the Extension Repository
+	 *
+	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @return void
+	 */
+	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+		$this->extensionRepository = $extensionRepository;
+	}
+
+	/**
 	 * Dependency injection of the Repository Helper Utility
 	 *
 	 * @param Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper
 	 * @return void
 	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper) {
+	public function injectRepositoryHelper(Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper) {
 		$this->repositoryHelper = $repositoryHelper;
 	}
 
 	/**
+	 * Dependency injection of repository repository
+	 *
 	 * @param Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository
 	 * @return void
 	 */
 	public function injectRepositoryRepository(Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository) {
 		$this->repositoryRepository = $repositoryRepository;
 	}
+
+	/**
+	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @return void
+	 */
+	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+		$this->listUtility = $listUtility;
+	}
+
 
 	/**
 	 * Update extension list from TER
@@ -81,16 +114,16 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 		if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
 			try {
 				$updated = $this->repositoryHelper->updateExtList();
+				$updated = TRUE;
 			} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
 				$errorMessage = $e->getMessage();
 			}
 		}
+
 		$this->view->assign('updated', $updated)
 			->assign('repository', $repository)
 			->assign('errorMessage', $errorMessage);
 	}
-
-
 
 
 }
