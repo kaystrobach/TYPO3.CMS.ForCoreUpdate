@@ -114,7 +114,6 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 		if ($repository->getLastUpdate() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
 			try {
 				$updated = $this->repositoryHelper->updateExtList();
-				$updated = TRUE;
 			} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
 				$errorMessage = $e->getMessage();
 			}
@@ -125,5 +124,5 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 			->assign('errorMessage', $errorMessage);
 	}
 
-
 }
+?>

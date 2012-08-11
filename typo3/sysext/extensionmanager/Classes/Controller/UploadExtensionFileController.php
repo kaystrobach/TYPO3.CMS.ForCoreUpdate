@@ -88,7 +88,13 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 	 */
 	public function extractAction() {
 		$file = $_FILES['tx_extensionmanager_tools_extensionmanagerextensionmanager'];
-		if (isset($file['name']['extensionFile']) && pathinfo($file['name']['extensionFile'], PATHINFO_EXTENSION) !== 't3x') {
+		$fileExtension = pathinfo($file['name']['extensionFile'], PATHINFO_EXTENSION);
+		$fileName = pathinfo($file['name']['extensionFile'], PATHINFO_BASENAME);
+		if (isset($file['name']['extensionFile']) && (
+				$fileExtension !== 't3x' &&
+				$fileExtension !== 'zip'
+			)
+		) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Wrong file format given.', 1342858853);
 		}
 		if (isset($file['tmp_name']['extensionFile'])) {
@@ -96,6 +102,17 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Creating temporary file failed.', 1342864339);
 		}
+		if ($fileExtension === 't3x') {
+			$extensionData = $this->getExtensionFromT3xFile($tempFile);
+		} else {
+
+			$extensionData = $this->getExtensionFromZipFile($tempFile, $fileName);
+		}
+
+		$this->view->assign('extensionKey', $extensionData['extKey']);
+	}
+
+	protected function getExtensionFromT3xFile($tempFile) {
 		$fileContent = t3lib_div::getUrl($tempFile);
 		if (!$fileContent) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('File had no or wrong content.', 1342859339);
@@ -104,13 +121,17 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		if ($extensionData['extKey']) {
 			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($extensionData);
 			$this->installUtility->install($extensionData['extKey']);
+			return $extensionData;
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Decoding the file went wrong. No extension key found', 1342864309);
 		}
-
-		$this->view->assign('extensionKey', $extensionData['extKey']);
 	}
 
-
+	protected function getExtensionFromZipFile($file, $fileName) {
+		$fileNameParts = t3lib_div::revExplode('_', $fileName, 2);
+		$this->fileHandlingUtility->unzip($file, $fileNameParts[0]);
+		$this->installUtility->install($fileNameParts[0]);
+		return array('extKey' => $fileNameParts[0]);
+	}
 }
 ?>
