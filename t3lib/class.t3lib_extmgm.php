@@ -202,8 +202,9 @@ class t3lib_extMgm {
 	 * If the extension is not installed, this function returns an empty string.
 	 *
 	 * @param string $key The key of the extension to look up, must not be empty
+	 * @throws InvalidArgumentException
 	 * @return string The extension version as a string in the format "x.y.z",
-	 *				will be an empty string if the extension is not loaded
+	 * will be an empty string if the extension is not loaded
 	 */
 	public static function getExtensionVersion($key) {
 		if (!is_string($key) || empty($key)) {
