@@ -1,26 +1,7 @@
 <?php
-/*                                                                        *
- * This script is backported from the FLOW3 package "TYPO3.Fluid".        *
- *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU Lesser General Public License, either version 3   *
- *  of the License, or (at your option) any later version.                *
- *                                                                        *
- *                                                                        *
- * This script is distributed in the hope that it will be useful, but     *
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
- * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser       *
- * General Public License for more details.                               *
- *                                                                        *
- * You should have received a copy of the GNU Lesser General Public       *
- * License along with the script.                                         *
- * If not, see http://www.gnu.org/licenses/lgpl.html                      *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
- *                                                                        */
-
 /**
- * View helper which allows you to create extbase based modules in the style of TYPO3 default modules.
+ * View helper which allows you to create extbase based modules in the
+ * style of TYPO3 default modules.
  * Note: This feature is experimental!
  *
  * = Examples =
@@ -63,7 +44,20 @@ class Tx_Extensionmanager_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_Vi
 	 * @see template
 	 * @see t3lib_PageRenderer
 	 */
-	public function render($pageTitle = '', $enableJumpToUrl = TRUE, $enableClickMenu = TRUE, $loadPrototype = TRUE, $loadScriptaculous = FALSE, $scriptaculousModule = '', $loadExtJs = FALSE, $loadExtJsTheme = TRUE, $extJsAdapter = '', $enableExtJsDebug = FALSE, $addCssFiles = array(), $addJsFiles = array()) {
+	public function render(
+		$pageTitle = '',
+		$enableJumpToUrl = TRUE,
+		$enableClickMenu = TRUE,
+		$loadPrototype = TRUE,
+		$loadScriptaculous = FALSE,
+		$scriptaculousModule = '',
+		$loadExtJs = FALSE,
+		$loadExtJsTheme = TRUE,
+		$extJsAdapter = '',
+		$enableExtJsDebug = FALSE,
+		$addCssFiles = array(),
+		$addJsFiles = array()
+	) {
 		$doc = $this->getDocInstance();
 		$pageRenderer = $doc->getPageRenderer();
 
@@ -88,18 +82,18 @@ class Tx_Extensionmanager_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_Vi
 			$pageRenderer->loadScriptaculous($scriptaculousModule);
 		}
 		if ($loadExtJs) {
-			$pageRenderer->loadExtJS(true, $loadExtJsTheme, $extJsAdapter);
+			$pageRenderer->loadExtJS(TRUE, $loadExtJsTheme, $extJsAdapter);
 			if ($enableExtJsDebug) {
 				$pageRenderer->enableExtJsDebug();
 			}
 		}
 		if (is_array($addCssFiles) && count($addCssFiles) > 0) {
-			foreach($addCssFiles as $addCssFile) {
+			foreach ($addCssFiles as $addCssFile) {
 				$pageRenderer->addCssFile($addCssFile);
 			}
 		}
 		if (is_array($addJsFiles) && count($addJsFiles) > 0) {
-			foreach($addJsFiles as $addJsFile) {
+			foreach ($addJsFiles as $addJsFile) {
 				$pageRenderer->addJsFile($addJsFile);
 			}
 		}

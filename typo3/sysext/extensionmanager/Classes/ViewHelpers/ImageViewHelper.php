@@ -1,20 +1,34 @@
 <?php
-
-/*                                                                        *
- * This script is part of the TYPO3 project - inspiring people to share!  *
- *                                                                        *
- * TYPO3 is free software; you can redistribute it and/or modify it under *
- * the terms of the GNU General Public License version 2 as published by  *
- * the Free Software Foundation.                                          *
- *                                                                        *
- * This script is distributed in the hope that it will be useful, but     *
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
- * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
- * Public License for more details.                                       *
- *                                                                        */
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 /**
  * Resizes a given image (if required) and renders the respective img tag
+ * In general just calls the parent image view helper but catches
+ * the "file does not exist" exception thrown by the file abstraction layer
  *
  * = Examples =
  *
@@ -46,7 +60,6 @@ class Tx_Extensionmanager_ViewHelpers_ImageViewHelper extends Tx_Fluid_ViewHelpe
 
 	/**
 	 * Resizes a given image (if required) and renders the respective img tag
-	 * @see http://typo3.org/documentation/document-library/references/doc_core_tsref/4.2.0/view/1/5/#id4164427
 	 *
 	 * @param string $src
 	 * @param string $width width of the image. This can be a numeric value representing the fixed width of the image in pixels. But you can also perform simple calculations by adding "m" or "c" to the value. See imgResource.width for possible options.
@@ -58,7 +71,15 @@ class Tx_Extensionmanager_ViewHelpers_ImageViewHelper extends Tx_Fluid_ViewHelpe
 	 *
 	 * @return string rendered tag.
 	 */
-	public function render($src, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL) {
+	public function render(
+		$src,
+		$width = NULL,
+		$height = NULL,
+		$minWidth = NULL,
+		$minHeight = NULL,
+		$maxWidth = NULL,
+		$maxHeight = NULL
+	) {
 		$image = '';
 		try {
 			$image = parent::render($src, $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight);
@@ -68,3 +89,4 @@ class Tx_Extensionmanager_ViewHelpers_ImageViewHelper extends Tx_Fluid_ViewHelpe
 		return $image;
 	}
 }
+?>

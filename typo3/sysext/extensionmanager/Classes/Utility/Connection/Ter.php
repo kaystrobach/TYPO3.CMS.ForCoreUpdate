@@ -38,7 +38,7 @@
  * @subpackage EM
  */
 class Tx_Extensionmanager_Utility_Connection_Ter {
-	var $wsdlURL;
+	public $wsdlUrl;
 
 	/**
 	 * Fetches an extension from the given mirror
@@ -58,7 +58,11 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 
 		if ($t3x === FALSE) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				sprintf('The T3X file "%s" could not be fetched. Possible reasons: network problems, allow_url_fopen is off, cURL is not enabled in Install Tool.', $mirrorUrl),
+				sprintf(
+					'The T3X file "%s" could not be fetched. Possible reasons: network problems, allow_url_fopen is off,' .
+					' cURL is not enabled in Install Tool.',
+					$mirrorUrl
+				),
 				1334426097
 			);
 		}
@@ -99,16 +103,25 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 				if (function_exists('gzuncompress')) {
 					$dat = gzuncompress($dat);
 				} else {
-					throw new Tx_Extensionmanager_Exception_ExtensionManager('Decoding Error: No decompressor available for compressed content. gzuncompress() function is not available!', 1342859463);
+					throw new Tx_Extensionmanager_Exception_ExtensionManager(
+						'Decoding Error: No decompressor available for compressed content. gzuncompress() function is not available!',
+						1342859463
+					);
 				}
 			}
 			$listArr = unserialize($dat);
 
 			if (!is_array($listArr)) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: Unserialized information was not an array - strange!', 1342859489);
+				throw new Tx_Extensionmanager_Exception_ExtensionManager(
+					'Error: Unserialized information was not an array - strange!',
+					1342859489
+				);
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: MD5 hashes in T3X data did not match!', 1342859505);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				'Error: MD5 hashes in T3X data did not match!',
+				1342859505
+			);
 		}
 		return $listArr;
 	}
@@ -117,28 +130,39 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 	 * Decodes extension upload array.
 	 * This kind of data is when an extension is uploaded to TER
 	 *
-	 * @param	string		Data stream
-	 * @return	mixed		Array with result on success, otherwise an error string.
+	 * @param string $stream Data stream
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return array Array with result on success, otherwise an error string.
 	 */
-	public function decodeExchangeData($str) {
-		$parts = explode(':', $str, 3);
+	public function decodeExchangeData($stream) {
+		$parts = explode(':', $stream, 3);
 		if ($parts[1] == 'gzcompress') {
 			if (function_exists('gzuncompress')) {
 				$parts[2] = gzuncompress($parts[2]);
 			} else {
-				return 'Decoding Error: No decompressor available for compressed content. gzcompress()/gzuncompress() functions are not available!';
+				throw new Tx_Extensionmanager_Exception_ExtensionManager(
+					'Decoding Error: No decompressor available for compressed content. gzcompress()/gzuncompress() ' .
+					'functions are not available!',
+					1344761814
+				);
 			}
 		}
 		if (md5($parts[2]) == $parts[0]) {
 			$output = unserialize($parts[2]);
-			if (is_array($output)) {
-				return $output;
-			} else {
-				return 'Error: Content could not be unserialized to an array. Strange (since MD5 hashes match!)';
+			if (!is_array($output)) {
+				throw new Tx_Extensionmanager_Exception_ExtensionManager(
+					'Error: Content could not be unserialized to an array. Strange (since MD5 hashes match!)',
+					1344761938
+				);
 			}
 		} else {
-			return 'Error: MD5 mismatch. Maybe the extension file was downloaded and saved as a text file by the browser and thereby corrupted!? (Always select "All" filetype when saving extensions)';
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				'Error: MD5 mismatch. Maybe the extension file was downloaded and saved as a text file by the ' .
+				'browser and thereby corrupted!? (Always select "All" filetype when saving extensions)',
+				1344761991
+			);
 		}
+		return $output;
 	}
 
 }

@@ -98,13 +98,25 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	}
 
 	/**
+	 * Set the download path
+	 *
 	 * @param string $downloadPath
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
 	 */
 	public function setDownloadPath($downloadPath) {
+		if (!in_array($downloadPath, Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallTypes())) {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(
+				htmlspecialchars($downloadPath) . ' not in allowed download paths',
+				1344766387
+			);
+		}
 		$this->downloadPath = $downloadPath;
 	}
 
 	/**
+	 * Get the download path
+	 *
 	 * @return string
 	 */
 	public function getDownloadPath() {

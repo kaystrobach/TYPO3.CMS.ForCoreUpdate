@@ -2,7 +2,7 @@
 /***************************************************************
  * Copyright notice
  *
- * (c) 2012
+ * (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
  * All rights reserved
  *
  * This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,8 +25,8 @@
 /**
  * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
  *
- * @package TYPO3
- * @subpackage extensionmanager
+ * @package Extension Manager
+ * @subpackage Tests
  */
 class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	/**
@@ -36,6 +36,9 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 
 	private $loadedExtensions = array();
 
+	/**
+	 * @return void
+	 */
 	public function setUp() {
 		$this->fixture = new Tx_Extensionmanager_Utility_List();
 		$this->loadedExtensions = $GLOBALS['TYPO3_LOADED_EXT'];
@@ -48,6 +51,9 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 		);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function tearDown() {
 		unset($this->fixture);
 		$GLOBALS['TYPO3_LOADED_EXT'] = $this->loadedExtensions;
@@ -68,11 +74,11 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 					'rsaauth' =>  array(),
 				),
 				array(
-					'cms' => array('installed' => true),
-					'lang' => array('installed' => true),
-					'news' => array('installed' => true),
-					'saltedpasswords' => array('installed' => true),
-					'rsaauth' => array('installed' => true),
+					'cms' => array('installed' => TRUE),
+					'lang' => array('installed' => TRUE),
+					'news' => array('installed' => TRUE),
+					'saltedpasswords' => array('installed' => TRUE),
+					'rsaauth' => array('installed' => TRUE),
 				)
 			),
 			'different extension lists' => array(
@@ -84,11 +90,11 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 					'rsaauth' => array(),
 				),
 				array(
-					'cms' => array('installed' => true),
-					'lang' => array('installed' => true),
-					'news' => array('installed' => true),
-					'saltedpasswords' => array('installed' => true),
-					'rsaauth' => array('installed' => true),
+					'cms' => array('installed' => TRUE),
+					'lang' => array('installed' => TRUE),
+					'news' => array('installed' => TRUE),
+					'saltedpasswords' => array('installed' => TRUE),
+					'rsaauth' => array('installed' => TRUE),
 				),
 			),
 			'different extension lists - set2' => array(
@@ -101,11 +107,11 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 					'em' => array(),
 				),
 				array(
-					'cms' => array('installed' => true),
-					'lang' => array('installed' => true),
-					'news' => array('installed' => true),
-					'saltedpasswords' => array('installed' => true),
-					'rsaauth' => array('installed' => true),
+					'cms' => array('installed' => TRUE),
+					'lang' => array('installed' => TRUE),
+					'news' => array('installed' => TRUE),
+					'saltedpasswords' => array('installed' => TRUE),
+					'rsaauth' => array('installed' => TRUE),
 					'em' => array(),
 				)
 			),
@@ -120,22 +126,24 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 					'em' => array(),
 				),
 				array(
-					'cms' => array('installed' => true),
-					'lang' => array('installed' => true),
+					'cms' => array('installed' => TRUE),
+					'lang' => array('installed' => TRUE),
 					'fluid' => array(),
-					'news' => array('installed' => true),
-					'saltedpasswords' => array('installed' => true),
-					'rsaauth' => array('installed' => true),
+					'news' => array('installed' => TRUE),
+					'saltedpasswords' => array('installed' => TRUE),
+					'rsaauth' => array('installed' => TRUE),
 					'em' => array(),
 				)
 			)
 		);
 	}
 
-
 	/**
 	 * @test
 	 * @dataProvider getAvailableAndInstalledExtensionsDataProvider
+	 * @param $availableExtensions
+	 * @param $expectedResult
+	 * @return void
 	 */
 	public function getAvailableAndInstalledExtensionsTest($availableExtensions, $expectedResult) {
 		$this->assertEquals($expectedResult, $this->fixture->getAvailableAndInstalledExtensions($availableExtensions));
@@ -167,13 +175,19 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 		);
 	}
 
-
 	/**
 	 * @test
 	 * @dataProvider enrichExtensionsWithEmConfInformationDataProvider
+	 * @param $extensions
+	 * @param $emConf
+	 * @param $expectedResult
+	 * @return void
 	 */
 	public function enrichExtensionsWithEmConfInformation($extensions, $emConf, $expectedResult) {
-		$this->fixture->extensionRepository = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Repository_ExtensionRepository', array('findOneByExtensionKeyAndVersion'));
+		$this->fixture->extensionRepository = $this->getAccessibleMock(
+			'Tx_Extensionmanager_Domain_Repository_ExtensionRepository',
+			array('findOneByExtensionKeyAndVersion')
+		);
 		$this->fixture->emConfUtility = $this->getMock('Tx_Extensionmanager_Utility_EmConf');
 		$this->fixture->emConfUtility->expects($this->any())->method('includeEmConf')->will($this->returnValue($emConf));
 		$this->assertEquals($expectedResult, $this->fixture->enrichExtensionsWithEmConfAndTerInformation($extensions));

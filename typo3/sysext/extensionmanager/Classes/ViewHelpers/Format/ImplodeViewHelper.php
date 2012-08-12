@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Susanne Moog <typo3@susannemoog.de>
+ *  (c) 2012 Susanne Moog, <typo3@susannemoog.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,7 +25,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Extensionmanager_ViewHelpers_Format_ImplodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+/**
+ * View Helper for imploding arrays
+ *
+ * @author Susanne Moog <typo3@susannemoog.de>
+ * @package Extension Manager
+ * @subpackage ViewHelpers
+ */
+class Tx_Extensionmanager_ViewHelpers_Format_ImplodeViewHelper
+	extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
 	 * Implodes a string

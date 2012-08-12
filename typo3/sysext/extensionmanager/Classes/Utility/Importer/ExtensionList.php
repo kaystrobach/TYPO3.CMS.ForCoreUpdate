@@ -1,26 +1,26 @@
 <?php
 /***************************************************************
- *  Copyright notice
+ * Copyright notice
  *
- *  (c) 2010 Marcus Krause <marcus#exp2010@t3sec.info>
- *           Steffen Kamper <info@sk-typo3.de>
- *  All rights reserved
+ * (c) 2010 Marcus Krause <marcus#exp2010@t3sec.info>
+ * Steffen Kamper <info@sk-typo3.de>
+ * All rights reserved
  *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This script is part of the TYPO3 project. The TYPO3 project is
+ * free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
+ * The GNU General Public License can be found at
+ * http://www.gnu.org/copyleft/gpl.html.
  *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This script is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- *  This copyright notice MUST APPEAR in all copies of the script!
+ * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 /**
  * Module: Extension manager - Extension list importer
@@ -32,12 +32,12 @@
 /**
  * Importer object for extension list
  *
- * @author      Marcus Krause <marcus#exp2010@t3sec.info>
- * @author      Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  *
- * @since       2010-02-10
- * @package     TYPO3
- * @subpackage  EM
+ * @since 2010-02-10
+ * @package Extension Manager
+ * @subpackage Utility/Importer
  */
 class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver {
 
@@ -58,14 +58,14 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	/**
 	 * Keeps record values to be inserted into database.
 	 *
-	 * @var  array
+	 * @var array
 	 */
 	protected $arrRows = array();
 
 	/**
 	 * Keeps fieldnames of cache_extension table.
 	 *
-	 * @var  array
+	 * @var array
 	 */
 	static protected $fieldNames = array(
 		'extkey',
@@ -92,7 +92,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	/**
 	 * Keeps indexes of fields that should not be quoted.
 	 *
-	 * @var  array
+	 * @var array
 	 */
 	static protected $fieldIndicesNoQuote = array(2, 3, 4, 10, 12, 13, 14, 15);
 
@@ -102,7 +102,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 *
 	 * The UID is necessary for inserting records.
 	 *
-	 * @var  integer
+	 * @var integer
 	 */
 	protected $repositoryUid = 1;
 
@@ -122,39 +122,13 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	protected $extensionModel;
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
-	 * @return void
-	 * @todo does not work :(
-	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
-		$this->extensionRepository = $extensionRepository;
-	}
-
-	/**
-	 * @param Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository
-	 * @todo does not work :(
-	 */
-	public function injectRepositoryRepository(Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository) {
-		$this->repositoryRepository = $repositoryRepository;
-	}
-
-	/**
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extensionModel
-	 * @todo does not work :(
-	 */
-	public function injectExtensionModel(Tx_Extensionmanager_Domain_Model_Extension $extensionModel) {
-		$this->extensionModel = $extensionModel;
-	}
-
-
-	/**
 	 * Class constructor.
 	 *
 	 * Method retrieves and initializes extension XML parser instance.
 	 *
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 */
-	function __construct() {
+	public function __construct() {
 		/** @var $objectManager Tx_Extbase_Object_ObjectManager */
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->repositoryRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_RepositoryRepository');
@@ -172,8 +146,8 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	/**
 	 * Method initializes parsing of extension.xml.gz file.
 	 *
-	 * @param string $localExtensionListFile absolute path to (gzipped) local extension list xml file
-	 * @param integer $repositoryUid UID of repository to be used when inserting records into DB
+	 * @param string $localExtensionListFile absolute path to extension list xml.gz
+	 * @param integer $repositoryUid UID of repository when inserting records into DB
 	 * @return integer total number of imported extension versions
 	 */
 	public function import($localExtensionListFile, $repositoryUid = NULL) {

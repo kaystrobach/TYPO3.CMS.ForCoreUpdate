@@ -29,8 +29,8 @@
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
  *
- * @package TYPO3
- * @subpackage EM
+ * @package Extension Manager
+ * @subpackage Utility/Repository
  */
 class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 
@@ -77,23 +77,6 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
 	 */
 	protected $extensionRepository;
-
-	/**
-	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
-	 * @return void
-	 * @todo does not work :(
-	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
-		$this->extensionRepository = $extensionRepository;
-	}
-
-	/**
-	 * @param Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository
-	 * @todo does not work :(
-	 */
-	public function injectRepositoryRepository(Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository) {
-		$this->repositoryRepository = $repositoryRepository;
-	}
 
 	/**
 	 * Class constructor.
@@ -318,11 +301,11 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @return boolean TRUE if the extension list was successfully update, FALSE if no update necessary
 	 * @see isExtListUpdateNecessary()
 	 */
-	public function updateExtList()  {
+	public function updateExtList() {
 		$updated = FALSE;
 		$updateNecessity = $this->isExtListUpdateNecessary();
 
-		if ($updateNecessity !== 0 || $forceUpdate === TRUE) {
+		if ($updateNecessity !== 0) {
 				// retrieval of file necessary
 			$tmpBitmask = (self::PROBLEM_EXTENSION_FILE_NOT_EXISTING | self::PROBLEM_EXTENSION_HASH_CHANGED);
 			if (($tmpBitmask & $updateNecessity) > 0) {

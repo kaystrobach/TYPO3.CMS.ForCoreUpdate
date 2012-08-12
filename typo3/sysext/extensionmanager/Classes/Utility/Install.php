@@ -88,7 +88,6 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Extensionmanager_Utility_Dependency $dependencyUtility
-	 * @todo does not work...
 	 * @return void
 	 */
 	public function injectDependencyUtility(Tx_Extensionmanager_Utility_Dependency $dependencyUtility) {
@@ -127,13 +126,15 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Helper function to uninstall an extension
 	 *
 	 * @param string $extensionKey
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return void
 	 */
 	public function uninstall($extensionKey) {
 		$dependentExtensions = $this->dependencyUtility->findInstalledExtensionsThatDependOnMe($extensionKey);
 		if (is_array($dependentExtensions) && count($dependentExtensions) > 0) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				'Cannot deactivate extension ' . $extensionKey . ' - The extension(s) ' . implode(',', $dependentExtensions) . ' depend on it',
+				'Cannot deactivate extension ' . $extensionKey . ' - The extension(s) ' . implode(',', $dependentExtensions) .
+				' depend on it',
 				1342554622
 			);
 		} else {
@@ -141,6 +142,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 	}
 
+	/**
+	 * Wrapper function for unloading extensions
+	 *
+	 * @param string $extensionKey
+	 * @return void
+	 */
 	protected function unloadExtension($extensionKey) {
 		t3lib_extMgm::unloadExtension($extensionKey);
 	}
@@ -164,6 +171,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		$this->saveDefaultConfiguration($extension['key']);
 	}
 
+	/**
+	 * Wrapper function for loading extensions
+	 *
+	 * @param string $extensionKey
+	 * @return void
+	 */
 	protected function loadExtension($extensionKey) {
 		t3lib_extMgm::loadExtension($extensionKey);
 	}
@@ -171,7 +184,6 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	/**
 	 * Fetch additional information for an extension key
 	 *
-	 * @todo unit tests
 	 * @param string $extensionKey
 	 * @internal
 	 * @return mixed
@@ -184,7 +196,9 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		} else {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Extension ' . $extensionKey . ' is not available', 1342864081);
 		}
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(array($extensionKey => $extension));
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(
+			array($extensionKey => $extension)
+		);
 		return $availableAndInstalledExtensions[$extensionKey];
 	}
 
@@ -275,7 +289,6 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 	}
 
-
 	/**
 	 * Import static SQL data (normally used for ext_tables_static+adt.sql)
 	 *
@@ -330,6 +343,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		}
 	}
 
+	/**
+	 * Get the data dump for an extension
+	 *
+	 * @param string $extension
+	 * @return array
+	 */
 	public function getExtensionSqlDataDump($extension) {
 		$extension = $this->enrichExtensionWithDetails($extension);
 		$filePrefix = PATH_site . $extension['siteRelPath'];
@@ -338,6 +357,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		return $sqlData;
 	}
 
+	/**
+	 * Gets the sql data dump for a specific sql file (for example ext_tables.sql)
+	 *
+	 * @param string $sqlFile
+	 * @return string
+	 */
 	protected function getSqlDataDumpForFile($sqlFile) {
 		$sqlData = '';
 		if (file_exists($sqlFile)) {
@@ -349,6 +374,8 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	}
 
 	/**
+	 * Checks if an update for an extension is available
+	 *
 	 * @internal
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extensionData
 	 * @return boolean
@@ -356,7 +383,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	public function isUpdateAvailable(Tx_Extensionmanager_Domain_Model_Extension $extensionData) {
 			// Only check for update for TER extensions
 		$version = $extensionData->getIntegerVersion();
-			/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
+		/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
 		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionData->getExtensionKey());
 		if ($highestTerVersionExtension instanceof Tx_Extensionmanager_Domain_Model_Extension) {
 			$highestVersion = $highestTerVersionExtension->getIntegerVersion();

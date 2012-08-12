@@ -31,7 +31,7 @@
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage ViewHelpers
  */
 class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
@@ -69,3 +69,5 @@ class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid
 		return $this->tag->render();
 	}
 }
+
+?>

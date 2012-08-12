@@ -25,10 +25,11 @@
 /**
  * Testcase for the Tx_Extensionmanager_Utility_EmConf class in the TYPO3 Core.
  *
- * @package TYPO3
- * @subpackage extensionmanager
+ * @package Extension Manager
+ * @subpackage Tests
  */
 class Tx_Extensionmanager_Utility_EmConfTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+
 	/**
 	 * Data Provider for construct em conf tests
 	 *

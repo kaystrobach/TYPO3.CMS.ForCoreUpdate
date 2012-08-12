@@ -25,16 +25,18 @@
 /**
  * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
  *
- * @package TYPO3
- * @subpackage extensionmanager
+ * @package Extension Manager
+ * @subpackage Tests
  */
 class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	public $fakedExtensions;
 
-
+	/**
+	 * @return void
+	 */
 	public function tearDown() {
-		foreach ($this->fakedExtensions as $extension => $_dummy) {
+		foreach ($this->fakedExtensions as $extension => $dummy) {
 			t3lib_div::rmdir(PATH_site . 'typo3conf/ext/' . $extension, TRUE);
 		}
 	}
@@ -43,13 +45,14 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 * Creates a fake extension inside typo3temp/. No configuration is created,
 	 * just the folder
 	 *
+	 * @param bool $extkeyOnly
 	 * @return string The extension key
 	 */
 	protected function createFakeExtension($extkeyOnly = FALSE) {
 		$extKey = strtolower(uniqid('testing'));
 
-		$absExtPath = PATH_site . "typo3conf/ext/$extKey/";
-		$relPath = "typo3conf/ext/$extKey/";
+		$absExtPath = PATH_site . 'typo3conf/ext/' . $extKey . '/';
+		$relPath = 'typo3conf/ext/' . $extKey . '/';
 		$this->fakedExtensions[$extKey] = array(
 			'siteRelPath' => $relPath,
 			'siteAbsPath' => $absExtPath
@@ -63,35 +66,48 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function makeAndClearExtensionDirRemovesExtensionDirIfAlreadyExists() {
 		$extKey = $this->createFakeExtension();
-		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('removeDirectory', 'addDirectory'));
-		$fileHandlerMock->expects($this->once())->method('removeDirectory')->with(PATH_site . "typo3conf/ext/$extKey/");
+		$fileHandlerMock = $this->getAccessibleMock(
+			'Tx_Extensionmanager_Utility_FileHandling',
+			array('removeDirectory', 'addDirectory')
+		);
+		$fileHandlerMock->expects($this->once())->method('removeDirectory')->with(PATH_site . 'typo3conf/ext/' . $extKey . '/');
 		$fileHandlerMock->_call('makeAndClearExtensionDir', $extKey);
 	}
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function makeAndClearExtensionDirAddsDir() {
 		$extKey = $this->createFakeExtension();
-		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('removeDirectory', 'addDirectory'));
-		$fileHandlerMock->expects($this->once())->method('addDirectory')->with(PATH_site . "typo3conf/ext/$extKey/");
+		$fileHandlerMock = $this->getAccessibleMock(
+			'Tx_Extensionmanager_Utility_FileHandling',
+			array('removeDirectory', 'addDirectory')
+		);
+		$fileHandlerMock->expects($this->once())->method('addDirectory')->with(PATH_site . 'typo3conf/ext/' . $extKey . '/');
 		$fileHandlerMock->_call('makeAndClearExtensionDir', $extKey);
 	}
 
 	/**
 	 * @test
 	 * @expectedException Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
 	 */
 	public function makeAndClearExtensionDirThrowsExceptionOnInvalidPath() {
-		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('removeDirectory', 'addDirectory'));
+		$fileHandlerMock = $this->getAccessibleMock(
+			'Tx_Extensionmanager_Utility_FileHandling',
+			array('removeDirectory', 'addDirectory')
+		);
 		$fileHandlerMock->_call('makeAndClearExtensionDir', 'testing123', 'fakepath');
 	}
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function addDirectoryAddsDirectory() {
 		$extDirPath = $this->fakedExtensions[$this->createFakeExtension(TRUE)]['siteAbsPath'];
@@ -104,6 +120,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	/**
 	 * @test
 	 * @expectedException Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
 	 */
 	public function addDirectoryThrowsExceptionOnError() {
 		$extDirPath = '/etc/test123/';
@@ -113,6 +130,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function removeDirectoryRemovesDirectory() {
 		$extDirPath = $this->fakedExtensions[$this->createFakeExtension()]['siteAbsPath'];
@@ -125,6 +143,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	/**
 	 * @test
 	 * @expectedException Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
 	 */
 	public function removeDirectoryThrowsExceptionOnError() {
 		$extDirPath = '/etc/test123/';
@@ -134,6 +153,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function unpackExtensionFromExtensionDataArrayCreatesTheExtensionDirectory() {
 		$extensionData = array(
@@ -156,6 +176,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function extractFilesArrayFromExtensionDataReturnsFileArray() {
 		$extensionData = array(
@@ -173,6 +194,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function writeExtensionFilesWritesFiles() {
 		$files = array(
@@ -199,6 +221,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function extractDirectoriesFromExtensionDataExtractsDirectories() {
 		$files = array(
@@ -225,6 +248,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function createDirectoriesForExtensionFilesCreatesDirectories() {
 		$rootPath = $this->fakedExtensions[$this->createFakeExtension()]['siteAbsPath'];
@@ -242,6 +266,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function writeEmConfWritesEmConfFile() {
 		$extKey = $this->createFakeExtension();

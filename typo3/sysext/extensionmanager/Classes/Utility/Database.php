@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
+ *  (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -26,7 +26,7 @@
  ***************************************************************/
 
 /**
- * Utility for dealing with database operations
+ * Utility for dealing with database related operations
  *
  * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager
@@ -151,3 +151,4 @@ class Tx_Extensionmanager_Utility_Database implements t3lib_Singleton {
 		return implode(LF, $lines);
 	}
 }
+?>

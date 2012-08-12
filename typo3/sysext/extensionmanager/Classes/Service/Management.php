@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
+ *  (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -211,11 +211,11 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 
 	/**
 	 *
-	 * @todo check naming and use
+	 *
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
 	 * @return array
 	 */
-	public function getDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function getAndResolveDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 		$installQueue = $this->downloadQueue->getExtensionInstallStorage();
 		if (is_array($installQueue) && count($installQueue) > 0) {

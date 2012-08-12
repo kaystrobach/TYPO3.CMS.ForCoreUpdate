@@ -1,33 +1,33 @@
 <?php
-	/***************************************************************
-	 * Copyright notice
-	 *
-	 * (c) 2012
-	 * All rights reserved
-	 *
-	 * This script is part of the TYPO3 project. The TYPO3 project is
-	 * free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * The GNU General Public License can be found at
-	 * http://www.gnu.org/copyleft/gpl.html.
-	 *
-	 * This script is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * This copyright notice MUST APPEAR in all copies of the script!
-	 ***************************************************************/
+/***************************************************************
+ * Copyright notice
+ *
+ * (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
+ * All rights reserved
+ *
+ * This script is part of the TYPO3 project. The TYPO3 project is
+ * free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * The GNU General Public License can be found at
+ * http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This script is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
-	/**
-	 * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
-	 *
-	 * @package TYPO3
-	 * @subpackage extensionmanager
-	 */
+/**
+ * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
+ *
+ * @package Extension Manager
+ * @subpackage Tests
+ */
 class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	/**
@@ -35,12 +35,18 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	 */
 	public $configurationItemRepository;
 
+	/**
+	 * @return void
+	 */
 	public function setUp() {
 		$className = $this->getConfigurationItemRepositoryMock();
 		$this->configurationItemRepository = new $className;
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getConfigurationItemRepositoryMock() {
 		$className = 'Tx_Extensionmanager_Repository_ConfigurationItemRepositoryMock';
 		if (!class_exists($className, FALSE)) {
@@ -66,6 +72,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function addMetaInformationUnsetsOriginalConfigurationMetaKey() {
 		$configuration = array(
@@ -78,6 +85,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function addMetaInformationReturnsMetaInformation() {
 		$configuration = array(
@@ -88,6 +96,9 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 		$this->assertEquals('metaInformation', $meta);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function extractInformationForConfigFieldsOfTypeUserAddsGenericAndTypeInformationDataProvider() {
 		return array(
 			array(
@@ -136,15 +147,19 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	 * @test
 	 * @dataProvider extractInformationForConfigFieldsOfTypeUserAddsGenericAndTypeInformationDataProvider
 	 * @param $configurationOption
+	 * @return void
 	 */
 	public function extractInformationForConfigFieldsOfTypeUserAddsGenericAndTypeInformation($configurationOption) {
-		$configurationOptionModified = $this->configurationItemRepository->extractInformationForConfigFieldsOfTypeUser($configurationOption);
+		$configurationOptionModified = $this->configurationItemRepository->extractInformationForConfigFieldsOfTypeUser(
+			$configurationOption
+		);
 		$this->assertEquals('user', $configurationOptionModified['type']);
 		$this->assertEquals($configurationOption['comparisonGeneric'], $configurationOptionModified['generic']);
 	}
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function extractInformationForConfigFieldsOfTypeOptionsAddsGenericTypeAndLabelInformation() {
 		$option = array (
@@ -175,6 +190,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function mergeWithExistingConfigurationOverwritesDefaultKeysWithCurrent() {
 		$backupExtConf = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'];
@@ -210,11 +226,17 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 				'enabled' => '0',
 			)
 		);
-		$result = $this->configurationItemRepository->mergeWithExistingConfiguration($defaultConfiguration, array('key' => 'testextensionkey'));
+		$result = $this->configurationItemRepository->mergeWithExistingConfiguration(
+			$defaultConfiguration,
+			array('key' => 'testextensionkey')
+		);
 		$this->assertEquals($expectedResult, $result);
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'] = $backupExtConf;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function createArrayFromConstantsCreatesAnArrayWithMetaInformationDataProvider() {
 		return array(
 			'demo data from salted passwords' => array(
@@ -298,6 +320,11 @@ TSConstantEditor.advancedbackend {
 	/**
 	 * @test
 	 * @dataProvider createArrayFromConstantsCreatesAnArrayWithMetaInformationDataProvider
+	 * @param $raw
+	 * @param $constants
+	 * @param $setupTsConstantEditor
+	 * @param $expected
+	 * @return void
 	 */
 	public function createArrayFromConstantsCreatesAnArrayWithMetaInformation($raw, $constants, $setupTsConstantEditor, $expected) {
 		$tsStyleConfig = $this->getMock('t3lib_tsStyleConfig');
@@ -318,6 +345,6 @@ TSConstantEditor.advancedbackend {
 		$constantsResult = $configurationItemRepositoryMock->createArrayFromConstants($raw, array());
 		$this->assertEquals($expected, $constantsResult);
 	}
-
-
 }
+
+?>

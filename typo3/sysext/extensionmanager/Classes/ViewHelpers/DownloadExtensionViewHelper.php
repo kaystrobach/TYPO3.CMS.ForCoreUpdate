@@ -31,10 +31,10 @@
  *
  * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage ViewHelpers
  */
-
-class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_FormViewHelper {
+class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper
+	extends Tx_Fluid_ViewHelpers_FormViewHelper {
 
 	/**
 	 * @var string

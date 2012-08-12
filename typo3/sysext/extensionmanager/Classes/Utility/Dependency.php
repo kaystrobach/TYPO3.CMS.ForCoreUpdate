@@ -299,7 +299,9 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 		if ($isExtensionDownloadableFromTer === TRUE) {
 			$isDownloadableVersionCompatible = $this->isDownloadableVersionCompatible($dependency);
 			if ($isDownloadableVersionCompatible === TRUE) {
-				$latestCompatibleExtensionByIntegerVersionDependency = $this->getLatestCompatibleExtensionByIntegerVersionDependency($dependency);
+				$latestCompatibleExtensionByIntegerVersionDependency = $this->getLatestCompatibleExtensionByIntegerVersionDependency(
+					$dependency
+				);
 				if ($latestCompatibleExtensionByIntegerVersionDependency instanceof Tx_Extensionmanager_Domain_Model_Extension) {
 					if ($this->isDependentExtensionLoaded($extensionKey)) {
 						$this->managementService->markExtensionForUpdate($latestCompatibleExtensionByIntegerVersionDependency);
@@ -416,7 +418,9 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
 	 * @return Tx_Extensionmanager_Domain_Model_Extension
 	 */
-	protected function getLatestCompatibleExtensionByIntegerVersionDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function getLatestCompatibleExtensionByIntegerVersionDependency(
+		Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	) {
 		$versions = $this->getLowestAndHighestIntegerVersions($dependency);
 		$compatibleDataSets = $this->extensionRepository->findByVersionRangeAndExtensionKeyOrderedByVersion(
 			$dependency->getIdentifier(),
@@ -447,7 +451,9 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	public function findInstalledExtensionsThatDependOnMe($extensionKey) {
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(
+			$availableAndInstalledExtensions
+		);
 		$dependentExtensions = array();
 		foreach ($availableAndInstalledExtensions as $availableAndInstalledExtensionKey => $availableAndInstalledExtension) {
 			if (

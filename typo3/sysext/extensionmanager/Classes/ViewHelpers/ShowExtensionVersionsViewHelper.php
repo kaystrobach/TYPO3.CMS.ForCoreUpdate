@@ -27,11 +27,11 @@
 
 
 /**
- * view helper
+ * Display a link to show all versions of an extension
  *
  * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage ViewHelpers
  */
 class Tx_Extensionmanager_ViewHelpers_ShowExtensionVersionsViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 

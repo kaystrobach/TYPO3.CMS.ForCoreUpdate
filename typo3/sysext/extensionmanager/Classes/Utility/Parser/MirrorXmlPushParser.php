@@ -32,14 +32,15 @@
  * Notice: ext/xml has proven to be buggy with entities.
  * Use at least PHP 5.2.9+ and libxml2 2.7.3+!
  *
- * @author	 Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	 Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  *
- * @since	 2010-11-17
- * @package	 TYPO3
- * @subpackage EM
+ * @since 2010-11-17
+ * @package Extension Manager
+ * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
+class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
+	extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
 
 
 	/**
@@ -49,13 +50,11 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 	 */
 	protected $observers = array();
 
-
 	/**
 	 * Class constructor.
 	 *
-	 * @return void
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->requiredPhpExtensions = 'xml';
 
 		if ($this->isAvailable()) {
@@ -119,7 +118,10 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 
 	/**
 	 * Method is invoked when parser accesses end tag of an element.
+	 * Although the first parameter seems unused, it needs to be there for
+	 * adherence to the API of xml_set_element_handler
 	 *
+	 * @see xml_set_element_handler
 	 * @param resource $parser parser resource
 	 * @param string $elementName element name at parser's current position
 	 * @return void
@@ -137,7 +139,10 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 
 	/**
 	 * Method is invoked when parser accesses any character other than elements.
+	 * Although the first parameter seems unused, it needs to be there for
+	 * adherence to the API of xml_set_character_data_handler
 	 *
+	 * @see xml_set_character_data_handler
 	 * @param resource $parser parser resource
 	 * @param string $data an element's value
 	 * @return void
@@ -166,6 +171,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 				case 'logo':
 					$this->sponsorlogo = $data;
 					break;
+				default:
 			}
 		}
 	}

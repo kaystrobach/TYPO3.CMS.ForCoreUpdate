@@ -1,33 +1,33 @@
 <?php
-	/***************************************************************
-	 * Copyright notice
-	 *
-	 * (c) 2012
-	 * All rights reserved
-	 *
-	 * This script is part of the TYPO3 project. The TYPO3 project is
-	 * free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * The GNU General Public License can be found at
-	 * http://www.gnu.org/copyleft/gpl.html.
-	 *
-	 * This script is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * This copyright notice MUST APPEAR in all copies of the script!
-	 ***************************************************************/
+/***************************************************************
+ * Copyright notice
+ *
+ * (c) 2012 Susanne Moog, <typo3@susannemoog.de>
+ * All rights reserved
+ *
+ * This script is part of the TYPO3 project. The TYPO3 project is
+ * free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * The GNU General Public License can be found at
+ * http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This script is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
-	/**
-	 * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
-	 *
-	 * @package TYPO3
-	 * @subpackage extensionmanager
-	 */
+/**
+ * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
+ *
+ * @package Extension Manager
+ * @subpackage Tests
+ */
 class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	/**
@@ -47,6 +47,7 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function updateExtensionListFromTerCallsUpdateExtListIfLastUpdateIsMoreThan24HoursAgo() {
 		$controllerMock = $this->getAccessibleMock(
@@ -104,6 +105,7 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 
 	/**
 	 * @test
+	 * @return void
 	 */
 	public function updateExtensionListFromTerCallsUpdateExtListIfForceUpdateCheckIsSet() {
 		$controllerMock = $this->getAccessibleMock(
@@ -167,3 +169,4 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 		$controllerMock->updateExtensionListFromTerAction();
 	}
 }
+?>

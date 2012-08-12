@@ -25,13 +25,12 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 /**
- * view helper
+ * View helper for configure extension link
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage ViewHelpers
  */
 class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
@@ -41,13 +40,14 @@ class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fl
 	protected $tagName = 'a';
 
 	/**
-	 * Renders an install link
+	 * Renders a configure extension link if the extension has configuration options
 	 *
 	 * @param string $extension
 	 * @return string the rendered a tag
 	 */
 	public function render($extension) {
-		if($extension['installed'] && file_exists(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt')) {
+		$tag = '';
+		if ($extension['installed'] && file_exists(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt')) {
 			$uriBuilder = $this->controllerContext->getUriBuilder();
 			$action = 'showConfigurationForm';
 			$uri = $uriBuilder
@@ -60,8 +60,9 @@ class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fl
 			$this->tag->addAttribute('href', $uri);
 			$label = 'Configure';
 			$this->tag->setContent($label);
-
-			return $this->tag->render();
+			$tag = $this->tag->render();
 		}
+		return $tag;
 	}
 }
+?>

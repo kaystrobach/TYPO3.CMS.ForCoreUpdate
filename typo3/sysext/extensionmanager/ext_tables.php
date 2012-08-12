@@ -1,5 +1,5 @@
 <?php
-if(!defined('TYPO3_MODE')) {
+if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
@@ -13,7 +13,7 @@ $TCA['tx_extensionmanager_extension'] = array(
 	),
 );
 
-if(TYPO3_MODE === 'BE') {
+if (TYPO3_MODE === 'BE') {
 	Tx_Extbase_Utility_Extension::registerModule(
 		$_EXTKEY,
 		'tools',

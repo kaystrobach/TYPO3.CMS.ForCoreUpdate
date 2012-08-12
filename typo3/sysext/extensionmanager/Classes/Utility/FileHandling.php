@@ -85,13 +85,6 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		$this->writeEmConfToFile($extensionData, $extensionDir, $extension);
 	}
 
-	public function unpackExtensionFromZipFile(
-		Tx_Extensionmanager_Domain_Model_Extension $extension = NULL,
-		$pathType = 'Local'
-	) {
-
-	}
-
 	/**
 	 * Extract needed directories from given extensionDataFilesArray
 	 *
@@ -260,6 +253,8 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	}
 
 	/**
+	 * Create a zip file from an extension
+	 *
 	 * @param array $extension
 	 * @return string
 	 */
@@ -285,7 +280,16 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		return $fileName;
 	}
 
-	public function unzip($file, $fileName, $pathType = 'Local') {
+	/**
+	 * Unzip an extension.zip.
+	 *
+	 * @param string $file path to zip file
+	 * @param string $fileName file name
+	 * @param string $pathType path type (Local, Global, System)
+	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @return void
+	 */
+	public function unzipExtensionFromFile($file, $fileName, $pathType = 'Local') {
 		$extensionDir = $this->makeAndClearExtensionDir($fileName, $pathType);
 		$zip = zip_open($file);
 		if (is_resource($zip)) {
@@ -298,8 +302,10 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 						t3lib_div::mkdir_deep($extensionDir . $dir);
 					}
 					if (strlen(trim($file)) > 0) {
-						$return = t3lib_div::writeFile($extensionDir . $dir . '/' . $file, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
-						if ($return === false) {
+						$return = t3lib_div::writeFile(
+							$extensionDir . $dir . '/' . $file, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry))
+						);
+						if ($return === FALSE) {
 							throw new Tx_Extensionmanager_Exception_ExtensionManager('Could not write file ' . $file, 1344691048);
 						}
 					}

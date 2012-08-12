@@ -169,9 +169,9 @@ class Tx_Extensionmanager_Utility_Parser_ExtensionXmlPushParser extends Tx_Exten
 					// downloadcounter could be a child node of
 					// extension or version
 					if ($this->version == NULL) {
-						$this->extensionDLCounter = $data;
+						$this->extensionDownloadCounter = $data;
 					} else {
-						$this->versionDLCounter = $data;
+						$this->versionDownloadCounter = $data;
 					}
 					break;
 				case 'title':

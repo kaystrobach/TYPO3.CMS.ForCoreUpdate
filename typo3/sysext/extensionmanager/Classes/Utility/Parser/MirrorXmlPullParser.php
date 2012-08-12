@@ -23,30 +23,20 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 /**
- * MirrorXmlPullParser.php
- *
- * Module: Extension manager - mirrors.xml pull-parser
- *
- * @author Marcus Krause <marcus#exp2010@t3sec.info>
- * @author Steffen Kamper <info@sk-typo3.de>
- */
-
-
-/**
  * Parser for TYPO3's mirrors.xml file.
  *
  * Depends on PHP ext/xmlreader which should be available
  * with PHP >= 5.1.0.
  *
- * @author	 Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	 Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @autho Steffen Kamper <info@sk-typo3.de>
  *
- * @since	 2010-02-19
- * @package	 TYPO3
- * @subpackage EM
+ * @sincer 2010-02-19
+ * @package Extension Manager
+ * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
-
+class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
+	extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
 
 	/**
 	 * Keeps list of attached observers.
@@ -55,14 +45,12 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 	 */
 	protected $observers = array();
 
-
 	/**
 	 * Class constructor.
 	 *
 	 * @access public
-	 * @return void
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->requiredPhpExtensions = 'xmlreader';
 
 		if ($this->isAvailable()) {
@@ -133,6 +121,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 			case 'logo':
 				$this->sponsorlogo = $this->getElementValue($elementName);
 				break;
+			default:
 		}
 	}
 
@@ -149,6 +138,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 				$this->notify();
 				$this->resetProperties();
 				break;
+			default:
 		}
 	}
 

@@ -148,7 +148,7 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 	 */
 	protected function getExtensionFromZipFile($file, $fileName) {
 		$fileNameParts = t3lib_div::revExplode('_', $fileName, 2);
-		$this->fileHandlingUtility->unzip($file, $fileNameParts[0]);
+		$this->fileHandlingUtility->unzipExtensionFromFile($file, $fileNameParts[0]);
 		$this->installUtility->install($fileNameParts[0]);
 		return array('extKey' => $fileNameParts[0]);
 	}

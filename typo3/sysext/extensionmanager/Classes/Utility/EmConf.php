@@ -88,6 +88,8 @@ $EM_CONF[$_EXTKEY] = ' . $emConf . ';
 	}
 
 	/**
+	 * Fix the em conf - Converts old / ter em_conf format to new format
+	 *
 	 * @param array $emConf
 	 * @return array
 	 */

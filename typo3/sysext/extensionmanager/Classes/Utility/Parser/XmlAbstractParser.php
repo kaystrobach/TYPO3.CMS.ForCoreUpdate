@@ -22,24 +22,16 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-/**
- * XmlAbstractParser.php
- *
- * Module: Extension manager - Extension.xml abstract parser
- *
- * @author Marcus Krause <marcus#exp2010@t3sec.info>
- * @author Steffen Kamper <info@sk-typo3.de>
- */
 
 /**
  * Abstract parser for EM related TYPO3 xml files.
  *
- * @author	 Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	 Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  *
- * @since	 2010-02-09
- * @package	 TYPO3
- * @subpackage EM
+ * @since 2010-02-09
+ * @package Extension Manager
+ * @subpackage Utility/Parser
  */
 abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 
@@ -72,7 +64,14 @@ abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 		$isAvailable = TRUE;
 		if (!extension_loaded($this->requiredPhpExtensions)) {
 			$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-			if (!((bool) ini_get('enable_dl') && !(bool) ini_get('safe_mode') && function_exists('dl') && dl($prefix . $this->requiredPhpExtensions . PHP_SHLIB_SUFFIX))) {
+			if (
+				!(
+					(bool) ini_get('enable_dl') &&
+					!(bool) ini_get('safe_mode') &&
+					function_exists('dl') &&
+					dl($prefix . $this->requiredPhpExtensions . PHP_SHLIB_SUFFIX)
+				)
+			) {
 				$isAvailable = FALSE;
 			}
 		}
@@ -84,7 +83,6 @@ abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 	 * Method parses an XML file.
 	 *
 	 * @param string $file GZIP stream resource
-	 * @return void
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager in case of XML parser errors
 	 */
 	abstract public function parseXml($file);

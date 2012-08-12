@@ -23,23 +23,14 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 /**
- * XmlParserFactory.php
- *
- * Module: Extension manager - XML parser factory
+ * Factory for XML parsers.
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- */
-
-/**
- * Factory for XML parsers.
  *
- * @author	 Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	 Steffen Kamper <info@sk-typo3.de>
- *
- * @since	 2010-02-10
- * @package	 TYPO3
- * @subpackage EM
+ * @since 2010-02-10
+ * @package Extension Manager
+ * @subpackage Utility/Parser
  */
 class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 
@@ -78,8 +69,6 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 	 *
 	 * This function will return an instance of a class that implements
 	 * Tx_Extensionmanager_ExtensionXmlAbstractParser.
-	 *
-	 * TODO use autoload if possible (might require EM to be moved in a sysext)
 	 *
 	 * @param string $parserType type of parser, one of extension and mirror
 	 * @param string $excludeClassNames (optional) comma-separated list of class names

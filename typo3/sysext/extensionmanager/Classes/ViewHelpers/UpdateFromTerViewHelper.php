@@ -27,11 +27,11 @@
 
 
 /**
- * view helper
+ * Renders a link to update the extension list from TER
  *
  * @author Susanne Moog <susanne.moog@typo3.org>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage ViewHelpers
  */
 class Tx_Extensionmanager_ViewHelpers_UpdateFromTerViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
@@ -41,9 +41,8 @@ class Tx_Extensionmanager_ViewHelpers_UpdateFromTerViewHelper extends Tx_Fluid_V
 	protected $tagName = 'a';
 
 	/**
-	 * Renders a download link
+	 * Renders a link to update extension list from TER
 	 *
-	 * @param string $extension
 	 * @return string the rendered a tag
 	 */
 	public function render() {
@@ -57,7 +56,7 @@ class Tx_Extensionmanager_ViewHelpers_UpdateFromTerViewHelper extends Tx_Fluid_V
 		$this->tag->setContent($label);
 		$this->tag->addAttribute('class', 'text');
 
-		return '<div class="updateFromTer">' . $this->tag->render() . '<span class="spinner"></span></div>' ;
+		return '<div class="updateFromTer">' . $this->tag->render() . '<span class="spinner"></span></div>';
 	}
 }
 

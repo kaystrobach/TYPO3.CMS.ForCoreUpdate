@@ -27,13 +27,14 @@
 
 
 /**
- * view helper
+ * Display a deactivate / activate link
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_ToggleExtensionInstallationStateViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class Tx_Extensionmanager_ViewHelpers_ToggleExtensionInstallationStateViewHelper
+	extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
 
 	/**
 	 * @var string
@@ -61,3 +62,5 @@ class Tx_Extensionmanager_ViewHelpers_ToggleExtensionInstallationStateViewHelper
 		return $this->tag->render();
 	}
 }
+
+?>

@@ -33,12 +33,12 @@
 /**
  * Importer object for mirror list.
  *
- * @author	  Marcus Krause <marcus#exp2010@t3sec.info>
- * @author	  Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  *
- * @since	   2010-02-10
- * @package	 TYPO3
- * @subpackage  EM
+ * @since 2010-02-10
+ * @package Extension Manager
+ * @subpackage Utility/Importer
  */
 class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 
@@ -64,7 +64,7 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 *
 	 * @throws tx_em_XmlException
 	 */
-	function __construct() {
+	public function __construct() {
 			// TODO catch parser exception
 		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('mirror');
 		if (is_object($this->parser)) {

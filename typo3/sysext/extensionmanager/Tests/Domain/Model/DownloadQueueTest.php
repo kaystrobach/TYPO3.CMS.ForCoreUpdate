@@ -2,7 +2,7 @@
 /***************************************************************
  * Copyright notice
  *
- * (c) 2012
+ * (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
  * All rights reserved
  *
  * This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,8 +25,8 @@
 /**
  * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
  *
- * @package TYPO3
- * @subpackage extensionmanager
+ * @package Extension Manager
+ * @subpackage Tests
  */
 class Tx_Extensionmanager_Domain_Model_DownloadQueueTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 

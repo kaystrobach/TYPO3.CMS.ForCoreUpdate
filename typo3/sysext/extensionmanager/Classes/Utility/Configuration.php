@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Susanne Moog <susanne.moog@typo3.org>
+ *  (c) 2012 Susanne Moog, <susanne.moog@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -48,7 +48,7 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 	 * @param Tx_Extbase_Object_ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager){
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -56,15 +56,30 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 	 * @param Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
 	 * @return void
 	 */
-	public function injectConfigurationItemRepository(Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository){
+	public function injectConfigurationItemRepository(
+		Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
+	) {
 		$this->configurationItemRepository = $configurationItemRepository;
 	}
 
+	/**
+	 * Saves default configuration of an extension to localConfiguration
+	 *
+	 * @param string $extensionKey
+	 * @return void
+	 */
 	public function saveDefaultConfiguration($extensionKey) {
 		$currentConfiguration = $this->getCurrentConfiguration($extensionKey);
 		$this->writeConfiguration($currentConfiguration, $extensionKey);
 	}
 
+	/**
+	 * Write extension specific configuration to localconf
+	 *
+	 * @param array $configuration
+	 * @param $extensionKey
+	 * @return void
+	 */
 	public function writeConfiguration(array $configuration, $extensionKey) {
 		/** @var $installUtility Tx_Extensionmanager_Utility_Install */
 		$installUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Install');
@@ -72,12 +87,17 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 	}
 
 	/**
+	 * Get current configuration of an extension
+	 *
 	 * @param string $extensionKey
 	 * @return array
 	 */
 	public function getCurrentConfiguration($extensionKey) {
 		$extension = $GLOBALS['TYPO3_LOADED_EXT'][$extensionKey];
-		$defaultConfig = $this->configurationItemRepository->createArrayFromConstants($configRaw = t3lib_div::getUrl(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt'), $extension);
+		$defaultConfig = $this->configurationItemRepository->createArrayFromConstants(
+			t3lib_div::getUrl(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt'),
+			$extension
+		);
 		$currentExtensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extension['key']]);
 		$currentExtensionConfig = is_array($currentExtensionConfig) ? $currentExtensionConfig : array();
 		$currentFullConfiguration = t3lib_div::array_merge_recursive_overrule($defaultConfig, $currentExtensionConfig);
@@ -85,3 +105,4 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 		return $currentFullConfiguration;
 	}
 }
+?>

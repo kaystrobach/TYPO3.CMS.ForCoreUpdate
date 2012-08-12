@@ -117,7 +117,7 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
 
-		$dependencyTypes = $this->managementService->getDependencies($extension);
+		$dependencyTypes = $this->managementService->getAndResolveDependencies($extension);
 		$message = '';
 		if (count($dependencyTypes) > 0) {
 				// @todo translate and beautify

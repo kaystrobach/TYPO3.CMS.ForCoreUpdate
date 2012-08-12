@@ -26,11 +26,11 @@
  ***************************************************************/
 
 /**
- * action controller.
+ * Utility for dealing with extension list related functions
  *
  * @author Susanne Moog <typo3@susannemoog.de>
  * @package Extension Manager
- * @subpackage Controller
+ * @subpackage Utility
  */
 class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 
@@ -41,6 +41,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @return void
 	 */
 	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
@@ -140,7 +141,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function enrichExtensionsWithEmConfAndTerInformation(array $extensions) {
-		foreach($extensions as $extensionKey => $properties) {
+		foreach ($extensions as $extensionKey => $properties) {
 			$emconf = $this->emConfUtility->includeEmConf($properties);
 			if ($emconf) {
 				$extensions[$extensionKey] = array_merge($emconf, $properties);
@@ -148,7 +149,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 					$extensionKey,
 					$extensions[$extensionKey]['version']
 				);
-				if($terObject instanceof Tx_Extensionmanager_Domain_Model_Extension) {
+				if ($terObject instanceof Tx_Extensionmanager_Domain_Model_Extension) {
 					$extensions[$extensionKey]['terObject'] = $terObject;
 					$extensions[$extensionKey]['updateAvailable'] = $this->installUtility->isUpdateAvailable($terObject);
 				}
@@ -160,6 +161,12 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 		return $extensions;
 	}
 
+	/**
+	 * Gets all available and installed extension with additional information
+	 * from em_conf and TER (if available)
+	 * 
+	 * @return array
+	 */
 	public function getAvailableAndInstalledExtensionsWithAdditionalInformation() {
 		$availableExtensions = $this->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->getAvailableAndInstalledExtensions($availableExtensions);
