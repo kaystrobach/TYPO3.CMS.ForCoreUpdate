@@ -32,7 +32,6 @@
  */
 class t3lib_rootline {
 
-
 	/**
 	 * @var integer
 	 */
@@ -67,6 +66,11 @@ class t3lib_rootline {
 	 * @var t3lib_cache_frontend_Frontend
 	 */
 	protected static $cache = NULL;
+
+	/**
+	 * @var array
+	 */
+	protected static $localCache = array();
 
 	/**
 	 * Fields to fetch when populating rootline data
@@ -137,6 +141,7 @@ class t3lib_rootline {
 	 * Initialize a state to work with
 	 *
 	 * @throws RuntimeException
+	 * @return void
 	 */
 	protected function initializeObject() {
 
@@ -161,11 +166,6 @@ class t3lib_rootline {
 			t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'], TRUE)
 		);
 		array_unique(self::$rootlineFields);
-
-		if (isset($GLOBALS['TSFE'])) {
-			$GLOBALS['TSFE']->includeTCA($GLOBALS['TSFE']->TCAloaded);
-		}
-		t3lib_div::loadTCA('pages');
 	}
 
 	/**
@@ -189,24 +189,34 @@ class t3lib_rootline {
 	 * @return array
 	 */
 	public function get() {
-		if (!self::$cache->has($this->getCacheIdentifier())) {
-			t3lib_utility_Debug::debug('cache MISS for ' . $this->getCacheIdentifier());
-			return $this->generateRootlineCache();
-		} else {
-			t3lib_utility_Debug::debug('cache HIT for ' . $this->getCacheIdentifier());
-			return self::$cache->get($this->getCacheIdentifier());
+		$cacheIdentifier = $this->getCacheIdentifier();
+		if (!isset(self::$localCache[$cacheIdentifier])) {
+			if (!self::$cache->has($cacheIdentifier)) {
+				$this->generateRootlineCache();
+			} else {
+				self::$localCache[$cacheIdentifier] = self::$cache->get($cacheIdentifier);
+			}
 		}
+		return self::$localCache[$cacheIdentifier];
 	}
 
 	/**
 	 * Queries the database for the page record and returns it.
 	 *
-	 * @param $uid int Page id
+	 * @param integer $uid Page id
 	 * @throws RuntimeException
 	 * @return array
 	 */
 	protected function getRecordArray($uid) {
 		if (!isset(self::$pageRecordCache[$this->getCacheIdentifier($uid)])) {
+
+			if (!is_array($GLOBALS['TCA']['pages']['columns'])) {
+				if (isset($GLOBALS['TSFE'])) {
+					$GLOBALS['TSFE']->includeTCA($GLOBALS['TSFE']->TCAloaded);
+				}
+				t3lib_div::loadTCA('pages');
+			}
+
 			$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 				implode(',', self::$rootlineFields),
 				'pages',
@@ -237,7 +247,7 @@ class t3lib_rootline {
 	/**
 	 * Resolve relations as defined in TCA and add them to the provided $pageRecord array.
 	 *
-	 * @param int $uid Page id
+	 * @param integer $uid Page id
 	 * @param array $pageRecord Array with page data to add relation data to.
 	 * @throws RuntimeException
 	 * @return array $pageRecord with additional relations
@@ -245,8 +255,9 @@ class t3lib_rootline {
 	protected function enrichWithRelationFields($uid, array $pageRecord) {
 		foreach ($GLOBALS['TCA']['pages']['columns'] as $column => $configuration) {
 			if ($this->columnHasRelationToResolve($configuration)) {
+				$configuration = $configuration['config'];
 				if ($configuration['MM']) {
-					/** @var t3lib_loadDBGroup $loadDBGroup */
+					/** @var $loadDBGroup t3lib_loadDBGroup */
 					$loadDBGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
 					$loadDBGroup->start(
 						$pageRecord[$column],
@@ -260,14 +271,17 @@ class t3lib_rootline {
 				} elseif ($configuration['foreign_field']) {
 					$table = $configuration['foreign_table'];
 					$field = $configuration['foreign_field'];
-					$whereClause = '`' . $field . '` = ' . intval($uid);
-					if (isset($configuration['foreign_table_match']) && is_array($configuration['foreign_table_match'])) {
-						$parts = array($whereClause);
-						foreach ($configuration['foreign_table_match'] as $field => $value) {
-							$parts[] = '`' . $field . '` = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($value);
+					$whereClauseParts = array('`' . $field . '` = ' . intval($uid));
+					if (isset($configuration['foreign_match_fields']) && is_array($configuration['foreign_match_fields'])) {
+						foreach ($configuration['foreign_match_fields'] as $field => $value) {
+							$whereClauseParts[] = '`' . $field . '` = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($value);
 						}
-						$whereClause = implode(' AND ', $parts);
+
 					}
+					if (isset($configuration['foreign_table_field'])) {
+						$whereClauseParts[] = '`' . trim($configuration['foreign_table_field']) . '` = \'pages\'';
+					}
+					$whereClause = implode(' AND ', $whereClauseParts);
 					$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $table, $whereClause);
 					if (!is_array($rows)) {
 						throw new RuntimeException('Could to resolve related records for page ' . $uid . ' and foreign_table ' . htmlspecialchars($configuration['foreign_table']), 1343589452);
@@ -292,10 +306,11 @@ class t3lib_rootline {
 	 * @return boolean TRUE, if it describes a non-CSV relation
 	 */
 	protected function columnHasRelationToResolve(array $configuration) {
-		if (!empty($configuration['MM']) && !empty($configuration['type']) && in_array($configuration['type'], array('select', 'inline', 'group'), TRUE)) {
+		$configuration = $configuration['config'];
+		if (isset($configuration['MM']) && isset($configuration['type']) && in_array($configuration['type'], array('select', 'inline', 'group'))) {
 			return TRUE;
 		}
-		if (!empty($configuration['foreign_key']) && !empty($configuration['type']) && in_array($configuration['type'], array('select', 'inline'), TRUE)) {
+		if (isset($configuration['foreign_field']) && isset($configuration['type']) && in_array($configuration['type'], array('select', 'inline'))) {
 			return TRUE;
 		}
 		return FALSE;
@@ -305,18 +320,18 @@ class t3lib_rootline {
 	 * Actual function to generate the rootline and cache it
 	 *
 	 * @throws RuntimeException
-	 * @return array
+	 * @return void
 	 */
 	protected function generateRootlineCache() {
 		$page = $this->getRecordArray($this->pageUid);
 
-			// if the current page is a mounted (according to the MP parameter) handle the mount-point
+			// If the current page is a mounted (according to the MP parameter) handle the mount-point
 		if ($this->isMountedPage()) {
 			$mountPoint = $this->getRecordArray($this->parsedMountPointParameters[$this->pageUid]);
 
 			$page = $this->processMountedPage($page, $mountPoint);
 			$parentUid = $mountPoint['pid'];
-				// anyhow after reaching the mount-point, we have to go up that rootline
+				// Anyhow after reaching the mount-point, we have to go up that rootline
 			unset($this->parsedMountPointParameters[$this->pageUid]);
 		} else {
 			$parentUid = $page['pid'];
@@ -325,7 +340,7 @@ class t3lib_rootline {
 		$cacheTags = array('pageId_' . $page['uid']);
 
 		if ($parentUid > 0) {
-				// get rootline of (and including) parent page
+				// Get rootline of (and including) parent page
 			$mountPointParameter = count($this->parsedMountPointParameters) > 0 ? $this->mountPointParameter : '';
 			/** @var $rootline t3lib_rootline */
 			$rootline = t3lib_div::makeInstance('t3lib_rootline', $parentUid, $mountPointParameter, $this->pageContext);
@@ -350,7 +365,7 @@ class t3lib_rootline {
 			$rootline,
 			$cacheTags
 		);
-		return $rootline;
+		self::$localCache[$this->getCacheIdentifier()] = $rootline;
 	}
 
 	/**
@@ -378,7 +393,7 @@ class t3lib_rootline {
 				1343464100);
 		}
 
-			// current page replaces the original mount-page
+			// Current page replaces the original mount-page
 		if ($mountPointPageData['mount_pid_ol']) {
 			$mountedPageData['_MOUNT_OL'] = TRUE;
 			$mountedPageData['_MOUNT_PAGE'] = array(
@@ -387,7 +402,7 @@ class t3lib_rootline {
 				'title' => $mountPointPageData['title']
 			);
 		} else {
-				// the mount-page is not replaced, the mount-page itself has to be used
+				// The mount-page is not replaced, the mount-page itself has to be used
 			$mountedPageData = $mountPointPageData;
 		}
 
