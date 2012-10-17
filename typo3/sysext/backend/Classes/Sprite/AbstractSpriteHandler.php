@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An abstract class implementing t3lib_spritemanager_SpriteIconGenerator.
  * Provides base functionality for all handlers.
@@ -34,32 +33,37 @@
  * @subpackage t3lib
  */
 abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanager_SpriteIconGenerator {
+
 	/**
 	 * all "registered" icons available through sprite API will cumulated here
+	 *
 	 * @var array
 	 */
 	protected $iconNames = array();
 
 	/**
 	 * contains the content of the CSS file to write
+	 *
 	 * @var string
 	 */
 	protected $styleSheetData = '';
 
 	/**
 	 * path to CSS file for generated styles
+	 *
 	 * @var string
 	 */
 	protected $cssTcaFile = '';
 
 	/**
 	 * constructor just init's the temp-file-name
+	 *
 	 * @return void
 	 */
 	public function __construct() {
-			// The file name is prefixed with "z" since the concatenator orders files per name
-		$this->cssTcaFile = PATH_site . t3lib_SpriteManager::$tempPath . 'zextensions.css';
-		$this->styleSheetData = '/* Auto-Generated via ' . get_class($this) . ' */' . LF;
+		// The file name is prefixed with "z" since the concatenator orders files per name
+		$this->cssTcaFile = (PATH_site . t3lib_SpriteManager::$tempPath) . 'zextensions.css';
+		$this->styleSheetData = (('/* Auto-Generated via ' . get_class($this)) . ' */') . LF;
 	}
 
 	/**
@@ -73,26 +77,26 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 	 * @return void
 	 */
 	protected function loadRegisteredSprites() {
-			// Saves which CSS Files are currently "allowed to be in place"
+		// Saves which CSS Files are currently "allowed to be in place"
 		$allowedCssFilesinTempDir = array(basename($this->cssTcaFile));
-			// Process every registeres file
+		// Process every registeres file
 		foreach ((array) $GLOBALS['TBE_STYLES']['spritemanager']['cssFiles'] as $file) {
 			$fileName = basename($file);
-				// File should be present
+			// File should be present
 			$allowedCssFilesinTempDir[] = $fileName;
-				// get-Cache Filename
-			$unique = md5($fileName . filemtime(PATH_site . $file) . filesize(PATH_site . $file));
-			$cacheFile = PATH_site . t3lib_SpriteManager::$tempPath . $fileName . $unique . '.css';
+			// get-Cache Filename
+			$unique = md5(($fileName . filemtime((PATH_site . $file))) . filesize((PATH_site . $file)));
+			$cacheFile = (((PATH_site . t3lib_SpriteManager::$tempPath) . $fileName) . $unique) . '.css';
 			if (!file_exists($cacheFile)) {
 				copy(PATH_site . $file, $cacheFile);
 			}
 		}
-			// Get all .css files in dir
+		// Get all .css files in dir
 		$cssFilesPresentInTempDir = t3lib_div::getFilesInDir(PATH_site . t3lib_SpriteManager::$tempPath, '.css', 0);
-			// and delete old ones which are not needed anymore
+		// and delete old ones which are not needed anymore
 		$filesToDelete = array_diff($cssFilesPresentInTempDir, $allowedCssFilesinTempDir);
 		foreach ($filesToDelete as $file) {
-			unlink(PATH_site . t3lib_SpriteManager::$tempPath . $file);
+			unlink((PATH_site . t3lib_SpriteManager::$tempPath) . $file);
 		}
 	}
 
@@ -103,10 +107,9 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 	 * @return void
 	 */
 	public function generate() {
-			// Include registered Sprites
+		// Include registered Sprites
 		$this->loadRegisteredSprites();
-
-			// Cache results in the CSS file
+		// Cache results in the CSS file
 		t3lib_div::writeFile($this->cssTcaFile, $this->styleSheetData);
 	}
 
@@ -127,58 +130,48 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 	 */
 	protected function collectTcaSpriteIcons() {
 		$tcaTables = array_keys($GLOBALS['TCA']);
-
 		$resultArray = array();
-
-			// Path (relative from typo3 dir) for skin-Images
+		// Path (relative from typo3 dir) for skin-Images
 		if (isset($GLOBALS['TBE_STYLES']['skinImgAutoCfg']['relDir'])) {
 			$skinPath = $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['relDir'];
 		} else {
 			$skinPath = '';
 		}
-
-			// check every table in the TCA, if an icon is needed
+		// check every table in the TCA, if an icon is needed
 		foreach ($tcaTables as $tableName) {
-
-				// This method is only needed for TCA tables where
-				// typeicon_classes are not configured
+			// This method is only needed for TCA tables where
+			// typeicon_classes are not configured
 			if (!is_array($GLOBALS['TCA'][$tableName]['ctrl']['typeicon_classes'])) {
 				$tcaCtrl = $GLOBALS['TCA'][$tableName]['ctrl'];
-
-					// Adding the default Icon (without types)
+				// Adding the default Icon (without types)
 				if (isset($tcaCtrl['iconfile'])) {
-						// In CSS we need a path relative to the css file
-						// [TCA][ctrl][iconfile] defines icons without path info to reside in gfx/i/
+					// In CSS we need a path relative to the css file
+					// [TCA][ctrl][iconfile] defines icons without path info to reside in gfx/i/
 					if (strpos($tcaCtrl['iconfile'], '/') !== FALSE) {
 						$icon = $tcaCtrl['iconfile'];
 					} else {
-						$icon = $skinPath . 'gfx/i/' . $tcaCtrl['iconfile'];
+						$icon = ($skinPath . 'gfx/i/') . $tcaCtrl['iconfile'];
 					}
-
 					$icon = t3lib_div::resolveBackPath($icon);
-					$resultArray['tcarecords-' . $tableName . '-default'] = $icon;
-
+					$resultArray[('tcarecords-' . $tableName) . '-default'] = $icon;
 				}
-
-					// If records types are available, register them
+				// If records types are available, register them
 				if (isset($tcaCtrl['typeicon_column']) && is_array($tcaCtrl['typeicons'])) {
 					foreach ($tcaCtrl['typeicons'] as $type => $icon) {
-
-							// In CSS we need a path relative to the css file
-							// [TCA][ctrl][iconfile] defines icons without path info to reside in gfx/i/
+						// In CSS we need a path relative to the css file
+						// [TCA][ctrl][iconfile] defines icons without path info to reside in gfx/i/
 						if (strpos($icon, '/') === FALSE) {
-							$icon = $skinPath . 'gfx/i/' . $icon;
+							$icon = ($skinPath . 'gfx/i/') . $icon;
 						}
-
 						$icon = t3lib_div::resolveBackPath($icon);
-
-						$resultArray['tcarecords-' . $tableName . '-' . $type] = $icon;
+						$resultArray[(('tcarecords-' . $tableName) . '-') . $type] = $icon;
 					}
 				}
 			}
 		}
 		return $resultArray;
 	}
+
 }
 
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'tabindex'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Tabindex extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'tabindex'.
 	 * Used with the elements button, input, select and textarea
@@ -46,14 +46,14 @@ class tx_form_Domain_Model_Attributes_Tabindex extends tx_form_Domain_Model_Attr
 	 * Elements that may receive focus should be navigated by user agents
 	 * according to the following rules:
 	 * 1. Those elements that support the tabindex attribute and assign a
-	 *    positive value to it are navigated first. Navigation proceeds from the
-	 *    element with the lowest tabindex value to the element with the highest
-	 *    value. Values need not be sequential nor must they begin with any
-	 *    particular value. Elements that have identical tabindex values should
-	 *    be navigated in the order they appear in the character stream.
+	 * positive value to it are navigated first. Navigation proceeds from the
+	 * element with the lowest tabindex value to the element with the highest
+	 * value. Values need not be sequential nor must they begin with any
+	 * particular value. Elements that have identical tabindex values should
+	 * be navigated in the order they appear in the character stream.
 	 * 2. Those elements that do not support the tabindex attribute or support
-	 *    it and assign it a value of "0" are navigated next. These elements are
-	 *    navigated in the order they appear in the character stream.
+	 * it and assign it a value of "0" are navigated next. These elements are
+	 * navigated in the order they appear in the character stream.
 	 * 3. Elements that are disabled do not participate in the tabbing order.
 	 *
 	 * The actual key sequence that causes tabbing navigation or element
@@ -68,13 +68,13 @@ class tx_form_Domain_Model_Attributes_Tabindex extends tx_form_Domain_Model_Attr
 	 * @return integer Attribute value
 	 */
 	public function getValue() {
-		$attribute = (integer) $this->value;
-
+		$attribute = (int) $this->value;
 		if ($attribute < 0 || $attribute > 32767) {
 			$attribute = 0;
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

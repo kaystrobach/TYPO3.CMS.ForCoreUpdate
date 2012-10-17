@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract action controller.
  *
@@ -45,9 +44,11 @@ class Tx_Extensionmanager_Controller_AbstractController extends Tx_Extbase_MVC_C
 		$view->assignMultiple(array(
 			'extensionName' => $this->request->getControllerExtensionName(),
 			'controllerName' => $this->request->getControllerName(),
-			'actionName' => $this->request->getControllerActionName(),
+			'actionName' => $this->request->getControllerActionName()
 		));
 		return $view;
 	}
+
 }
+
 ?>

@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Typoscript to JSON converter
  *
@@ -32,6 +31,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Factory_TyposcriptToJson {
+
 	/**
 	 * @var array
 	 */
@@ -46,7 +46,6 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	public function convert(array $typoscript) {
 		$this->setValidationRules($typoscript);
 		$jsonObject = $this->createElement('form', $typoscript);
-
 		return $jsonObject;
 	}
 
@@ -61,17 +60,13 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	public function createElement($class, array $arguments = array()) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_Domain_Model_Json_' . ucfirst($class);
-
 		$this->addValidationRules($arguments);
-
 		/** @var $object tx_form_Domain_Model_JSON_Element */
 		$object = t3lib_div::makeInstance($className);
 		$object->setParameters($arguments);
-
 		if ($object->childElementsAllowed()) {
 			$this->getChildElementsByIntegerKey($object, $arguments);
 		}
-
 		return $object;
 	}
 
@@ -157,7 +152,6 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	 */
 	protected function addValidationRules(array &$arguments) {
 		$validationRulesAvailable = FALSE;
-
 		if (!empty($this->validationRules) && isset($arguments['name'])) {
 			foreach ($this->validationRules as $key => $ruleName) {
 				if (intval($key) && !strstr($key, '.')) {
@@ -172,5 +166,7 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 			}
 		}
 	}
+
 }
+
 ?>

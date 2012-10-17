@@ -28,13 +28,11 @@
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
  */
-
 /**
  * Importer object for extension list
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-10
  * @package Extension Manager
  * @subpackage Utility/Importer
@@ -96,7 +94,6 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 */
 	static protected $fieldIndicesNoQuote = array(2, 3, 4, 10, 12, 13, 14, 15);
 
-
 	/**
 	 * Keeps repository UID.
 	 *
@@ -134,7 +131,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 		$this->repositoryRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_RepositoryRepository');
 		$this->extensionRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_ExtensionRepository');
 		$this->extensionModel = $this->objectManager->get('Tx_Extensionmanager_Domain_Model_Extension');
-			// TODO catch parser exception
+		// TODO catch parser exception
 		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('extension');
 		if (is_object($this->parser)) {
 			$this->parser->attach($this);
@@ -156,21 +153,13 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 		}
 		$zlibStream = 'compress.zlib://';
 		$this->sumRecords = 0;
-
 		$this->parser->parseXML($zlibStream . $localExtensionListFile);
-
-			// flush last rows to database if existing
+		// flush last rows to database if existing
 		if (count($this->arrRows)) {
-			$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows(
-				'tx_extensionmanager_domain_model_extension',
-				self::$fieldNames,
-				$this->arrRows,
-				self::$fieldIndicesNoQuote
-			);
+			$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows('tx_extensionmanager_domain_model_extension', self::$fieldNames, $this->arrRows, self::$fieldIndicesNoQuote);
 		}
 		$extensions = $this->extensionRepository->insertLastVersion($this->repositoryUid);
 		$this->repositoryRepository->updateRepositoryCount($extensions, $this->repositoryUid);
-
 		return $this->sumRecords;
 	}
 
@@ -181,18 +170,13 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 * @return void
 	 */
 	protected function loadIntoDatabase(SplSubject &$subject) {
-			// flush every 50 rows to database
+		// flush every 50 rows to database
 		if ($this->sumRecords !== 0 && $this->sumRecords % 50 === 0) {
-			$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows(
-				'tx_extensionmanager_domain_model_extension',
-				self::$fieldNames,
-				$this->arrRows,
-				self::$fieldIndicesNoQuote
-			);
+			$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows('tx_extensionmanager_domain_model_extension', self::$fieldNames, $this->arrRows, self::$fieldIndicesNoQuote);
 			$this->arrRows = array();
 		}
 		$versionRepresentations = t3lib_utility_VersionNumber::convertVersionStringToArray($subject->getVersion());
-			// order must match that of self::$fieldNamses!
+		// order must match that of self::$fieldNamses!
 		$this->arrRows[] = array(
 			$subject->getExtkey(),
 			$subject->getVersion(),
@@ -212,7 +196,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 			$this->extensionModel->getDefaultCategory($subject->getCategory() ? $subject->getCategory() : ''),
 			$subject->getDescription() ? $subject->getDescription() : '',
 			$subject->getDependencies() ? $subject->getDependencies() : '',
-			$subject->getUploadcomment() ? $subject->getUploadcomment() : '',
+			$subject->getUploadcomment() ? $subject->getUploadcomment() : ''
 		);
 		++$this->sumRecords;
 	}
@@ -228,6 +212,7 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 			$this->loadIntoDatabase($subject);
 		}
 	}
+
 }
 
 ?>

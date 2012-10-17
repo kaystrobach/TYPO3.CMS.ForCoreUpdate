@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A contract for a cache backend which is capable of storing, retrieving and
  * including PHP source code.
@@ -32,8 +31,8 @@
  * @api
  * @author Robert Lemke <robert@typo3.org>
  */
-interface t3lib_cache_backend_PhpCapableBackend extends t3lib_cache_backend_Backend {
-
+interface t3lib_cache_backend_PhpCapableBackend extends t3lib_cache_backend_Backend
+{
 	/**
 	 * Loads PHP code from the cache and require_onces it right away.
 	 *
@@ -42,5 +41,6 @@ interface t3lib_cache_backend_PhpCapableBackend extends t3lib_cache_backend_Back
 	 * @api
 	 */
 	public function requireOnce($entryIdentifier);
+
 }
 ?>

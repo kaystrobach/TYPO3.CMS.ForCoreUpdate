@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility for dealing with ext_emconf
  *
@@ -42,11 +41,10 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 	 */
 	public function includeEmConf(array $extension) {
 		$_EXTKEY = $extension['key'];
-		$path = PATH_site . $extension['siteRelPath'] . '/ext_emconf.php';
+		$path = (PATH_site . $extension['siteRelPath']) . '/ext_emconf.php';
 		$EM_CONF = NULL;
-
 		if (file_exists($path)) {
-			include($path);
+			include $path;
 			if (is_array($EM_CONF[$_EXTKEY])) {
 				return $EM_CONF[$_EXTKEY];
 			}
@@ -69,19 +67,19 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 		}
 		$emConf = $this->fixEmConf($extensionData['EM_CONF']);
 		$emConf = var_export($emConf, TRUE);
-		$code = '<?php
+		$code = ((((('<?php
 
 /***************************************************************
-* Extension Manager/Repository config file for ext "' . $extensionData['extKey'] . '".
+* Extension Manager/Repository config file for ext "' . $extensionData['extKey']) . '".
 *
-* Auto generated ' . date('d-m-Y H:i') . '
+* Auto generated ') . date('d-m-Y H:i')) . '
 *
 * Manual updates:
 * Only the data in the array - everything else is removed by next
 * writing. "version" and "dependencies" must not be touched!
 ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = ' . $emConf . ';
+$EM_CONF[$_EXTKEY] = ') . $emConf) . ';
 
 ?>';
 		return str_replace('  ', TAB, $code);
@@ -94,11 +92,7 @@ $EM_CONF[$_EXTKEY] = ' . $emConf . ';
 	 * @return array
 	 */
 	public function fixEmConf(array $emConf) {
-		if (!isset($emConf['constraints']) ||
-			!isset($emConf['constraints']['depends']) ||
-			!isset($emConf['constraints']['conflicts']) ||
-			!isset($emConf['constraints']['suggests'])
-		) {
+		if (((!isset($emConf['constraints']) || !isset($emConf['constraints']['depends'])) || !isset($emConf['constraints']['conflicts'])) || !isset($emConf['constraints']['suggests'])) {
 			if (!isset($emConf['constraints']) || !isset($emConf['constraints']['depends'])) {
 				$emConf['constraints']['depends'] = $this->stringToDependency($emConf['dependencies']);
 				if (strlen($emConf['PHP_version'])) {
@@ -119,12 +113,10 @@ $EM_CONF[$_EXTKEY] = ' . $emConf . ';
 			$emConf['dependencies'] = $this->dependencyToString($emConf['constraints']);
 			$emConf['conflicts'] = $this->dependencyToString($emConf['constraints'], 'conflicts');
 		}
-
 		unset($emConf['private']);
 		unset($emConf['download_password']);
 		unset($emConf['TYPO3_version']);
 		unset($emConf['PHP_version']);
-
 		return $emConf;
 	}
 
@@ -139,7 +131,7 @@ $EM_CONF[$_EXTKEY] = ' . $emConf . ';
 	 * @param string $type The dependency type to list if $dep is an array
 	 * @return string A simple dependency list for display
 	 */
-	public static function dependencyToString($dependency, $type = 'depends') {
+	static public function dependencyToString($dependency, $type = 'depends') {
 		if (is_array($dependency)) {
 			if (isset($dependency[$type]['php'])) {
 				unset($dependency[$type]['php']);
@@ -147,7 +139,7 @@ $EM_CONF[$_EXTKEY] = ' . $emConf . ';
 			if (isset($dependency[$type]['typo3'])) {
 				unset($dependency[$type]['typo3']);
 			}
-			$dependencyString = (count($dependency[$type])) ? implode(',', array_keys($dependency[$type])) : '';
+			$dependencyString = count($dependency[$type]) ? implode(',', array_keys($dependency[$type])) : '';
 			return $dependencyString;
 		}
 		return '';
@@ -174,6 +166,7 @@ $EM_CONF[$_EXTKEY] = ' . $emConf . ';
 		}
 		return $constraint;
 	}
+
 }
 
 ?>

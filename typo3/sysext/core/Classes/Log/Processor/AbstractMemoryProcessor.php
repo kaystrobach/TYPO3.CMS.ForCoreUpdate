@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Common memory processor methods.
  *
@@ -60,7 +58,7 @@ abstract class t3lib_log_processor_AbstractMemory extends t3lib_log_processor_Ab
 	 * @return void
 	 */
 	public function setRealMemoryUsage($realMemoryUsage) {
-		$this->realMemoryUsage = (boolean) $realMemoryUsage;
+		$this->realMemoryUsage = (bool) $realMemoryUsage;
 	}
 
 	/**
@@ -79,7 +77,7 @@ abstract class t3lib_log_processor_AbstractMemory extends t3lib_log_processor_Ab
 	 * @return void
 	 */
 	public function setFormatSize($formatSize) {
-		$this->formatSize = (boolean) $formatSize;
+		$this->formatSize = (bool) $formatSize;
 	}
 
 	/**

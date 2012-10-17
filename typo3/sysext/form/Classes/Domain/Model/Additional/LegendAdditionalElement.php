@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Additional 'legend'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Additional_Legend extends tx_form_Domain_Model_Additional_Abstract {
+
 	/**
 	 * Return the value of the object
 	 *
@@ -37,8 +37,9 @@ class tx_form_Domain_Model_Additional_Legend extends tx_form_Domain_Model_Additi
 	 */
 	public function getValue() {
 		$additional = $this->localCobj->cObjGetSingle($this->type, $this->value);
-
 		return $additional;
 	}
+
 }
+
 ?>

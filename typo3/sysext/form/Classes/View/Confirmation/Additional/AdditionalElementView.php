@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Additional elements for FORM object
  *
@@ -54,9 +53,9 @@ class tx_form_View_Confirmation_Additional extends tx_form_View_Confirmation_Ele
 	 * @return string The value of the additional
 	 */
 	public function getAdditionalValue() {
-		return htmlspecialchars($this->model->getAdditionalValue(
-			tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE)
-		));
+		return htmlspecialchars($this->model->getAdditionalValue(tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE)));
 	}
+
 }
+
 ?>

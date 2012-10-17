@@ -24,13 +24,11 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains a frontend version of the TYPO3 Core Form generator - AKA "TCEforms"
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * Extension class for the rendering of TCEforms in the frontend
  *
@@ -53,7 +51,7 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	 * @return string
 	 */
 	public function wrapLabels($str) {
-		return '<font face="verdana" size="1" color="black">' . $str . '</font>';
+		return ('<font face="verdana" size="1" color="black">' . $str) . '</font>';
 	}
 
 	/**
@@ -66,17 +64,13 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 		$out = '';
 		$bgColor = ' bgcolor="#D6DAD0"';
 		foreach ($paletteArray as $content) {
-			$hRow[] = '<td' . $bgColor . '><font face="verdana" size="1">&nbsp;</font></td><td nowrap="nowrap"' . $bgColor . '><font color="#666666" face="verdana" size="1">' . $content['NAME'] . '</font></td>';
-			$iRow[] = '<td valign="top">' .
-					'<img name="req_' . $content['TABLE'] . '_' . $content['ID'] . '_' . $content['FIELD'] . '" src="clear.gif" width="10" height="10" alt="" />' .
-					'<img name="cm_' . $content['TABLE'] . '_' . $content['ID'] . '_' . $content['FIELD'] . '" src="clear.gif" width="7" height="10" alt="" />' .
-					'</td><td nowrap="nowrap" valign="top">' . $content['ITEM'] . $content['HELP_ICON'] . '</td>';
+			$hRow[] = ((((('<td' . $bgColor) . '><font face="verdana" size="1">&nbsp;</font></td><td nowrap="nowrap"') . $bgColor) . '><font color="#666666" face="verdana" size="1">') . $content['NAME']) . '</font></td>';
+			$iRow[] = ((((((((((((((((('<td valign="top">' . '<img name="req_') . $content['TABLE']) . '_') . $content['ID']) . '_') . $content['FIELD']) . '" src="clear.gif" width="10" height="10" alt="" />') . '<img name="cm_') . $content['TABLE']) . '_') . $content['ID']) . '_') . $content['FIELD']) . '" src="clear.gif" width="7" height="10" alt="" />') . '</td><td nowrap="nowrap" valign="top">') . $content['ITEM']) . $content['HELP_ICON']) . '</td>';
 		}
-		$out = '<table border="0" cellpadding="0" cellspacing="0">
-			<tr><td><img src="clear.gif" width="' . intval($this->paletteMargin) . '" height="1" alt="" /></td>' . implode('', $hRow) . '</tr>
-			<tr><td></td>' . implode('', $iRow) . '</tr>
+		$out = ((((('<table border="0" cellpadding="0" cellspacing="0">
+			<tr><td><img src="clear.gif" width="' . intval($this->paletteMargin)) . '" height="1" alt="" /></td>') . implode('', $hRow)) . '</tr>
+			<tr><td></td>') . implode('', $iRow)) . '</tr>
 		</table>';
-
 		return $out;
 	}
 
@@ -94,9 +88,7 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	<tr>
 		<td nowrap="nowrap" bgcolor="#ABBBB4"><img name="req_###FIELD_TABLE###_###FIELD_ID###_###FIELD_FIELD###" src="clear.gif" width="10" height="10" alt="" /><img name="cm_###FIELD_TABLE###_###FIELD_ID###_###FIELD_FIELD###" src="clear.gif" width="7" height="10" alt="" /><font face="verdana" size="1" color="black">###FIELD_ITEM###</font>###FIELD_PAL_LINK_ICON###</td>
 	</tr>	';
-
 		$this->totalWrap = '<table border="0" cellpadding="1" cellspacing="0" bgcolor="black"><tr><td><table border="0" cellpadding="2" cellspacing="0">|</table></td></tr></table>';
-
 		$this->palFieldTemplate = '
 	<tr>
 		<td nowrap="nowrap" bgcolor="#ABBBB4"><font face="verdana" size="1" color="black">###FIELD_PALETTE###</font></td>
@@ -144,10 +136,7 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	 */
 	public function initializeTemplateContainer() {
 		$GLOBALS['TBE_TEMPLATE'] = t3lib_div::makeInstance('frontendDoc');
-		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->addInlineSetting(
-			'', 'PATH_typo3', t3lib_div::dirname(t3lib_div::getIndpEnv('SCRIPT_NAME')) . '/' . TYPO3_mainDir
-		);
-
+		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->addInlineSetting('', 'PATH_typo3', (t3lib_div::dirname(t3lib_div::getIndpEnv('SCRIPT_NAME')) . '/') . TYPO3_mainDir);
 		$GLOBALS['SOBE'] = new stdClass();
 		$GLOBALS['SOBE']->doc = $GLOBALS['TBE_TEMPLATE'];
 	}
@@ -165,6 +154,7 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 			return $this->backPath . $url;
 		}
 	}
+
 }
 
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A quite exception handler which catches but ignores any exception.
  *
@@ -35,12 +34,14 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 
 	/**
 	 * Default title for error messages
+	 *
 	 * @var string
 	 */
 	protected $defaultTitle = 'Oops, an error occurred!';
 
 	/**
 	 * Default message for error messages
+	 *
 	 * @var string
 	 */
 	protected $defaultMessage = '';
@@ -62,14 +63,8 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 */
 	public function echoExceptionWeb(Exception $exception) {
 		$this->sendStatusHeaders($exception);
-
 		$this->writeLogEntries($exception, self::CONTEXT_WEB);
-
-		$messageObj = t3lib_div::makeInstance(
-			't3lib_message_ErrorPageMessage',
-			$this->getMessage($exception),
-			$this->getTitle($exception)
-		);
+		$messageObj = t3lib_div::makeInstance('t3lib_message_ErrorPageMessage', $this->getMessage($exception), $this->getTitle($exception));
 		$messageObj->output();
 	}
 
@@ -81,7 +76,7 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 */
 	public function echoExceptionCLI(Exception $exception) {
 		$this->writeLogEntries($exception, self::CONTEXT_CLI);
-		exit(1);
+		die(1);
 	}
 
 	/**
@@ -91,16 +86,14 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @return boolean
 	 */
 	protected function discloseExceptionInformation(Exception $exception) {
-			// Show client error messages 40x in every case
+		// Show client error messages 40x in every case
 		if ($exception instanceof t3lib_error_http_AbstractClientErrorException) {
 			return TRUE;
 		}
-
-			// Only show errors in FE, if a BE user is authenticated
+		// Only show errors in FE, if a BE user is authenticated
 		if (TYPO3_MODE === 'FE') {
 			return $GLOBALS['TSFE']->beUserLogin;
 		}
-
 		return TRUE;
 	}
 
@@ -111,10 +104,7 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @return string
 	 */
 	protected function getTitle(Exception $exception) {
-		if ($this->discloseExceptionInformation($exception)
-			&& method_exists($exception, 'getTitle')
-			&& strlen($exception->getTitle()) > 0) {
-
+		if (($this->discloseExceptionInformation($exception) && method_exists($exception, 'getTitle')) && strlen($exception->getTitle()) > 0) {
 			return htmlspecialchars($exception->getTitle());
 		} else {
 			return $this->defaultTitle;
@@ -129,10 +119,9 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 */
 	protected function getMessage(Exception $exception) {
 		if ($this->discloseExceptionInformation($exception)) {
-				// Exception has an error code given
+			// Exception has an error code given
 			if ($exception->getCode() > 0) {
-				$moreInformationLink = '<p>More information regarding this error might be available <a href="' .
-					TYPO3_URL_EXCEPTION . $exception->getCode() . '" target="_blank">online</a>.</p>';
+				$moreInformationLink = (('<p>More information regarding this error might be available <a href="' . TYPO3_URL_EXCEPTION) . $exception->getCode()) . '" target="_blank">online</a>.</p>';
 			} else {
 				$moreInformationLink = '';
 			}
@@ -141,6 +130,7 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 			return $this->defaultMessage;
 		}
 	}
+
 }
 
 ?>

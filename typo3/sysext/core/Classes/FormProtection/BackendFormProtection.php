@@ -22,7 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class t3lib_formprotection_BackendFormProtection.
  *
@@ -37,11 +36,11 @@
  *
  * <pre>
  * $formToken = t3lib_formprotection_Factory::get()
- * 	->generateToken(
- *	 'BE user setup', 'edit'
+ * ->generateToken(
+ * 'BE user setup', 'edit'
  * );
  * $this->content .= '<input type="hidden" name="formToken" value="' .
- *	 $formToken . '" />';
+ * $formToken . '" />';
  * </pre>
  *
  * The three parameters $formName, $action and $formInstanceName can be
@@ -54,8 +53,8 @@
  *
  * <pre>
  * $formToken = t3lib_formprotection_Factory::get()
- * 	->getFormProtection()->generateToken(
- *	'tt_content', 'edit', $uid
+ * ->getFormProtection()->generateToken(
+ * 'tt_content', 'edit', $uid
  * );
  * </pre>
  *
@@ -65,30 +64,28 @@
  *
  * <pre>
  * if ($dataHasBeenSubmitted && t3lib_formprotection_Factory::get()
- * 	->validateToken(
- *		 t3lib_div::_POST('formToken'),
- *		 'BE user setup', 'edit
- *	 )
+ * ->validateToken(
+ * t3lib_div::_POST('formToken'),
+ * 'BE user setup', 'edit
+ * )
  * ) {
- *	 // processes the data
+ * processes the data
  * } else {
- *	 // no need to do anything here as the BE form protection will create a
- *	 // flash message for an invalid token
+ * no need to do anything here as the BE form protection will create a
+ * flash message for an invalid token
  * }
  * </pre>
- *
  */
-
 /**
  * Backend form protection
  *
  * @package TYPO3
  * @subpackage t3lib
- *
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
 class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Abstract {
+
 	/**
 	 * Keeps the instance of the user which existed during creation
 	 * of the object.
@@ -110,11 +107,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 */
 	public function __construct() {
 		if (!$this->isAuthorizedBackendSession()) {
-			throw new t3lib_error_Exception(
-				'A back-end form protection may only be instantiated if there' .
-				' is an active back-end session.',
-				1285067843
-			);
+			throw new t3lib_error_Exception('A back-end form protection may only be instantiated if there' . ' is an active back-end session.', 1285067843);
 		}
 		$this->backendUser = $GLOBALS['BE_USER'];
 		parent::__construct();
@@ -127,16 +120,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return void
 	 */
 	protected function createValidationErrorMessage() {
-		$message = t3lib_div::makeInstance(
-			't3lib_FlashMessage',
-			$GLOBALS['LANG']->sL(
-				'LLL:EXT:lang/locallang_core.xml:error.formProtection.tokenInvalid'
-			),
-			'',
-			t3lib_FlashMessage::ERROR,
-				// Do not save error message in session if we are in an Ajax action
-			!(isset($GLOBALS['TYPO3_AJAX']) && $GLOBALS['TYPO3_AJAX'] === TRUE)
-		);
+		$message = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:error.formProtection.tokenInvalid'), '', t3lib_FlashMessage::ERROR, !(isset($GLOBALS['TYPO3_AJAX']) && $GLOBALS['TYPO3_AJAX'] === TRUE));
 		t3lib_FlashMessageQueue::addMessage($message);
 	}
 
@@ -144,7 +128,6 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * Retrieves the saved session token or generates a new one.
 	 *
 	 * @return array<array>
-	 *		 the saved tokens as, will be empty if no tokens have been saved
 	 */
 	protected function retrieveSessionToken() {
 		$this->sessionToken = $this->backendUser->getSessionData('formSessionToken');
@@ -173,8 +156,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return string
 	 */
 	public function setSessionTokenFromRegistry() {
-		$this->sessionToken = $this->getRegistry()
-				->get('core', 'formSessionToken:' . $this->backendUser->user['uid']);
+		$this->sessionToken = $this->getRegistry()->get('core', 'formSessionToken:' . $this->backendUser->user['uid']);
 		if (empty($this->sessionToken)) {
 			throw new UnexpectedValueException('Failed to restore the session token from the registry.', 1301827270);
 		}
@@ -189,8 +171,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return void
 	 */
 	public function storeSessionTokenInRegistry() {
-		$this->getRegistry()
-				->set('core', 'formSessionToken:' . $this->backendUser->user['uid'], $this->sessionToken);
+		$this->getRegistry()->set('core', 'formSessionToken:' . $this->backendUser->user['uid'], $this->sessionToken);
 	}
 
 	/**
@@ -200,8 +181,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return string
 	 */
 	public function removeSessionTokenFromRegistry() {
-		return $this->getRegistry()
-				->remove('core', 'formSessionToken:' . $this->backendUser->user['uid']);
+		return $this->getRegistry()->remove('core', 'formSessionToken:' . $this->backendUser->user['uid']);
 	}
 
 	/**
@@ -220,7 +200,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * Inject the registry. Currently only used in unit tests.
 	 *
 	 * @access private
-	 * @param  t3lib_Registry $registry
+	 * @param t3lib_Registry $registry
 	 * @return void
 	 */
 	public function injectRegistry(t3lib_Registry $registry) {
@@ -233,8 +213,9 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return boolean
 	 */
 	protected function isAuthorizedBackendSession() {
-		return (isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof t3lib_beUserAuth && isset($GLOBALS['BE_USER']->user['uid']));
+		return (isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof t3lib_beUserAuth) && isset($GLOBALS['BE_USER']->user['uid']);
 	}
+
 }
 
 ?>

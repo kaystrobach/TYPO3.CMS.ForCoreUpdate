@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * An exception when the size of the uploaded file has exceeded
  *
@@ -31,5 +29,7 @@
  */
 class t3lib_file_exception_UploadSizeException extends t3lib_file_exception_AbstractFileOperationException {
 
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Model for menu entries
  *
@@ -242,6 +241,7 @@ class Typo3_Domain_Model_BackendModule {
 	public function getOnClick() {
 		return $this->onClick;
 	}
+
 }
 
 ?>

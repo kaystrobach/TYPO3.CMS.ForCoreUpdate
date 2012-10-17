@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to register category configurations.
  *
@@ -34,6 +33,7 @@
  * @subpackage t3lib
  */
 class t3lib_category_Registry implements t3lib_Singleton {
+
 	/**
 	 * @var array
 	 */
@@ -49,7 +49,7 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	 *
 	 * @return t3lib_category_Registry
 	 */
-	public static function getInstance() {
+	static public function getInstance() {
 		return t3lib_div::makeInstance('t3lib_category_Registry');
 	}
 
@@ -57,9 +57,7 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	 * Creates this object.
 	 */
 	public function __construct() {
-		$this->template = str_repeat(PHP_EOL, 3) . 'CREATE TABLE %s (' . PHP_EOL .
-			'  %s int(11) DEFAULT \'0\' NOT NULL' . PHP_EOL .
-			');' . str_repeat(PHP_EOL, 3);
+		$this->template = (((((str_repeat(PHP_EOL, 3) . 'CREATE TABLE %s (') . PHP_EOL) . '  %s int(11) DEFAULT \'0\' NOT NULL') . PHP_EOL) . ');') . str_repeat(PHP_EOL, 3);
 	}
 
 	/**
@@ -72,16 +70,13 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	 */
 	public function add($extensionKey, $tableName, $fieldName) {
 		$result = FALSE;
-
-			// Makes sure there is an existing table configuration and nothing registered yet:
+		// Makes sure there is an existing table configuration and nothing registered yet:
 		if (!empty($GLOBALS['TCA'][$tableName])) {
 			if (!$this->isRegistered($tableName, $fieldName)) {
 				$this->registry[$extensionKey][$tableName] = $fieldName;
 			}
-
 			$result = TRUE;
 		}
-
 		return $result;
 	}
 
@@ -112,14 +107,12 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	 */
 	public function isRegistered($tableName, $fieldName) {
 		$isRegistered = FALSE;
-
 		foreach ($this->registry as $configuration) {
 			if (!empty($configuration[$tableName]) && $configuration[$tableName] === $fieldName) {
 				$isRegistered = TRUE;
 				break;
 			}
 		}
-
 		return $isRegistered;
 	}
 
@@ -130,11 +123,9 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	 */
 	public function getDatabaseTableDefinitions() {
 		$sql = '';
-
 		foreach ($this->getExtensionKeys() as $extensionKey) {
 			$sql .= $this->getDatabaseTableDefinition($extensionKey);
 		}
-
 		return $sql;
 	}
 
@@ -148,13 +139,13 @@ class t3lib_category_Registry implements t3lib_Singleton {
 		if (!isset($this->registry[$extensionKey]) || !is_array($this->registry[$extensionKey])) {
 			return '';
 		}
-
 		$sql = '';
 		foreach ($this->registry[$extensionKey] as $tableName => $fieldName) {
 			$sql .= sprintf($this->template, $tableName, $fieldName);
 		}
-
 		return $sql;
 	}
+
 }
+
 ?>

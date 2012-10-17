@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * The Cache Manager
  *
@@ -56,7 +55,7 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	protected $defaultCacheConfiguration = array(
 		'frontend' => 't3lib_cache_frontend_VariableFrontend',
 		'backend' => 't3lib_cache_backend_DbBackend',
-		'options' => array(),
+		'options' => array()
 	);
 
 	/**
@@ -72,9 +71,9 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 * cache identifier and the value is an array of configuration options.
 	 * Possible options are:
 	 *
-	 *   frontend
-	 *   backend
-	 *   backendOptions
+	 * frontend
+	 * backend
+	 * backendOptions
 	 *
 	 * If one of the options is not specified, the default value is assumed.
 	 * Existing cache configurations are preserved.
@@ -86,10 +85,7 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	public function setCacheConfigurations(array $cacheConfigurations) {
 		foreach ($cacheConfigurations as $identifier => $configuration) {
 			if (!is_array($configuration)) {
-				throw new \InvalidArgumentException(
-					'The cache configuration for cache "' . $identifier . '" was not an array as expected.',
-					1231259656
-				);
+				throw new \InvalidArgumentException(('The cache configuration for cache "' . $identifier) . '" was not an array as expected.', 1231259656);
 			}
 			$this->cacheConfigurations[$identifier] = $configuration;
 		}
@@ -105,14 +101,9 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 */
 	public function registerCache(t3lib_cache_frontend_Frontend $cache) {
 		$identifier = $cache->getIdentifier();
-
 		if (isset($this->caches[$identifier])) {
-			throw new t3lib_cache_exception_DuplicateIdentifier(
-				'A cache with identifier "' . $identifier . '" has already been registered.',
-				1203698223
-			);
+			throw new t3lib_cache_exception_DuplicateIdentifier(('A cache with identifier "' . $identifier) . '" has already been registered.', 1203698223);
 		}
-
 		$this->caches[$identifier] = $cache;
 	}
 
@@ -126,16 +117,11 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 */
 	public function getCache($identifier) {
 		if ($this->hasCache($identifier) === FALSE) {
-			throw new t3lib_cache_exception_NoSuchCache(
-				'A cache with identifier "' . $identifier . '" does not exist.',
-				1203699034
-			);
+			throw new t3lib_cache_exception_NoSuchCache(('A cache with identifier "' . $identifier) . '" does not exist.', 1203699034);
 		}
-
 		if (!isset($this->caches[$identifier])) {
 			$this->createCache($identifier);
 		}
-
 		return $this->caches[$identifier];
 	}
 
@@ -189,8 +175,8 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 * defined in the bootstrap scripts.
 	 *
 	 * Note: Policy configuration handling is implemented here as well as other parts
-	 * 		of FLOW3 (like the security framework) are not fully initialized at the
-	 * 		time needed.
+	 * of FLOW3 (like the security framework) are not fully initialized at the
+	 * time needed.
 	 *
 	 * @param string $fileMonitorIdentifier Identifier of the File Monitor
 	 * @param array $changedFiles A list of full paths to changed files
@@ -198,85 +184,81 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 */
 	public function flushClassFileCachesByChangedFiles($fileMonitorIdentifier, array $changedFiles) {
 		$modifiedClassNamesWithUnderscores = array();
-
 		$objectClassesCache = $this->getCache('FLOW3_Object_Classes');
 		$objectConfigurationCache = $this->getCache('FLOW3_Object_Configuration');
-
 		switch ($fileMonitorIdentifier) {
-			case 'FLOW3_ClassFiles' :
-				$modifiedAspectClassNamesWithUnderscores = array();
-				foreach ($changedFiles as $pathAndFilename => $status) {
-					$pathAndFilename = str_replace(FLOW3_PATH_PACKAGES, '', $pathAndFilename);
-					$matches = array();
-					if (preg_match('/[^\/]+\/(.+)\/(Classes|Tests)\/(.+)\.php/', $pathAndFilename, $matches) === 1) {
-						$classNameWithUnderscores = str_replace('/', '_', $matches[1] . '_' . ($matches[2] === 'Tests' ? 'Tests_' : '') . $matches[3]);
-						$classNameWithUnderscores = str_replace('.', '_', $classNameWithUnderscores);
-						$modifiedClassNamesWithUnderscores[$classNameWithUnderscores] = TRUE;
-
-							// If an aspect was modified, the whole code cache needs to be flushed, so keep track of them:
-						if (substr($classNameWithUnderscores, -6, 6) === 'Aspect') {
-							$modifiedAspectClassNamesWithUnderscores[$classNameWithUnderscores] = TRUE;
-						}
-							// As long as no modified aspect was found, we are optimistic that only part of the cache needs to be flushed:
-						if (count($modifiedAspectClassNamesWithUnderscores) === 0) {
-							$objectClassesCache->remove($classNameWithUnderscores);
-						}
+		case 'FLOW3_ClassFiles':
+			$modifiedAspectClassNamesWithUnderscores = array();
+			foreach ($changedFiles as $pathAndFilename => $status) {
+				$pathAndFilename = str_replace(FLOW3_PATH_PACKAGES, '', $pathAndFilename);
+				$matches = array();
+				if (preg_match('/[^\\/]+\\/(.+)\\/(Classes|Tests)\\/(.+)\\.php/', $pathAndFilename, $matches) === 1) {
+					$classNameWithUnderscores = str_replace('/', '_', (($matches[1] . '_') . ($matches[2] === 'Tests' ? 'Tests_' : '')) . $matches[3]);
+					$classNameWithUnderscores = str_replace('.', '_', $classNameWithUnderscores);
+					$modifiedClassNamesWithUnderscores[$classNameWithUnderscores] = TRUE;
+					// If an aspect was modified, the whole code cache needs to be flushed, so keep track of them:
+					if (substr($classNameWithUnderscores, -6, 6) === 'Aspect') {
+						$modifiedAspectClassNamesWithUnderscores[$classNameWithUnderscores] = TRUE;
+					}
+					// As long as no modified aspect was found, we are optimistic that only part of the cache needs to be flushed:
+					if (count($modifiedAspectClassNamesWithUnderscores) === 0) {
+						$objectClassesCache->remove($classNameWithUnderscores);
 					}
 				}
-				$flushDoctrineProxyCache = FALSE;
-				if (count($modifiedClassNamesWithUnderscores) > 0) {
-					$reflectionStatusCache = $this->getCache('FLOW3_Reflection_Status');
-					foreach (array_keys($modifiedClassNamesWithUnderscores) as $classNameWithUnderscores) {
-						$reflectionStatusCache->remove($classNameWithUnderscores);
-						if ($flushDoctrineProxyCache === FALSE && preg_match('/_Domain_Model_(.+)/', $classNameWithUnderscores) === 1) {
-							$flushDoctrineProxyCache = TRUE;
-						}
-					}
-					$objectConfigurationCache->remove('allCompiledCodeUpToDate');
-				}
-				if (count($modifiedAspectClassNamesWithUnderscores) > 0) {
-					$this->systemLogger->log('Aspect classes have been modified, flushing the whole proxy classes cache.', LOG_INFO);
-					$objectClassesCache->flush();
-				}
-				if ($flushDoctrineProxyCache === TRUE) {
-					$this->systemLogger->log('Domain model changes have been detected, triggering Doctrine 2 proxy rebuilding.', LOG_INFO);
-					$objectConfigurationCache->remove('doctrineProxyCodeUpToDate');
-				}
-			break;
-			case 'FLOW3_ConfigurationFiles' :
-				$policyChangeDetected = FALSE;
-				$routesChangeDetected = FALSE;
-				foreach (array_keys($changedFiles) as $pathAndFilename) {
-					$filename = basename($pathAndFilename);
-					if (!in_array($filename, array('Policy.yaml', 'Routes.yaml'))) {
-						continue;
-					}
-					if ($policyChangeDetected === FALSE && basename($pathAndFilename) === 'Policy.yaml') {
-						$this->systemLogger->log('The security policies have changed, flushing the policy cache.', LOG_INFO);
-						$this->getCache('FLOW3_Security_Policy')->flush();
-						$policyChangeDetected = TRUE;
-					} elseif ($routesChangeDetected === FALSE && basename($pathAndFilename) === 'Routes.yaml') {
-						$this->systemLogger->log('A Routes.yaml file has been changed, flushing the routing cache.', LOG_INFO);
-						$this->getCache('FLOW3_Mvc_Routing_FindMatchResults')->flush();
-						$this->getCache('FLOW3_Mvc_Routing_Resolve')->flush();
-						$routesChangeDetected = TRUE;
+			}
+			$flushDoctrineProxyCache = FALSE;
+			if (count($modifiedClassNamesWithUnderscores) > 0) {
+				$reflectionStatusCache = $this->getCache('FLOW3_Reflection_Status');
+				foreach (array_keys($modifiedClassNamesWithUnderscores) as $classNameWithUnderscores) {
+					$reflectionStatusCache->remove($classNameWithUnderscores);
+					if ($flushDoctrineProxyCache === FALSE && preg_match('/_Domain_Model_(.+)/', $classNameWithUnderscores) === 1) {
+						$flushDoctrineProxyCache = TRUE;
 					}
 				}
-
-				$this->systemLogger->log('The configuration has changed, triggering an AOP proxy class rebuild.', LOG_INFO);
-				$objectConfigurationCache->remove('allAspectClassesUpToDate');
 				$objectConfigurationCache->remove('allCompiledCodeUpToDate');
+			}
+			if (count($modifiedAspectClassNamesWithUnderscores) > 0) {
+				$this->systemLogger->log('Aspect classes have been modified, flushing the whole proxy classes cache.', LOG_INFO);
 				$objectClassesCache->flush();
+			}
+			if ($flushDoctrineProxyCache === TRUE) {
+				$this->systemLogger->log('Domain model changes have been detected, triggering Doctrine 2 proxy rebuilding.', LOG_INFO);
+				$objectConfigurationCache->remove('doctrineProxyCodeUpToDate');
+			}
 			break;
-			case 'FLOW3_TranslationFiles' :
-				foreach ($changedFiles as $pathAndFilename => $status) {
-					$matches = array();
-					if (preg_match('/\/Translations\/.+\.xlf/', $pathAndFilename, $matches) === 1) {
-						$this->systemLogger->log('The localization files have changed, thus flushing the I18n XML model cache.', LOG_INFO);
-						$this->getCache('FLOW3_I18n_XmlModelCache')->flush();
-						break;
-					}
+		case 'FLOW3_ConfigurationFiles':
+			$policyChangeDetected = FALSE;
+			$routesChangeDetected = FALSE;
+			foreach (array_keys($changedFiles) as $pathAndFilename) {
+				$filename = basename($pathAndFilename);
+				if (!in_array($filename, array('Policy.yaml', 'Routes.yaml'))) {
+					continue;
 				}
+				if ($policyChangeDetected === FALSE && basename($pathAndFilename) === 'Policy.yaml') {
+					$this->systemLogger->log('The security policies have changed, flushing the policy cache.', LOG_INFO);
+					$this->getCache('FLOW3_Security_Policy')->flush();
+					$policyChangeDetected = TRUE;
+				} elseif ($routesChangeDetected === FALSE && basename($pathAndFilename) === 'Routes.yaml') {
+					$this->systemLogger->log('A Routes.yaml file has been changed, flushing the routing cache.', LOG_INFO);
+					$this->getCache('FLOW3_Mvc_Routing_FindMatchResults')->flush();
+					$this->getCache('FLOW3_Mvc_Routing_Resolve')->flush();
+					$routesChangeDetected = TRUE;
+				}
+			}
+			$this->systemLogger->log('The configuration has changed, triggering an AOP proxy class rebuild.', LOG_INFO);
+			$objectConfigurationCache->remove('allAspectClassesUpToDate');
+			$objectConfigurationCache->remove('allCompiledCodeUpToDate');
+			$objectClassesCache->flush();
+			break;
+		case 'FLOW3_TranslationFiles':
+			foreach ($changedFiles as $pathAndFilename => $status) {
+				$matches = array();
+				if (preg_match('/\\/Translations\\/.+\\.xlf/', $pathAndFilename, $matches) === 1) {
+					$this->systemLogger->log('The localization files have changed, thus flushing the I18n XML model cache.', LOG_INFO);
+					$this->getCache('FLOW3_I18n_XmlModelCache')->flush();
+					break;
+				}
+			}
 			break;
 		}
 	}
@@ -296,8 +278,8 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 * @return string Class Tag
 	 * @api
 	 */
-	public static function getClassTag($className = '') {
-		return ($className === '') ? t3lib_cache_frontend_Frontend::TAG_CLASS : t3lib_cache_frontend_Frontend::TAG_CLASS . str_replace('\\', '_', $className);
+	static public function getClassTag($className = '') {
+		return $className === '' ? t3lib_cache_frontend_Frontend::TAG_CLASS : t3lib_cache_frontend_Frontend::TAG_CLASS . str_replace('\\', '_', $className);
 	}
 
 	/**
@@ -325,20 +307,19 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 		} else {
 			$frontend = $this->defaultCacheConfiguration['frontend'];
 		}
-
 		if (isset($this->cacheConfigurations[$identifier]['backend'])) {
 			$backend = $this->cacheConfigurations[$identifier]['backend'];
 		} else {
 			$backend = $this->defaultCacheConfiguration['backend'];
 		}
-
 		if (isset($this->cacheConfigurations[$identifier]['options'])) {
 			$backendOptions = $this->cacheConfigurations[$identifier]['options'];
 		} else {
 			$backendOptions = $this->defaultCacheConfiguration['options'];
 		}
-
 		$this->cacheFactory->create($identifier, $frontend, $backend, $backendOptions);
 	}
+
 }
+
 ?>

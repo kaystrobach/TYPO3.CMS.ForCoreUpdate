@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008-2011 Benjamin Mack <mack@xnos.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008-2011 Benjamin Mack <mack@xnos.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Class to hold all the information about an AJAX call and send
  * the right headers for the request type
@@ -34,13 +33,21 @@
  * @subpackage core
  */
 class TYPO3AJAX {
-	protected $ajaxId        = NULL;
-	protected $errorMessage  = NULL;
-	protected $isError       = FALSE;
-	protected $content       = array();
+
+	protected $ajaxId = NULL;
+
+	protected $errorMessage = NULL;
+
+	protected $isError = FALSE;
+
+	protected $content = array();
+
 	protected $contentFormat = 'plain';
-	protected $charset       = 'utf-8';
+
+	protected $charset = 'utf-8';
+
 	protected $requestCharset = 'utf-8';
+
 	protected $javascriptCallbackWrap = '
 		<script type="text/javascript">
 			/*<![CDATA[*/
@@ -59,21 +66,18 @@ class TYPO3AJAX {
 	 * @param string $ajaxId The AJAX id
 	 */
 	public function __construct($ajaxId) {
-
-			// Get charset from current AJAX request (which is expected to be utf-8)
-		preg_match('/;\s*charset\s*=\s*([a-zA-Z0-9_-]*)/i', $_SERVER['CONTENT_TYPE'], $contenttype);
+		// Get charset from current AJAX request (which is expected to be utf-8)
+		preg_match('/;\\s*charset\\s*=\\s*([a-zA-Z0-9_-]*)/i', $_SERVER['CONTENT_TYPE'], $contenttype);
 		$charset = $GLOBALS['LANG']->csConvObj->parse_charset($contenttype[1]);
 		if ($charset && $charset != $this->requestCharset) {
 			$this->requestCharset = $charset;
 		}
-
-			// If the AJAX request does not have the same encoding like the backend
-			// we need to convert the POST and GET parameters in the right charset
+		// If the AJAX request does not have the same encoding like the backend
+		// we need to convert the POST and GET parameters in the right charset
 		if ($this->charset != $this->requestCharset) {
 			$GLOBALS['LANG']->csConvObj->convArray($_POST, $this->requestCharset, $this->charset);
 			$GLOBALS['LANG']->csConvObj->convArray($_GET, $this->requestCharset, $this->charset);
 		}
-
 		$this->ajaxId = $ajaxId;
 	}
 
@@ -129,7 +133,7 @@ class TYPO3AJAX {
 	 * @return mixed The content for a specific key or the whole content
 	 */
 	public function getContent($key = '') {
-		return ($key && array_key_exists($key, $this->content) ? $this->content[$key] : $this->content);
+		return $key && array_key_exists($key, $this->content) ? $this->content[$key] : $this->content;
 	}
 
 	/**
@@ -184,24 +188,26 @@ class TYPO3AJAX {
 	public function render() {
 		if ($this->isError) {
 			$this->renderAsError();
-			exit;
+			die;
 		}
 		switch ($this->contentFormat) {
-			case 'jsonhead':
-			case 'jsonbody':
-			case 'json':
-				$this->renderAsJSON();
-				break;
-			case 'javascript':
-				$this->renderAsJavascript();
-				break;
-			case 'xml':
-				$this->renderAsXML();
-				break;
-			default:
-				$this->renderAsPlain();
+		case 'jsonhead':
+
+		case 'jsonbody':
+
+		case 'json':
+			$this->renderAsJSON();
+			break;
+		case 'javascript':
+			$this->renderAsJavascript();
+			break;
+		case 'xml':
+			$this->renderAsXML();
+			break;
+		default:
+			$this->renderAsPlain();
 		}
-		exit;
+		die;
 	}
 
 	/**
@@ -214,7 +220,7 @@ class TYPO3AJAX {
 		header(t3lib_utility_Http::HTTP_STATUS_500 . ' (AJAX)');
 		header('Content-type: text/xml; charset=' . $this->charset);
 		header('X-JSON: false');
-		die('<t3err>'.htmlspecialchars($this->errorMessage).'</t3err>');
+		die(('<t3err>' . htmlspecialchars($this->errorMessage)) . '</t3err>');
 	}
 
 	/**
@@ -247,25 +253,22 @@ class TYPO3AJAX {
 	 * in your AJAX options of your AJAX request object in JS
 	 *
 	 * the content will be available
-	 *    - in the second parameter of the onSuccess / onComplete callback (except when contentFormat = 'jsonbody')
-	 *    - and in the xhr.responseText as a string (except when contentFormat = 'jsonhead')
-	 *         you can evaluate this in JS with xhr.responseText.evalJSON();
+	 * - in the second parameter of the onSuccess / onComplete callback (except when contentFormat = 'jsonbody')
+	 * - and in the xhr.responseText as a string (except when contentFormat = 'jsonhead')
+	 * you can evaluate this in JS with xhr.responseText.evalJSON();
 	 *
 	 * @return void
 	 */
 	protected function renderAsJSON() {
-			// If the backend does not run in UTF-8 then we need to convert it to unicode as
-			// the json_encode method will return empty otherwise
+		// If the backend does not run in UTF-8 then we need to convert it to unicode as
+		// the json_encode method will return empty otherwise
 		if ($this->charset != $this->requestCharset) {
 			$GLOBALS['LANG']->csConvObj->convArray($this->content, $this->charset, $this->requestCharset);
 		}
-
 		$content = json_encode($this->content);
-
 		header('Content-type: application/json; charset=' . $this->requestCharset);
 		header('X-JSON: ' . ($this->contentFormat != 'jsonbody' ? $content : TRUE));
-
-			// Bring content in xhr.responseText except when in "json head only" mode
+		// Bring content in xhr.responseText except when in "json head only" mode
 		if ($this->contentFormat != 'jsonhead') {
 			echo $content;
 		}
@@ -278,16 +281,16 @@ class TYPO3AJAX {
 	 * @return void
 	 */
 	protected function renderAsJavascript() {
-			// If the backend does not run in UTF-8 then we need to convert it to unicode as
-			// the json_encode method will return empty otherwise
+		// If the backend does not run in UTF-8 then we need to convert it to unicode as
+		// the json_encode method will return empty otherwise
 		if ($this->charset != $this->requestCharset) {
 			$GLOBALS['LANG']->csConvObj->convArray($this->content, $this->charset, $this->requestCharset);
 		}
-
 		$content = str_replace('|', json_encode($this->content), $this->javascriptCallbackWrap);
-
 		header('Content-type: text/html; charset=' . $this->requestCharset);
 		echo $content;
 	}
+
 }
+
 ?>

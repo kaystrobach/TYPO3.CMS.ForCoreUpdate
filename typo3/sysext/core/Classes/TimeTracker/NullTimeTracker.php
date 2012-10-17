@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * A fake time tracker that does nothing but providing the methods of the real time tracker.
  * This is done to save some performance over the real time tracker.
@@ -32,6 +30,7 @@
  * @subpackage t3lib
  */
 class t3lib_TimeTrackNull {
+
 	/**
 	 * "Constructor"
 	 * Sets the starting time
@@ -41,6 +40,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function start() {
+
 	}
 
 	/**
@@ -53,6 +53,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function push($tslabel, $value = '') {
+
 	}
 
 	/**
@@ -64,6 +65,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function pull($content = '') {
+
 	}
 
 	/**
@@ -76,6 +78,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function setTSselectQuery(array $data, $msg = '') {
+
 	}
 
 	/**
@@ -88,6 +91,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function setTSlogMessage($content, $num = 0) {
+
 	}
 
 	/**
@@ -98,6 +102,7 @@ class t3lib_TimeTrackNull {
 	 * @return string HTML table with the information about parsing times.
 	 */
 	public function printTSlog() {
+
 	}
 
 	/**
@@ -108,6 +113,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function incStackPointer() {
+
 	}
 
 	/**
@@ -118,6 +124,7 @@ class t3lib_TimeTrackNull {
 	 * @return void
 	 */
 	public function decStackPointer() {
+
 	}
 
 	/**
@@ -127,7 +134,9 @@ class t3lib_TimeTrackNull {
 	 * @return integer The microtime value as milliseconds value
 	 */
 	public function getMilliseconds($microtime = NULL) {
+
 	}
+
 }
 
 ?>

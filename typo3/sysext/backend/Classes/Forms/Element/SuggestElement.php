@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * TCEforms wizard for rendering an AJAX selector for records
  *
@@ -32,10 +31,13 @@
  * @author Benjamin Mack <benni@typo3.org>
  */
 class t3lib_TCEforms_Suggest {
-		// Count the number of ajax selectors used
+
+	// Count the number of ajax selectors used
 	public $suggestCount = 0;
+
 	public $cssClass = 'typo3-TCEforms-suggest';
-		// Reference to t3lib_tceforms
+
+	// Reference to t3lib_tceforms
 	public $TCEformsObj;
 
 	/**
@@ -60,46 +62,38 @@ class t3lib_TCEforms_Suggest {
 	 */
 	public function renderSuggestSelector($fieldname, $table, $field, array $row, array $config) {
 		$this->suggestCount++;
-
-		$containerCssClass = $this->cssClass . ' ' . $this->cssClass . '-position-right';
-		$suggestId = 'suggest-' . $table . '-' . $field . '-' . $row['uid'];
-
+		$containerCssClass = (($this->cssClass . ' ') . $this->cssClass) . '-position-right';
+		$suggestId = (((('suggest-' . $table) . '-') . $field) . '-') . $row['uid'];
 		if ($GLOBALS['TCA'][$table]['columns'][$field]['config']['type'] === 'flex') {
-			$fieldPattern = 'data[' . $table . '][' . $row['uid'] . '][';
+			$fieldPattern = ((('data[' . $table) . '][') . $row['uid']) . '][';
 			$flexformField = str_replace($fieldPattern, '', $fieldname);
 			$flexformField = substr($flexformField, 0, -1);
 			$field = str_replace(array(']['), '|', $flexformField);
 		}
-
-		$selector = '
-		<div class="' . $containerCssClass . '" id="' . $suggestId . '">
-			<input type="text" id="' . $fieldname . 'Suggest" value="' .
-					$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.findRecord') . '" class="' . $this->cssClass . '-search" />
-			<div class="' . $this->cssClass . '-indicator" style="display: none;" id="' . $fieldname . 'SuggestIndicator">
-				<img src="' . $GLOBALS['BACK_PATH'] . 'gfx/spinner.gif" alt="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:alttext.suggestSearching') . '" />
+		$selector = ((((((((((((((((((((('
+		<div class="' . $containerCssClass) . '" id="') . $suggestId) . '">
+			<input type="text" id="') . $fieldname) . 'Suggest" value="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.findRecord')) . '" class="') . $this->cssClass) . '-search" />
+			<div class="') . $this->cssClass) . '-indicator" style="display: none;" id="') . $fieldname) . 'SuggestIndicator">
+				<img src="') . $GLOBALS['BACK_PATH']) . 'gfx/spinner.gif" alt="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:alttext.suggestSearching')) . '" />
 			</div>
-			<div class="' . $this->cssClass . '-choices" style="display: none;" id="' . $fieldname . 'SuggestChoices"></div>
+			<div class="') . $this->cssClass) . '-choices" style="display: none;" id="') . $fieldname) . 'SuggestChoices"></div>
 
 		</div>';
-
-			// Get minimumCharacters from TCA
+		// Get minimumCharacters from TCA
 		if (isset($config['fieldConf']['config']['wizards']['suggest']['default']['minimumCharacters'])) {
 			$minChars = intval($config['fieldConf']['config']['wizards']['suggest']['default']['minimumCharacters']);
 		}
-			// Overwrite it with minimumCharacters from TSConfig (TCEFORM) if given
+		// Overwrite it with minimumCharacters from TSConfig (TCEFORM) if given
 		if (isset($config['fieldTSConfig']['suggest.']['default.']['minimumCharacters'])) {
 			$minChars = intval($config['fieldTSConfig']['suggest.']['default.']['minimumCharacters']);
 		}
-		$minChars = ($minChars > 0 ? $minChars : 2);
-
-			// Replace "-" with ucwords for the JS object name
+		$minChars = $minChars > 0 ? $minChars : 2;
+		// Replace "-" with ucwords for the JS object name
 		$jsObj = str_replace(' ', '', ucwords(str_replace('-', ' ', t3lib_div::strtolower($suggestId))));
-		$this->TCEformsObj->additionalJS_post[] = '
-			var ' . $jsObj . ' = new TCEForms.Suggest("' . $fieldname . '", "' . $table . '", "' . $field .
-												'", "' . $row['uid'] . '", ' . $row['pid'] . ', ' . $minChars . ');
-			' . $jsObj . '.defaultValue = "' . t3lib_div::slashJS($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.findRecord')) . '";
+		$this->TCEformsObj->additionalJS_post[] = ((((((((((((((((('
+			var ' . $jsObj) . ' = new TCEForms.Suggest("') . $fieldname) . '", "') . $table) . '", "') . $field) . '", "') . $row['uid']) . '", ') . $row['pid']) . ', ') . $minChars) . ');
+			') . $jsObj) . '.defaultValue = "') . t3lib_div::slashJS($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.findRecord'))) . '";
 		';
-
 		return $selector;
 	}
 
@@ -111,19 +105,16 @@ class t3lib_TCEforms_Suggest {
 	 * @return void
 	 */
 	public function processAjaxRequest($params, &$ajaxObj) {
-
-			// Get parameters from $_GET/$_POST
+		// Get parameters from $_GET/$_POST
 		$search = t3lib_div::_GP('value');
 		$table = t3lib_div::_GP('table');
 		$field = t3lib_div::_GP('field');
 		$uid = t3lib_div::_GP('uid');
 		$pageId = t3lib_div::_GP('pid');
-
 		t3lib_div::loadTCA($table);
-
-			// If the $uid is numeric, we have an already existing element, so get the
-			// TSconfig of the page itself or the element container (for non-page elements)
-			// otherwise it's a new element, so use given id of parent page (i.e., don't modify it here)
+		// If the $uid is numeric, we have an already existing element, so get the
+		// TSconfig of the page itself or the element container (for non-page elements)
+		// otherwise it's a new element, so use given id of parent page (i.e., don't modify it here)
 		if (is_numeric($uid)) {
 			if ($table == 'pages') {
 				$pageId = $uid;
@@ -132,16 +123,13 @@ class t3lib_TCEforms_Suggest {
 				$pageId = $row['pid'];
 			}
 		}
-
 		$TSconfig = t3lib_BEfunc::getPagesTSconfig($pageId);
 		$queryTables = array();
 		$foreign_table_where = '';
-
 		$fieldConfig = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
-
 		$parts = explode('|', $field);
 		if ($GLOBALS['TCA'][$table]['columns'][$parts[0]]['config']['type'] === 'flex') {
-			if (is_array($row) && (count($row) > 0)) {
+			if (is_array($row) && count($row) > 0) {
 				$flexfieldTCAConfig = $GLOBALS['TCA'][$table]['columns'][$parts[0]]['config'];
 				$flexformDSArray = t3lib_BEfunc::getFlexFormDS($flexfieldTCAConfig, $row, $table);
 				$flexformDSArray = t3lib_div::resolveAllSheetsInDS($flexformDSArray);
@@ -162,112 +150,96 @@ class t3lib_TCEforms_Suggest {
 				$field = str_replace('|', '][', $field);
 			}
 		}
-
 		$wizardConfig = $fieldConfig['wizards']['suggest'];
-
 		if (isset($fieldConfig['allowed'])) {
 			$queryTables = t3lib_div::trimExplode(',', $fieldConfig['allowed']);
 		} elseif (isset($fieldConfig['foreign_table'])) {
 			$queryTables = array($fieldConfig['foreign_table']);
 			$foreign_table_where = $fieldConfig['foreign_table_where'];
-				// strip ORDER BY clause
+			// strip ORDER BY clause
 			$foreign_table_where = trim(preg_replace('/ORDER[[:space:]]+BY.*/i', '', $foreign_table_where));
 		}
 		$resultRows = array();
-
-			// fetch the records for each query table. A query table is a table from which records are allowed to
-			// be added to the TCEForm selector, originally fetched from the "allowed" config option in the TCA
+		// fetch the records for each query table. A query table is a table from which records are allowed to
+		// be added to the TCEForm selector, originally fetched from the "allowed" config option in the TCA
 		foreach ($queryTables as $queryTable) {
 			t3lib_div::loadTCA($queryTable);
-
-				// if the table does not exist, skip it
+			// if the table does not exist, skip it
 			if (!is_array($GLOBALS['TCA'][$queryTable]) || !count($GLOBALS['TCA'][$queryTable])) {
 				continue;
 			}
 			$config = (array) $wizardConfig['default'];
-
 			if (is_array($wizardConfig[$queryTable])) {
 				$config = t3lib_div::array_merge_recursive_overrule($config, $wizardConfig[$queryTable]);
 			}
-
-				// merge the configurations of different "levels" to get the working configuration for this table and
-				// field (i.e., go from the most general to the most special configuration)
+			// merge the configurations of different "levels" to get the working configuration for this table and
+			// field (i.e., go from the most general to the most special configuration)
 			if (is_array($TSconfig['TCEFORM.']['suggest.']['default.'])) {
 				$config = t3lib_div::array_merge_recursive_overrule($config, $TSconfig['TCEFORM.']['suggest.']['default.']);
 			}
-
 			if (is_array($TSconfig['TCEFORM.']['suggest.'][$queryTable . '.'])) {
 				$config = t3lib_div::array_merge_recursive_overrule($config, $TSconfig['TCEFORM.']['suggest.'][$queryTable . '.']);
 			}
-
-				// use $table instead of $queryTable here because we overlay a config
-				// for the input-field here, not for the queried table
+			// use $table instead of $queryTable here because we overlay a config
+			// for the input-field here, not for the queried table
 			if (is_array($TSconfig['TCEFORM.'][$table . '.'][$field . '.']['suggest.']['default.'])) {
 				$config = t3lib_div::array_merge_recursive_overrule($config, $TSconfig['TCEFORM.'][$table . '.'][$field . '.']['suggest.']['default.']);
 			}
 			if (is_array($TSconfig['TCEFORM.'][$table . '.'][$field . '.']['suggest.'][$queryTable . '.'])) {
 				$config = t3lib_div::array_merge_recursive_overrule($config, $TSconfig['TCEFORM.'][$table . '.'][$field . '.']['suggest.'][$queryTable . '.']);
 			}
-
-				//process addWhere
+			//process addWhere
 			if (!isset($config['addWhere']) && $foreign_table_where) {
 				$config['addWhere'] = $foreign_table_where;
 			}
 			if (isset($config['addWhere'])) {
 				$config['addWhere'] = strtr(' ' . $config['addWhere'], array(
-																			'###THIS_UID###' => intval($uid),
-																			'###CURRENT_PID###' => intval($pageId),
-																		));
+					'###THIS_UID###' => intval($uid),
+					'###CURRENT_PID###' => intval($pageId)
+				));
 			}
-				// instantiate the class that should fetch the records for this $queryTable
+			// instantiate the class that should fetch the records for this $queryTable
 			$receiverClassName = $config['receiverClass'];
 			if (!class_exists($receiverClassName)) {
 				$receiverClassName = 't3lib_TCEforms_Suggest_DefaultReceiver';
 			}
 			$receiverObj = t3lib_div::makeInstance($receiverClassName, $queryTable, $config);
-
 			$params = array('value' => $search);
 			$rows = $receiverObj->queryTable($params);
-
 			if (empty($rows)) {
 				continue;
 			}
 			$resultRows = t3lib_div::array_merge($resultRows, $rows);
 			unset($rows);
 		}
-
 		$listItems = array();
 		if (count($resultRows) > 0) {
-				// traverse all found records and sort them
+			// traverse all found records and sort them
 			$rowsSort = array();
 			foreach ($resultRows as $key => $row) {
 				$rowsSort[$key] = $row['text'];
 			}
 			asort($rowsSort);
 			$rowsSort = array_keys($rowsSort);
-
-				// Limit the number of items in the result list
+			// Limit the number of items in the result list
 			$maxItems = $config['maxItemsInResultList'] ? $config['maxItemsInResultList'] : 10;
 			$maxItems = min(count($resultRows), $maxItems);
-
-				// put together the selector entry
+			// put together the selector entry
 			for ($i = 0; $i < $maxItems; $i++) {
 				$row = $resultRows[$rowsSort[$i]];
-				$rowId = $row['table'] . '-' . $row['uid'] . '-' . $table . '-' . $uid . '-' . $field;
-				$listItems[] = '<li' . ($row['class'] != '' ? ' class="' . $row['class'] . '"' : '') .
-							' id="' . $rowId . '" style="' . $row['style'] . '">' . $row['text'] . '</li>';
+				$rowId = ((((((($row['table'] . '-') . $row['uid']) . '-') . $table) . '-') . $uid) . '-') . $field;
+				$listItems[] = ((((((('<li' . ($row['class'] != '' ? (' class="' . $row['class']) . '"' : '')) . ' id="') . $rowId) . '" style="') . $row['style']) . '">') . $row['text']) . '</li>';
 			}
 		}
-
 		if (count($listItems) > 0) {
 			$list = implode('', $listItems);
 		} else {
-			$list = '<li class="suggest-noresults"><i>' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.noRecordFound') . '</i></li>';
+			$list = ('<li class="suggest-noresults"><i>' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.noRecordFound')) . '</i></li>';
 		}
-
-		$list = '<ul class="' . $this->cssClass . '-resultlist">' . $list . '</ul>';
+		$list = ((('<ul class="' . $this->cssClass) . '-resultlist">') . $list) . '</ul>';
 		$ajaxObj->addContent(0, $list);
 	}
+
 }
 
 ?>

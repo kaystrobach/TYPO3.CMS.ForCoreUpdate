@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to handle system commands.
  *
@@ -42,7 +41,7 @@ final class t3lib_utility_Command {
 	 * @param integer $returnValue
 	 * @return NULL|array
 	 */
-	public static function exec($command, &$output = NULL, &$returnValue = 0) {
+	static public function exec($command, &$output = NULL, &$returnValue = 0) {
 		$lastLine = exec($command, $output, $returnValue);
 		return $lastLine;
 	}
@@ -55,66 +54,57 @@ final class t3lib_utility_Command {
 	 * @param string $path Override the default path (e.g. used by the install tool)
 	 * @return string Compiled command that deals with IM6 & GraphicsMagick
 	 */
-	public static function imageMagickCommand($command, $parameters, $path = '') {
+	static public function imageMagickCommand($command, $parameters, $path = '') {
 		$gfxConf = $GLOBALS['TYPO3_CONF_VARS']['GFX'];
-		$isExt = (TYPO3_OS == 'WIN' ? '.exe' : '');
+		$isExt = TYPO3_OS == 'WIN' ? '.exe' : '';
 		$switchCompositeParameters = FALSE;
-
 		if (!$path) {
 			$path = $gfxConf['im_path'];
 		}
 		$path = t3lib_div::fixWindowsFilePath($path);
-
 		$im_version = strtolower($gfxConf['im_version_5']);
 		$combineScript = $gfxConf['im_combine_filename'] ? trim($gfxConf['im_combine_filename']) : 'combine';
-
-			// This is only used internally, has no effect outside
+		// This is only used internally, has no effect outside
 		if ($command === 'combine') {
 			$command = 'composite';
 		}
-
-			// Compile the path & command
+		// Compile the path & command
 		if ($im_version === 'gm') {
 			$switchCompositeParameters = TRUE;
-			$path = escapeshellarg($path . 'gm' . $isExt) . ' ' . $command;
+			$path = (escapeshellarg((($path . 'gm') . $isExt)) . ' ') . $command;
 		} else {
 			if ($im_version === 'im6') {
 				$switchCompositeParameters = TRUE;
 			}
-			$path = escapeshellarg($path . (($command == 'composite') ? $combineScript : $command) . $isExt);
+			$path = escapeshellarg(($path . ($command == 'composite' ? $combineScript : $command)) . $isExt);
 		}
-
-			// strip profile information for thumbnails and reduce their size
-		if ($parameters && $command != 'identify' && $gfxConf['im_useStripProfileByDefault'] && $gfxConf['im_stripProfileCommand'] != '') {
+		// strip profile information for thumbnails and reduce their size
+		if ((($parameters && $command != 'identify') && $gfxConf['im_useStripProfileByDefault']) && $gfxConf['im_stripProfileCommand'] != '') {
 			if (strpos($parameters, $gfxConf['im_stripProfileCommand']) === FALSE) {
-					// Determine whether the strip profile action has be disabled by TypoScript:
+				// Determine whether the strip profile action has be disabled by TypoScript:
 				if ($parameters !== '-version' && strpos($parameters, '###SkipStripProfile###') === FALSE) {
-					$parameters = $gfxConf['im_stripProfileCommand'] . ' ' . $parameters;
+					$parameters = ($gfxConf['im_stripProfileCommand'] . ' ') . $parameters;
 				} else {
 					$parameters = str_replace('###SkipStripProfile###', '', $parameters);
 				}
 			}
 		}
-
-		$cmdLine = $path . ' ' . $parameters;
-
-			// Because of some weird incompatibilities between ImageMagick 4 and 6 (plus GraphicsMagick),
-			// it is needed to change the parameters order under some preconditions
+		$cmdLine = ($path . ' ') . $parameters;
+		// Because of some weird incompatibilities between ImageMagick 4 and 6 (plus GraphicsMagick),
+		// it is needed to change the parameters order under some preconditions
 		if ($command == 'composite' && $switchCompositeParameters) {
 			$paramsArr = t3lib_div::unQuoteFilenames($parameters);
-
-				// The mask image has been specified => swap the parameters
+			// The mask image has been specified => swap the parameters
 			if (count($paramsArr) > 5) {
 				$tmp = $paramsArr[count($paramsArr) - 3];
 				$paramsArr[count($paramsArr) - 3] = $paramsArr[count($paramsArr) - 4];
 				$paramsArr[count($paramsArr) - 4] = $tmp;
 			}
-
-			$cmdLine = $path . ' ' . implode(' ', $paramsArr);
+			$cmdLine = ($path . ' ') . implode(' ', $paramsArr);
 		}
-
 		return $cmdLine;
 	}
+
 }
 
 ?>

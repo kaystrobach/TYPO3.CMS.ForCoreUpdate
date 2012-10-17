@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * interface for classes with hook for postprocessing extTables after loading
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_extTables_PostProcessingHook {
-
+interface t3lib_extTables_PostProcessingHook
+{
 	/**
 	 * Function which may process data created / registered by extTables
 	 * scripts (f.e. modifying TCA data of all extensions)
@@ -43,5 +42,4 @@ interface t3lib_extTables_PostProcessingHook {
 	public function processData();
 
 }
-
 ?>

@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class t3lib_formprotection_InstallToolFormProtection.
  *
@@ -37,9 +36,9 @@
  *
  * <pre>
  * $formToken = $this->formProtection->generateToken(
- *	'installToolPassword', 'change'
+ * 'installToolPassword', 'change'
  * );
- * // then puts the generated form token in a hidden field in the template
+ * then puts the generated form token in a hidden field in the template
  * </pre>
  *
  * The three parameters $formName, $action and $formInstanceName can be
@@ -52,28 +51,26 @@
  *
  * <pre>
  * if ($dataHasBeenSubmitted && $this->formProtection()->validateToken(
- *	 $_POST['formToken'],
- *	 'installToolPassword',
- *	 'change'
+ * $_POST['formToken'],
+ * 'installToolPassword',
+ * 'change'
  * ) {
- *	 // processes the data
+ * processes the data
  * } else {
- *	 // no need to do anything here as the install tool form protection will
- *	 // create an error message for an invalid token
+ * no need to do anything here as the install tool form protection will
+ * create an error message for an invalid token
  * }
  * </pre>
- *
  */
-
 /**
  * Install Tool form protection
  *
  * @package TYPO3
  * @subpackage t3lib
- *
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  */
 class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtection_Abstract {
+
 	/**
 	 * an instance of the install tool used for displaying messages
 	 *
@@ -95,7 +92,6 @@ class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtectio
 	 * This instance will be used for displaying messages.
 	 *
 	 * @param tx_install $installTool the current instance of the install tool
-	 *
 	 * @return void
 	 */
 	public function injectInstallTool(tx_install $installTool) {
@@ -109,10 +105,7 @@ class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtectio
 	 * @return void
 	 */
 	protected function createValidationErrorMessage() {
-		$this->installTool->addErrorMessage(
-			'Validating the security token of this form has failed. ' .
-			'Please reload the form and submit it again.'
-		);
+		$this->installTool->addErrorMessage('Validating the security token of this form has failed. ' . 'Please reload the form and submit it again.');
 	}
 
 	/**
@@ -121,9 +114,7 @@ class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtectio
 	 * @return void
 	 */
 	protected function retrieveSessionToken() {
-		if (isset($_SESSION['installToolFormToken'])
-			&& !empty($_SESSION['installToolFormToken'])
-		) {
+		if (isset($_SESSION['installToolFormToken']) && !empty($_SESSION['installToolFormToken'])) {
 			$this->sessionToken = $_SESSION['installToolFormToken'];
 		} else {
 			$this->sessionToken = $this->generateSessionToken();
@@ -140,6 +131,7 @@ class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtectio
 	public function persistSessionToken() {
 		$_SESSION['installToolFormToken'] = $this->sessionToken;
 	}
+
 }
 
 ?>

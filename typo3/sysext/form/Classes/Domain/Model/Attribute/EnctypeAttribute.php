@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'enctype'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Enctype extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'enctype'.
 	 * Used with the element 'form'
@@ -52,5 +52,7 @@ class tx_form_Domain_Model_Attributes_Enctype extends tx_form_Domain_Model_Attri
 		}
 		return $attribute;
 	}
+
 }
+
 ?>

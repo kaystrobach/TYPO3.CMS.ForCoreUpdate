@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Main model for extension configuration categories
  *
@@ -53,7 +52,6 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 	 */
 	public function __construct() {
 		$this->subcategories = new Tx_Extbase_Persistence_ObjectStorage();
-
 	}
 
 	/**
@@ -110,5 +108,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 	public function getHighlightText() {
 		return $this->highlightText;
 	}
+
 }
+
 ?>

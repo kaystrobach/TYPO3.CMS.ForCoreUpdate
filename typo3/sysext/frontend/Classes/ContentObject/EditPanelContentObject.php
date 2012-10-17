@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains EDITPANEL class object.
  *
@@ -43,12 +42,12 @@ class tslib_content_EditPanel extends tslib_content_Abstract {
 		if ($GLOBALS['TSFE']->beUserLogin) {
 			$theValue = $this->cObj->editPanel($theValue, $conf);
 		}
-
 		if (isset($conf['stdWrap.'])) {
 			$theValue = $this->cObj->stdWrap($theValue, $conf['stdWrap.']);
 		}
-
 		return $theValue;
 	}
+
 }
+
 ?>

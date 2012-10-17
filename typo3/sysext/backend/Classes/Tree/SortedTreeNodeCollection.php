@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Sorted Tree Node Collection
  *
@@ -37,6 +36,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_SortedNodeCollection extends t3lib_tree_NodeCollection {
+
 	/**
 	 * Checks if a specific node is inside the collection
 	 *
@@ -66,7 +66,7 @@ class t3lib_tree_SortedNodeCollection extends t3lib_tree_NodeCollection {
 	 * @return integer
 	 */
 	protected function binarySearch(t3lib_tree_Node $node, $start, $end) {
-		if ((!$start && ($end - $start) >= 2) || ($end - $start) > 2) {
+		if (!$start && $end - $start >= 2 || $end - $start > 2) {
 			$divider = ceil(($end - $start) / 2);
 			if ($this->offsetGet($divider)->equals($node)) {
 				return $divider;
@@ -112,4 +112,5 @@ class t3lib_tree_SortedNodeCollection extends t3lib_tree_NodeCollection {
 	}
 
 }
+
 ?>

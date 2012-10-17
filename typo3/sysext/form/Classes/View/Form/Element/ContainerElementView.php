@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract class for the form element containers (FORM and FIELDSET) view
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_View_Form_Element_Container extends tx_form_View_Form_Element_Abstract {
+
 	/**
 	 * Default layout of the container
 	 *
@@ -73,15 +73,14 @@ class tx_form_View_Form_Element_Container extends tx_form_View_Form_Element_Abst
 	 */
 	public function createChildElementFromModel($modelChild) {
 		$childElement = NULL;
-
 		$class = tx_form_Common::getInstance()->getLastPartOfClassName($modelChild);
 		$className = 'tx_form_View_Form_Element_' . ucfirst($class);
-
 		if (class_exists($className)) {
 			$childElement = t3lib_div::makeInstance($className, $modelChild);
 		}
-
 		return $childElement;
 	}
+
 }
+
 ?>

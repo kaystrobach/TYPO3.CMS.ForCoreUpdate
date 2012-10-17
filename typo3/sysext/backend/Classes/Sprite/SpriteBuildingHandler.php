@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Sprite build handler
  *
@@ -47,27 +46,16 @@ class t3lib_spritemanager_SpriteBuildingHandler extends t3lib_spritemanager_Abst
 	 */
 	public function generate() {
 		$this->generatorInstance = t3lib_div::makeInstance('t3lib_spritemanager_SpriteGenerator', 'GeneratorHandler');
-		$this->generatorInstance
-				->setOmmitSpriteNameInIconName(TRUE)
-				->setIncludeTimestampInCSS(TRUE)
-				->setSpriteFolder(t3lib_SpriteManager::$tempPath)
-				->setCSSFolder(t3lib_SpriteManager::$tempPath);
-
-		$iconsToProcess = array_merge(
-			(array) $GLOBALS['TBE_STYLES']['spritemanager']['singleIcons'],
-			$this->collectTcaSpriteIcons()
-		);
-
+		$this->generatorInstance->setOmmitSpriteNameInIconName(TRUE)->setIncludeTimestampInCSS(TRUE)->setSpriteFolder(t3lib_SpriteManager::$tempPath)->setCSSFolder(t3lib_SpriteManager::$tempPath);
+		$iconsToProcess = array_merge((array) $GLOBALS['TBE_STYLES']['spritemanager']['singleIcons'], $this->collectTcaSpriteIcons());
 		foreach ($iconsToProcess as $iconName => $iconFile) {
 			$iconsToProcess[$iconName] = t3lib_div::resolveBackPath('typo3/' . $iconFile);
 		}
-
 		$generatorResponse = $this->generatorInstance->generateSpriteFromArray($iconsToProcess);
-
 		$this->iconNames = array_merge($this->iconNames, $generatorResponse['iconNames']);
-
 		parent::generate();
 	}
+
 }
 
 ?>

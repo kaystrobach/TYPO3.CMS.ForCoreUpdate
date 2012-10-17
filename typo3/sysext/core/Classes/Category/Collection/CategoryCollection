@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Category Collection to handle records attached to a category
  *
@@ -32,16 +31,14 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_category_Collection_CategoryCollection
-	extends t3lib_collection_AbstractRecordCollection
-	implements t3lib_collection_Editable {
+class t3lib_category_Collection_CategoryCollection extends t3lib_collection_AbstractRecordCollection implements t3lib_collection_Editable {
 
 	/**
 	 * The table name collections are stored to
 	 *
 	 * @var string
 	 */
-	protected static $storageTableName = 'sys_category';
+	static protected $storageTableName = 'sys_category';
 
 	/**
 	 * Creates this object.
@@ -51,14 +48,10 @@ class t3lib_category_Collection_CategoryCollection
 	 */
 	public function __construct($tableName = NULL) {
 		parent::__construct();
-
 		if (!empty($tableName)) {
 			$this->setItemTableName($tableName);
 		} elseif (empty($this->itemTableName)) {
-			throw new RuntimeException(
-				't3lib_category_Collection_CategoryCollection needs a valid itemTableName.',
-				1341826168
-			);
+			throw new RuntimeException('t3lib_category_Collection_CategoryCollection needs a valid itemTableName.', 1341826168);
 		}
 	}
 
@@ -70,19 +63,13 @@ class t3lib_category_Collection_CategoryCollection
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
 	 * @return t3lib_category_Collection_CategoryCollection
 	 */
-	public static function create(array $collectionRecord, $fillItems = FALSE) {
+	static public function create(array $collectionRecord, $fillItems = FALSE) {
 		/** @var $collection t3lib_category_Collection_CategoryCollection */
-		$collection = t3lib_div::makeInstance(
-			't3lib_category_Collection_CategoryCollection',
-			$collectionRecord['table_name']
-		);
-
+		$collection = t3lib_div::makeInstance('t3lib_category_Collection_CategoryCollection', $collectionRecord['table_name']);
 		$collection->fromArray($collectionRecord);
-
 		if ($fillItems) {
 			$collection->loadContents();
 		}
-
 		return $collection;
 	}
 
@@ -97,17 +84,10 @@ class t3lib_category_Collection_CategoryCollection
 	 * @param string $tableName the table name
 	 * @return t3lib_collection_Collection
 	 */
-	public static function load($id, $fillItems = FALSE, $tableName = '') {
+	static public function load($id, $fillItems = FALSE, $tableName = '') {
 		t3lib_div::loadTCA(static::$storageTableName);
-
-		$collectionRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-			'*',
-			static::$storageTableName,
-			'uid=' . intval($id) . t3lib_BEfunc::deleteClause(static::$storageTableName)
-		);
-
+		$collectionRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', static::$storageTableName, ('uid=' . intval($id)) . t3lib_BEfunc::deleteClause(static::$storageTableName));
 		$collectionRecord['table_name'] = $tableName;
-
 		return self::create($collectionRecord, $fillItems);
 	}
 
@@ -120,23 +100,14 @@ class t3lib_category_Collection_CategoryCollection
 	 */
 	protected function getCollectedRecords() {
 		$relatedRecords = array();
-
 		/** @var $GLOBALS['TYPO3_DB'] t3lib_DB */
-		$resource = $this->getDatabase()->exec_SELECT_mm_query(
-			$this->getItemTableName() . '.*',
-			self::$storageTableName,
-			'sys_category_record_mm',
-			$this->getItemTableName(),
-			'AND ' . self::$storageTableName . '.uid=' . intval($this->getIdentifier())
-		);
-
+		$resource = $this->getDatabase()->exec_SELECT_mm_query($this->getItemTableName() . '.*', self::$storageTableName, 'sys_category_record_mm', $this->getItemTableName(), (('AND ' . self::$storageTableName) . '.uid=') . intval($this->getIdentifier()));
 		if ($resource) {
 			while ($record = $this->getDatabase()->sql_fetch_assoc($resource)) {
 				$relatedRecords[] = $record;
 			}
 			$this->getDatabase()->sql_free_result($resource);
 		}
-
 		return $relatedRecords;
 	}
 
@@ -153,7 +124,6 @@ class t3lib_category_Collection_CategoryCollection
 	public function loadContents() {
 		$entries = $this->getCollectedRecords();
 		$this->removeAll();
-
 		foreach ($entries as $entry) {
 			$this->add($entry);
 		}
@@ -170,7 +140,7 @@ class t3lib_category_Collection_CategoryCollection
 		return array(
 			'title' => $this->getTitle(),
 			'description' => $this->getDescription(),
-			'items' => $this->getItemUidList(TRUE),
+			'items' => $this->getItemUidList(TRUE)
 		);
 	}
 
@@ -231,12 +201,10 @@ class t3lib_category_Collection_CategoryCollection
 	 */
 	public function getItems() {
 		$itemArray = array();
-
 		/** @var $item t3lib_file_File */
 		foreach ($this->storage as $item) {
 			$itemArray[] = $item;
 		}
-
 		return $itemArray;
 	}
 
@@ -245,7 +213,7 @@ class t3lib_category_Collection_CategoryCollection
 	 *
 	 * @return string
 	 */
-	public static function getStorageTableName() {
+	static public function getStorageTableName() {
 		return self::$storageTableName;
 	}
 
@@ -254,7 +222,7 @@ class t3lib_category_Collection_CategoryCollection
 	 *
 	 * @return string
 	 */
-	public static function getStorageItemsField() {
+	static public function getStorageItemsField() {
 		return self::$storageItemsField;
 	}
 
@@ -266,6 +234,7 @@ class t3lib_category_Collection_CategoryCollection
 	protected function getDatabase() {
 		return $GLOBALS['TYPO3_DB'];
 	}
+
 }
 
 ?>

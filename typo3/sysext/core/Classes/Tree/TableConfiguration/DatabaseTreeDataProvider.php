@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * TCA tree data provider
  *
@@ -36,7 +35,6 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 
 	const MODE_CHILDREN = 1;
 	const MODE_PARENT = 2;
-
 	/**
 	 * @var string
 	 */
@@ -54,7 +52,6 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 
 	/**
 	 * @var string
-	 *
 	 */
 	protected $tableWhere = '';
 
@@ -256,25 +253,18 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 			$node->setExpanded($this->isExpanded($basicNode));
 		}
 		$node->setId($basicNode->getId());
-
-		$node->setSelectable(
-			!t3lib_div::inList($this->getNonSelectableLevelList(), $level)
-			&& !in_array($basicNode->getId(), $this->getItemUnselectableList())
-		);
+		$node->setSelectable(!t3lib_div::inList($this->getNonSelectableLevelList(), $level) && !in_array($basicNode->getId(), $this->getItemUnselectableList()));
 		$node->setSortValue($this->nodeSortValues[$basicNode->getId()]);
-
 		$node->setIcon(t3lib_iconWorks::mapRecordTypeToSpriteIconClass($this->tableName, $row));
 		$node->setParentNode($parent);
 		if ($basicNode->hasChildNodes()) {
 			$node->setHasChildren(TRUE);
-
 			$childNodes = t3lib_div::makeInstance('t3lib_tree_SortedNodeCollection');
 			foreach ($basicNode->getChildNodes() as $child) {
 				$childNodes->append($this->buildRepresentationForNode($child, $node, $level + 1));
 			}
 			$node->setChildNodes($childNodes);
 		}
-
 		return $node;
 	}
 
@@ -286,15 +276,10 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	public function initializeTreeData() {
 		parent::initializeTreeData();
 		$this->nodeSortValues = array_flip($this->itemWhiteList);
-
 		$this->columnConfiguration = $GLOBALS['TCA'][$this->getTableName()]['columns'][$this->getLookupField()]['config'];
 		if (isset($this->columnConfiguration['foreign_table']) && $this->columnConfiguration['foreign_table'] != $this->getTableName()) {
-			throw new InvalidArgumentException(
-				'TCA Tree configuration is invalid: tree for different node-Tables is not implemented yet',
-				1290944650
-			);
+			throw new InvalidArgumentException('TCA Tree configuration is invalid: tree for different node-Tables is not implemented yet', 1290944650);
 		}
-
 		$this->treeData = t3lib_div::makeInstance('t3lib_tree_Node');
 		$this->treeData->setId($this->getRootUid());
 		$this->treeData->setParentNode(NULL);
@@ -314,16 +299,12 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	protected function getChildrenOf(t3lib_tree_Node $node, $level) {
 		$nodeData = NULL;
 		if ($node->getId() !== 0) {
-			$nodeData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-				'*',
-				$this->tableName,
-				'uid=' . $node->getId()
-			);
+			$nodeData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->tableName, 'uid=' . $node->getId());
 		}
 		if ($nodeData == NULL) {
 			$nodeData = array(
 				'uid' => 0,
-				$this->getLookupField() => '',
+				$this->getLookupField() => ''
 			);
 		}
 		$storage = NULL;
@@ -342,7 +323,6 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 				$storage->append($node);
 			}
 		}
-
 		return $storage;
 	}
 
@@ -358,16 +338,13 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 		} else {
 			$children = $this->getChildrenUidsFromChildrenRelation($row);
 		}
-
 		$allowedArray = array();
 		foreach ($children as $child) {
 			if (!in_array($child, $this->idCache) && in_array($child, $this->itemWhiteList)) {
 				$allowedArray[] = $child;
 			}
 		}
-
 		$this->idCache = array_merge($this->idCache, $allowedArray);
-
 		return $allowedArray;
 	}
 
@@ -379,35 +356,25 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	 */
 	protected function getChildrenUidsFromParentRelation(array $row) {
 		$uid = $row['uid'];
-
 		switch ((string) $this->columnConfiguration['type']) {
-			case 'inline':
-			case 'select':
-				if ($this->columnConfiguration['MM']) {
-					$dbGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
-						// Dummy field for setting "look from other site"
-					$this->columnConfiguration['MM_oppositeField'] = 'children';
+		case 'inline':
 
-					$dbGroup->start(
-						$row[$this->getLookupField()],
-						$this->getTableName(),
-						$this->columnConfiguration['MM'],
-						$uid,
-						$this->getTableName(),
-						$this->columnConfiguration
-					);
-
-					$relatedUids = $dbGroup->tableArray[$this->getTableName()];
-				} elseif ($this->columnConfiguration['foreign_field']) {
-					$relatedUids = $this->listFieldQuery($this->columnConfiguration['foreign_field'], $uid);
-				} else {
-					$relatedUids = $this->listFieldQuery($this->getLookupField(), $uid);
-				}
-			break;
-			default:
+		case 'select':
+			if ($this->columnConfiguration['MM']) {
+				$dbGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				// Dummy field for setting "look from other site"
+				$this->columnConfiguration['MM_oppositeField'] = 'children';
+				$dbGroup->start($row[$this->getLookupField()], $this->getTableName(), $this->columnConfiguration['MM'], $uid, $this->getTableName(), $this->columnConfiguration);
+				$relatedUids = $dbGroup->tableArray[$this->getTableName()];
+			} elseif ($this->columnConfiguration['foreign_field']) {
+				$relatedUids = $this->listFieldQuery($this->columnConfiguration['foreign_field'], $uid);
+			} else {
 				$relatedUids = $this->listFieldQuery($this->getLookupField(), $uid);
+			}
+			break;
+		default:
+			$relatedUids = $this->listFieldQuery($this->getLookupField(), $uid);
 		}
-
 		return $relatedUids;
 	}
 
@@ -421,39 +388,26 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 		$relatedUids = array();
 		$uid = $row['uid'];
 		$value = $row[$this->getLookupField()];
-
 		switch ((string) $this->columnConfiguration['type']) {
-			case 'inline':
-			case 'select':
-				if ($this->columnConfiguration['MM']) {
-					$dbGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
-					$dbGroup->start(
-						$value,
-						$this->getTableName(),
-						$this->columnConfiguration['MM'],
-						$uid,
-						$this->getTableName(),
-						$this->columnConfiguration
-					);
+		case 'inline':
 
-					$relatedUids = $dbGroup->tableArray[$this->getTableName()];
-				} elseif ($this->columnConfiguration['foreign_field']) {
-					$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-						'uid',
-						$this->getTableName(),
-						$this->columnConfiguration['foreign_field'] . '=' . intval($uid)
-					);
-					foreach ($records as $record) {
-						$relatedUids[] = $record['uid'];
-					}
-				} else {
-					$relatedUids = t3lib_div::intExplode(',', $value, TRUE);
+		case 'select':
+			if ($this->columnConfiguration['MM']) {
+				$dbGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				$dbGroup->start($value, $this->getTableName(), $this->columnConfiguration['MM'], $uid, $this->getTableName(), $this->columnConfiguration);
+				$relatedUids = $dbGroup->tableArray[$this->getTableName()];
+			} elseif ($this->columnConfiguration['foreign_field']) {
+				$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $this->getTableName(), ($this->columnConfiguration['foreign_field'] . '=') . intval($uid));
+				foreach ($records as $record) {
+					$relatedUids[] = $record['uid'];
 				}
-			break;
-			default:
+			} else {
 				$relatedUids = t3lib_div::intExplode(',', $value, TRUE);
+			}
+			break;
+		default:
+			$relatedUids = t3lib_div::intExplode(',', $value, TRUE);
 		}
-
 		return $relatedUids;
 	}
 
@@ -462,22 +416,17 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	 *
 	 * @param string $fieldName the name of the field to be queried
 	 * @param integer $queryId the uid to search for
-	 *
 	 * @return integer[] all uids found
 	 */
 	protected function listFieldQuery($fieldName, $queryId) {
-		$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'uid',
-			$this->getTableName(),
-			$GLOBALS['TYPO3_DB']->listQuery($fieldName, intval($queryId), $this->getTableName())
-				. (intval($queryId) == 0 ? (' OR ' . $fieldName . ' = \'\'') : '')
-		);
+		$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $this->getTableName(), $GLOBALS['TYPO3_DB']->listQuery($fieldName, intval($queryId), $this->getTableName()) . (intval($queryId) == 0 ? (' OR ' . $fieldName) . ' = \'\'' : ''));
 		$uidArray = array();
 		foreach ($records as $record) {
 			$uidArray[] = $record['uid'];
 		}
 		return $uidArray;
 	}
+
 }
 
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Describes necessary methods if the node label should be editable
  * within the tree.
@@ -34,7 +33,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_LabelEditable {
+interface t3lib_tree_LabelEditable
+{
 	/**
 	 * Sets the new label
 	 *
@@ -42,5 +42,6 @@ interface t3lib_tree_LabelEditable {
 	 * @return void
 	 */
 	public function setLabel($label);
+
 }
 ?>

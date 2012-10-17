@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Display a link to show all versions of an extension
  *
@@ -49,16 +47,16 @@ class Tx_Extensionmanager_ViewHelpers_ShowExtensionVersionsViewHelper extends Tx
 	public function render($extension) {
 		$uriBuilder = $this->controllerContext->getUriBuilder();
 		$action = 'showAllVersions';
-		$uri = $uriBuilder
-			->reset()
-			->uriFor($action, array(
+		$uri = $uriBuilder->reset()->uriFor($action, array(
 			'extensionKey' => $extension->getExtensionKey(),
 			'allVersions' => TRUE
 		), 'List');
 		$this->tag->addAttribute('href', $uri);
 		$label = 'Show all versions';
 		$this->tag->setContent($label);
-
 		return $this->tag->render();
 	}
+
 }
+
+?>

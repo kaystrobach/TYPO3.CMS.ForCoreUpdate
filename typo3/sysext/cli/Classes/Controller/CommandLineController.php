@@ -29,7 +29,6 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * TYPO3 cli script basis
  *
@@ -39,32 +38,48 @@
  */
 class t3lib_cli {
 
-		// Command line arguments, exploded into key => value-array pairs
-	var $cli_args = array();
-	var $cli_options = array(
+	// Command line arguments, exploded into key => value-array pairs
+	/**
+	 * @todo Define visibility
+	 */
+	public $cli_args = array();
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $cli_options = array(
 		array('-s', 'Silent operation, will only output errors and important messages.'),
 		array('--silent', 'Same as -s'),
-		array('-ss', 'Super silent, will not even output errors or important messages.'),
+		array('-ss', 'Super silent, will not even output errors or important messages.')
 	);
-	var $cli_help = array(
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $cli_help = array(
 		'name' => 'CLI base class (overwrite this...)',
 		'synopsis' => '###OPTIONS###',
 		'description' => 'Class with basic functionality for CLI scripts (overwrite this...)',
 		'examples' => 'Give examples...',
 		'options' => '',
 		'license' => 'GNU GPL - free software!',
-		'author' => '[Author name]',
+		'author' => '[Author name]'
 	);
-	var $stdin = NULL;
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $stdin = NULL;
 
 	/**
 	 * Constructor
 	 * Make sure child classes also call this!
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function __construct() {
-			// Loads the cli_args array with command line arguments
+	public function __construct() {
+		// Loads the cli_args array with command line arguments
 		$this->cli_args = $this->cli_getArgIndex();
 	}
 
@@ -72,15 +87,15 @@ class t3lib_cli {
 	 * Finds the arg token (like "-s") in argv and returns the rest of argv from that point on.
 	 * This should only be used in special cases since this->cli_args should already be prepared with an index of values!
 	 *
-	 * @param string $option Option string, eg. "-s"
+	 * @param string $option Option string, eg. "-s
 	 * @param array $argv Input argv array
 	 * @return array Output argv array with all options AFTER the found option.
+	 * @todo Define visibility
 	 */
-	function cli_getArgArray($option, $argv) {
+	public function cli_getArgArray($option, $argv) {
 		while (count($argv) && strcmp($argv[0], $option)) {
 			array_shift($argv);
 		}
-
 		if (!strcmp($argv[0], $option)) {
 			array_shift($argv);
 			return count($argv) ? $argv : array('');
@@ -90,21 +105,23 @@ class t3lib_cli {
 	/**
 	 * Return TRUE if option is found
 	 *
-	 * @param string $option Option string, eg. "-s"
+	 * @param string $option Option string, eg. "-s
 	 * @return boolean TRUE if option found
+	 * @todo Define visibility
 	 */
-	function cli_isArg($option) {
+	public function cli_isArg($option) {
 		return isset($this->cli_args[$option]);
 	}
 
 	/**
 	 * Return argument value
 	 *
-	 * @param string $option Option string, eg. "-s"
+	 * @param string $option Option string, eg. "-s
 	 * @param integer $idx Value index, default is 0 (zero) = the first one...
 	 * @return boolean TRUE if option found
+	 * @todo Define visibility
 	 */
-	function cli_argValue($option, $idx = 0) {
+	public function cli_argValue($option, $idx = 0) {
 		return is_array($this->cli_args[$option]) ? $this->cli_args[$option][$idx] : '';
 	}
 
@@ -114,17 +131,18 @@ class t3lib_cli {
 	 * Array is empty if no values
 	 *
 	 * @return array
+	 * @todo Define visibility
 	 */
-	function cli_getArgIndex() {
+	public function cli_getArgIndex() {
 		$cli_options = array();
 		$index = '_DEFAULT';
 		foreach ($_SERVER['argv'] as $token) {
-				// Options starting with a number is invalid - they could be negative values!
-			if ($token{0} === '-' && !t3lib_utility_Math::canBeInterpretedAsInteger($token{1})) {
+			// Options starting with a number is invalid - they could be negative values!
+			if ($token[0] === '-' && !t3lib_utility_Math::canBeInterpretedAsInteger($token[1])) {
 				list($index, $opt) = explode('=', $token, 2);
 				if (isset($cli_options[$index])) {
-					echo 'ERROR: Option ' . $index . ' was used twice!' . LF;
-					exit;
+					echo (('ERROR: Option ' . $index) . ' was used twice!') . LF;
+					die;
 				}
 				$cli_options[$index] = array();
 				if (isset($opt)) {
@@ -134,47 +152,44 @@ class t3lib_cli {
 				$cli_options[$index][] = $token;
 			}
 		}
-
 		return $cli_options;
 	}
 
 	/**
 	 * Validates if the input arguments in this->cli_args are all listed in this->cli_options and if not,
 	 * will exit with an error.
+	 *
+	 * @todo Define visibility
 	 */
-	function cli_validateArgs() {
+	public function cli_validateArgs() {
 		$cli_args_copy = $this->cli_args;
 		unset($cli_args_copy['_DEFAULT']);
 		$allOptions = array();
-
 		foreach ($this->cli_options as $cfg) {
 			$allOptions[] = $cfg[0];
 			$argSplit = t3lib_div::trimExplode(' ', $cfg[0], 1);
 			if (isset($cli_args_copy[$argSplit[0]])) {
-
 				foreach ($argSplit as $i => $v) {
 					$ii = $i;
 					if ($i > 0) {
-						if (!isset($cli_args_copy[$argSplit[0]][$i - 1]) && $v{0} != '[') { // Using "[]" around a paramter makes it optional
-							echo 'ERROR: Option "' . $argSplit[0] . '" requires a value ("' . $v . '") on position ' . $i . LF;
-							exit;
+						if (!isset($cli_args_copy[$argSplit[0]][($i - 1)]) && $v[0] != '[') {
+							// Using "[]" around a paramter makes it optional
+							echo ((((('ERROR: Option "' . $argSplit[0]) . '" requires a value ("') . $v) . '") on position ') . $i) . LF;
+							die;
 						}
 					}
 				}
-
 				$ii++;
 				if (isset($cli_args_copy[$argSplit[0]][$ii - 1])) {
-					echo 'ERROR: Option "' . $argSplit[0] . '" does not support a value on position ' . $ii . LF;
-					exit;
+					echo ((('ERROR: Option "' . $argSplit[0]) . '" does not support a value on position ') . $ii) . LF;
+					die;
 				}
-
 				unset($cli_args_copy[$argSplit[0]]);
 			}
 		}
-
 		if (count($cli_args_copy)) {
-			echo wordwrap('ERROR: Option ' . implode(',', array_keys($cli_args_copy)) . ' was unknown to this script!' . LF . '(Options are: ' . implode(', ', $allOptions) . ')' . LF);
-			exit;
+			echo wordwrap((((((('ERROR: Option ' . implode(',', array_keys($cli_args_copy))) . ' was unknown to this script!') . LF) . '(Options are: ') . implode(', ', $allOptions)) . ')') . LF);
+			die;
 		}
 	}
 
@@ -182,17 +197,16 @@ class t3lib_cli {
 	 * Asks stdin for keyboard input and returns the line (after enter is pressed)
 	 *
 	 * @return string
+	 * @todo Define visibility
 	 */
-	function cli_keyboardInput() {
-
-			// Have to open the stdin stream only ONCE! otherwise I cannot read multiple lines from it... :
+	public function cli_keyboardInput() {
+		// Have to open the stdin stream only ONCE! otherwise I cannot read multiple lines from it... :
 		if (!$this->stdin) {
 			$this->stdin = fopen('php://stdin', 'r');
 		}
-
 		while (FALSE == ($line = fgets($this->stdin, 1000))) {
-		}
 
+		}
 		return trim($line);
 	}
 
@@ -201,11 +215,11 @@ class t3lib_cli {
 	 *
 	 * @param string $msg String to ask before...
 	 * @return boolean TRUE if "y" or "yes" is the input (case insensitive)
+	 * @todo Define visibility
 	 */
-	function cli_keyboardInput_yes($msg = '') {
-			// ONLY makes sense to echo it out since we are awaiting keyboard input - that cannot be silenced
+	public function cli_keyboardInput_yes($msg = '') {
+		// ONLY makes sense to echo it out since we are awaiting keyboard input - that cannot be silenced
 		echo $msg . ' (Yes/No + return): ';
-
 		return t3lib_div::inList('y,yes', strtolower($this->cli_keyboardInput()));
 	}
 
@@ -215,10 +229,11 @@ class t3lib_cli {
 	 * @param string $string The string
 	 * @param boolean $force If string should be written even if -s is set (-ss will subdue it!)
 	 * @return boolean Returns TRUE if string was outputted.
+	 * @todo Define visibility
 	 */
-	function cli_echo($string = '', $force = FALSE) {
+	public function cli_echo($string = '', $force = FALSE) {
 		if (isset($this->cli_args['-ss'])) {
-			// Nothing to do...
+
 		} elseif (isset($this->cli_args['-s']) || isset($this->cli_args['--silent'])) {
 			if ($force) {
 				echo $string;
@@ -228,7 +243,6 @@ class t3lib_cli {
 			echo $string;
 			return TRUE;
 		}
-
 		return FALSE;
 	}
 
@@ -236,36 +250,40 @@ class t3lib_cli {
 	 * Prints help-output from ->cli_help array
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function cli_help() {
+	public function cli_help() {
 		foreach ($this->cli_help as $key => $value) {
-			$this->cli_echo(strtoupper($key) . ":\n");
+			$this->cli_echo(strtoupper($key) . ':
+');
 			switch ($key) {
-				case 'synopsis':
-					$optStr = '';
-					foreach ($this->cli_options as $v) {
-						$optStr .= ' [' . $v[0] . ']';
-					}
-					$this->cli_echo($this->cli_indent(str_replace('###OPTIONS###', trim($optStr), $value), 4) . "\n\n");
-					break;
-				case 'options':
-					$this->cli_echo($this->cli_indent($value, 4) . LF);
+			case 'synopsis':
+				$optStr = '';
+				foreach ($this->cli_options as $v) {
+					$optStr .= (' [' . $v[0]) . ']';
+				}
+				$this->cli_echo($this->cli_indent(str_replace('###OPTIONS###', trim($optStr), $value), 4) . '
 
-					$maxLen = 0;
-					foreach ($this->cli_options as $v) {
-						if (strlen($v[0]) > $maxLen) {
-							$maxLen = strlen($v[0]);
-						}
+');
+				break;
+			case 'options':
+				$this->cli_echo($this->cli_indent($value, 4) . LF);
+				$maxLen = 0;
+				foreach ($this->cli_options as $v) {
+					if (strlen($v[0]) > $maxLen) {
+						$maxLen = strlen($v[0]);
 					}
+				}
+				foreach ($this->cli_options as $v) {
+					$this->cli_echo(($v[0] . substr($this->cli_indent(rtrim((($v[1] . LF) . $v[2])), ($maxLen + 4)), strlen($v[0]))) . LF);
+				}
+				$this->cli_echo(LF);
+				break;
+			default:
+				$this->cli_echo($this->cli_indent($value, 4) . '
 
-					foreach ($this->cli_options as $v) {
-						$this->cli_echo($v[0] . substr($this->cli_indent(rtrim($v[1] . LF . $v[2]), $maxLen + 4), strlen($v[0])) . LF);
-					}
-					$this->cli_echo(LF);
-					break;
-				default:
-					$this->cli_echo($this->cli_indent($value, 4) . "\n\n");
-					break;
+');
+				break;
 			}
 		}
 	}
@@ -276,16 +294,17 @@ class t3lib_cli {
 	 * @param string $str String to break and indent.
 	 * @param integer $indent Number of space chars to indent.
 	 * @return string Result
+	 * @todo Define visibility
 	 */
-	function cli_indent($str, $indent) {
+	public function cli_indent($str, $indent) {
 		$lines = explode(LF, wordwrap($str, 75 - $indent));
 		$indentStr = str_pad('', $indent, ' ');
 		foreach ($lines as $k => $v) {
 			$lines[$k] = $indentStr . $lines[$k];
 		}
-
 		return implode(LF, $lines);
 	}
+
 }
 
 ?>

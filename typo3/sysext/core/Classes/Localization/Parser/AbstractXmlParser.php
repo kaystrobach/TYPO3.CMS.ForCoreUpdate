@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract class for XML based parser.
  *
@@ -62,29 +61,18 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 		$this->sourcePath = $sourcePath;
 		$this->languageKey = $languageKey;
 		$this->charset = $this->getCharset($languageKey, $charset);
-
-		if (($this->languageKey !== 'default' && $this->languageKey !== 'en')) {
-			$this->sourcePath = t3lib_div::getFileAbsFileName(
-				t3lib_div::llXmlAutoFileName($this->sourcePath, $this->languageKey)
-			);
+		if ($this->languageKey !== 'default' && $this->languageKey !== 'en') {
+			$this->sourcePath = t3lib_div::getFileAbsFileName(t3lib_div::llXmlAutoFileName($this->sourcePath, $this->languageKey));
 			if (!@is_file($this->sourcePath)) {
-						// Global localization is not available, try split localization file
-					$this->sourcePath = t3lib_div::getFileAbsFileName(
-					t3lib_div::llXmlAutoFileName($sourcePath, $languageKey, TRUE)
-				);
+				// Global localization is not available, try split localization file
+				$this->sourcePath = t3lib_div::getFileAbsFileName(t3lib_div::llXmlAutoFileName($sourcePath, $languageKey, TRUE));
 			}
-
 			if (!@is_file($this->sourcePath)) {
-				throw new t3lib_l10n_exception_FileNotFound(
-					'Localization file does not exist',
-					1306332397
-				);
+				throw new t3lib_l10n_exception_FileNotFound('Localization file does not exist', 1306332397);
 			}
 		}
-
 		$LOCAL_LANG = array();
 		$LOCAL_LANG[$languageKey] = $this->parseXmlFile();
-
 		return $LOCAL_LANG;
 	}
 
@@ -104,13 +92,11 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 		} else {
 			$csConvObj = t3lib_div::makeInstance('t3lib_cs');
 		}
-
 		if ($charset !== '') {
 			$targetCharset = $csConvObj->parse_charset($charset);
 		} else {
 			$targetCharset = 'utf-8';
 		}
-
 		return $targetCharset;
 	}
 
@@ -122,14 +108,9 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 	 */
 	protected function parseXmlFile() {
 		$rootXmlNode = simplexml_load_file($this->sourcePath, 'SimpleXmlElement', \LIBXML_NOWARNING);
-
 		if (!isset($rootXmlNode) || $rootXmlNode === FALSE) {
-			throw new t3lib_l10n_exception_InvalidXmlFile(
-				'The path provided does not point to existing and accessible well-formed XML file.',
-				1278155987
-			);
+			throw new t3lib_l10n_exception_InvalidXmlFile('The path provided does not point to existing and accessible well-formed XML file.', 1278155987);
 		}
-
 		return $this->doParsingFromRoot($rootXmlNode);
 	}
 
@@ -140,6 +121,7 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 	 * @return array An array representing the parsed XML file
 	 */
 	abstract protected function doParsingFromRoot(SimpleXMLElement $root);
+
 }
 
 ?>

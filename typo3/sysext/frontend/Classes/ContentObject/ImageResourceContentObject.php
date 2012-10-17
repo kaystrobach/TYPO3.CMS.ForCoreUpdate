@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains IMG_RESOURCE class object.
  *
@@ -41,16 +40,12 @@ class tslib_content_ImageResource extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-
 		$GLOBALS['TSFE']->lastImgResourceInfo = $this->cObj->getImgResource($conf['file'], $conf['file.']);
-
 		$imageResource = $GLOBALS['TSFE']->lastImgResourceInfo[3];
-
-		$theValue = isset($conf['stdWrap.'])
-			? $this->cObj->stdWrap($imageResource, $conf['stdWrap.'])
-			: $imageResource;
-
+		$theValue = isset($conf['stdWrap.']) ? $this->cObj->stdWrap($imageResource, $conf['stdWrap.']) : $imageResource;
 		return $theValue;
 	}
+
 }
+
 ?>

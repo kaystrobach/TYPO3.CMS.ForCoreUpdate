@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * An exception when something is wrong within the extension manager
  *
@@ -31,6 +29,7 @@
  * @subpackage Exception
  */
 class Tx_Extensionmanager_Exception_ExtensionManager extends t3lib_exception {
+
 
 }
 

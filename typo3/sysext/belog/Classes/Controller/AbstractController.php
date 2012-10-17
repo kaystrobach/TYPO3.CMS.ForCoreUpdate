@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract class to show log entries from sys_log
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Controller_ActionController {
+
 	/**
 	 * @var integer
 	 */
@@ -60,7 +60,6 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * @var integer
 	 */
 	const TIMEFRAME_CUSTOM = 30;
-
 	/**
 	 * whether plugin is running in page context (sub module of Web > Info)
 	 *
@@ -96,33 +95,27 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * @return void
 	 */
 	public function initializeIndexAction() {
-			// @TODO: Extbase backend modules rely on frontend TypoScript for view, persistence
-			// and settings. Thus, we need a TypoScript root template, that then loads the
-			// ext_typoscript_setup.txt file of this module. This is nasty, but can not be
-			// circumvented until there is a better solution in extbase.
-			// For now we throw an exception if no settings are detected.
+		// @TODO: Extbase backend modules rely on frontend TypoScript for view, persistence
+		// and settings. Thus, we need a TypoScript root template, that then loads the
+		// ext_typoscript_setup.txt file of this module. This is nasty, but can not be
+		// circumvented until there is a better solution in extbase.
+		// For now we throw an exception if no settings are detected.
 		if (empty($this->settings)) {
-			throw new RuntimeException(
-				'No settings detected. This usually happens if there is no frontend TypoScript template with root flag set. ' .
-					'Please create one.',
-				1333650506
-			);
+			throw new RuntimeException('No settings detected. This usually happens if there is no frontend TypoScript template with root flag set. ' . 'Please create one.', 1333650506);
 		}
-
 		if (!isset($this->settings['dateFormat'])) {
 			$this->settings['dateFormat'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'];
 		}
 		if (!isset($this->settings['timeFormat'])) {
 			$this->settings['timeFormat'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
 		}
-
-			// @TODO: The dateTime property mapper throws exceptions that cannot be caught
-			// if the property is not given in the expected format. This is documented with
-			// issue http://forge.typo3.org/issues/33861. Depending on the outcome of the
-			// ticket, the code below might have to be adapted again.
-			// @TODO: There is a second solution to hint the property mapper with fluid on the expected
-			// format: <f:form.hidden property="manualDateStart.dateFormat" value="..." />. This
-			// could make the method below obsolete.
+		// @TODO: The dateTime property mapper throws exceptions that cannot be caught
+		// if the property is not given in the expected format. This is documented with
+		// issue http://forge.typo3.org/issues/33861. Depending on the outcome of the
+		// ticket, the code below might have to be adapted again.
+		// @TODO: There is a second solution to hint the property mapper with fluid on the expected
+		// format: <f:form.hidden property="manualDateStart.dateFormat" value="..." />. This
+		// could make the method below obsolete.
 		$this->configurePropertyMapperForDateTimeFormat($this->arguments['constraint']->getPropertyMappingConfiguration()->forProperty('manualDateStart'));
 		$this->configurePropertyMapperForDateTimeFormat($this->arguments['constraint']->getPropertyMappingConfiguration()->forProperty('manualDateStop'));
 	}
@@ -134,8 +127,8 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * @return void
 	 */
 	public function indexAction(Tx_Belog_Domain_Model_Constraint $constraint = NULL) {
-			// Constraint object handling:
-			// If there is none from GET, try to get it from BE user data, else create new
+		// Constraint object handling:
+		// If there is none from GET, try to get it from BE user data, else create new
 		if ($constraint === NULL) {
 			$constraint = $this->getConstraintFromBeUserData();
 			if ($constraint === NULL) {
@@ -148,16 +141,9 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 		$constraint->setPageId($this->pageId);
 		$this->setStartAndEndTimeFromTimeSelector($constraint);
 		$this->forceWorkspaceSelectionIfInWorkspace($constraint);
-
 		$logEntries = $this->logEntryRepository->findByConstraint($constraint);
 		$groupedLogEntries = $this->groupLogEntriesByPageAndDay($logEntries, $constraint->getGroupByPage());
-
-		$this->view
-			->assign('groupedLogEntries', $groupedLogEntries)
-			->assign('constraint', $constraint)
-			->assign('userGroups', $this->createUserAndGroupListForSelectOptions())
-			->assign('workspaces', $this->createWorkspaceListForSelectOptions())
-			->assign('pageDepths', $this->createPageDepthOptions());
+		$this->view->assign('groupedLogEntries', $groupedLogEntries)->assign('constraint', $constraint)->assign('userGroups', $this->createUserAndGroupListForSelectOptions())->assign('workspaces', $this->createWorkspaceListForSelectOptions())->assign('pageDepths', $this->createPageDepthOptions());
 	}
 
 	/**
@@ -170,7 +156,6 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 		if (!is_string($serializedConstraint) || empty($serializedConstraint)) {
 			return NULL;
 		}
-
 		return @unserialize($serializedConstraint);
 	}
 
@@ -200,33 +185,27 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 */
 	protected function groupLogEntriesByPageAndDay(Tx_Extbase_Persistence_QueryResult $logEntries, $groupByPage = FALSE) {
 		$targetStructure = array();
-
-			/** @var $entry Tx_Belog_Domain_Model_LogEntry */
+		/** @var $entry Tx_Belog_Domain_Model_LogEntry */
 		foreach ($logEntries as $entry) {
-				// Create page split list or flat list
+			// Create page split list or flat list
 			if ($groupByPage) {
 				$pid = $entry->getEventPid();
 			} else {
 				$pid = -1;
 			}
-
-				// Create array if it is not defined yet
+			// Create array if it is not defined yet
 			if (!is_array($targetStructure[$pid])) {
 				$targetStructure[$pid] = array();
 			}
-
-				// Get day timestamp of log entry and create sub array if needed
+			// Get day timestamp of log entry and create sub array if needed
 			$timestampDay = strtotime(strftime('%d.%m.%Y', $entry->getTstamp()));
 			if (!is_array($targetStructure[$pid][$timestampDay])) {
 				$targetStructure[$pid][$timestampDay] = array();
 			}
-
-				// Add row
+			// Add row
 			$targetStructure[$pid][$timestampDay][] = $entry;
 		}
-
 		ksort($targetStructure);
-
 		return $targetStructure;
 	}
 
@@ -237,11 +216,7 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * @return void
 	 */
 	protected function configurePropertyMapperForDateTimeFormat(Tx_Extbase_Property_PropertyMappingConfiguration $propertyMapperDate) {
-		$propertyMapperDate->setTypeConverterOption(
-			'Tx_Extbase_Property_TypeConverter_DateTimeConverter',
-			Tx_Extbase_Property_TypeConverter_DateTimeConverter::CONFIGURATION_DATE_FORMAT,
-			$this->settings['dateFormat'] . ' ' . $this->settings['timeFormat']
-		);
+		$propertyMapperDate->setTypeConverterOption('Tx_Extbase_Property_TypeConverter_DateTimeConverter', Tx_Extbase_Property_TypeConverter_DateTimeConverter::CONFIGURATION_DATE_FORMAT, ($this->settings['dateFormat'] . ' ') . $this->settings['timeFormat']);
 	}
 
 	/**
@@ -253,23 +228,19 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 */
 	protected function createUserAndGroupListForSelectOptions() {
 		$userGroupArray = array();
-
-			// Two meta entries: 'all' and 'self'
+		// Two meta entries: 'all' and 'self'
 		$userGroupArray[0] = Tx_Extbase_Utility_Localization::translate('allUsers', 'Belog');
 		$userGroupArray[-1] = Tx_Extbase_Utility_Localization::translate('self', 'Belog');
-
-			// List of groups, key is gr-'uid'
+		// List of groups, key is gr-'uid'
 		$groups = t3lib_BEfunc::getGroupNames();
 		foreach ($groups as $group) {
-			$userGroupArray['gr-' . $group['uid']] = Tx_Extbase_Utility_Localization::translate('group', 'Belog') . ' ' . $group['title'];
+			$userGroupArray['gr-' . $group['uid']] = (Tx_Extbase_Utility_Localization::translate('group', 'Belog') . ' ') . $group['title'];
 		}
-
-			// List of users, key is us-'uid'
+		// List of users, key is us-'uid'
 		$users = t3lib_BEfunc::getUserNames();
 		foreach ($users as $user) {
-			$userGroupArray['us-' . $user['uid']] = Tx_Extbase_Utility_Localization::translate('user', 'Belog') . ' ' . $user['username'];
+			$userGroupArray['us-' . $user['uid']] = (Tx_Extbase_Utility_Localization::translate('user', 'Belog') . ' ') . $user['username'];
 		}
-
 		return $userGroupArray;
 	}
 
@@ -282,18 +253,15 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 		if (!t3lib_extMgm::isLoaded('workspaces')) {
 			return array();
 		}
-
 		$workspaceArray = array();
-			// Two meta entries: 'all' and 'live'
+		// Two meta entries: 'all' and 'live'
 		$workspaceArray[-99] = Tx_Extbase_Utility_Localization::translate('any', 'Belog');
 		$workspaceArray[0] = Tx_Extbase_Utility_Localization::translate('live', 'Belog');
-
 		$workspaces = $this->objectManager->get('Tx_Belog_Domain_Repository_WorkspaceRepository')->findAll();
-			/** @var $workspace Tx_Belog_Domain_Model_Workspace */
+		/** @var $workspace Tx_Belog_Domain_Model_Workspace */
 		foreach ($workspaces as $workspace) {
-			$workspaceArray[$workspace->getUid()] = $workspace->getUid() . ': ' . $workspace->getTitle();
+			$workspaceArray[$workspace->getUid()] = ($workspace->getUid() . ': ') . $workspace->getTitle();
 		}
-
 		return $workspaceArray;
 	}
 
@@ -322,24 +290,11 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 */
 	protected function createPageDepthOptions() {
 		$options = array(
-			0 => Tx_Extbase_Utility_Localization::translate(
-				'LLL:EXT:lang/locallang_mod_web_info.xlf:depth_0',
-				'lang'
-			),
-			1 => Tx_Extbase_Utility_Localization::translate(
-				'LLL:EXT:lang/locallang_mod_web_info.xlf:depth_1',
-				'lang'
-			),
-			2 => Tx_Extbase_Utility_Localization::translate(
-				'LLL:EXT:lang/locallang_mod_web_info.xlf:depth_2',
-				'lang'
-			),
-			3 => Tx_Extbase_Utility_Localization::translate(
-				'LLL:EXT:lang/locallang_mod_web_info.xlf:depth_3',
-				'lang'
-			)
+			0 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_0', 'lang'),
+			1 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_1', 'lang'),
+			2 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_2', 'lang'),
+			3 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_3', 'lang')
 		);
-
 		return $options;
 	}
 
@@ -352,54 +307,56 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	protected function setStartAndEndTimeFromTimeSelector(Tx_Belog_Domain_Model_Constraint $constraint) {
 		$startTime = 0;
 		$endTime = $GLOBALS['EXEC_TIME'];
-
-			// @TODO: Refactor this construct
+		// @TODO: Refactor this construct
 		switch ($constraint->getTimeFrame()) {
-			case self::TIMEFRAME_THISWEEK:
-					// This week
-				$week = (date('w') ?: 7) - 1;
-				$startTime = mktime(0, 0, 0) - $week * 3600 * 24;
-				break;
-			case self::TIMEFRAME_LASTWEEK:
-					// Last week
-				$week = (date('w') ?: 7) - 1;
-				$startTime = mktime(0, 0, 0) - ($week + 7) * 3600 * 24;
-				$endTime = mktime(0, 0, 0) - $week * 3600 * 24;
-				break;
-			case self::TIMEFRAME_LASTSEVENDAYS:
-					// Last 7 days
-				$startTime = mktime(0, 0, 0) - 7 * 3600 * 24;
-				break;
-			case self::TIMEFRAME_THISMONTH:
-					// This month
-				$startTime = mktime(0, 0, 0, date('m'), 1);
-				break;
-			case self::TIMEFRAME_LASTMONTH:
-					// Last month
-				$startTime = mktime(0, 0, 0, date('m') - 1, 1);
-				$endTime = mktime(0, 0, 0, date('m'), 1);
-				break;
-			case self::TIMEFRAME_LAST31DAYS:
-					// Last 31 days
-				$startTime = mktime(0, 0, 0) - 31 * 3600 * 24;
-				break;
-			case self::TIMEFRAME_CUSTOM:
-				if ($constraint->getManualDateStart() instanceof DateTime) {
-					$startTime = $constraint->getManualDateStart()->format('U');
-					if ($constraint->getManualDateStop() instanceof DateTime) {
-						$manualEndTime = $constraint->getManualDateStop()->format('U');
-						if ($manualEndTime > $startTime) {
-							$endTime = $manualEndTime;
-						}
-					} else {
-						$endTime = $GLOBALS['EXEC_TIME'];
+		case self::TIMEFRAME_THISWEEK:
+			// This week
+			$week = (date('w') ?: 7) - 1;
+			$startTime = mktime(0, 0, 0) - ($week * 3600) * 24;
+			break;
+		case self::TIMEFRAME_LASTWEEK:
+			// Last week
+			$week = (date('w') ?: 7) - 1;
+			$startTime = mktime(0, 0, 0) - (($week + 7) * 3600) * 24;
+			$endTime = mktime(0, 0, 0) - ($week * 3600) * 24;
+			break;
+		case self::TIMEFRAME_LASTSEVENDAYS:
+			// Last 7 days
+			$startTime = mktime(0, 0, 0) - (7 * 3600) * 24;
+			break;
+		case self::TIMEFRAME_THISMONTH:
+			// This month
+			$startTime = mktime(0, 0, 0, date('m'), 1);
+			break;
+		case self::TIMEFRAME_LASTMONTH:
+			// Last month
+			$startTime = mktime(0, 0, 0, date('m') - 1, 1);
+			$endTime = mktime(0, 0, 0, date('m'), 1);
+			break;
+		case self::TIMEFRAME_LAST31DAYS:
+			// Last 31 days
+			$startTime = mktime(0, 0, 0) - (31 * 3600) * 24;
+			break;
+		case self::TIMEFRAME_CUSTOM:
+			if ($constraint->getManualDateStart() instanceof DateTime) {
+				$startTime = $constraint->getManualDateStart()->format('U');
+				if ($constraint->getManualDateStop() instanceof DateTime) {
+					$manualEndTime = $constraint->getManualDateStop()->format('U');
+					if ($manualEndTime > $startTime) {
+						$endTime = $manualEndTime;
 					}
+				} else {
+					$endTime = $GLOBALS['EXEC_TIME'];
 				}
-				break;
-			default:
+			}
+			break;
+		default:
+
 		}
 		$constraint->setStartTimestamp($startTime);
 		$constraint->setEndTimestamp($endTime);
 	}
+
 }
+
 ?>

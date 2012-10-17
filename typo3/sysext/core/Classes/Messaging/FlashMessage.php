@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * A class representing flash messages.
  *
@@ -46,11 +44,11 @@ class t3lib_FlashMessage extends t3lib_message_AbstractMessage {
 	 * @var string The message severity class names
 	 */
 	protected $classes = array(
-		self::NOTICE  => 'notice',
-		self::INFO    => 'information',
-		self::OK      => 'ok',
+		self::NOTICE => 'notice',
+		self::INFO => 'information',
+		self::OK => 'ok',
 		self::WARNING => 'warning',
-		self::ERROR   => 'error',
+		self::ERROR => 'error'
 	);
 
 	/**
@@ -59,7 +57,6 @@ class t3lib_FlashMessage extends t3lib_message_AbstractMessage {
 	 * @param string $message The message.
 	 * @param string $title Optional message title.
 	 * @param integer $severity Optional severity, must be either of t3lib_FlashMessage::INFO, t3lib_FlashMessage::OK,
-	 *				  			t3lib_FlashMessage::WARNING or t3lib_FlashMessage::ERROR. Default is t3lib_FlashMessage::OK.
 	 * @param boolean $storeInSession Optional, defines whether the message should be stored in the session or only for one request (default)
 	 * @return void
 	 */
@@ -106,16 +103,12 @@ class t3lib_FlashMessage extends t3lib_message_AbstractMessage {
 	public function render() {
 		$title = '';
 		if (!empty($this->title)) {
-			$title = '<div class="message-header">' . $this->title . '</div>';
+			$title = ('<div class="message-header">' . $this->title) . '</div>';
 		}
-
-		$message = '<div class="typo3-message ' . $this->getClass() . '">'
-				. $title
-				. '<div class="message-body">' . $this->message . '</div>'
-				. '</div>';
-
+		$message = (((((('<div class="typo3-message ' . $this->getClass()) . '">') . $title) . '<div class="message-body">') . $this->message) . '</div>') . '</div>';
 		return $message;
 	}
+
 }
 
 ?>

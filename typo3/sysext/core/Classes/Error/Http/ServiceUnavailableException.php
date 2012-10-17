@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Exception for Error 503 - Service Unavailable
  *
@@ -56,9 +55,9 @@ class t3lib_error_http_ServiceUnavailableException extends t3lib_error_http_Abst
 		if (!empty($message)) {
 			$this->message = $message;
 		}
-
 		parent::__construct($this->statusHeaders, $this->message, $this->title, $code);
 	}
+
 }
 
 ?>

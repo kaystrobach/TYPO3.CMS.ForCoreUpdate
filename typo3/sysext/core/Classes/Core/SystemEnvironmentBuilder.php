@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to encapsulate base setup of bootstrap.
  *
@@ -49,7 +48,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @param string $relativePathPart Relative path of the entry script back to document root
 	 * @return void
 	 */
-	public static function run($relativePathPart = '') {
+	static public function run($relativePathPart = '') {
 		self::ensureRequiredEnvironment();
 		self::checkGlobalsAreNotSetViaPostOrGet();
 		self::defineBaseConstants();
@@ -69,11 +68,10 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function ensureRequiredEnvironment() {
+	static protected function ensureRequiredEnvironment() {
 		if (version_compare(phpversion(), '5.3', '<')) {
 			die('TYPO3 requires PHP 5.3.0 or higher.');
 		}
-
 		if (self::getPhpIniValueBoolean('register_globals')) {
 			die('TYPO3 requires PHP setting "register_globals" set to Off. (Error: #1345284320)');
 		}
@@ -86,7 +84,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @return boolean TRUE if the given option is enabled, FALSE if disabled
 	 * @see t3lib_utility_PhpOptions::getIniValueBoolean
 	 */
-	protected static function getPhpIniValueBoolean($configOption) {
+	static protected function getPhpIniValueBoolean($configOption) {
 		return filter_var(ini_get($configOption), FILTER_VALIDATE_BOOLEAN, array(FILTER_REQUIRE_SCALAR, FILTER_NULL_ON_FAILURE));
 	}
 
@@ -95,7 +93,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function checkGlobalsAreNotSetViaPostOrGet() {
+	static protected function checkGlobalsAreNotSetViaPostOrGet() {
 		if (isset($_POST['GLOBALS']) || isset($_GET['GLOBALS'])) {
 			die('You cannot set the GLOBALS array from outside the script.');
 		}
@@ -106,13 +104,12 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function defineBaseConstants() {
-			// This version, branch and copyright
+	static protected function defineBaseConstants() {
+		// This version, branch and copyright
 		define('TYPO3_version', '6.0-dev');
 		define('TYPO3_branch', '6.0');
 		define('TYPO3_copyright_year', '1998-2012');
-
-			// TYPO3 external links
+		// TYPO3 external links
 		define('TYPO3_URL_GENERAL', 'http://typo3.org/');
 		define('TYPO3_URL_ORG', 'http://typo3.org/');
 		define('TYPO3_URL_LICENSE', 'http://typo3.org/licenses');
@@ -127,24 +124,19 @@ class Typo3_Bootstrap_BaseSetup {
 		define('TYPO3_URL_DOWNLOAD', 'http://typo3.org/download/');
 		define('TYPO3_URL_SYSTEMREQUIREMENTS', 'http://typo3.org/about/typo3-the-cms/system-requirements/');
 		define('TYPO3_URL_DONATE', 'http://typo3.org/donate/online-donation/');
-
-			// A tabulator, a linefeed, a carriage return, a CR-LF combination
+		// A tabulator, a linefeed, a carriage return, a CR-LF combination
 		define('TAB', chr(9));
 		define('LF', chr(10));
 		define('CR', chr(13));
 		define('CRLF', CR . LF);
-
-			// Security related constant: Default value of fileDenyPattern
-		define('FILE_DENY_PATTERN_DEFAULT', '\.(php[3-6]?|phpsh|phtml)(\..*)?$|^\.htaccess$');
-
-			// Security related constant: List of file extensions that should be registered as php script file extensions
+		// Security related constant: Default value of fileDenyPattern
+		define('FILE_DENY_PATTERN_DEFAULT', '\\.(php[3-6]?|phpsh|phtml)(\\..*)?$|^\\.htaccess$');
+		// Security related constant: List of file extensions that should be registered as php script file extensions
 		define('PHP_EXTENSIONS_DEFAULT', 'php,php3,php4,php5,php6,phpsh,inc,phtml');
-
-			// List of extensions required to run the core
+		// List of extensions required to run the core
 		define('REQUIRED_EXTENSIONS', 'cms,lang,sv,extensionmanager,recordlist,extbase,fluid');
-
-			// Operating system identifier
-			// Either "WIN" or empty string
+		// Operating system identifier
+		// Either "WIN" or empty string
 		define('TYPO3_OS', self::getTypo3Os());
 	}
 
@@ -154,41 +146,34 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @param string $relativePathPart Relative path of the entry script back to document root
 	 * @return void
 	 */
-	protected static function definePaths($relativePathPart = '') {
-			// Relative path from document root to typo3/ directory
-			// Hardcoded to "typo3/"
+	static protected function definePaths($relativePathPart = '') {
+		// Relative path from document root to typo3/ directory
+		// Hardcoded to "typo3/"
 		define('TYPO3_mainDir', 'typo3/');
-
-			// Absolute path of the entry script that was called
-			// All paths are unified between Windows and Unix, so the \ of Windows is substituted to a /
-			// Example "/var/www/instance-name/htdocs/typo3conf/ext/wec_map/mod1/index.php"
-			// Example "c:/var/www/instance-name/htdocs/typo3/backend.php" for a path in Windows
+		// Absolute path of the entry script that was called
+		// All paths are unified between Windows and Unix, so the \ of Windows is substituted to a /
+		// Example "/var/www/instance-name/htdocs/typo3conf/ext/wec_map/mod1/index.php"
+		// Example "c:/var/www/instance-name/htdocs/typo3/backend.php" for a path in Windows
 		define('PATH_thisScript', self::getPathThisScript());
-
-			// Absolute path of the document root of the instance with trailing slash
-			// Example "/var/www/instance-name/htdocs/"
+		// Absolute path of the document root of the instance with trailing slash
+		// Example "/var/www/instance-name/htdocs/"
 		define('PATH_site', self::getPathSite($relativePathPart));
-
-			// Absolute path of the typo3 directory of the instance with trailing slash
-			// Example "/var/www/instance-name/htdocs/typo3/"
+		// Absolute path of the typo3 directory of the instance with trailing slash
+		// Example "/var/www/instance-name/htdocs/typo3/"
 		define('PATH_typo3', PATH_site . TYPO3_mainDir);
-
-			// Relative path (from the PATH_typo3) to a BE module NOT using mod.php dispatcher with trailing slash
-			// Example "sysext/perms/mod/" for an extension installed in typo3/sysext/
-			// Example "install/" for the install tool entry script
-			// Example "../typo3conf/ext/templavoila/mod2/ for an extension installed in typo3conf/ext/
+		// Relative path (from the PATH_typo3) to a BE module NOT using mod.php dispatcher with trailing slash
+		// Example "sysext/perms/mod/" for an extension installed in typo3/sysext/
+		// Example "install/" for the install tool entry script
+		// Example "../typo3conf/ext/templavoila/mod2/ for an extension installed in typo3conf/ext/
 		define('PATH_typo3_mod', defined('TYPO3_MOD_PATH') ? TYPO3_MOD_PATH : '');
-
-			// Absolute path to the t3lib directory with trailing slash
-			// Example "/var/www/instance-name/htdocs/t3lib/"
+		// Absolute path to the t3lib directory with trailing slash
+		// Example "/var/www/instance-name/htdocs/t3lib/"
 		define('PATH_t3lib', PATH_site . 't3lib/');
-
-			// Absolute path to the typo3conf directory with trailing slash
-			// Example "/var/www/instance-name/htdocs/typo3conf/"
+		// Absolute path to the typo3conf directory with trailing slash
+		// Example "/var/www/instance-name/htdocs/typo3conf/"
 		define('PATH_typo3conf', PATH_site . 'typo3conf/');
-
-			// Absolute path to the tslib directory with trailing slash
-			// Example "/var/www/instance-name/htdocs/typo3/sysext/cms/tslib/"
+		// Absolute path to the tslib directory with trailing slash
+		// Example "/var/www/instance-name/htdocs/typo3/sysext/cms/tslib/"
 		define('PATH_tslib', PATH_typo3 . 'sysext/cms/tslib/');
 	}
 
@@ -197,7 +182,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function checkMainPathsExist() {
+	static protected function checkMainPathsExist() {
 		if (!is_file(PATH_thisScript)) {
 			die('Unable to determine path to entry script.');
 		}
@@ -217,34 +202,31 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function requireBaseClasses() {
-		/** @define "PATH_t3lib" "../../../t3lib/" */
-		require_once(PATH_t3lib . 'class.t3lib_div.php');
-
-		require_once(PATH_t3lib . 'utility/class.t3lib_utility_array.php');
-		require_once(PATH_t3lib . 'class.t3lib_configuration.php');
-		require_once(PATH_t3lib . 'class.t3lib_extmgm.php');
-
-		require_once(PATH_t3lib . 'class.t3lib_cache.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_exception.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_nosuchcache.php');
-		require_once(PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invaliddata.php');
-		require_once(PATH_t3lib . 'interfaces/interface.t3lib_singleton.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_factory.php');
-		require_once(PATH_t3lib . 'cache/class.t3lib_cache_manager.php');
-		require_once(PATH_t3lib . 'cache/frontend/interfaces/interface.t3lib_cache_frontend_frontend.php');
-		require_once(PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php');
-		require_once(PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_stringfrontend.php');
-		require_once(PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_phpfrontend.php');
-		require_once(PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_backend.php');
-		require_once(PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_taggablebackend.php');
-		require_once(PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_abstractbackend.php');
-		require_once(PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_phpcapablebackend.php');
-		require_once(PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_simplefilebackend.php');
-		require_once(PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_nullbackend.php');
-		require_once(PATH_t3lib . 'log/class.t3lib_log_level.php');
-
-		require_once(PATH_t3lib . 'class.t3lib_autoloader.php');
+	static protected function requireBaseClasses() {
+		/** @define PATH_t3lib" "../../../t3lib/ */
+		require_once PATH_t3lib . 'class.t3lib_div.php';
+		require_once PATH_t3lib . 'utility/class.t3lib_utility_array.php';
+		require_once PATH_t3lib . 'class.t3lib_configuration.php';
+		require_once PATH_t3lib . 'class.t3lib_extmgm.php';
+		require_once PATH_t3lib . 'class.t3lib_cache.php';
+		require_once PATH_t3lib . 'cache/class.t3lib_cache_exception.php';
+		require_once PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_nosuchcache.php';
+		require_once PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invaliddata.php';
+		require_once PATH_t3lib . 'interfaces/interface.t3lib_singleton.php';
+		require_once PATH_t3lib . 'cache/class.t3lib_cache_factory.php';
+		require_once PATH_t3lib . 'cache/class.t3lib_cache_manager.php';
+		require_once PATH_t3lib . 'cache/frontend/interfaces/interface.t3lib_cache_frontend_frontend.php';
+		require_once PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php';
+		require_once PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_stringfrontend.php';
+		require_once PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_phpfrontend.php';
+		require_once PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_backend.php';
+		require_once PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_taggablebackend.php';
+		require_once PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_abstractbackend.php';
+		require_once PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_phpcapablebackend.php';
+		require_once PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_simplefilebackend.php';
+		require_once PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_nullbackend.php';
+		require_once PATH_t3lib . 'log/class.t3lib_log_level.php';
+		require_once PATH_t3lib . 'class.t3lib_autoloader.php';
 	}
 
 	/**
@@ -252,7 +234,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function handleMagicQuotesGpc() {
+	static protected function handleMagicQuotesGpc() {
 		if (!get_magic_quotes_gpc()) {
 			t3lib_div::addSlashesOnArray($_GET);
 			t3lib_div::addSlashesOnArray($_POST);
@@ -275,8 +257,8 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function addCorePearPathToIncludePath() {
-		set_include_path(PATH_typo3 . 'contrib/pear/' . PATH_SEPARATOR . get_include_path());
+	static protected function addCorePearPathToIncludePath() {
+		set_include_path(((PATH_typo3 . 'contrib/pear/') . PATH_SEPARATOR) . get_include_path());
 	}
 
 	/**
@@ -284,13 +266,11 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function initializeGlobalVariables() {
-			// Unset variable(s) in global scope (security issue #13959)
+	static protected function initializeGlobalVariables() {
+		// Unset variable(s) in global scope (security issue #13959)
 		unset($GLOBALS['error']);
-
-			// Set up base information about browser/user-agent
+		// Set up base information about browser/user-agent
 		$GLOBALS['CLIENT'] = t3lib_div::clientInfo();
-
 		$GLOBALS['TYPO3_MISC'] = array();
 		$GLOBALS['T3_VAR'] = array();
 		$GLOBALS['T3_SERVICES'] = array();
@@ -301,7 +281,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function loadDefaultConfiguration() {
+	static protected function loadDefaultConfiguration() {
 		$GLOBALS['TYPO3_CONF_VARS'] = t3lib_Configuration::getDefaultConfiguration();
 	}
 
@@ -311,21 +291,19 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function initializeGlobalTimeTrackingVariables() {
-			// Set PARSETIME_START to the system time in milliseconds.
+	static protected function initializeGlobalTimeTrackingVariables() {
+		// Set PARSETIME_START to the system time in milliseconds.
 		$GLOBALS['PARSETIME_START'] = t3lib_div::milliseconds();
-			// Microtime of (nearly) script start
+		// Microtime of (nearly) script start
 		$GLOBALS['TYPO3_MISC']['microtime_start'] = microtime(TRUE);
-
-			// EXEC_TIME is set so that the rest of the script has a common value for the script execution time
+		// EXEC_TIME is set so that the rest of the script has a common value for the script execution time
 		$GLOBALS['EXEC_TIME'] = time();
-			// $ACCESS_TIME is a common time in minutes for access control
-		$GLOBALS['ACCESS_TIME'] = $GLOBALS['EXEC_TIME'] - ($GLOBALS['EXEC_TIME'] % 60);
-
-			// $SIM_EXEC_TIME is set to $EXEC_TIME but can be altered later in the script if we want to
-			// simulate another execution-time when selecting from eg. a database
+		// $ACCESS_TIME is a common time in minutes for access control
+		$GLOBALS['ACCESS_TIME'] = $GLOBALS['EXEC_TIME'] - $GLOBALS['EXEC_TIME'] % 60;
+		// $SIM_EXEC_TIME is set to $EXEC_TIME but can be altered later in the script if we want to
+		// simulate another execution-time when selecting from eg. a database
 		$GLOBALS['SIM_EXEC_TIME'] = $GLOBALS['EXEC_TIME'];
-			// If $SIM_EXEC_TIME is changed this value must be set accordingly
+		// If $SIM_EXEC_TIME is changed this value must be set accordingly
 		$GLOBALS['SIM_ACCESS_TIME'] = $GLOBALS['ACCESS_TIME'];
 	}
 
@@ -339,9 +317,9 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return void
 	 */
-	protected static function initializeBasicErrorReporting() {
-			// Core should be notice free at least until this point ...
-		error_reporting(E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED));
+	static protected function initializeBasicErrorReporting() {
+		// Core should be notice free at least until this point ...
+		error_reporting(E_ALL & ~((E_STRICT | E_NOTICE) | E_DEPRECATED));
 	}
 
 	/**
@@ -349,7 +327,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return string Either 'WIN' if running on Windows, else empty string
 	 */
-	protected static function getTypo3Os() {
+	static protected function getTypo3Os() {
 		$typoOs = '';
 		if (!stristr(PHP_OS, 'darwin') && stristr(PHP_OS, 'win')) {
 			$typoOs = 'WIN';
@@ -371,7 +349,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return string Absolute path to entry script
 	 */
-	protected static function getPathThisScript() {
+	static protected function getPathThisScript() {
 		if (defined('TYPO3_cliMode') && TYPO3_cliMode === TRUE) {
 			return self::getPathThisScriptCli();
 		} else {
@@ -386,14 +364,14 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return string Absolute path to entry script
 	 */
-	protected static function getPathThisScriptNonCli() {
+	static protected function getPathThisScriptNonCli() {
 		$cgiPath = '';
 		if (isset($_SERVER['ORIG_PATH_TRANSLATED'])) {
 			$cgiPath = $_SERVER['ORIG_PATH_TRANSLATED'];
 		} elseif (isset($_SERVER['PATH_TRANSLATED'])) {
 			$cgiPath = $_SERVER['PATH_TRANSLATED'];
 		}
-		if ($cgiPath && (PHP_SAPI === 'fpm-fcgi' || PHP_SAPI === 'cgi' || PHP_SAPI === 'isapi' || PHP_SAPI === 'cgi-fcgi')) {
+		if ($cgiPath && (((PHP_SAPI === 'fpm-fcgi' || PHP_SAPI === 'cgi') || PHP_SAPI === 'isapi') || PHP_SAPI === 'cgi-fcgi')) {
 			$scriptPath = $cgiPath;
 		} else {
 			if (isset($_SERVER['ORIG_SCRIPT_FILENAME'])) {
@@ -402,11 +380,10 @@ class Typo3_Bootstrap_BaseSetup {
 				$scriptPath = $_SERVER['SCRIPT_FILENAME'];
 			}
 		}
-			// Replace \ to / for Windows
+		// Replace \ to / for Windows
 		$scriptPath = str_replace('\\', '/', $scriptPath);
-			// Replace double // to /
+		// Replace double // to /
 		$scriptPath = str_replace('//', '/', $scriptPath);
-
 		return $scriptPath;
 	}
 
@@ -418,8 +395,8 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * @return string Absolute path to entry script
 	 */
-	protected static function getPathThisScriptCli() {
-			// Possible relative path of the called script
+	static protected function getPathThisScriptCli() {
+		// Possible relative path of the called script
 		if (isset($_SERVER['argv'][0])) {
 			$scriptPath = $_SERVER['argv'][0];
 		} elseif (isset($_ENV['_'])) {
@@ -427,11 +404,10 @@ class Typo3_Bootstrap_BaseSetup {
 		} else {
 			$scriptPath = $_SERVER['_'];
 		}
-
-			// Find out if path is relative or not
+		// Find out if path is relative or not
 		$isRelativePath = FALSE;
 		if (TYPO3_OS === 'WIN') {
-			if (!preg_match('/^([A-Z]:)?\\\/', $scriptPath)) {
+			if (!preg_match('/^([A-Z]:)?\\\\/', $scriptPath)) {
 				$isRelativePath = TRUE;
 			}
 		} else {
@@ -439,17 +415,15 @@ class Typo3_Bootstrap_BaseSetup {
 				$isRelativePath = TRUE;
 			}
 		}
-
-			// Concatenate path to current working directory with relative path and remove "/./" constructs
+		// Concatenate path to current working directory with relative path and remove "/./" constructs
 		if ($isRelativePath) {
 			if (isset($_SERVER['PWD'])) {
 				$workingDirectory = $_SERVER['PWD'];
 			} else {
 				$workingDirectory = getcwd();
 			}
-			$scriptPath = $workingDirectory . '/' . preg_replace('/\.\//', '', $scriptPath);
+			$scriptPath = ($workingDirectory . '/') . preg_replace('/\\.\\//', '', $scriptPath);
 		}
-
 		return $scriptPath;
 	}
 
@@ -462,15 +436,15 @@ class Typo3_Bootstrap_BaseSetup {
 	 *
 	 * We have two main scenarios for entry points:
 	 * - Directly called documentRoot/index.php (-> FE call or eiD include): index.php sets $relativePathPart to
-	 *   empty string to hint this code that the document root is identical to the directory the script is located at.
+	 * empty string to hint this code that the document root is identical to the directory the script is located at.
 	 * - An indirect include of typo3/init.php (-> a backend module, the install tool, or scripts like thumbs.php).
-	 *   If init.php is included we distinguish two cases:
-	 *   -- A backend module defines 'TYPO3_MOD_PATH': This is the case for "old" modules that are not called through
-	 *      "mod.php" dispatcher, and in the install tool. The TYPO3_MOD_PATH defines the relative path to the typo3/
-	 *      directory. This is taken as base to calculate the document root.
-	 *   -- A script includes init.php and does not define 'TYPO3_MOD_PATH': This is the case for the mod.php dispatcher
-	 *      and other entry scripts like 'cli_dispatch.phpsh' or 'thumbs.php' that are located parallel to init.php. In
-	 *      this case init.php sets 'typo3/' as $relativePathPart as base to calculate the document root.
+	 * If init.php is included we distinguish two cases:
+	 * -- A backend module defines 'TYPO3_MOD_PATH': This is the case for "old" modules that are not called through
+	 * "mod.php" dispatcher, and in the install tool. The TYPO3_MOD_PATH defines the relative path to the typo3/
+	 * directory. This is taken as base to calculate the document root.
+	 * -- A script includes init.php and does not define 'TYPO3_MOD_PATH': This is the case for the mod.php dispatcher
+	 * and other entry scripts like 'cli_dispatch.phpsh' or 'thumbs.php' that are located parallel to init.php. In
+	 * this case init.php sets 'typo3/' as $relativePathPart as base to calculate the document root.
 	 *
 	 * This basically boils down to the following code:
 	 * If TYPO3_MOD_PATH is defined, subtract this 'local' part from the entry point directory, else use
@@ -479,8 +453,8 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @param string $relativePathPart Relative directory part from document root to script path if TYPO3_MOD_PATH is not used
 	 * @return string Absolute path to document root of installation
 	 */
-	protected static function getPathSite($relativePathPart) {
-			// If end of path is not "typo3/" and TYPO3_MOD_PATH is given
+	static protected function getPathSite($relativePathPart) {
+		// If end of path is not "typo3/" and TYPO3_MOD_PATH is given
 		if (defined('TYPO3_MOD_PATH')) {
 			return self::getPathSiteByTypo3ModulePath();
 		} else {
@@ -495,27 +469,21 @@ class Typo3_Bootstrap_BaseSetup {
 	 * - "sysext/extensionName/path/entryScript.php" -> extension is below 'docRoot'/typo3/sysext
 	 * - "ext/extensionName/path/entryScript.php" -> extension is below 'docRoot'/typo3/ext
 	 * - "../typo3conf/ext/extensionName/path/entryScript.php" -> extension is below 'docRoot'/typo3conf/ext
-	 *- "install/index.php" -> install tool in 'docRoot'/typo3/install/
+	 * - "install/index.php" -> install tool in 'docRoot'/typo3/install/
 	 *
 	 * The method unifies the above and subtracts the calculated path part from PATH_thisScript
 	 *
 	 * @return string Absolute path to document root of installation
 	 */
-	protected static function getPathSiteByTypo3ModulePath() {
-		if (
-			substr(TYPO3_MOD_PATH, 0, strlen('sysext/')) === 'sysext/'
-			|| substr(TYPO3_MOD_PATH, 0, strlen('ext/')) === 'ext/'
-			|| substr(TYPO3_MOD_PATH, 0, strlen('install/')) === 'install/'
-		) {
+	static protected function getPathSiteByTypo3ModulePath() {
+		if ((substr(TYPO3_MOD_PATH, 0, strlen('sysext/')) === 'sysext/' || substr(TYPO3_MOD_PATH, 0, strlen('ext/')) === 'ext/') || substr(TYPO3_MOD_PATH, 0, strlen('install/')) === 'install/') {
 			$pathPartRelativeToDocumentRoot = TYPO3_mainDir . TYPO3_MOD_PATH;
 		} elseif (substr(TYPO3_MOD_PATH, 0, strlen('../typo3conf/')) === '../typo3conf/') {
 			$pathPartRelativeToDocumentRoot = substr(TYPO3_MOD_PATH, 3);
 		} else {
 			die('Unable to determine TYPO3 document root.');
 		}
-
 		$entryScriptDirectory = self::getUnifiedDirectoryNameWithTrailingSlash(PATH_thisScript);
-
 		return substr($entryScriptDirectory, 0, -strlen($pathPartRelativeToDocumentRoot));
 	}
 
@@ -525,7 +493,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @param string $relativePathPart Relative part of script from document root
 	 * @return string Absolute path to document root of installation
 	 */
-	protected static function getPathSiteByRelativePathPart($relativePathPart) {
+	static protected function getPathSiteByRelativePathPart($relativePathPart) {
 		$entryScriptDirectory = self::getUnifiedDirectoryNameWithTrailingSlash(PATH_thisScript);
 		if (strlen($relativePathPart) > 0) {
 			$pathSite = substr($entryScriptDirectory, 0, -strlen($relativePathPart));
@@ -541,12 +509,14 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @param string $absolutePath Absolute path to script
 	 * @return string Directory name of script file location, unified for Windows and Unix
 	 */
-	protected static function getUnifiedDirectoryNameWithTrailingSlash($absolutePath) {
+	static protected function getUnifiedDirectoryNameWithTrailingSlash($absolutePath) {
 		$directory = dirname($absolutePath);
 		if (TYPO3_OS === 'WIN') {
 			$directory = str_replace('\\', '/', $directory);
 		}
 		return $directory . '/';
 	}
+
 }
+
 ?>

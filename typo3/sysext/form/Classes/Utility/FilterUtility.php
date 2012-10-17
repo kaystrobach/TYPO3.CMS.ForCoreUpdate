@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Static methods for filtering
  *
@@ -57,7 +56,6 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	 */
 	public function addFilter(tx_form_System_Filter_Interface $filter) {
 		$this->filters[] = $filter;
-
 		return $this;
 	}
 
@@ -97,7 +95,7 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	 * @param array $arguments
 	 * @return mixed
 	 */
-	public static function get($class, $value, array $arguments = array()) {
+	static public function get($class, $value, array $arguments = array()) {
 		return self::createFilter($class, $arguments)->filter($value);
 	}
 
@@ -109,17 +107,17 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	 * @param array $arguments Configuration of the filter
 	 * @return tx_form_System_Filter_Interface The filter object
 	 */
-	public static function createFilter($class, array $arguments = NULL) {
+	static public function createFilter($class, array $arguments = NULL) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_System_Filter_' . ucfirst($class);
-
 		if (is_null($arguments)) {
 			$filter = t3lib_div::makeInstance($className);
 		} else {
 			$filter = t3lib_div::makeInstance($className, $arguments);
 		}
-
 		return $filter;
 	}
+
 }
+
 ?>

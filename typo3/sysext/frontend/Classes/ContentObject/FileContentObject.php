@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains FILE class object.
  *
@@ -41,32 +40,22 @@ class tslib_content_File extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-
-		$file = isset($conf['file.'])
-			? $this->cObj->stdWrap($conf['file'], $conf['file.'])
-			: $conf['file'];
-
+		$file = isset($conf['file.']) ? $this->cObj->stdWrap($conf['file'], $conf['file.']) : $conf['file'];
 		$theValue = $this->cObj->fileResource($file, trim($this->cObj->getAltParam($conf, FALSE)));
-
-		$linkWrap =  isset($conf['linkWrap.'])
-			? $this->cObj->stdWrap($conf['linkWrap'], $conf['linkWrap.'])
-			: $conf['linkWrap'];
+		$linkWrap = isset($conf['linkWrap.']) ? $this->cObj->stdWrap($conf['linkWrap'], $conf['linkWrap.']) : $conf['linkWrap'];
 		if ($linkWrap) {
 			$theValue = $this->cObj->linkWrap($theValue, $linkWrap);
 		}
-
-		$wrap =  isset($conf['wrap.'])
-			? $this->cObj->stdWrap($conf['wrap'], $conf['wrap.'])
-			: $conf['wrap'];
+		$wrap = isset($conf['wrap.']) ? $this->cObj->stdWrap($conf['wrap'], $conf['wrap.']) : $conf['wrap'];
 		if ($wrap) {
 			$theValue = $this->cObj->wrap($theValue, $wrap);
 		}
-
 		if (isset($conf['stdWrap.'])) {
 			$theValue = $this->cObj->stdWrap($theValue, $conf['stdWrap.']);
 		}
-
 		return $theValue;
 	}
+
 }
+
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This cache factory takes care of instantiating a cache frontend and injecting
  * a certain cache backend. After creation of the new cache, the cache object
@@ -80,35 +79,27 @@ class t3lib_cache_Factory implements t3lib_Singleton {
 	 * @api
 	 */
 	public function create($cacheIdentifier, $cacheObjectName, $backendObjectName, array $backendOptions = array()) {
-			// New operator used on purpose: This class is required early during
-			// bootstrap before makeInstance() is propely set up
+		// New operator used on purpose: This class is required early during
+		// bootstrap before makeInstance() is propely set up
 		$backend = new $backendObjectName($this->context, $backendOptions);
-
 		if (!$backend instanceof t3lib_cache_backend_Backend) {
-			throw new t3lib_cache_exception_InvalidBackend(
-				'"' . $backendObjectName . '" is not a valid cache backend object.',
-				1216304301
-			);
+			throw new t3lib_cache_exception_InvalidBackend(('"' . $backendObjectName) . '" is not a valid cache backend object.', 1216304301);
 		}
 		if (is_callable(array($backend, 'initializeObject'))) {
 			$backend->initializeObject();
 		}
-
-			// New used on purpose, see comment above
+		// New used on purpose, see comment above
 		$cache = new $cacheObjectName($cacheIdentifier, $backend);
-
 		if (!$cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new t3lib_cache_exception_InvalidCache(
-				'"' . $cacheObjectName . '" is not a valid cache frontend object.',
-				1216304300
-			);
+			throw new t3lib_cache_exception_InvalidCache(('"' . $cacheObjectName) . '" is not a valid cache frontend object.', 1216304300);
 		}
 		if (is_callable(array($cache, 'initializeObject'))) {
 			$cache->initializeObject();
 		}
-
 		$this->cacheManager->registerCache($cache);
 		return $cache;
 	}
+
 }
+
 ?>

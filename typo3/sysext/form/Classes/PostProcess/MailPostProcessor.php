@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * The mail post processor
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_Interface {
+
 	/**
 	 * @var tx_form_Domain_Model_Form
 	 */
@@ -82,14 +82,11 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 		$this->setCc();
 		$this->setPriority();
 		$this->setOrganization();
-
 		// @todo The whole content rendering seems to be missing here!
-
 		$this->setHtmlContent();
 		$this->setPlainContent();
 		$this->addAttachmentsFromForm();
 		$this->send();
-
 		return $this->render();
 	}
 
@@ -131,7 +128,6 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 		if (!t3lib_div::validEmail($fromEmail)) {
 			$fromEmail = t3lib_utility_Mail::getSystemFromAddress();
 		}
-
 		$fromName = '';
 		if ($this->typoScript['senderName']) {
 			$fromName = $this->typoScript['senderName'];
@@ -141,12 +137,10 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 			$fromName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
 		}
 		$fromName = $this->sanitizeHeaderString($fromName);
-		if (preg_match('/\s|,/', $fromName) >= 1) {
-			$fromName = '"' . $fromName . '"';
+		if (preg_match('/\\s|,/', $fromName) >= 1) {
+			$fromName = ('"' . $fromName) . '"';
 		}
-
 		$from = array($fromEmail => $fromName);
-
 		$this->mailMessage->setFrom($from);
 	}
 
@@ -158,10 +152,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function setTo() {
-		if (
-			$this->typoScript['recipientEmail'] &&
-			t3lib_div::validEmail($this->typoScript['recipientEmail'])
-		) {
+		if ($this->typoScript['recipientEmail'] && t3lib_div::validEmail($this->typoScript['recipientEmail'])) {
 			$this->mailMessage->setTo($this->typoScript['recipientEmail']);
 		}
 	}
@@ -174,10 +165,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function setCc() {
-		if (
-			$this->typoScript['ccEmail'] &&
-			t3lib_div::validEmail($this->typoScript['ccEmail'])
-		) {
+		if ($this->typoScript['ccEmail'] && t3lib_div::validEmail($this->typoScript['ccEmail'])) {
 			$this->mailMessage->AddCc(trim($this->typoScript['ccEmail']));
 		}
 	}
@@ -242,11 +230,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 */
 	protected function setHtmlContent() {
 		/** @var $view tx_form_View_Mail_Html */
-		$view = t3lib_div::makeInstance(
-			'tx_form_View_Mail_Html',
-			$this->form,
-			$this->typoScript
-		);
+		$view = t3lib_div::makeInstance('tx_form_View_Mail_Html', $this->form, $this->typoScript);
 		$htmlContent = $view->get();
 		$this->mailMessage->setBody($htmlContent, 'text/html');
 	}
@@ -260,10 +244,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 */
 	protected function setPlainContent() {
 		/** @var $view tx_form_View_Mail_Plain */
-		$view = t3lib_div::makeInstance(
-			'tx_form_View_Mail_Plain',
-			$this->form
-		);
+		$view = t3lib_div::makeInstance('tx_form_View_Mail_Plain', $this->form);
 		$plainContent = $view->render();
 		$this->mailMessage->addPart($plainContent, 'text/plain');
 	}
@@ -287,12 +268,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 */
 	protected function render() {
 		/** @var $view tx_form_View_Mail */
-		$view = t3lib_div::makeInstance(
-			'tx_form_View_Mail',
-			$this->mailMessage,
-			$this->typoScript
-		);
-
+		$view = t3lib_div::makeInstance('tx_form_View_Mail', $this->mailMessage, $this->typoScript);
 		return $view->render();
 	}
 
@@ -303,7 +279,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return string Valid or empty string
 	 */
 	protected function sanitizeHeaderString($string) {
-		$pattern = '/[\r\n\f\e]/';
+		$pattern = '/[\\r\\n\\f\\e]/';
 		if (preg_match($pattern, $string) > 0) {
 			$this->dirtyHeaders[] = $string;
 			$string = '';
@@ -342,13 +318,13 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 				if (is_array($submittedValues[$elementName]) && isset($submittedValues[$elementName]['tempFilename'])) {
 					$filename = $submittedValues[$elementName]['tempFilename'];
 					if (is_file($filename) && t3lib_div::isAllowedAbsPath($filename)) {
-						$this->mailMessage->attach(
-							Swift_Attachment::fromPath($filename)->setFilename($submittedValues[$elementName]['originalFilename'])
-						);
+						$this->mailMessage->attach(Swift_Attachment::fromPath($filename)->setFilename($submittedValues[$elementName]['originalFilename']));
 					}
 				}
 			}
 		}
 	}
+
 }
+
 ?>

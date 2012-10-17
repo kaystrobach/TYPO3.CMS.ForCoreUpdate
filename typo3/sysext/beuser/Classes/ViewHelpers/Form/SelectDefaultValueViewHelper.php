@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Extends Tx_Fluid_ViewHelpers_Form_SelectViewHelper with empty default value in select input field
  *

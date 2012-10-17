@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Constraints for log entries
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractEntity {
+
 	/**
 	 * Selected user/group; possible values are "gr-<uid>" for a group, "us-<uid>" for a user or -1 for "all users"
 	 *
@@ -127,6 +127,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	 * Default constructor
 	 */
 	public function __construct() {
+
 	}
 
 	/**
@@ -240,7 +241,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	 * @return boolean
 	 */
 	public function getGroupByPage() {
-		return (boolean)$this->groupByPage;
+		return (bool) $this->groupByPage;
 	}
 
 	/**
@@ -335,7 +336,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	 * @return boolean
 	 */
 	public function getIsInPageContext() {
-		return (boolean)$this->isInPageContext;
+		return (bool) $this->isInPageContext;
 	}
 
 	/**
@@ -375,5 +376,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	public function getDepth() {
 		return intval($this->depth);
 	}
+
 }
+
 ?>

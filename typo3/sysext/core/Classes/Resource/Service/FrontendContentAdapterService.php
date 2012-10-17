@@ -21,13 +21,12 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Tslib content adapter to modify $row array ($cObj->data[]) for backwards compatibility
  *
- * @package     TYPO3
+ * @package TYPO3
  * @author Ingmar Schlecht <ingmar@typo3.org>
- * @license     http://www.gnu.org/copyleft/gpl.html
+ * @license http://www.gnu.org/copyleft/gpl.html
  */
 class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 
@@ -36,7 +35,7 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 	 *
 	 * @var string
 	 */
-	protected static $migrateFields = array(
+	static protected $migrateFields = array(
 		'tt_content' => array(
 			'image' => array(
 				'paths' => 'image',
@@ -44,18 +43,18 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 				'captions' => 'imagecaption',
 				'links' => 'image_link',
 				'alternativeTexts' => 'altText',
-				'sysFileUids' => 'sysFileUids',	// additional fields for the UIDs
+				'sysFileUids' => 'sysFileUids'
 			),
 			'media' => array(
 				'paths' => 'media',
-				'captions' => 'imagecaption',
-			),
+				'captions' => 'imagecaption'
+			)
 		),
 		'pages' => array(
 			'media' => array(
 				'paths' => 'media'
-			),
-		),
+			)
+		)
 	);
 
 	/**
@@ -67,9 +66,9 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 	 *
 	 * @param $row typically an array, but can also be null (in extensions or e.g. FLUID viewhelpers)
 	 * @param $table the database table where the record is from
-	 * @return	void
+	 * @return 	void
 	 */
-	public static function modifyDBRow(&$row, $table) {
+	static public function modifyDBRow(&$row, $table) {
 		if (array_key_exists($table, static::$migrateFields)) {
 			foreach (static::$migrateFields[$table] as $migrateFieldName => $oldFieldNames) {
 				if ($row !== NULL && isset($row[$migrateFieldName])) {
@@ -94,7 +93,7 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 						$fileFieldContents['sysFileUids'][] = $file->getUid();
 					}
 					foreach ($oldFieldNames as $oldFieldType => $oldFieldName) {
-							// For paths, make comma separated list
+						// For paths, make comma separated list
 						if ($oldFieldType === 'paths') {
 							$fieldContents = implode(',', $fileFieldContents[$oldFieldType]);
 						} else {
@@ -108,11 +107,13 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 					if (count($files) > 0) {
 
 					} elseif ($row['image'] > 0) {
-						throw new RuntimeException('inconsistent count field in "' . $table . '".' . $migrateFieldName, 1333754565);
+						throw new RuntimeException((('inconsistent count field in "' . $table) . '".') . $migrateFieldName, 1333754565);
 					}
 				}
 			}
 		}
 	}
+
 }
+
 ?>

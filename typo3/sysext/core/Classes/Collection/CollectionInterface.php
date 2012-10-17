@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Marker interface for collection classes
  *
@@ -37,8 +36,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Collection extends Iterator, Serializable, Countable {
+interface t3lib_collection_Collection extends Iterator, Serializable, Countable
+{
 
 }
-
 ?>

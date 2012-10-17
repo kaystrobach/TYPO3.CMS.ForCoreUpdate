@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Repository for accessing the file mounts
  *
@@ -59,17 +57,13 @@ class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_Abst
 	 */
 	public function findByStorageType($storageType) {
 		$storageObjects = array();
-
 		$whereClause = 'deleted=0 AND hidden=0';
-		$whereClause .= ' AND ' . $this->typeField . ' = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($storageType, $this->table);
-
+		$whereClause .= ((' AND ' . $this->typeField) . ' = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr($storageType, $this->table);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->table, $whereClause);
-
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$storageObjects[] = $this->createDomainObject($row);
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
 		return $storageObjects;
 	}
 
@@ -81,29 +75,19 @@ class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_Abst
 	 */
 	public function findAll() {
 		$storageObjects = array();
-
 		$whereClause = 'deleted=0 AND hidden=0';
 		if ($this->type != '') {
-			$whereClause .= ' AND ' . $this->typeField . ' = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->type, $this->table);
+			$whereClause .= ((' AND ' . $this->typeField) . ' = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->type, $this->table);
 		}
-
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->table, $whereClause);
-
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$storageObjects[] = $this->createDomainObject($row);
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
 		if (count($storageObjects) === 0) {
-			$this->createLocalStorage(
-				'fileadmin/ (auto-created)',
-				$GLOBALS['TYPO3_CONF_VARS']['BE']['fileadminDir'],
-				'relative',
-				'This is the local fileadmin/ directory. This storage mount has been created automatically by TYPO3.'
-			);
+			$this->createLocalStorage('fileadmin/ (auto-created)', $GLOBALS['TYPO3_CONF_VARS']['BE']['fileadminDir'], 'relative', 'This is the local fileadmin/ directory. This storage mount has been created automatically by TYPO3.');
 			$storageObjects = self::findAll();
 		}
-
 		return $storageObjects;
 	}
 
@@ -124,16 +108,16 @@ class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_Abst
 			'name' => $name,
 			'description' => $description,
 			'driver' => 'Local',
-			'configuration' => '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+			'configuration' => ((('<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 				<T3FlexForms>
 					<data>
 						<sheet index="sDEF">
 							<language index="lDEF">
 								<field index="basePath">
-									<value index="vDEF">' . rtrim($basePath, '/') . '/</value>
+									<value index="vDEF">' . rtrim($basePath, '/')) . '/</value>
 								</field>
 								<field index="pathType">
-									<value index="vDEF">' . $pathType . '</value>
+									<value index="vDEF">') . $pathType) . '</value>
 								</field>
 							</language>
 						</sheet>
@@ -144,9 +128,8 @@ class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_Abst
 			'is_public' => 1,
 			'is_writable' => 1
 		);
-
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_file_storage', $field_values);
-		return (int)$GLOBALS['TYPO3_DB']->sql_insert_id();
+		return (int) $GLOBALS['TYPO3_DB']->sql_insert_id();
 	}
 
 	/**
@@ -158,6 +141,7 @@ class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_Abst
 	protected function createDomainObject(array $databaseRow) {
 		return $this->factory->getStorageObject($databaseRow['uid'], $databaseRow);
 	}
+
 }
 
 ?>

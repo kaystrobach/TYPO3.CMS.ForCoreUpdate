@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Create detail string from log entry
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_FormatDetailsViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
 	/**
 	 * Create formatted detail string from log row.
 	 *
@@ -47,18 +47,14 @@ class Tx_Belog_ViewHelpers_FormatDetailsViewHelper extends Tx_Fluid_Core_ViewHel
 	public function render(Tx_Belog_Domain_Model_LogEntry $logEntry) {
 		$detailString = $logEntry->getDetails();
 		$substitutes = $logEntry->getLogData();
-
-			// Strip pathes from file names if the log was a file action
+		// Strip pathes from file names if the log was a file action
 		if ($logEntry->getType() === 2) {
 			$substitutes = $this->stripPathFromFilenames($substitutes);
 		}
-
-			// Substitute
+		// Substitute
 		$detailString = vsprintf($detailString, $substitutes);
-
-			// Remove possible pending other %s
+		// Remove possible pending other %s
 		$detailString = str_replace('%s', '', $detailString);
-
 		return htmlspecialchars($detailString);
 	}
 
@@ -74,5 +70,7 @@ class Tx_Belog_ViewHelpers_FormatDetailsViewHelper extends Tx_Fluid_Core_ViewHel
 		}
 		return $files;
 	}
+
 }
+
 ?>

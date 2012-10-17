@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Controller for viewing the frontend
  *
@@ -50,40 +49,31 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 	 */
 	protected function getTargetUrl() {
 		$pageIdToShow = intval(t3lib_div::_GP('id'));
-
 		$adminCommand = $this->getAdminCommand($pageIdToShow);
 		$domainName = $this->getDomainName($pageIdToShow);
-
-			// Mount point overlay: Set new target page id and mp parameter
-			/** @var t3lib_pageSelect $sysPage */
+		// Mount point overlay: Set new target page id and mp parameter
+		/** @var t3lib_pageSelect $sysPage */
 		$sysPage = t3lib_div::makeInstance('t3lib_pageSelect');
 		$sysPage->init(FALSE);
 		$mountPointMpParameter = '';
 		$finalPageIdToShow = $pageIdToShow;
 		$mountPointInformation = $sysPage->getMountPointInfo($pageIdToShow);
 		if ($mountPointInformation && $mountPointInformation['overlay']) {
-				// New page id
+			// New page id
 			$finalPageIdToShow = $mountPointInformation['mount_pid'];
 			$mountPointMpParameter = '&MP=' . $mountPointInformation['MPvar'];
 		}
-
-			// Modify relative path to protocol with host if domain record is given
+		// Modify relative path to protocol with host if domain record is given
 		$protocolAndHost = '..';
 		if ($domainName) {
 			$protocol = 'http';
-			$page = (array)$sysPage->getPage($finalPageIdToShow);
+			$page = (array) $sysPage->getPage($finalPageIdToShow);
 			if ($page['url_scheme'] == 2 || $page['url_scheme'] == 0 && t3lib_div::getIndpEnv('TYPO3_SSL')) {
 				$protocol = 'https';
 			}
-			$protocolAndHost = $protocol . '://' . $domainName;
+			$protocolAndHost = ($protocol . '://') . $domainName;
 		}
-
-		$url = $protocolAndHost
-			. '/index.php?id=' . $finalPageIdToShow
-			. $this->getTypeParameterIfSet($finalPageIdToShow)
-			. $mountPointMpParameter
-			. $adminCommand;
-
+		$url = (((($protocolAndHost . '/index.php?id=') . $finalPageIdToShow) . $this->getTypeParameterIfSet($finalPageIdToShow)) . $mountPointMpParameter) . $adminCommand;
 		return $url;
 	}
 
@@ -94,7 +84,7 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 	 * @return string
 	 */
 	protected function getAdminCommand($pageId) {
-			// The page will show only if there is a valid page and if this page may be viewed by the user
+		// The page will show only if there is a valid page and if this page may be viewed by the user
 		$pageinfo = t3lib_BEfunc::readPageAccess($pageId, $GLOBALS['BE_USER']->getPagePermsClause(1));
 		$addCommand = '';
 		if (is_array($pageinfo)) {
@@ -131,5 +121,7 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 		$domain = t3lib_BEfunc::firstDomainRecord(t3lib_BEfunc::BEgetRootLine($pageId));
 		return $domain;
 	}
+
 }
+
 ?>

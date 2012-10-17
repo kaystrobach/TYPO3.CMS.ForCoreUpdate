@@ -38,81 +38,76 @@ class t3lib_TCEforms_ValueSlider {
 	 * @param array $params
 	 * @param t3lib_TCEforms $pObj
 	 * @return string
+	 * @todo Define visibility
 	 */
-	function renderWizard(&$params, &$pObj) {
-
+	public function renderWizard(&$params, &$pObj) {
 		$jsPath = '../t3lib/js/extjs/components/slider/';
 		$pObj->loadJavascriptLib($jsPath . 'ValueSlider.js');
-
 		$field = $params['field'];
 		$value = $params['row'][$field];
-
-			// If Slider is used in a flexform
+		// If Slider is used in a flexform
 		if (!empty($params['flexFormPath'])) {
 			$flexFormTools = t3lib_div::makeInstance('t3lib_flexformtools');
 			$flexFormValue = $flexFormTools->getArrayValueByPath($params['flexFormPath'], t3lib_div::xml2array($value));
-
 			if ($flexFormValue !== NULL) {
 				$value = $flexFormValue;
 			}
 		}
-
 		$itemName = $params['itemName'];
-			// Set default values (which correspond to those of the JS component)
+		// Set default values (which correspond to those of the JS component)
 		$min = 0;
 		$max = 10000;
-			// Use the range property, if defined, to set min and max values
+		// Use the range property, if defined, to set min and max values
 		if (isset($params['fieldConfig']['range'])) {
 			$min = isset($params['fieldConfig']['range']['lower']) ? intval($params['fieldConfig']['range']['lower']) : 0;
 			$max = isset($params['fieldConfig']['range']['upper']) ? intval($params['fieldConfig']['range']['upper']) : 10000;
 		}
 		$elementType = $params['fieldConfig']['type'];
-		$step =  $params['wConf']['step'] ? $params['wConf']['step'] : 1;
+		$step = $params['wConf']['step'] ? $params['wConf']['step'] : 1;
 		$width = intval($params['wConf']['width']) ? intval($params['wConf']['width']) : 400;
-
 		$type = 'null';
 		if (isset($params['fieldConfig']['eval'])) {
 			$eval = t3lib_div::trimExplode(',', $params['fieldConfig']['eval'], TRUE);
 			if (in_array('time', $eval)) {
 				$type = 'time';
-				$value = (int)$value;
+				$value = (int) $value;
 			} elseif (in_array('int', $eval)) {
 				$type = 'int';
-				$value = (int)$value;
+				$value = (int) $value;
 			} elseif (in_array('double2', $eval)) {
 				$type = 'double';
-				$value = (double)$value;
+				$value = (double) $value;
 			}
 		}
 		if (isset($params['fieldConfig']['items'])) {
 			$type = 'array';
-			$value = (int)$value;
+			$value = (int) $value;
 		}
 		$callback = $params['fieldChangeFunc']['TBE_EDITOR_fieldChanged'];
 		$getField = $params['fieldChangeFunc']['typo3form.fieldGet'];
 		$id = 'slider-' . $params['md5ID'];
-		$contents = '<div id="' . $id . '"></div>';
-		$js = '
+		$contents = ('<div id="' . $id) . '"></div>';
+		$js = ((((((((((((((((((((('
 		new TYPO3.Components.TcaValueSlider({
-			minValue: ' . $min . ',
-			maxValue: ' . $max . ',
-			value: ' . $value . ',
-			increment: ' . $step . ',
-			renderTo: "' . $id . '",
-			itemName: "' . $itemName . '",
-			changeCallback: "' . $callback . '",
-			getField: "' . $getField . '",
-			width: "' . $width . '",
-			type: "' . $type . '",
-			elementType: "' . $elementType . '"
+			minValue: ' . $min) . ',
+			maxValue: ') . $max) . ',
+			value: ') . $value) . ',
+			increment: ') . $step) . ',
+			renderTo: "') . $id) . '",
+			itemName: "') . $itemName) . '",
+			changeCallback: "') . $callback) . '",
+			getField: "') . $getField) . '",
+			width: "') . $width) . '",
+			type: "') . $type) . '",
+			elementType: "') . $elementType) . '"
 		});
 		';
 		/** @var $pageRenderer t3lib_pageRenderer */
 		$pageRenderer = $GLOBALS['SOBE']->doc->getPageRenderer();
 		$pageRenderer->addExtOnReadyCode($js);
-
 		return $contents;
 	}
+
 }
 
 ?>

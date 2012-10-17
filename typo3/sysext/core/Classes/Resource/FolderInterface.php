@@ -24,15 +24,15 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for folders
  *
- * @author  Andreas Wolf <andreas.wolf@typo3.org>
- * @package  TYPO3
- * @subpackage  t3lib
+ * @author Andreas Wolf <andreas.wolf@typo3.org>
+ * @package TYPO3
+ * @subpackage t3lib
  */
-interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface {
+interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface
+{
 	/**
 	 * Returns a list of all subfolders
 	 *
@@ -78,6 +78,6 @@ interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface {
 	 * @return boolean TRUE if deletion succeeded
 	 */
 	public function delete();
-}
 
+}
 ?>

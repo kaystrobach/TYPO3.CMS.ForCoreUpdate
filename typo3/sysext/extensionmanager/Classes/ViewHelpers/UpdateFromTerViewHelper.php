@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Renders a link to update the extension list from TER
  *
@@ -55,9 +53,9 @@ class Tx_Extensionmanager_ViewHelpers_UpdateFromTerViewHelper extends Tx_Fluid_V
 		$label = 'Update Extension List';
 		$this->tag->setContent($label);
 		$this->tag->addAttribute('class', 'text');
-
-		return '<div class="updateFromTer">' . $this->tag->render() . '<span class="spinner"></span></div>';
+		return ('<div class="updateFromTer">' . $this->tag->render()) . '<span class="spinner"></span></div>';
 	}
+
 }
 
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Parser for XLIFF file.
  *
@@ -43,74 +42,68 @@ class t3lib_l10n_parser_Xliff extends t3lib_l10n_parser_AbstractXml {
 	protected function doParsingFromRoot(SimpleXMLElement $root) {
 		$parsedData = array();
 		$bodyOfFileTag = $root->file->body;
-
 		if ($bodyOfFileTag instanceof SimpleXMLElement) {
 			foreach ($bodyOfFileTag->children() as $translationElement) {
 				if ($translationElement->getName() === 'trans-unit' && !isset($translationElement['restype'])) {
-						// If restype would be set, it could be metadata from Gettext to XLIFF conversion (and we don't need this data)
-
+					// If restype would be set, it could be metadata from Gettext to XLIFF conversion (and we don't need this data)
 					if ($this->languageKey === 'default') {
-							// Default language coming from an XLIFF template (no target element)
-						$parsedData[(string)$translationElement['id']][0] = array(
-							'source' => (string)$translationElement->source,
-							'target' => (string)$translationElement->source,
+						// Default language coming from an XLIFF template (no target element)
+						$parsedData[(string) $translationElement['id']][0] = array(
+							'source' => (string) $translationElement->source,
+							'target' => (string) $translationElement->source
 						);
 					} else {
-							// @todo Support "approved" attribute
+						// @todo Support "approved" attribute
 						if (!empty($translationElement->target)) {
-							$parsedData[(string)$translationElement['id']][0] = array(
-								'source' => (string)$translationElement->source,
-								'target' => (string)$translationElement->target,
+							$parsedData[(string) $translationElement['id']][0] = array(
+								'source' => (string) $translationElement->source,
+								'target' => (string) $translationElement->target
 							);
 						} else {
-								// No target element => not yet translated
-							$parsedData[(string)$translationElement['id']][0] = array(
-								'source' => (string)$translationElement->source,
-								'target' => (string)$translationElement->source,
+							// No target element => not yet translated
+							$parsedData[(string) $translationElement['id']][0] = array(
+								'source' => (string) $translationElement->source,
+								'target' => (string) $translationElement->source
 							);
 						}
 					}
-				} elseif ($translationElement->getName() === 'group' && isset($translationElement['restype']) && (string)$translationElement['restype'] === 'x-gettext-plurals') {
-						// This is a translation with plural forms
+				} elseif (($translationElement->getName() === 'group' && isset($translationElement['restype'])) && (string) $translationElement['restype'] === 'x-gettext-plurals') {
+					// This is a translation with plural forms
 					$parsedTranslationElement = array();
-
 					foreach ($translationElement->children() as $translationPluralForm) {
 						if ($translationPluralForm->getName() === 'trans-unit') {
-								// When using plural forms, ID looks like this: 1[0], 1[1] etc
-							$formIndex = substr((string)$translationPluralForm['id'], strpos((string)$translationPluralForm['id'], '[') + 1, -1);
-
+							// When using plural forms, ID looks like this: 1[0], 1[1] etc
+							$formIndex = substr((string) $translationPluralForm['id'], strpos((string) $translationPluralForm['id'], '[') + 1, -1);
 							if ($this->languageKey === 'default') {
-									// Default language come from XLIFF template (no target element)
-								$parsedTranslationElement[(int)$formIndex] = array(
-									'source' => (string)$translationPluralForm->source,
-									'target' => (string)$translationPluralForm->source,
+								// Default language come from XLIFF template (no target element)
+								$parsedTranslationElement[(int) $formIndex] = array(
+									'source' => (string) $translationPluralForm->source,
+									'target' => (string) $translationPluralForm->source
 								);
 							} else {
-									// @todo Support "approved" attribute
+								// @todo Support "approved" attribute
 								if (!empty($translationPluralForm->target)) {
-									$parsedTranslationElement[(int)$formIndex] = array(
-										'source' => (string)$translationPluralForm->source,
-										'target' => (string)$translationPluralForm->target,
+									$parsedTranslationElement[(int) $formIndex] = array(
+										'source' => (string) $translationPluralForm->source,
+										'target' => (string) $translationPluralForm->target
 									);
 								} else {
-										// No target element => not yet translated
-									$parsedTranslationElement[(int)$formIndex] = array(
-										'source' => (string)$translationPluralForm->source,
-										'target' => (string)$translationPluralForm->source,
+									// No target element => not yet translated
+									$parsedTranslationElement[(int) $formIndex] = array(
+										'source' => (string) $translationPluralForm->source,
+										'target' => (string) $translationPluralForm->source
 									);
 								}
 							}
 						}
 					}
-
 					if (!empty($parsedTranslationElement)) {
 						if (isset($translationElement['id'])) {
-							$id = (string)$translationElement['id'];
+							$id = (string) $translationElement['id'];
 						} else {
-							$id = (string)($translationElement->{'trans-unit'}[0]['id']);
+							$id = (string) $translationElement->{'trans-unit'}[0]['id'];
 							$id = substr($id, 0, strpos($id, '['));
 						}
-
 						$parsedData[$id] = $parsedTranslationElement;
 					}
 				}
@@ -118,6 +111,7 @@ class t3lib_l10n_parser_Xliff extends t3lib_l10n_parser_AbstractXml {
 		}
 		return $parsedData;
 	}
+
 }
 
 ?>

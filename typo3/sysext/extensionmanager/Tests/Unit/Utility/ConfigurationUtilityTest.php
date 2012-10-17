@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the Tx_Extensionmanager_Utility_Configuration class in the TYPO3 Core.
  *
@@ -29,6 +28,7 @@
  * @subpackage Tests
  */
 class Tx_Extensionmanager_Utility_ConfigurationTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+
 	/**
 	 * @param array $configuration
 	 * @param array $expected
@@ -38,11 +38,7 @@ class Tx_Extensionmanager_Utility_ConfigurationTest extends Tx_Extbase_Tests_Uni
 	public function convertValuedToNestedConfiguration(array $configuration, array $expected) {
 		/** @var $fixture Tx_Extensionmanager_Utility_Configuration */
 		$fixture = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
-
-		$this->assertEquals(
-			$expected,
-			$fixture->convertValuedToNestedConfiguration($configuration)
-		);
+		$this->assertEquals($expected, $fixture->convertValuedToNestedConfiguration($configuration));
 	}
 
 	/**
@@ -53,80 +49,82 @@ class Tx_Extensionmanager_Utility_ConfigurationTest extends Tx_Extbase_Tests_Uni
 			'plain array' => array(
 				array(
 					'first' => array(
-						'value' => 'value1',
+						'value' => 'value1'
 					),
 					'second' => array(
-						'value' => 'value2',
-					),
+						'value' => 'value2'
+					)
 				),
 				array(
 					'first' => 'value1',
-					'second' => 'value2',
-				),
+					'second' => 'value2'
+				)
 			),
 			'nested value with 2 levels' => array(
 				array(
 					'first.firstSub' => array(
-						'value' => 'value1',
+						'value' => 'value1'
 					),
 					'second.secondSub' => array(
-						'value' => 'value2',
-					),
+						'value' => 'value2'
+					)
 				),
 				array(
 					'first.' => array(
-						'firstSub' => 'value1',
+						'firstSub' => 'value1'
 					),
 					'second.' => array(
-						'secondSub' => 'value2',
-					),
-				),
+						'secondSub' => 'value2'
+					)
+				)
 			),
 			'nested value with 3 levels' => array(
 				array(
 					'first.firstSub.firstSubSub' => array(
-						'value' => 'value1',
+						'value' => 'value1'
 					),
 					'second.secondSub.secondSubSub' => array(
-						'value' => 'value2',
-					),
+						'value' => 'value2'
+					)
 				),
 				array(
 					'first.' => array(
 						'firstSub.' => array(
-							'firstSubSub' => 'value1',
-						),
+							'firstSubSub' => 'value1'
+						)
 					),
 					'second.' => array(
 						'secondSub.' => array(
-							'secondSubSub' => 'value2',
-						),
-					),
-				),
+							'secondSubSub' => 'value2'
+						)
+					)
+				)
 			),
 			'mixed nested value with 2 levels' => array(
 				array(
 					'first' => array(
-						'value' => 'firstValue',
+						'value' => 'firstValue'
 					),
 					'first.firstSub' => array(
-						'value' => 'value1',
+						'value' => 'value1'
 					),
 					'second.secondSub' => array(
-						'value' => 'value2',
-					),
+						'value' => 'value2'
+					)
 				),
 				array(
 					'first' => 'firstValue',
 					'first.' => array(
-						'firstSub' => 'value1',
+						'firstSub' => 'value1'
 					),
 					'second.' => array(
-						'secondSub' => 'value2',
-					),
-				),
-			),
+						'secondSub' => 'value2'
+					)
+				)
+			)
 		);
 	}
+
 }
+
 ?>

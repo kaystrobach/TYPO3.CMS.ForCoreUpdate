@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Global error handler for TYPO3
  *
@@ -44,7 +43,6 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 	 * Registers this class as default error handler
 	 *
 	 * @param integer $errorHandlerErrors The integer representing the E_* error level which should be
-	 *					 handled by the registered error handler.
 	 * @return void
 	 */
 	public function __construct($errorHandlerErrors) {
@@ -59,7 +57,6 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 	 */
 	public function setExceptionalErrors($exceptionalErrors) {
 		$this->exceptionalErrors = (int) $exceptionalErrors;
-
 	}
 
 	/**
@@ -77,11 +74,10 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 	 * @throws t3lib_error_Exception with the data passed to this method if the error is registered as exceptionalError
 	 */
 	public function handleError($errorLevel, $errorMessage, $errorFile, $errorLine) {
-			// Don't do anything if error_reporting is disabled by an @ sign
+		// Don't do anything if error_reporting is disabled by an @ sign
 		if (error_reporting() == 0) {
 			return TRUE;
 		}
-
 		$errorLevels = array(
 			E_WARNING => 'Warning',
 			E_NOTICE => 'Notice',
@@ -91,83 +87,66 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 			E_STRICT => 'Runtime Notice',
 			E_RECOVERABLE_ERROR => 'Catchable Fatal Error'
 		);
-
-		$message = 'PHP ' . $errorLevels[$errorLevel] . ': ' . $errorMessage . ' in ' . $errorFile . ' line ' . $errorLine;
-
+		$message = (((((('PHP ' . $errorLevels[$errorLevel]) . ': ') . $errorMessage) . ' in ') . $errorFile) . ' line ') . $errorLine;
 		if ($errorLevel & $this->exceptionalErrors) {
-				// We need to manually require the exception classes in case the autoloader is not available at this point yet.
-				// @see http://forge.typo3.org/issues/23444
+			// We need to manually require the exception classes in case the autoloader is not available at this point yet.
+			// @see http://forge.typo3.org/issues/23444
 			if (!class_exists('t3lib_error_Exception', FALSE)) {
-				require_once(PATH_t3lib . 'class.t3lib_exception.php');
-				require_once(PATH_t3lib . 'error/class.t3lib_error_exception.php');
+				require_once PATH_t3lib . 'class.t3lib_exception.php';
+				require_once PATH_t3lib . 'error/class.t3lib_error_exception.php';
 			}
-
 			throw new t3lib_error_Exception($message, 1);
 		} else {
-
 			switch ($errorLevel) {
-				case E_USER_ERROR:
-				case E_RECOVERABLE_ERROR:
-					$severity = 2;
-					break;
-				case E_USER_WARNING:
-				case E_WARNING:
-					$severity = 1;
-					break;
-				default:
-					$severity = 0;
-					break;
+			case E_USER_ERROR:
+
+			case E_RECOVERABLE_ERROR:
+				$severity = 2;
+				break;
+			case E_USER_WARNING:
+
+			case E_WARNING:
+				$severity = 1;
+				break;
+			default:
+				$severity = 0;
+				break;
 			}
-
-			$logTitle = 'Core: Error handler (' . TYPO3_MODE . ')';
-
-				// Write error message to the configured syslogs,
-				// see: $TYPO3_CONF_VARS['SYS']['systemLog']
+			$logTitle = ('Core: Error handler (' . TYPO3_MODE) . ')';
+			// Write error message to the configured syslogs,
+			// see: $TYPO3_CONF_VARS['SYS']['systemLog']
 			if ($errorLevel & $GLOBALS['TYPO3_CONF_VARS']['SYS']['syslogErrorReporting']) {
 				t3lib_div::sysLog($message, $logTitle, $severity);
 			}
-
-				// In case an error occurs before a database connection exists, try
-				// to connect to the DB to be able to write an entry to devlog/sys_log
+			// In case an error occurs before a database connection exists, try
+			// to connect to the DB to be able to write an entry to devlog/sys_log
 			if (is_object($GLOBALS['TYPO3_DB']) && empty($GLOBALS['TYPO3_DB']->link)) {
 				try {
 					$GLOBALS['TYPO3_DB']->connectDB();
-				}
-				catch (Exception $e) {
-					// There's nothing more we can do at this point if the
-					// database failed. It is up to the various log writers
-					// to check for themselves whether they have a DB connection
-					// available or not.
+				} catch (Exception $e) {
+
 				}
 			}
-
-				// Write error message to devlog extension(s),
-				// see: $TYPO3_CONF_VARS['SYS']['enable_errorDLOG']
+			// Write error message to devlog extension(s),
+			// see: $TYPO3_CONF_VARS['SYS']['enable_errorDLOG']
 			if (TYPO3_ERROR_DLOG) {
 				t3lib_div::devLog($message, $logTitle, $severity + 1);
 			}
-				// Write error message to TSlog (admin panel)
+			// Write error message to TSlog (admin panel)
 			if (is_object($GLOBALS['TT'])) {
-				$GLOBALS['TT']->setTSlogMessage($logTitle . ': ' . $message, $severity + 1);
+				$GLOBALS['TT']->setTSlogMessage(($logTitle . ': ') . $message, $severity + 1);
 			}
-				// Write error message to sys_log table (ext: belog, Tools->Log)
+			// Write error message to sys_log table (ext: belog, Tools->Log)
 			if ($errorLevel & $GLOBALS['TYPO3_CONF_VARS']['SYS']['belogErrorReporting']) {
-				$this->writeLog($logTitle . ': ' . $message, $severity);
+				$this->writeLog(($logTitle . ': ') . $message, $severity);
 			}
-
-				// Add error message to the flashmessageQueue
+			// Add error message to the flashmessageQueue
 			if (defined('TYPO3_ERRORHANDLER_MODE') && TYPO3_ERRORHANDLER_MODE == 'debug') {
-				$flashMessage = t3lib_div::makeInstance(
-					't3lib_FlashMessage',
-					$message,
-					'PHP ' . $errorLevels[$errorLevel],
-					$severity
-				);
+				$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $message, 'PHP ' . $errorLevels[$errorLevel], $severity);
 				t3lib_FlashMessageQueue::addMessage($flashMessage);
 			}
 		}
-
-			// Don't execute PHP internal error handler
+		// Don't execute PHP internal error handler
 		return TRUE;
 	}
 
@@ -190,8 +169,7 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 					$workspace = $GLOBALS['BE_USER']->workspace;
 				}
 			}
-
-			$fields_values = Array(
+			$fields_values = array(
 				'userid' => $userId,
 				'type' => 5,
 				'action' => 0,
@@ -205,6 +183,7 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_log', $fields_values);
 		}
 	}
+
 }
 
 ?>

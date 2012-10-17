@@ -22,13 +22,11 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Central utility class for repository handling.
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @package Extension Manager
  * @subpackage Utility/Repository
  */
@@ -45,21 +43,18 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @var integer
 	 */
 	const PROBLEM_EXTENSION_FILE_NOT_EXISTING = 1;
-
 	/**
 	 * Type of problem: wrong hash indicates outdated extension file.
 	 *
 	 * @var integer
 	 */
 	const PROBLEM_EXTENSION_HASH_CHANGED = 2;
-
 	/**
 	 * Type of problem: no version records in database.
 	 *
 	 * @var integer
 	 */
 	const PROBLEM_NO_VERSIONS_IN_DATABASE = 4;
-
 	/**
 	 * Keeps instance of repository class.
 	 *
@@ -90,7 +85,6 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 		$repository = $repositoryRepository->findByUid(1);
 		$this->setRepository($repository);
 	}
-
 
 	/**
 	 * Method registers required repository instance to work with.
@@ -143,22 +137,14 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 */
 	protected function fetchFile($remoteResource, $localResource) {
-		if (is_string($remoteResource) && is_string($localResource)
-			&& !empty($remoteResource) && !empty($localResource)
-		) {
+		if (((is_string($remoteResource) && is_string($localResource)) && !empty($remoteResource)) && !empty($localResource)) {
 			$fileContent = t3lib_div::getUrl($remoteResource, 0, array(TYPO3_user_agent));
 			if ($fileContent !== FALSE) {
 				if (t3lib_div::writeFile($localResource, $fileContent) === FALSE) {
-					throw new Tx_Extensionmanager_Exception_ExtensionManager(
-						sprintf('Could not write to file %s.', htmlspecialchars($localResource)),
-						1342635378
-					);
+					throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Could not write to file %s.', htmlspecialchars($localResource)), 1342635378);
 				}
 			} else {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager(
-					sprintf('Could not access remote resource %s.', htmlspecialchars($remoteResource)),
-					1342635425
-				);
+				throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Could not access remote resource %s.', htmlspecialchars($remoteResource)), 1342635425);
 			}
 		}
 	}
@@ -171,9 +157,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @see getRemoteExtListFile()
 	 */
 	public function getLocalExtListFile() {
-		$absFilePath = PATH_site . 'typo3temp/' .
-			intval($this->repository->getUid()) .
-			'.extensions.xml.gz';
+		$absFilePath = ((PATH_site . 'typo3temp/') . intval($this->repository->getUid())) . '.extensions.xml.gz';
 		return $absFilePath;
 	}
 
@@ -186,8 +170,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 */
 	public function getRemoteExtListFile() {
 		$mirror = $this->getMirrors(TRUE)->getMirror();
-		$filePath = 'http://' . $mirror['host'] . $mirror['path'] .
-			'extensions.xml.gz';
+		$filePath = (('http://' . $mirror['host']) . $mirror['path']) . 'extensions.xml.gz';
 		return $filePath;
 	}
 
@@ -200,8 +183,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 */
 	public function getRemoteExtHashFile() {
 		$mirror = $this->getMirrors(TRUE)->getMirror();
-		$filePath = 'http://' . $mirror['host'] . $mirror['path'] .
-			'extensions.md5';
+		$filePath = (('http://' . $mirror['host']) . $mirror['path']) . 'extensions.md5';
 		return $filePath;
 	}
 
@@ -213,9 +195,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @see getRemoteMirrorListFile()
 	 */
 	public function getLocalMirrorListFile() {
-		$absFilePath = PATH_site . 'typo3temp/' .
-			intval($this->repository->getUid()) .
-			'.mirrors.xml.gz';
+		$absFilePath = ((PATH_site . 'typo3temp/') . intval($this->repository->getUid())) . '.mirrors.xml.gz';
 		return $absFilePath;
 	}
 
@@ -244,7 +224,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 */
 	public function getMirrors($forcedUpdateFromRemote = TRUE) {
 		$assignedMirror = $this->repository->getMirrors();
-		if ($forcedUpdateFromRemote || is_null($assignedMirror) || !is_object($assignedMirror)) {
+		if (($forcedUpdateFromRemote || is_null($assignedMirror)) || !is_object($assignedMirror)) {
 			if ($forcedUpdateFromRemote || !is_file($this->getLocalMirrorListFile())) {
 				$this->fetchMirrorListFile();
 			}
@@ -261,33 +241,25 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 *
 	 * @access public
 	 * @see Tx_Extensionmanager_Utility_Repository_Helper::PROBLEM_NO_VERSIONS_IN_DATABASE,
-	 * Tx_Extensionmanager_Utility_Repository_Helper::PROBLEM_EXTENSION_FILE_NOT_EXISTING,
-	 * Tx_Extensionmanager_Utility_Repository_Helper::PROBLEM_EXTENSION_HASH_CHANGED
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
 	 * @return integer "0" if everything is perfect, otherwise bitmask with problems
 	 */
 	public function isExtListUpdateNecessary() {
 		$updateNecessity = 0;
-
 		if ($this->extensionRepository->countByRepository($this->repository->getUid()) <= 0) {
 			$updateNecessity |= self::PROBLEM_NO_VERSIONS_IN_DATABASE;
 		}
-
 		if (!is_file($this->getLocalExtListFile())) {
 			$updateNecessity |= self::PROBLEM_EXTENSION_FILE_NOT_EXISTING;
 		} else {
 			$remotemd5 = t3lib_div::getUrl($this->getRemoteExtHashFile(), 0, array(TYPO3_user_agent));
-
 			if ($remotemd5 !== FALSE) {
 				$localmd5 = md5_file($this->getLocalExtListFile());
 				if ($remotemd5 !== $localmd5) {
 					$updateNecessity |= self::PROBLEM_EXTENSION_HASH_CHANGED;
 				}
 			} else {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager(
-					'Could not retrieve extension hash file from remote server.',
-					1342635016
-				);
+				throw new Tx_Extensionmanager_Exception_ExtensionManager('Could not retrieve extension hash file from remote server.', 1342635016);
 			}
 		}
 		return $updateNecessity;
@@ -303,27 +275,21 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	public function updateExtList() {
 		$updated = FALSE;
 		$updateNecessity = $this->isExtListUpdateNecessary();
-
 		if ($updateNecessity !== 0) {
-				// retrieval of file necessary
-			$tmpBitmask = (self::PROBLEM_EXTENSION_FILE_NOT_EXISTING | self::PROBLEM_EXTENSION_HASH_CHANGED);
+			// retrieval of file necessary
+			$tmpBitmask = self::PROBLEM_EXTENSION_FILE_NOT_EXISTING | self::PROBLEM_EXTENSION_HASH_CHANGED;
 			if (($tmpBitmask & $updateNecessity) > 0) {
 				$this->fetchExtListFile();
 				$updateNecessity &= ~$tmpBitmask;
 			}
-
-				// database table cleanup
-			if (($updateNecessity & self::PROBLEM_NO_VERSIONS_IN_DATABASE)) {
+			// database table cleanup
+			if ($updateNecessity & self::PROBLEM_NO_VERSIONS_IN_DATABASE) {
 				$updateNecessity &= ~self::PROBLEM_NO_VERSIONS_IN_DATABASE;
 			} else {
-					// using straight sql here as extbases "remove" runs into memory problems
-				$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-					'tx_extensionmanager_domain_model_extension',
-					'repository=' . $this->repository->getUid()
-				);
+				// using straight sql here as extbases "remove" runs into memory problems
+				$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_extensionmanager_domain_model_extension', 'repository=' . $this->repository->getUid());
 			}
-
-				// no further problems - start of import process
+			// no further problems - start of import process
 			if ($updateNecessity === 0) {
 				$uid = $this->repository->getUid();
 				/* @var $objExtListImporter Tx_Extensionmanager_Utility_Importer_ExtensionList */
@@ -334,6 +300,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 		}
 		return $updated;
 	}
+
 }
 
 ?>

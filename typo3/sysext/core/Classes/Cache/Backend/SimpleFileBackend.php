@@ -8,7 +8,6 @@
  *                                                                        *
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
-
 /**
  * A caching backend which stores cache entries in files, but does not support or
  * care about expiry times and tags.
@@ -20,12 +19,9 @@
 class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_PhpCapableBackend {
 
 	const SEPARATOR = '^';
-
 	const EXPIRYTIME_FORMAT = 'YmdHis';
 	const EXPIRYTIME_LENGTH = 14;
-
 	const DATASIZE_DIGITS = 10;
-
 	/**
 	 * Directory where the files are stored
 	 *
@@ -92,33 +88,23 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 */
 	public function setCache(t3lib_cache_frontend_Frontend $cache) {
 		parent::setCache($cache);
-
 		if (empty($this->temporaryCacheDirectory)) {
-				// If no cache directory was given with cacheDirectory
-				// configuration option, set it to a path below typo3temp/
+			// If no cache directory was given with cacheDirectory
+			// configuration option, set it to a path below typo3temp/
 			$temporaryCacheDirectory = PATH_site . 'typo3temp/';
 		} else {
 			$temporaryCacheDirectory = $this->temporaryCacheDirectory;
 		}
-
-		$codeOrData = ($cache instanceof t3lib_cache_frontend_PhpFrontend) ? 'Code' : 'Data';
-		$finalCacheDirectory = $temporaryCacheDirectory . 'Cache/' . $codeOrData . '/' . $this->cacheIdentifier . '/';
-
+		$codeOrData = $cache instanceof t3lib_cache_frontend_PhpFrontend ? 'Code' : 'Data';
+		$finalCacheDirectory = (((($temporaryCacheDirectory . 'Cache/') . $codeOrData) . '/') . $this->cacheIdentifier) . '/';
 		if (!is_dir($finalCacheDirectory)) {
 			$this->createFinalCacheDirectory($finalCacheDirectory);
 		}
 		unset($this->temporaryCacheDirectory);
 		$this->cacheDirectory = $finalCacheDirectory;
-
-		$this->cacheEntryFileExtension = ($cache instanceof t3lib_cache_frontend_PhpFrontend) ? '.php' : '';
-
-		if ((strlen($this->cacheDirectory) + 23) > t3lib_div::getMaximumPathLength()) {
-			throw new \t3lib_cache_Exception(
-				'The length of the temporary cache file path "' . $this->cacheDirectory . '" exceeds the ' .
-				'maximum path length of ' . (t3lib_div::getMaximumPathLength() - 23) . '. Please consider ' .
-				'setting the temporaryDirectoryBase option to a shorter path.',
-				1248710426
-			);
+		$this->cacheEntryFileExtension = $cache instanceof t3lib_cache_frontend_PhpFrontend ? '.php' : '';
+		if (strlen($this->cacheDirectory) + 23 > t3lib_div::getMaximumPathLength()) {
+			throw new \t3lib_cache_Exception(((((('The length of the temporary cache file path "' . $this->cacheDirectory) . '" exceeds the ') . 'maximum path length of ') . (t3lib_div::getMaximumPathLength() - 23)) . '. Please consider ') . 'setting the temporaryDirectoryBase option to a shorter path.', 1248710426);
 		}
 	}
 
@@ -134,37 +120,31 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * option was handled.
 	 *
 	 * @param string $cacheDirectory The cache base directory. If a relative path
-	 * 		is given, it is assumed it is in TYPO3_DOCUMENT_ROOT. If an absolute
-	 * 		path is given it is taken as is.
 	 * @return void
 	 * @throws \t3lib_cache_Exception if the directory is not within allowed
-	 * 		open_basedir path.
 	 */
 	public function setCacheDirectory($cacheDirectory) {
-			// Skip handling if directory is a stream ressource
-			// This is used by unit tests with vfs:// directoryies
+		// Skip handling if directory is a stream ressource
+		// This is used by unit tests with vfs:// directoryies
 		if (strpos($cacheDirectory, '://')) {
 			$this->temporaryCacheDirectory = $cacheDirectory;
 			return;
 		}
-
 		$documentRoot = PATH_site;
-
-		if (($open_basedir = ini_get('open_basedir'))) {
+		if ($open_basedir = ini_get('open_basedir')) {
 			if (TYPO3_OS === 'WIN') {
 				$delimiter = ';';
 				$cacheDirectory = str_replace('\\', '/', $cacheDirectory);
-				if (!(preg_match('/[A-Z]:/', substr($cacheDirectory, 0, 2)))) {
+				if (!preg_match('/[A-Z]:/', substr($cacheDirectory, 0, 2))) {
 					$cacheDirectory = PATH_site . $cacheDirectory;
 				}
 			} else {
 				$delimiter = ':';
 				if ($cacheDirectory[0] != '/') {
-						// relative path to cache directory.
+					// relative path to cache directory.
 					$cacheDirectory = PATH_site . $cacheDirectory;
 				}
 			}
-
 			$basedirs = explode($delimiter, $open_basedir);
 			$cacheDirectoryInBaseDir = FALSE;
 			foreach ($basedirs as $basedir) {
@@ -182,13 +162,11 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 				}
 			}
 			if (!$cacheDirectoryInBaseDir) {
-				throw new \t3lib_cache_Exception(
-					'Open_basedir restriction in effect. The directory "' . $cacheDirectory . '" is not in an allowed path.'
-				);
+				throw new \t3lib_cache_Exception(('Open_basedir restriction in effect. The directory "' . $cacheDirectory) . '" is not in an allowed path.');
 			}
 		} else {
 			if ($cacheDirectory[0] == '/') {
-					// Absolute path to cache directory.
+				// Absolute path to cache directory.
 				$documentRoot = '/';
 			}
 			if (TYPO3_OS === 'WIN') {
@@ -197,13 +175,11 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 				}
 			}
 		}
-
-			// After this point all paths have '/' as directory seperator
+		// After this point all paths have '/' as directory seperator
 		if ($cacheDirectory[strlen($cacheDirectory) - 1] !== '/') {
 			$cacheDirectory .= '/';
 		}
-
-		$this->temporaryCacheDirectory = $documentRoot . $cacheDirectory . $this->cacheIdentifier . '/';
+		$this->temporaryCacheDirectory = (($documentRoot . $cacheDirectory) . $this->cacheIdentifier) . '/';
 	}
 
 	/**
@@ -218,17 +194,10 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 		try {
 			t3lib_div::mkdir_deep($finalCacheDirectory);
 		} catch (\RuntimeException $e) {
-			throw new \t3lib_cache_Exception(
-				'The directory "' . $finalCacheDirectory . '" can not be created.',
-				1303669848,
-				$e
-			);
+			throw new \t3lib_cache_Exception(('The directory "' . $finalCacheDirectory) . '" can not be created.', 1303669848, $e);
 		}
 		if (!is_writable($finalCacheDirectory)) {
-			throw new \t3lib_cache_Exception(
-				'The directory "' . $finalCacheDirectory . '" is not writable.',
-				1203965200
-			);
+			throw new \t3lib_cache_Exception(('The directory "' . $finalCacheDirectory) . '" is not writable.', 1203965200);
 		}
 	}
 
@@ -257,37 +226,21 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (!is_string($data)) {
-			throw new \t3lib_cache_Exception_InvalidData(
-				'The specified data is of type "' . gettype($data) . '" but a string is expected.',
-				1334756734
-			);
+			throw new \t3lib_cache_Exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1334756734);
 		}
-
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1334756735
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1334756735);
 		}
-
 		if ($entryIdentifier === '') {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not be empty.',
-				1334756736
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not be empty.', 1334756736);
 		}
-
-		$temporaryCacheEntryPathAndFilename = $this->cacheDirectory . uniqid() . '.temp';
+		$temporaryCacheEntryPathAndFilename = ($this->cacheDirectory . uniqid()) . '.temp';
 		$result = file_put_contents($temporaryCacheEntryPathAndFilename, $data);
 		t3lib_div::fixPermissions($temporaryCacheEntryPathAndFilename);
 		if ($result === FALSE) {
-			throw new t3lib_cache_Exception(
-				'The temporary cache file "' . $temporaryCacheEntryPathAndFilename . '" could not be written.',
-				1334756737
-			);
+			throw new t3lib_cache_Exception(('The temporary cache file "' . $temporaryCacheEntryPathAndFilename) . '" could not be written.', 1334756737);
 		}
-
-		$cacheEntryPathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		$cacheEntryPathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		rename($temporaryCacheEntryPathAndFilename, $cacheEntryPathAndFilename);
 	}
 
@@ -301,13 +254,9 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 */
 	public function get($entryIdentifier) {
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1334756877
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1334756877);
 		}
-
-		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		if (!file_exists($pathAndFilename)) {
 			return FALSE;
 		}
@@ -324,12 +273,9 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 */
 	public function has($entryIdentifier) {
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1334756878
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1334756878);
 		}
-		return file_exists($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension);
+		return file_exists(($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension);
 	}
 
 	/**
@@ -343,20 +289,13 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 */
 	public function remove($entryIdentifier) {
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1334756960
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1334756960);
 		}
 		if ($entryIdentifier === '') {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not be empty.',
-				1334756961
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not be empty.', 1334756961);
 		}
-
 		try {
-			unlink($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension);
+			unlink(($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension);
 		} catch (\Exception $e) {
 			return FALSE;
 		}
@@ -383,7 +322,7 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * @api
 	 */
 	protected function isCacheFileExpired($cacheEntryPathAndFilename) {
-		return (file_exists($cacheEntryPathAndFilename) === FALSE);
+		return file_exists($cacheEntryPathAndFilename) === FALSE;
 	}
 
 	/**
@@ -393,6 +332,7 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * @api
 	 */
 	public function collectGarbage() {
+
 	}
 
 	/**
@@ -402,8 +342,8 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * @return mixed The file names (including path) as an array if one or more entries could be found, otherwise FALSE
 	 */
 	protected function findCacheFilesByIdentifier($entryIdentifier) {
-		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
-		return (file_exists($pathAndFilename) ? array($pathAndFilename) : FALSE);
+		$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
+		return file_exists($pathAndFilename) ? array($pathAndFilename) : FALSE;
 	}
 
 	/**
@@ -415,14 +355,13 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * @api
 	 */
 	public function requireOnce($entryIdentifier) {
-		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1282073036
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073036);
 		}
-		return (file_exists($pathAndFilename) ? require_once($pathAndFilename) : FALSE);
+		return file_exists($pathAndFilename) ? require_once $pathAndFilename : FALSE;
 	}
+
 }
+
 ?>

@@ -21,9 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
-
 /**
  * Abstract implementation of a log writer
  *
@@ -42,14 +39,10 @@ abstract class t3lib_log_writer_Abstract implements t3lib_log_writer_Writer {
 	public function __construct(array $options = array()) {
 		foreach ($options as $optionKey => $optionValue) {
 			$methodName = 'set' . ucfirst($optionKey);
-
 			if (method_exists($this, $methodName)) {
-				$this->$methodName($optionValue);
+				$this->{$methodName}($optionValue);
 			} else {
-				throw new InvalidArgumentException(
-					'Invalid log writer option "' . $optionKey . '" for log writer of type "' . get_class($this) . '"',
-					1321696151
-				);
+				throw new InvalidArgumentException(((('Invalid log writer option "' . $optionKey) . '" for log writer of type "') . get_class($this)) . '"', 1321696151);
 			}
 		}
 	}

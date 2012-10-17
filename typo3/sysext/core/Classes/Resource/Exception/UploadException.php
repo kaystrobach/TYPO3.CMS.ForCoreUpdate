@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * An exception when the upload goes wrong
  *
@@ -31,5 +29,7 @@
  */
 class t3lib_file_exception_UploadException extends t3lib_file_exception_AbstractFileOperationException {
 
+
 }
+
 ?>

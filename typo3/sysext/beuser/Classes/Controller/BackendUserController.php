@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Backend module user administration controller
  *
@@ -45,9 +44,9 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 	protected $moduleDataStorageService;
 
 	/**
-	  * @var Tx_Beuser_Domain_Repository_BackendUserRepository
-	  * @inject
-	  */
+	 * @var Tx_Beuser_Domain_Repository_BackendUserRepository
+	 * @inject
+	 */
 	protected $backendUserRepository;
 
 	/**
@@ -72,8 +71,7 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 	 */
 	public function processRequest(Tx_Extbase_MVC_RequestInterface $request, Tx_Extbase_MVC_ResponseInterface $response) {
 		$this->moduleData = $this->moduleDataStorageService->loadModuleData();
-
-			// We "finally" persist the module data.
+		// We "finally" persist the module data.
 		try {
 			parent::processRequest($request, $response);
 			$this->moduleDataStorageService->persistModuleData($this->moduleData);
@@ -90,18 +88,13 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 	 * @return void
 	 */
 	public function initializeAction() {
-			// @TODO: Extbase backend modules relies on frontend TypoScript for view, persistence
-			// and settings. Thus, we need a TypoScript root template, that then loads the
-			// ext_typoscript_setup.txt file of this module. This is nasty, but can not be
-			// circumvented until there is a better solution in extbase.
-			// For now we throw an exception if no settings are detected.
+		// @TODO: Extbase backend modules relies on frontend TypoScript for view, persistence
+		// and settings. Thus, we need a TypoScript root template, that then loads the
+		// ext_typoscript_setup.txt file of this module. This is nasty, but can not be
+		// circumvented until there is a better solution in extbase.
+		// For now we throw an exception if no settings are detected.
 		if (empty($this->settings)) {
-			throw new RuntimeException(
-				'No settings detected. This module can not work then. '.
-				'This usually happens if there is no frontend TypoScript template with root flag set. ' .
-				'Please create a frontend page with a TypoScript root template.',
-				1344375003
-			);
+			throw new RuntimeException(('No settings detected. This module can not work then. ' . 'This usually happens if there is no frontend TypoScript template with root flag set. ') . 'Please create a frontend page with a TypoScript root template.', 1344375003);
 		}
 	}
 
@@ -118,14 +111,11 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 		} else {
 			$this->moduleData->setDemand($demand);
 		}
-
-			// Switch user permanently or only until logout
+		// Switch user permanently or only until logout
 		if (t3lib_div::_GP('SwitchUser')) {
 			$this->switchUser(t3lib_div::_GP('SwitchUser'), t3lib_div::_GP('switchBackUser'));
 		}
-
 		$compareUserList = $this->moduleData->getCompareUserList();
-
 		$this->view->assign('demand', $demand);
 		$this->view->assign('returnUrl', 'mod.php?M=tools_BeuserTxBeuser');
 		$this->view->assign('dateFormat', $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy']);
@@ -149,7 +139,6 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 				'sessions' => $this->backendUserSessionRepository->findByBackendUser($onlineUser)
 			);
 		}
-
 		$this->view->assign('dateFormat', $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy']);
 		$this->view->assign('timeFormat', $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']);
 		$this->view->assign('onlineUsersAndSessions', $onlineUsersAndSessions);
@@ -163,7 +152,6 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 	 */
 	public function compareAction() {
 		$compareUserList = $this->moduleData->getCompareUserList();
-
 		$this->view->assign('dateFormat', $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy']);
 		$this->view->assign('timeFormat', $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']);
 		$this->view->assign('compareUserList', !empty($compareUserList) ? $this->backendUserRepository->findByUidList($compareUserList) : '');
@@ -200,18 +188,11 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 	 * @return void
 	 */
 	protected function terminateBackendUserSessionAction(Tx_Beuser_Domain_Model_BackendUser $backendUser, $sessionId) {
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			'be_sessions',
-			'ses_userid = "' . $backendUser->getUid() . '"' .
-				' AND ses_id = "' . $sessionId . '"' .
-				' LIMIT 1'
-		);
-
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('be_sessions', ((((('ses_userid = "' . $backendUser->getUid()) . '"') . ' AND ses_id = "') . $sessionId) . '"') . ' LIMIT 1');
 		if ($GLOBALS['TYPO3_DB']->sql_affected_rows() == 1) {
 			$message = 'Session successfully terminated.';
 			$this->flashMessageContainer->add($message, '', t3lib_FlashMessage::OK);
 		}
-
 		$this->forward('online');
 	}
 
@@ -226,14 +207,12 @@ class Tx_Beuser_Controller_BackendUserController extends Tx_Extbase_MVC_Controll
 		$targetUser = t3lib_BEfunc::getRecord('be_users', $switchUser);
 		if (is_array($targetUser) && $GLOBALS['BE_USER']->isAdmin()) {
 			$updateData['ses_userid'] = $targetUser['uid'];
-
-				// User switchback or replace current session?
+			// User switchback or replace current session?
 			if ($switchBack) {
 				$updateData['ses_backuserid'] = intval($GLOBALS['BE_USER']->user['uid']);
 			}
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('be_sessions', 'ses_id=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($GLOBALS['BE_USER']->id, 'be_sessions') . ' AND ses_name=' . $GLOBALS['TYPO3_DB']->fullQuoteStr(t3lib_beUserAuth::getCookieName(), 'be_sessions') . ' AND ses_userid=' . intval($GLOBALS['BE_USER']->user['uid']), $updateData);
-
-			$redirectUrl = $GLOBALS['BACK_PATH'] . 'index.php' . ($GLOBALS['TYPO3_CONF_VARS']['BE']['interfaces'] ? '' : '?commandLI=1');
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('be_sessions', (((('ses_id=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($GLOBALS['BE_USER']->id, 'be_sessions')) . ' AND ses_name=') . $GLOBALS['TYPO3_DB']->fullQuoteStr(t3lib_beUserAuth::getCookieName(), 'be_sessions')) . ' AND ses_userid=') . intval($GLOBALS['BE_USER']->user['uid']), $updateData);
+			$redirectUrl = ($GLOBALS['BACK_PATH'] . 'index.php') . ($GLOBALS['TYPO3_CONF_VARS']['BE']['interfaces'] ? '' : '?commandLI=1');
 			t3lib_utility_Http::redirect($redirectUrl);
 		}
 	}

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Service class for managing multiple step processes (dependencies for example)
  *
@@ -134,29 +133,23 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	public function resolveDependenciesAndInstall(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 		$this->downloadQueue->addExtensionToQueue($extension);
-
 		$queue = $this->downloadQueue->getExtensionQueue();
 		$downloadedDependencies = array();
 		$updatedDependencies = array();
 		$installedDependencies = array();
-
 		if (array_key_exists('download', $queue)) {
 			$downloadedDependencies = $this->downloadDependencies($queue['download']);
 		}
-
 		if (array_key_exists('update', $queue)) {
 			$this->downloadDependencies($queue['update']);
 			$updatedDependencies = $this->uninstallDependenciesToBeUpdated($queue['update']);
 		}
-
-			// add extension at the end of the download queue
+		// add extension at the end of the download queue
 		$this->downloadQueue->addExtensionToInstallQueue($extension->getExtensionKey());
-
 		$installQueue = $this->downloadQueue->getExtensionInstallStorage();
 		if (count($installQueue) > 0) {
 			$installedDependencies = $this->installDependencies($installQueue);
 		}
-
 		return array_merge($downloadedDependencies, $updatedDependencies, $installedDependencies);
 	}
 
@@ -223,6 +216,7 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 		}
 		return array_merge($this->downloadQueue->getExtensionQueue(), $installQueue);
 	}
+
 }
 
 ?>

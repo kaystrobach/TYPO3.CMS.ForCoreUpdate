@@ -1,5 +1,4 @@
 <?php
-
 /***************************************************************
  *  Copyright notice
  *
@@ -23,7 +22,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An extension helper model to be used in ext:about context
  *
@@ -53,7 +51,6 @@ class Tx_About_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEn
 	 * @var string
 	 */
 	protected $title = '';
-
 
 	/**
 	 * @param string $author
@@ -112,4 +109,5 @@ class Tx_About_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEn
 	}
 
 }
+
 ?>

@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * View helper which allows you to create extbase based modules in the
  * style of TYPO3 default modules.
@@ -46,7 +45,6 @@
  * "your module content" wrapped with propper head & body tags.
  * Custom CSS file EXT:your_extension/Resources/Public/styles/backend.css and JavaScript file EXT:your_extension/Resources/Public/scripts/main.js will be loaded
  * </output>
- *
  */
 class Tx_Extensionmanager_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_ViewHelpers_Be_AbstractBackendViewHelper {
 
@@ -69,31 +67,17 @@ class Tx_Extensionmanager_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_Vi
 	 * @see template
 	 * @see t3lib_PageRenderer
 	 */
-	public function render(
-		$pageTitle = '',
-		$enableJumpToUrl = TRUE,
-		$enableClickMenu = TRUE,
-		$loadPrototype = TRUE,
-		$loadScriptaculous = FALSE,
-		$scriptaculousModule = '',
-		$loadExtJs = FALSE,
-		$loadExtJsTheme = TRUE,
-		$extJsAdapter = '',
-		$enableExtJsDebug = FALSE,
-		$addCssFiles = array(),
-		$addJsFiles = array()
-	) {
+	public function render($pageTitle = '', $enableJumpToUrl = TRUE, $enableClickMenu = TRUE, $loadPrototype = TRUE, $loadScriptaculous = FALSE, $scriptaculousModule = '', $loadExtJs = FALSE, $loadExtJsTheme = TRUE, $extJsAdapter = '', $enableExtJsDebug = FALSE, $addCssFiles = array(), $addJsFiles = array()) {
 		$doc = $this->getDocInstance();
 		$pageRenderer = $doc->getPageRenderer();
-
 		if ($enableJumpToUrl) {
-			$doc->JScode .= '
+			$doc->JScode .= ('
 				<script language="javascript" type="text/javascript">
 					script_ended = 0;
 					function jumpToUrl(URL)	{
 						document.location = URL;
 					}
-					' . $doc->redirectUrls() . '
+					' . $doc->redirectUrls()) . '
 				</script>
 			';
 		}
@@ -122,11 +106,12 @@ class Tx_Extensionmanager_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_Vi
 				$pageRenderer->addJsFile($addJsFile);
 			}
 		}
-
 		$output = $this->renderChildren();
 		$output = $doc->startPage($pageTitle) . $output;
 		$output .= $doc->endPage();
 		return $output;
 	}
+
 }
+
 ?>

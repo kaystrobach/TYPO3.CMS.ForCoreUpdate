@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Adapter for Swift_Mailer to be used by TYPO3 extensions.
  *
@@ -44,6 +43,7 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 
 	/**
 	 * Create a new MailTransport
+	 *
 	 * @param string $debugFile
 	 */
 	public function __construct($debugFile) {
@@ -61,12 +61,14 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 	 * Not used.
 	 */
 	public function start() {
+
 	}
 
 	/**
 	 * Not used.
 	 */
 	public function stop() {
+
 	}
 
 	/**
@@ -79,43 +81,28 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 	 */
 	public function send(Swift_Mime_Message $message, &$failedRecipients = NULL) {
 		$message->generateId();
-
-			// Create a mbox-like header
+		// Create a mbox-like header
 		$mboxFrom = $this->getReversePath($message);
 		$mboxDate = strftime('%c', $message->getDate());
 		$messageStr = sprintf('From %s  %s', $mboxFrom, $mboxDate) . LF;
-
-			// Add the complete mail inclusive headers
+		// Add the complete mail inclusive headers
 		$messageStr .= $message->toString();
 		$messageStr .= LF . LF;
-
 		$lockObject = t3lib_div::makeInstance('t3lib_lock', $this->debugFile, $GLOBALS['TYPO3_CONF_VARS']['SYS']['lockingMode']);
 		/** @var t3lib_lock $lockObject */
 		$lockObject->acquire();
-
-			// Write the mbox file
+		// Write the mbox file
 		$file = @fopen($this->debugFile, 'a');
 		if (!$file) {
 			$lockObject->release();
-			throw new RuntimeException(
-				sprintf('Could not write to file "%s" when sending an email to debug transport', $this->debugFile),
-				1291064151
-			);
+			throw new RuntimeException(sprintf('Could not write to file "%s" when sending an email to debug transport', $this->debugFile), 1291064151);
 		}
-
 		@fwrite($file, $messageStr);
 		@fclose($file);
-
 		t3lib_div::fixPermissions($this->debugFile);
-
 		$lockObject->release();
-
-			// Return every receipient as "delivered"
-		$count = (
-			count((array) $message->getTo())
-			+ count((array) $message->getCc())
-			+ count((array) $message->getBcc())
-		);
+		// Return every receipient as "delivered"
+		$count = (count((array) $message->getTo()) + count((array) $message->getCc())) + count((array) $message->getBcc());
 		return $count;
 	}
 
@@ -150,6 +137,7 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 	public function registerPlugin(Swift_Events_EventListener $plugin) {
 		return TRUE;
 	}
+
 }
 
 ?>

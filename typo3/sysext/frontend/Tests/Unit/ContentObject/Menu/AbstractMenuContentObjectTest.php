@@ -21,16 +21,15 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the "tslib_menu" class in the TYPO3 Core.
  *
  * @package TYPO3
  * @subpackage tslib
- *
  * @author Stefan Galinski <stefan.galinski@gmail.com>
  */
 class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+
 	/**
 	 * @var tslib_menu
 	 */
@@ -43,11 +42,9 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	public function setUp() {
 		$proxy = $this->buildAccessibleProxy('tslib_menu');
-		$this->fixture = new $proxy;
-
+		$this->fixture = new $proxy();
 		$backupGlobalVariables['TYPO3_DB'] = $GLOBALS['TYPO3_DB'];
 		$GLOBALS['TYPO3_DB'] = $this->getMock('t3lib_db');
-
 		$backupGlobalVariables['TSFE'] = $GLOBALS['TSFE'];
 		$GLOBALS['TSFE'] = $this->getMock('tslib_fe');
 		$GLOBALS['TSFE']->cObj = new tslib_cObj();
@@ -57,14 +54,12 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 		foreach ($this->backupGlobalVariables as $key => $data) {
 			$GLOBALS[$key] = $data;
 		}
-
 		unset($this->fixture);
 	}
 
 	////////////////////////////////
 	// Tests concerning sectionIndex
 	////////////////////////////////
-
 	/**
 	 * Prepares a test for the method sectionIndex
 	 *
@@ -80,10 +75,7 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 */
 	public function sectionIndexReturnsEmptyArrayIfTheRequestedPageCouldNotBeFetched() {
 		$this->prepareSectionIndexTest();
-
-		$this->fixture->sys_page->expects($this->once())->method('getPage')
-			->will($this->returnValue(NULL));
-
+		$this->fixture->sys_page->expects($this->once())->method('getPage')->will($this->returnValue(NULL));
 		$result = $this->fixture->_call('sectionIndex', 'field');
 		$this->assertEquals($result, array());
 	}
@@ -93,11 +85,8 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 */
 	public function sectionIndexUsesTheInternalIdIfNoPageIdWasGiven() {
 		$this->prepareSectionIndexTest();
-
 		$this->fixture->id = 10;
-		$this->fixture->sys_page->expects($this->once())->method('getPage')
-			->will($this->returnValue(NULL))->with(10);
-
+		$this->fixture->sys_page->expects($this->once())->method('getPage')->will($this->returnValue(NULL))->with(10);
 		$result = $this->fixture->_call('sectionIndex', 'field');
 		$this->assertEquals($result, array());
 	}
@@ -108,13 +97,8 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 */
 	public function sectionIndexThrowsAnExceptionIfTheInternalQueryFails() {
 		$this->prepareSectionIndexTest();
-
-		$this->fixture->sys_page->expects($this->once())->method('getPage')
-			->will($this->returnValue(array()));
-
-		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')
-			->will($this->returnValue(0));
-
+		$this->fixture->sys_page->expects($this->once())->method('getPage')->will($this->returnValue(array()));
+		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')->will($this->returnValue(0));
 		$this->fixture->_call('sectionIndex', 'field');
 	}
 
@@ -123,25 +107,12 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 */
 	public function sectionIndexReturnsOverlaidRowBasedOnTheLanguageOfTheGivenPage() {
 		$this->prepareSectionIndexTest();
-
 		$this->fixture->mconf['sectionIndex.']['type'] = 'all';
 		$GLOBALS['TSFE']->sys_language_contentOL = 1;
-
-		$this->fixture->sys_page->expects($this->once())->method('getPage')
-			->will($this->returnValue(array('_PAGES_OVERLAY_LANGUAGE' => 1)));
-
-		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')
-			->will($this->returnValue(1));
-
-		$GLOBALS['TYPO3_DB']->expects($this->exactly(2))->method('sql_fetch_assoc')
-			->will($this->onConsecutiveCalls(
-				$this->returnValue(array('uid' => 0, 'header' => 'NOT_OVERLAID')),
-				$this->returnValue(FALSE))
-			);
-
-		$this->fixture->sys_page->expects($this->once())->method('getRecordOverlay')
-			->will($this->returnValue(array('uid' => 0, 'header' => 'OVERLAID')));
-
+		$this->fixture->sys_page->expects($this->once())->method('getPage')->will($this->returnValue(array('_PAGES_OVERLAY_LANGUAGE' => 1)));
+		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')->will($this->returnValue(1));
+		$GLOBALS['TYPO3_DB']->expects($this->exactly(2))->method('sql_fetch_assoc')->will($this->onConsecutiveCalls($this->returnValue(array('uid' => 0, 'header' => 'NOT_OVERLAID')), $this->returnValue(FALSE)));
+		$this->fixture->sys_page->expects($this->once())->method('getRecordOverlay')->will($this->returnValue(array('uid' => 0, 'header' => 'OVERLAID')));
 		$result = $this->fixture->_call('sectionIndex', 'field');
 		$this->assertEquals($result[0]['title'], 'OVERLAID');
 	}
@@ -152,33 +123,37 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	public function sectionIndexFiltersDataProvider() {
 		return array(
 			'unfiltered fields' => array(
-				1, array(
+				1,
+				array(
 					'sectionIndex' => 1,
 					'header' => 'foo',
-					'header_layout' => 1,
-				),
+					'header_layout' => 1
+				)
 			),
 			'with unset section index' => array(
-				0, array(
+				0,
+				array(
 					'sectionIndex' => 0,
 					'header' => 'foo',
-					'header_layout' => 1,
-				),
+					'header_layout' => 1
+				)
 			),
 			'with unset header' => array(
-				0, array(
+				0,
+				array(
 					'sectionIndex' => 1,
 					'header' => '',
-					'header_layout' => 1,
-				),
+					'header_layout' => 1
+				)
 			),
 			'with header layout 100' => array(
-				0, array(
+				0,
+				array(
 					'sectionIndex' => 1,
 					'header' => 'foo',
-					'header_layout' => 100,
-				),
-			),
+					'header_layout' => 100
+				)
+			)
 		);
 	}
 
@@ -190,21 +165,10 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 */
 	public function sectionIndexFilters($expectedAmount, array $dataRow) {
 		$this->prepareSectionIndexTest();
-
 		$this->fixture->mconf['sectionIndex.']['type'] = 'header';
-
-		$this->fixture->sys_page->expects($this->once())->method('getPage')
-			->will($this->returnValue(array()));
-
-		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')
-			->will($this->returnValue(1));
-
-		$GLOBALS['TYPO3_DB']->expects($this->exactly(2))->method('sql_fetch_assoc')
-			->will($this->onConsecutiveCalls(
-				$this->returnValue($dataRow),
-				$this->returnValue(FALSE))
-			);
-
+		$this->fixture->sys_page->expects($this->once())->method('getPage')->will($this->returnValue(array()));
+		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')->will($this->returnValue(1));
+		$GLOBALS['TYPO3_DB']->expects($this->exactly(2))->method('sql_fetch_assoc')->will($this->onConsecutiveCalls($this->returnValue($dataRow), $this->returnValue(FALSE)));
 		$result = $this->fixture->_call('sectionIndex', 'field');
 		$this->assertCount($expectedAmount, $result);
 	}
@@ -229,11 +193,11 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 			'with stdWrap useColPos' => array(
 				array(
 					'useColPos.' => array(
-						'wrap' => '2|',
-					),
+						'wrap' => '2|'
+					)
 				),
 				'colPos=2'
-			),
+			)
 		);
 	}
 
@@ -245,24 +209,18 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 */
 	public function sectionIndexQueriesWithDifferentColPos($configuration, $whereClausePrefix) {
 		$this->prepareSectionIndexTest();
-
-		$this->fixture->sys_page->expects($this->once())->method('getPage')
-			->will($this->returnValue(array()));
-
+		$this->fixture->sys_page->expects($this->once())->method('getPage')->will($this->returnValue(array()));
 		$this->fixture->mconf['sectionIndex.'] = $configuration;
 		$queryConfiguration = array(
 			'pidInList' => 12,
 			'orderBy' => 'field',
-			'languageField' =>'sys_language_uid',
-			'where' => $whereClausePrefix,
+			'languageField' => 'sys_language_uid',
+			'where' => $whereClausePrefix
 		);
-
-		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')
-			->with('tt_content', $queryConfiguration)
-			->will($this->returnValue(1));
-
+		$this->fixture->parent_cObj->expects($this->once())->method('exec_getQuery')->with('tt_content', $queryConfiguration)->will($this->returnValue(1));
 		$this->fixture->_call('sectionIndex', 'field', 12);
 	}
+
 }
 
 ?>

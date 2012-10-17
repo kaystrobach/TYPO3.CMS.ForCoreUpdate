@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * TYPO3 prepared statement for t3lib_db class.
  *
@@ -34,7 +33,7 @@
  * $statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('*', 'pages', 'uid = :uid');
  * $statement->execute(array(':uid' => 2));
  * while (($row = $statement->fetch()) !== FALSE) {
- *	// ...
+ * ...
  * }
  * $statement->free();
  * </code>
@@ -47,82 +46,88 @@ class t3lib_db_PreparedStatement {
 
 	/**
 	 * Represents the SQL NULL data type.
+	 *
 	 * @var integer
 	 */
 	const PARAM_NULL = 0;
-
 	/**
 	 * Represents the SQL INTEGER data type.
+	 *
 	 * @var integer
 	 */
 	const PARAM_INT = 1;
-
 	/**
 	 * Represents the SQL CHAR, VARCHAR, or other string data type.
+	 *
 	 * @var integer
 	 */
 	const PARAM_STR = 2;
-
 	/**
 	 * Represents a boolean data type.
+	 *
 	 * @var integer
 	 */
 	const PARAM_BOOL = 3;
-
 	/**
 	 * Automatically detects underlying type
+	 *
 	 * @var integer
 	 */
 	const PARAM_AUTOTYPE = 4;
-
 	/**
 	 * Specifies that the fetch method shall return each row as an array indexed by
 	 * column name as returned in the corresponding result set. If the result set
 	 * contains multiple columns with the same name, t3lib_db_PreparedStatement::FETCH_ASSOC
 	 * returns only a single value per column name.
+	 *
 	 * @var integer
 	 */
 	const FETCH_ASSOC = 2;
-
 	/**
 	 * Specifies that the fetch method shall return each row as an array indexed by
 	 * column number as returned in the corresponding result set, starting at column 0.
+	 *
 	 * @var integer
 	 */
 	const FETCH_NUM = 3;
-
 	/**
 	 * Query to be executed.
+	 *
 	 * @var string
 	 */
 	protected $query;
 
 	/**
 	 * Components of the query to be executed.
+	 *
 	 * @var array
 	 */
 	protected $precompiledQueryParts;
 
 	/**
 	 * Table (used to call $GLOBALS['TYPO3_DB']->fullQuoteStr().
+	 *
 	 * @var string
 	 */
 	protected $table;
 
 	/**
 	 * Binding parameters.
+	 *
 	 * @var array
 	 */
 	protected $parameters;
 
 	/**
 	 * Default fetch mode.
+	 *
 	 * @var integer
 	 */
 	protected $defaultFetchMode = self::FETCH_ASSOC;
 
 	/**
 	 * MySQL result pointer (of SELECT query) / DBAL object.
+	 *
 	 * @var pointer
 	 */
 	protected $resource;
@@ -130,6 +135,7 @@ class t3lib_db_PreparedStatement {
 	/**
 	 * Random token which is wrapped around the markers
 	 * that will be replaced by user input.
+	 *
 	 * @var string
 	 */
 	protected $parameterWrapToken;
@@ -181,7 +187,6 @@ class t3lib_db_PreparedStatement {
 			$key = is_int($parameter) ? $parameter + 1 : $parameter;
 			$this->bindValue($key, $value, self::PARAM_AUTOTYPE);
 		}
-
 		return $this;
 	}
 
@@ -211,29 +216,27 @@ class t3lib_db_PreparedStatement {
 	 */
 	public function bindValue($parameter, $value, $data_type = self::PARAM_AUTOTYPE) {
 		switch ($data_type) {
-			case self::PARAM_INT:
-				if (!is_int($value)) {
-					throw new InvalidArgumentException('$value is not an integer as expected: ' . $value, 1281868686);
-				}
-				break;
-			case self::PARAM_BOOL:
-				if (!is_bool($value)) {
-					throw new InvalidArgumentException('$value is not a boolean as expected: ' . $value, 1281868687);
-				}
-				break;
-			case self::PARAM_NULL:
-				if (!is_null($value)) {
-					throw new InvalidArgumentException('$value is not NULL as expected: ' . $value, 1282489834);
-				}
-				break;
+		case self::PARAM_INT:
+			if (!is_int($value)) {
+				throw new InvalidArgumentException('$value is not an integer as expected: ' . $value, 1281868686);
+			}
+			break;
+		case self::PARAM_BOOL:
+			if (!is_bool($value)) {
+				throw new InvalidArgumentException('$value is not a boolean as expected: ' . $value, 1281868687);
+			}
+			break;
+		case self::PARAM_NULL:
+			if (!is_null($value)) {
+				throw new InvalidArgumentException('$value is not NULL as expected: ' . $value, 1282489834);
+			}
+			break;
 		}
-
 		$key = is_int($parameter) ? $parameter - 1 : $parameter;
 		$this->parameters[$key] = array(
 			'value' => $value,
-			'type' => ($data_type == self::PARAM_AUTOTYPE ? $this->guessValueType($value) : $data_type),
+			'type' => $data_type == self::PARAM_AUTOTYPE ? $this->guessValueType($value) : $data_type
 		);
-
 		return $this;
 	}
 
@@ -241,9 +244,9 @@ class t3lib_db_PreparedStatement {
 	 * Executes the prepared statement. If the prepared statement included parameter
 	 * markers, you must either:
 	 * <ul>
-	 *	 <li>call {@link t3lib_db_PreparedStatement::bindParam()} to bind PHP variables
-	 *   to the parameter markers: bound variables pass their value as input</li>
-	 *	 <li>or pass an array of input-only parameter values</li>
+	 * <li>call {@link t3lib_db_PreparedStatement::bindParam()} to bind PHP variables
+	 * to the parameter markers: bound variables pass their value as input</li>
+	 * <li>or pass an array of input-only parameter values</li>
 	 * </ul>
 	 *
 	 * $input_parameters behave as in {@link t3lib_db_PreparedStatement::bindParams()}
@@ -269,28 +272,24 @@ class t3lib_db_PreparedStatement {
 		$query = $this->query;
 		$precompiledQueryParts = $this->precompiledQueryParts;
 		$parameterValues = $this->parameters;
-
 		if (count($input_parameters) > 0) {
 			$parameterValues = array();
 			foreach ($input_parameters as $key => $value) {
 				$parameterValues[$key] = array(
 					'value' => $value,
-					'type' => $this->guessValueType($value),
+					'type' => $this->guessValueType($value)
 				);
 			}
 		}
-
 		$this->replaceValuesInQuery($query, $precompiledQueryParts, $parameterValues);
 		if (count($precompiledQueryParts) > 0) {
 			$query = implode('', $precompiledQueryParts['queryParts']);
 		}
 		$this->resource = $GLOBALS['TYPO3_DB']->exec_PREPAREDquery($query, $precompiledQueryParts);
-
-			// Empty binding parameters
+		// Empty binding parameters
 		$this->parameters = array();
-
-			// Return the success flag
-		return ($this->resource ? TRUE : FALSE);
+		// Return the success flag
+		return $this->resource ? TRUE : FALSE;
 	}
 
 	/**
@@ -305,14 +304,14 @@ class t3lib_db_PreparedStatement {
 			$fetch_style = $this->defaultFetchMode;
 		}
 		switch ($fetch_style) {
-			case self::FETCH_ASSOC:
-				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($this->resource);
-				break;
-			case self::FETCH_NUM:
-				$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($this->resource);
-				break;
-			default:
-				throw new InvalidArgumentException('$fetch_style must be either t3lib_db_PreparedStatement::FETCH_ASSOC or t3lib_db_PreparedStatement::FETCH_NUM', 1281646455);
+		case self::FETCH_ASSOC:
+			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($this->resource);
+			break;
+		case self::FETCH_NUM:
+			$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($this->resource);
+			break;
+		default:
+			throw new InvalidArgumentException('$fetch_style must be either t3lib_db_PreparedStatement::FETCH_ASSOC or t3lib_db_PreparedStatement::FETCH_NUM', 1281646455);
 		}
 		return $row;
 	}
@@ -378,8 +377,8 @@ class t3lib_db_PreparedStatement {
 	 * Returns an array of error information about the last operation performed by this statement handle.
 	 * The array consists of the following fields:
 	 * <ol start="0">
-	 *  <li>Driver specific error code.</li>
-	 *  <li>Driver specific error message</li>
+	 * <li>Driver specific error code.</li>
+	 * <li>Driver specific error message</li>
 	 * </ol>
 	 *
 	 * @return array Array of error information.
@@ -387,7 +386,7 @@ class t3lib_db_PreparedStatement {
 	public function errorInfo() {
 		return array(
 			$GLOBALS['TYPO3_DB']->sql_errno(),
-			$GLOBALS['TYPO3_DB']->sql_error(),
+			$GLOBALS['TYPO3_DB']->sql_error()
 		);
 	}
 
@@ -400,12 +399,13 @@ class t3lib_db_PreparedStatement {
 	 */
 	public function setFetchMode($mode) {
 		switch ($mode) {
-			case self::FETCH_ASSOC:
-			case self::FETCH_NUM:
-				$this->defaultFetchMode = $mode;
-				break;
-			default:
-				throw new InvalidArgumentException('$mode must be either t3lib_db_PreparedStatement::FETCH_ASSOC or t3lib_db_PreparedStatement::FETCH_NUM', 1281875340);
+		case self::FETCH_ASSOC:
+
+		case self::FETCH_NUM:
+			$this->defaultFetchMode = $mode;
+			break;
+		default:
+			throw new InvalidArgumentException('$mode must be either t3lib_db_PreparedStatement::FETCH_ASSOC or t3lib_db_PreparedStatement::FETCH_NUM', 1281875340);
 		}
 	}
 
@@ -425,7 +425,6 @@ class t3lib_db_PreparedStatement {
 		} else {
 			$type = self::PARAM_STR;
 		}
-
 		return $type;
 	}
 
@@ -438,37 +437,31 @@ class t3lib_db_PreparedStatement {
 	 * @return void
 	 */
 	protected function replaceValuesInQuery(&$query, array &$precompiledQueryParts, array $parameterValues) {
-
 		if (count($precompiledQueryParts['queryParts']) === 0) {
 			$query = $this->tokenizeQueryParameterMarkers($query, $parameterValues);
 		}
-
 		foreach ($parameterValues as $key => $typeValue) {
 			switch ($typeValue['type']) {
-				case self::PARAM_NULL:
-					$value = 'NULL';
-					break;
-				case self::PARAM_INT:
-					$value = intval($typeValue['value']);
-					break;
-				case self::PARAM_STR:
-					$value = $GLOBALS['TYPO3_DB']->fullQuoteStr($typeValue['value'], $this->table);
-					break;
-				case self::PARAM_BOOL:
-					$value = $typeValue['value'] ? 1 : 0;
-					break;
-				default:
-					throw new InvalidArgumentException(
-						sprintf('Unknown type %s used for parameter %s.', $typeValue['type'], $key),
-						1281859196
-					);
+			case self::PARAM_NULL:
+				$value = 'NULL';
+				break;
+			case self::PARAM_INT:
+				$value = intval($typeValue['value']);
+				break;
+			case self::PARAM_STR:
+				$value = $GLOBALS['TYPO3_DB']->fullQuoteStr($typeValue['value'], $this->table);
+				break;
+			case self::PARAM_BOOL:
+				$value = $typeValue['value'] ? 1 : 0;
+				break;
+			default:
+				throw new InvalidArgumentException(sprintf('Unknown type %s used for parameter %s.', $typeValue['type'], $key), 1281859196);
 			}
-
 			if (is_int($key)) {
 				if (count($precompiledQueryParts['queryParts']) > 0) {
 					$precompiledQueryParts['queryParts'][2 * $key + 1] = $value;
 				} else {
-					$parts = explode($this->parameterWrapToken . '?' . $this->parameterWrapToken, $query, 2);
+					$parts = explode(($this->parameterWrapToken . '?') . $this->parameterWrapToken, $query, 2);
 					$parts[0] .= $value;
 					$query = implode('', $parts);
 				}
@@ -478,7 +471,7 @@ class t3lib_db_PreparedStatement {
 						$precompiledQueryParts['queryParts'][$i] = $value;
 					}
 				}
-				$query = str_replace($this->parameterWrapToken . $key . $this->parameterWrapToken, $value, $query);
+				$query = str_replace(($this->parameterWrapToken . $key) . $this->parameterWrapToken, $value, $query);
 			}
 		}
 	}
@@ -495,19 +488,18 @@ class t3lib_db_PreparedStatement {
 		$unnamedParameterCount = 0;
 		foreach ($parameterValues as $key => $typeValue) {
 			if (!is_int($key)) {
-				if (!preg_match('/^:[\w]+$/', $key)) {
+				if (!preg_match('/^:[\\w]+$/', $key)) {
 					throw new InvalidArgumentException('Parameter names must start with ":" followed by an arbitrary number of alphanumerical characters.', 1282348825);
 				}
-					// Replace the marker (not preceeded by a word character or a ':' but
-					// followed by a word boundary)
-				$query = preg_replace('/(?<![\w:])' . $key . '\b/', $this->parameterWrapToken . $key . $this->parameterWrapToken, $query);
+				// Replace the marker (not preceeded by a word character or a ':' but
+				// followed by a word boundary)
+				$query = preg_replace(('/(?<![\\w:])' . $key) . '\\b/', ($this->parameterWrapToken . $key) . $this->parameterWrapToken, $query);
 			} else {
 				$unnamedParameterCount++;
 			}
 		}
 		$parts = explode('?', $query, $unnamedParameterCount + 1);
-		$query = implode($this->parameterWrapToken . '?' . $this->parameterWrapToken, $parts);
-
+		$query = implode(($this->parameterWrapToken . '?') . $this->parameterWrapToken, $parts);
 		return $query;
 	}
 
@@ -517,8 +509,9 @@ class t3lib_db_PreparedStatement {
 	 * @return string
 	 */
 	protected function generateParameterWrapToken() {
-		return '__' . t3lib_div::getRandomHexString(16) . '__';
+		return ('__' . t3lib_div::getRandomHexString(16)) . '__';
 	}
+
 }
 
 ?>

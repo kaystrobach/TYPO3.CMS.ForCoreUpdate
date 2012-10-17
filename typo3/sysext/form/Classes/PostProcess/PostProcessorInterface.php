@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for postprocessors
  *
@@ -29,8 +28,8 @@
  * @package TYPO3
  * @subpackage form
  */
-interface tx_form_System_Postprocessor_Interface {
-
+interface tx_form_System_Postprocessor_Interface
+{
 	/**
 	 * Constructor
 	 *
@@ -45,5 +44,6 @@ interface tx_form_System_Postprocessor_Interface {
 	 * @return string The post processing HTML
 	 */
 	public function process();
+
 }
 ?>

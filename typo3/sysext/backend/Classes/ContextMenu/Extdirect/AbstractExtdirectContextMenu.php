@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Context Menu for ExtDirect
  *
@@ -37,6 +36,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_contextmenu_extdirect_ContextMenu extends t3lib_contextmenu_AbstractContextMenu {
+
 	/**
 	 * Returns the actions for the given node information
 	 *
@@ -55,11 +55,9 @@ abstract class t3lib_contextmenu_extdirect_ContextMenu extends t3lib_contextmenu
 			$dataProvider = t3lib_div::makeInstance('t3lib_contextmenu_AbstractDataProvider');
 			$this->setDataProvider($dataProvider);
 		}
-
 		/** @var $node t3lib_tree_Node */
 		$node = t3lib_div::makeInstance('t3lib_tree_Node', (array) $nodeData);
 		$actions = $this->dataProvider->getActionsForNode($node);
-
 		return $actions;
 	}
 
@@ -71,7 +69,9 @@ abstract class t3lib_contextmenu_extdirect_ContextMenu extends t3lib_contextmenu
 	 * @return array
 	 */
 	public function getActionsForNode(t3lib_tree_Node $node) {
+
 	}
+
 }
 
 ?>

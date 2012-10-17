@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Controller for actions related to the TER download of an extension
  *
@@ -44,7 +42,6 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 	 * @var Tx_Extensionmanager_Utility_FileHandling
 	 */
 	protected $fileHandlingUtility;
-
 
 	/**
 	 * @var Tx_Extensionmanager_Service_Management
@@ -116,23 +113,20 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		$extensionUid = $this->request->getArgument('extension');
 		/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 		$extension = $this->extensionRepository->findByUid(intval($extensionUid));
-
 		$dependencyTypes = $this->managementService->getAndResolveDependencies($extension);
 		$message = '';
 		if (count($dependencyTypes) > 0) {
-				// @todo translate and beautify
+			// @todo translate and beautify
 			$message = 'The following dependencies have to be resolved before installation:<br /><br />';
 			foreach ($dependencyTypes as $dependencyType => $dependencies) {
-				$message .= '<h3>Extensions marked for ' . $dependencyType . ':</h3>';
+				$message .= ('<h3>Extensions marked for ' . $dependencyType) . ':</h3>';
 				foreach ($dependencies as $extensionKey => $dependency) {
 					$message .= $extensionKey . '<br />';
 				}
 				$message .= 'Shall these dependencies be resolved automatically?';
 			}
 		}
-		$this->view->assign('dependencies', $dependencyTypes)
-			->assign('extension', $extension)
-			->assign('message', $message);
+		$this->view->assign('dependencies', $dependencyTypes)->assign('extension', $extension)->assign('message', $message);
 	}
 
 	/**
@@ -149,11 +143,9 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 				throw new Tx_Extensionmanager_Exception_ExtensionManager('Required argument extension not set.', 1334433342);
 			}
 			$extensionUid = $this->request->getArgument('extension');
-
 			if ($this->request->hasArgument('downloadPath')) {
 				$this->downloadUtility->setDownloadPath($this->request->getArgument('downloadPath'));
 			}
-
 			/** @var $extension Tx_Extensionmanager_Domain_Model_Extension */
 			$extension = $this->extensionRepository->findByUid(intval($extensionUid));
 			$this->prepareExtensionForImport($extension);
@@ -161,9 +153,7 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
 			$errorMessage = $e->getMessage();
 		}
-		$this->view->assign('result', $result)
-			->assign('extension', $extension)
-			->assign('errorMessage', $errorMessage);
+		$this->view->assign('result', $result)->assign('extension', $extension)->assign('errorMessage', $errorMessage);
 	}
 
 	/**
@@ -195,8 +185,7 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionKey);
 		$this->prepareExtensionForImport($highestTerVersionExtension);
 		$result = $this->managementService->resolveDependenciesAndInstall($highestTerVersionExtension);
-		$this->view->assign('result', $result)
-			->assign('extension', $highestTerVersionExtension);
+		$this->view->assign('result', $result)->assign('extension', $highestTerVersionExtension);
 	}
 
 	/**
@@ -215,10 +204,9 @@ class Tx_Extensionmanager_Controller_DownloadController extends Tx_Extensionmana
 		foreach ($updatableVersions as $updatableVersion) {
 			$updateComments[$updatableVersion->getVersion()] = $updatableVersion->getUpdateComment();
 		}
-		$this->view
-			->assign('updateComments', $updateComments)
-			->assign('extensionKey', $extensionKey);
+		$this->view->assign('updateComments', $updateComments)->assign('extensionKey', $extensionKey);
 	}
 
 }
+
 ?>

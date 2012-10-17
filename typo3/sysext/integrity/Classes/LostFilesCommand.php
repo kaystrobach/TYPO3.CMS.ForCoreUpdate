@@ -1,36 +1,35 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Cleaner module: Lost files
  * User function called from tx_lowlevel_cleaner_core configured in ext_localconf.php
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * Looking for Lost files
  *
@@ -40,17 +39,20 @@
  */
 class tx_lowlevel_lost_files extends tx_lowlevel_cleaner_core {
 
-	var $checkRefIndex = TRUE;
+	/**
+	 * @todo Define visibility
+	 */
+	public $checkRefIndex = TRUE;
 
 	/**
 	 * Constructor
+	 *
+	 * @todo Define visibility
 	 */
-	function __construct() {
+	public function __construct() {
 		parent::__construct();
-
 		$this->cli_options[] = array('--excludePath [path-list]', 'Comma separated list of paths to exclude. Example: "uploads/[path1],uploads/[path2],..."');
-
-			// Setting up help:
+		// Setting up help:
 		$this->cli_help['name'] = 'lost_files -- Looking for files in the uploads/ folder which does not have a reference in TYPO3 managed records.';
 		$this->cli_help['description'] = trim('
 Assumptions:
@@ -69,7 +71,6 @@ Another scenario could of course be de-installation of extensions which managed 
 Automatic Repair of Errors:
 - Simply delete lost files (Warning: First, make sure those files are not used somewhere TYPO3 does not know about! See the assumptions above).
 ');
-
 		$this->cli_help['examples'] = '/.../cli_dispatch.phpsh lowlevel_cleaner lost_files -s -r
 Will report lost files.';
 	}
@@ -83,13 +84,13 @@ Will report lost files.';
 	 * TODO: Add parameter to include RTEmagic images
 	 *
 	 * @return array
+	 * @todo Define visibility
 	 */
-	function main() {
+	public function main() {
 		global $TYPO3_DB;
-
-			// Initialize result array:
+		// Initialize result array:
 		$resultArray = array(
-			'message' => $this->cli_help['name'].LF.LF.$this->cli_help['description'],
+			'message' => (($this->cli_help['name'] . LF) . LF) . $this->cli_help['description'],
 			'headers' => array(
 				'managedFiles' => array('Files related to TYPO3 records and managed by TCEmain', 'These files you definitely want to keep.', 0),
 				'ignoredFiles' => array('Ignored files (index.html, .htaccess etc.)', 'These files are allowed in uploads/ folder', 0),
@@ -103,57 +104,42 @@ Will report lost files.';
 			'lostFiles' => array(),
 			'warnings' => array()
 		);
-
-			// Get all files:
+		// Get all files:
 		$fileArr = array();
-		$fileArr = t3lib_div::getAllFilesAndFoldersInPath($fileArr, PATH_site.'uploads/');
+		$fileArr = t3lib_div::getAllFilesAndFoldersInPath($fileArr, PATH_site . 'uploads/');
 		$fileArr = t3lib_div::removePrefixPathFromList($fileArr, PATH_site);
-
 		$excludePaths = t3lib_div::trimExplode(',', $this->cli_argValue('--excludePath', 0), 1);
-
-			// Traverse files and for each, look up if its found in the reference index.
+		// Traverse files and for each, look up if its found in the reference index.
 		foreach ($fileArr as $key => $value) {
-
 			$include = TRUE;
 			foreach ($excludePaths as $exclPath) {
 				if (t3lib_div::isFirstPartOfStr($value, $exclPath)) {
 					$include = FALSE;
 				}
 			}
-
 			$shortKey = t3lib_div::shortmd5($value);
-
 			if ($include) {
-					// First, allow "index.html", ".htaccess" files since they are often used for good reasons
+				// First, allow "index.html", ".htaccess" files since they are often used for good reasons
 				if (substr($value, -11) == '/index.html' || substr($value, -10) == '/.htaccess') {
 					unset($fileArr[$key]);
 					$resultArray['ignoredFiles'][$shortKey] = $value;
 				} else {
-						// Looking for a reference from a field which is NOT a soft reference (thus, only fields with a proper TCA/Flexform configuration)
-					$recs = $TYPO3_DB->exec_SELECTgetRows(
-						'*',
-						'sys_refindex',
-						'ref_table='.$TYPO3_DB->fullQuoteStr('_FILE', 'sys_refindex').
-							' AND ref_string='.$TYPO3_DB->fullQuoteStr($value, 'sys_refindex').
-							' AND softref_key='.$TYPO3_DB->fullQuoteStr('', 'sys_refindex'),
-						'',
-						'sorting DESC'
-					);
-
-						// If found, unset entry:
-					if (count($recs))		{
+					// Looking for a reference from a field which is NOT a soft reference (thus, only fields with a proper TCA/Flexform configuration)
+					$recs = $TYPO3_DB->exec_SELECTgetRows('*', 'sys_refindex', (((('ref_table=' . $TYPO3_DB->fullQuoteStr('_FILE', 'sys_refindex')) . ' AND ref_string=') . $TYPO3_DB->fullQuoteStr($value, 'sys_refindex')) . ' AND softref_key=') . $TYPO3_DB->fullQuoteStr('', 'sys_refindex'), '', 'sorting DESC');
+					// If found, unset entry:
+					if (count($recs)) {
 						unset($fileArr[$key]);
 						$resultArray['managedFiles'][$shortKey] = $value;
-						if (count($recs)>1) {
-							$resultArray['warnings'][$shortKey] = 'Warning: File "'.$value.'" had '.count($recs).' references from group-fields, should have only one!';
+						if (count($recs) > 1) {
+							$resultArray['warnings'][$shortKey] = ((('Warning: File "' . $value) . '" had ') . count($recs)) . ' references from group-fields, should have only one!';
 						}
 					} else {
-							// When here it means the file was not found. So we test if it has a RTEmagic-image name and if so, we allow it:
+						// When here it means the file was not found. So we test if it has a RTEmagic-image name and if so, we allow it:
 						if (preg_match('/^RTEmagic[P|C]_/', basename($value))) {
 							unset($fileArr[$key]);
 							$resultArray['RTEmagicFiles'][$shortKey] = $value;
 						} else {
-								// We conclude that the file is lost...:
+							// We conclude that the file is lost...:
 							unset($fileArr[$key]);
 							$resultArray['lostFiles'][$shortKey] = $value;
 						}
@@ -161,15 +147,12 @@ Will report lost files.';
 				}
 			}
 		}
-
 		asort($resultArray['ignoredFiles']);
 		asort($resultArray['managedFiles']);
 		asort($resultArray['RTEmagicFiles']);
 		asort($resultArray['lostFiles']);
 		asort($resultArray['warnings']);
-
 		// $fileArr variable should now be empty with all contents transferred to the result array keys.
-
 		return $resultArray;
 	}
 
@@ -179,11 +162,12 @@ Will report lost files.';
 	 *
 	 * @param array $resultArray Result array from main() function
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function main_autoFix($resultArray) {
-		foreach($resultArray['lostFiles'] as $key => $value) {
+	public function main_autoFix($resultArray) {
+		foreach ($resultArray['lostFiles'] as $key => $value) {
 			$absFileName = t3lib_div::getFileAbsFileName($value);
-			echo 'Deleting file: "'.$absFileName.'": ';
+			echo ('Deleting file: "' . $absFileName) . '": ';
 			if ($bypass = $this->cli_noExecutionCheck($absFileName)) {
 				echo $bypass;
 			} else {
@@ -191,12 +175,13 @@ Will report lost files.';
 					unlink($absFileName);
 					echo 'DONE';
 				} else {
-					echo '	ERROR: File "'.$absFileName.'" was not found!';
+					echo ('	ERROR: File "' . $absFileName) . '" was not found!';
 				}
 			}
 			echo LF;
 		}
 	}
+
 }
 
 ?>

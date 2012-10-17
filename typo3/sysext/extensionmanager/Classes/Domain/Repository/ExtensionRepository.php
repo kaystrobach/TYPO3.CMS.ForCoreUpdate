@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A repository for extensions
  *
@@ -76,12 +75,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 */
 	public function findByExtensionKeyOrderedByVersion($extensionKey) {
 		$query = $this->createQuery();
-		$query->matching(
-			$query->logicalAnd(
-				$query->equals('extensionKey', $extensionKey),
-				$query->greaterThanOrEqual('reviewState', 0)
-			)
-		);
+		$query->matching($query->logicalAnd($query->equals('extensionKey', $extensionKey), $query->greaterThanOrEqual('reviewState', 0)));
 		$query->setOrderings(array('version' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING));
 		return $query->execute();
 	}
@@ -95,15 +89,8 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 */
 	public function findOneByExtensionKeyAndVersion($extensionKey, $version) {
 		$query = $this->createQuery();
-		$query->matching(
-			$query->logicalAnd(
-				$query->equals('extensionKey', $extensionKey),
-				$query->equals('version', $version)
-			)
-		);
-		return $query->setLimit(1)
-			->execute()
-			->getFirst();
+		$query->matching($query->logicalAnd($query->equals('extensionKey', $extensionKey), $query->equals('version', $version)));
+		return $query->setLimit(1)->execute()->getFirst();
 	}
 
 	/**
@@ -116,28 +103,25 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * @return mixed
 	 */
 	public function findByTitleOrAuthorNameOrExtensionKey($searchString) {
-		$quotedSearchString = $GLOBALS['TYPO3_DB']->escapeStrForLike(
-			$GLOBALS['TYPO3_DB']->quoteStr($searchString, 'tx_extensionmanager_domain_model_extension'),
-			'tx_extensionmanager_domain_model_extension'
-		);
-		$quotedSearchStringForLike = '\'%' . $quotedSearchString . '%\'';
-		$quotedSearchString = '\'' . $quotedSearchString .  '\'';
-		$select = 'tx_extensionmanager_domain_model_extension.*,
+		$quotedSearchString = $GLOBALS['TYPO3_DB']->escapeStrForLike($GLOBALS['TYPO3_DB']->quoteStr($searchString, 'tx_extensionmanager_domain_model_extension'), 'tx_extensionmanager_domain_model_extension');
+		$quotedSearchStringForLike = ('\'%' . $quotedSearchString) . '%\'';
+		$quotedSearchString = ('\'' . $quotedSearchString) . '\'';
+		$select = ((((((('tx_extensionmanager_domain_model_extension.*,
 			(
-				(extkey like ' . $quotedSearchString . ') * 8 +
-				(extkey like ' . $quotedSearchStringForLike . ') * 4 +
-				(title like ' . $quotedSearchStringForLike . ') * 2 +
-				(authorname like ' . $quotedSearchStringForLike . ')
+				(extkey like ' . $quotedSearchString) . ') * 8 +
+				(extkey like ') . $quotedSearchStringForLike) . ') * 4 +
+				(title like ') . $quotedSearchStringForLike) . ') * 2 +
+				(authorname like ') . $quotedSearchStringForLike) . ')
 			) as position';
 		$from = 'tx_extensionmanager_domain_model_extension';
-		$where = '(
-					extkey = ' . $quotedSearchString . '
+		$where = ((((((('(
+					extkey = ' . $quotedSearchString) . '
 					OR
-					extkey LIKE ' . $quotedSearchStringForLike . '
+					extkey LIKE ') . $quotedSearchStringForLike) . '
 					OR
-					description LIKE ' . $quotedSearchStringForLike . '
+					description LIKE ') . $quotedSearchStringForLike) . '
 					OR
-					title LIKE ' . $quotedSearchStringForLike . '
+					title LIKE ') . $quotedSearchStringForLike) . '
 				)
 				AND lastversion=1
 				HAVING position > 0';
@@ -157,39 +141,21 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	public function findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $lowestVersion = 0, $highestVersion = 0) {
 		$query = $this->createQuery();
 		$constraint = NULL;
-
 		if ($lowestVersion !== 0 && $highestVersion !== 0) {
-			$constraint = $query->logicalAnd(
-				$query->lessThan('integerVersion', $highestVersion),
-				$query->greaterThan('integerVersion', $lowestVersion),
-				$query->equals('extensionKey', $extensionKey)
-			);
+			$constraint = $query->logicalAnd($query->lessThan('integerVersion', $highestVersion), $query->greaterThan('integerVersion', $lowestVersion), $query->equals('extensionKey', $extensionKey));
 		} elseif ($lowestVersion === 0 && $highestVersion !== 0) {
-			$constraint = $query->logicalAnd(
-				$query->lessThan('integerVersion', $highestVersion),
-				$query->equals('extensionKey', $extensionKey)
-			);
+			$constraint = $query->logicalAnd($query->lessThan('integerVersion', $highestVersion), $query->equals('extensionKey', $extensionKey));
 		} elseif ($lowestVersion !== 0 && $highestVersion === 0) {
-			$constraint = $query->logicalAnd(
-				$query->greaterThan('integerVersion', $lowestVersion),
-				$query->equals('extensionKey', $extensionKey)
-			);
+			$constraint = $query->logicalAnd($query->greaterThan('integerVersion', $lowestVersion), $query->equals('extensionKey', $extensionKey));
 		} elseif ($lowestVersion === 0 && $highestVersion === 0) {
 			$constraint = $query->equals('extensionKey', $extensionKey);
 		}
 		if ($constraint) {
-			$query->matching(
-				$query->logicalAnd(
-					$constraint,
-					$query->greaterThanOrEqual('reviewState', 0)
-				)
-			);
+			$query->matching($query->logicalAnd($constraint, $query->greaterThanOrEqual('reviewState', 0)));
 		}
-		$query->setOrderings(
-			array(
-				'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
-			)
-		);
+		$query->setOrderings(array(
+			'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
+		));
 		return $query->execute();
 	}
 
@@ -213,20 +179,11 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 */
 	public function findHighestAvailableVersion($extensionKey) {
 		$query = $this->createQuery();
-		$query->matching(
-			$query->logicalAnd(
-				$query->equals('extensionKey', $extensionKey),
-				$query->greaterThanOrEqual('reviewState', 0)
-			)
-		);
-		$query->setOrderings(
-			array(
-				'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
-			)
-		);
-		return $query->setLimit(1)
-			->execute()
-			->getFirst();
+		$query->matching($query->logicalAnd($query->equals('extensionKey', $extensionKey), $query->greaterThanOrEqual('reviewState', 0)));
+		$query->setOrderings(array(
+			'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
+		));
+		return $query->setLimit(1)->execute()->getFirst();
 	}
 
 	/**
@@ -238,34 +195,16 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * @return integer
 	 */
 	public function insertLastVersion($repositoryUid = 1) {
-		$groupedRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'extkey, version, max(intversion) maxintversion',
-			'tx_extensionmanager_domain_model_extension',
-			'repository=' . intval($repositoryUid),
-			'extkey'
-		);
+		$groupedRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('extkey, version, max(intversion) maxintversion', 'tx_extensionmanager_domain_model_extension', 'repository=' . intval($repositoryUid), 'extkey');
 		$extensions = count($groupedRows);
-
 		if ($extensions > 0) {
-				// set all to 0
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				'tx_extensionmanager_domain_model_extension',
-				'lastversion=1 AND repository=' . intval($repositoryUid),
-				array('lastversion' => 0)
-			);
-
-				// Find latest version of extensions and set lastversion to 1 for these
+			// set all to 0
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_extensionmanager_domain_model_extension', 'lastversion=1 AND repository=' . intval($repositoryUid), array('lastversion' => 0));
+			// Find latest version of extensions and set lastversion to 1 for these
 			foreach ($groupedRows as $row) {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-					'tx_extensionmanager_domain_model_extension',
-					'extkey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['extkey'], 'tx_extensionmanager_domain_model_extension') .
-						' AND intversion=' . intval($row['maxintversion']) .
-						' AND repository=' . intval($repositoryUid),
-					array('lastversion' => 1)
-				);
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_extensionmanager_domain_model_extension', (((('extkey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($row['extkey'], 'tx_extensionmanager_domain_model_extension')) . ' AND intversion=') . intval($row['maxintversion'])) . ' AND repository=') . intval($repositoryUid), array('lastversion' => 1));
 			}
 		}
-
 		return $extensions;
 	}
 
@@ -277,19 +216,14 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * @return Tx_Extbase_Persistence_Query
 	 */
 	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {
-		if($query->getConstraint()) {
-			$query->matching(
-				$query->logicalAnd(
-					$query->getConstraint(),
-					$query->equals('lastversion', TRUE)
-				)
-			);
+		if ($query->getConstraint()) {
+			$query->matching($query->logicalAnd($query->getConstraint(), $query->equals('lastversion', TRUE)));
 		} else {
-			$query->matching(
-				$query->equals('lastversion', TRUE)
-			);
+			$query->matching($query->equals('lastversion', TRUE));
 		}
 		return $query;
 	}
+
 }
+
 ?>

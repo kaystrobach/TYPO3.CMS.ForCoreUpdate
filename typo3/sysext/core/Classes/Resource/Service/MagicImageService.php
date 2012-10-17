@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Magic image service
  *
@@ -47,18 +46,13 @@ class t3lib_file_Service_MagicImageService {
 	 */
 	protected function getMagicFolder($targetFolderCombinedIdentifier) {
 		$fileFactory = t3lib_file_Factory::getInstance();
-
-			// @todo Proper exception handling is missing here
+		// @todo Proper exception handling is missing here
 		if ($targetFolderCombinedIdentifier) {
 			$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier($targetFolderCombinedIdentifier);
 		}
-
-		if (empty($magicFolder) || !($magicFolder instanceof t3lib_file_Folder)) {
-			$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier(
-				$GLOBALS['TYPO3_CONF_VARS']['BE']['RTE_imageStorageDir']
-			);
+		if (empty($magicFolder) || !$magicFolder instanceof t3lib_file_Folder) {
+			$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier($GLOBALS['TYPO3_CONF_VARS']['BE']['RTE_imageStorageDir']);
 		}
-
 		return $magicFolder;
 	}
 
@@ -89,10 +83,9 @@ class t3lib_file_Service_MagicImageService {
 	 */
 	public function createMagicImage(t3lib_file_FileInterface $imageFileObject, array $fileConfiguration, $targetFolderCombinedIdentifier) {
 		$magicImage = NULL;
-
-			// Get file for processing
+		// Get file for processing
 		$imageFilePath = $imageFileObject->getForLocalProcessing(TRUE);
-			// Process dimensions
+		// Process dimensions
 		$maxWidth = t3lib_utility_Math::forceIntegerInRange($fileConfiguration['width'], 0, $fileConfiguration['maxW']);
 		$maxHeight = t3lib_utility_Math::forceIntegerInRange($fileConfiguration['height'], 0, $fileConfiguration['maxH']);
 		if (!$maxWidth) {
@@ -101,18 +94,18 @@ class t3lib_file_Service_MagicImageService {
 		if (!$maxHeight) {
 			$maxHeight = $fileConfiguration['maxH'];
 		}
-			// Create the magic image
+		// Create the magic image
 		$magicImageInfo = $this->getImageObject()->imageMagickConvert($imageFilePath, 'WEB', $maxWidth . 'm', $maxHeight . 'm');
-
 		if ($magicImageInfo[3]) {
-			$targetFileName = 'RTEmagicC_' . pathInfo($imageFileObject->getName(), PATHINFO_FILENAME) . '.' . pathinfo($magicImageInfo[3], PATHINFO_EXTENSION);
+			$targetFileName = (('RTEmagicC_' . pathInfo($imageFileObject->getName(), PATHINFO_FILENAME)) . '.') . pathinfo($magicImageInfo[3], PATHINFO_EXTENSION);
 			$magicFolder = $this->getMagicFolder($targetFolderCombinedIdentifier);
 			if ($magicFolder instanceof t3lib_file_Folder) {
 				$magicImage = $magicFolder->addFile($magicImageInfo[3], $targetFileName, 'changeName');
 			}
 		}
-
 		return $magicImage;
 	}
+
 }
+
 ?>

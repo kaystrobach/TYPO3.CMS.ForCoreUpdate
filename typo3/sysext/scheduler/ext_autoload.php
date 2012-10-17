@@ -24,6 +24,6 @@ return array(
 	'tx_scheduler_tablegarbagecollection' => $extensionPath . 'tasks/class.tx_scheduler_tablegarbagecollection.php',
 	'tx_scheduler_tablegarbagecollection_additionalfieldprovider' => $extensionPath . 'tasks/class.tx_scheduler_tablegarbagecollection_additionalfieldprovider.php',
 	'tx_scheduler_recyclergarbagecollection' => $extensionPath . 'tasks/class.tx_scheduler_recyclergarbagecollection.php',
-	'tx_scheduler_recyclergarbagecollection_additionalfieldprovider' => $extensionPath . 'tasks/class.tx_scheduler_recyclergarbagecollection_additionalfieldprovider.php',
+	'tx_scheduler_recyclergarbagecollection_additionalfieldprovider' => $extensionPath . 'tasks/class.tx_scheduler_recyclergarbagecollection_additionalfieldprovider.php'
 );
 ?>

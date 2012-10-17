@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains COA_INT class object.
  *
@@ -43,12 +42,9 @@ class tslib_content_ContentObjectArrayInternal extends tslib_content_Abstract {
 	public function render($conf = array()) {
 		if (is_array($conf)) {
 			$substKey = 'INT_SCRIPT.' . $GLOBALS['TSFE']->uniqueHash();
-			$includeLibs = isset($conf['includeLibs.'])
-				? $this->cObj->stdWrap($conf['includeLibs'], $conf['includeLibs.'])
-				: $conf['includeLibs'];
-
-			$content = '<!--' . $substKey . '-->';
-			$GLOBALS['TSFE']->config['INTincScript'][$substKey] = array (
+			$includeLibs = isset($conf['includeLibs.']) ? $this->cObj->stdWrap($conf['includeLibs'], $conf['includeLibs.']) : $conf['includeLibs'];
+			$content = ('<!--' . $substKey) . '-->';
+			$GLOBALS['TSFE']->config['INTincScript'][$substKey] = array(
 				'file' => $includeLibs,
 				'conf' => $conf,
 				'cObj' => serialize($this->cObj),
@@ -59,5 +55,7 @@ class tslib_content_ContentObjectArrayInternal extends tslib_content_Abstract {
 			$GLOBALS['TT']->setTSlogMessage('No elements in this content object array (COA_INT).', 2);
 		}
 	}
+
 }
+
 ?>

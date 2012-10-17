@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Philipp Gampe (dev.typo3@philippgampe.info)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Philipp Gampe (dev.typo3@philippgampe.info)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Observer to automatically save a http request chunk by chunk to a file.
  * If the file already exists, it will be overwritten.
@@ -59,9 +58,7 @@ class t3lib_http_observer_Download implements SplObserver {
 	 * Constructor
 	 *
 	 * @throws InvalidArgumentException if directory is not found or is not within the PATH_site
-	 * or within the lockRootPath
 	 * @param string $directory The absolute path to the directory in which the file is saved.
-	 * A trailing '/' is removed automatically.
 	 * @param string $filename The filename - if not set, it is determined automatically.
 	 */
 	public function __construct($directory, $filename = '') {
@@ -80,24 +77,23 @@ class t3lib_http_observer_Download implements SplObserver {
 	 */
 	public function update(SplSubject $request) {
 		$event = $request->getLastEvent();
-
 		switch ($event['name']) {
-			case 'receivedHeaders':
-				if ($this->targetFilename === '') {
-					$this->determineFilename($request, $event['data']);
-				}
-				$this->openFile();
-				break;
-			case 'receivedBodyPart':
-				// Fall through
-			case 'receivedEncodedBodyPart':
-				fwrite($this->filePointer, $event['data']);
-				break;
-			case 'receivedBody':
-				$this->closeFile();
-				break;
-			default:
-				// do nothing
+		case 'receivedHeaders':
+			if ($this->targetFilename === '') {
+				$this->determineFilename($request, $event['data']);
+			}
+			$this->openFile();
+			break;
+		case 'receivedBodyPart':
+
+		case 'receivedEncodedBodyPart':
+			fwrite($this->filePointer, $event['data']);
+			break;
+		case 'receivedBody':
+			$this->closeFile();
+			break;
+		default:
+
 		}
 	}
 
@@ -105,7 +101,6 @@ class t3lib_http_observer_Download implements SplObserver {
 	 * Sets the directory and checks whether the directory is available.
 	 *
 	 * @throws InvalidArgumentException if directory is not found or is not within the PATH_site
-	 * or within the lockRootPath
 	 * @param string $directory The absolute path to the directory in which the file is saved.
 	 * @return void
 	 */
@@ -114,10 +109,9 @@ class t3lib_http_observer_Download implements SplObserver {
 			throw new InvalidArgumentException($directory . ' is not a directory', 1312223779);
 		}
 		if (!t3lib_div::isAllowedAbsPath($directory)) {
-			throw new InvalidArgumentException($directory . ' is not within the PATH_site'
-					. ' OR within the lockRootPath', 1328734617);
+			throw new InvalidArgumentException(($directory . ' is not within the PATH_site') . ' OR within the lockRootPath', 1328734617);
 		}
-		$this->targetDirectory = $directory = rtrim($directory, DIRECTORY_SEPARATOR);
+		$this->targetDirectory = ($directory = rtrim($directory, DIRECTORY_SEPARATOR));
 	}
 
 	/**
@@ -142,11 +136,8 @@ class t3lib_http_observer_Download implements SplObserver {
 	 */
 	protected function determineFilename(HTTP_Request2 $request, HTTP_Request2_Response $response) {
 		$matches = array();
-
 		$disposition = $response->getHeader('content-disposition');
-		if ($disposition !== NULL
-				&& 0 === strpos($disposition, 'attachment')
-				&& 1 === preg_match('/filename="([^"]+)"/', $disposition, $matches)) {
+		if (($disposition !== NULL && 0 === strpos($disposition, 'attachment')) && 1 === preg_match('/filename="([^"]+)"/', $disposition, $matches)) {
 			$filename = basename($matches[1]);
 		} else {
 			$filename = basename($request->getUrl()->getPath());
@@ -168,9 +159,8 @@ class t3lib_http_observer_Download implements SplObserver {
 		if ($this->targetFilename === '') {
 			throw new UnexpectedValueException('The file name must not be empty', 1321113658);
 		}
-		$this->targetFilePath = $this->targetDirectory . DIRECTORY_SEPARATOR . $this->targetFilename;
+		$this->targetFilePath = ($this->targetDirectory . DIRECTORY_SEPARATOR) . $this->targetFilename;
 		$this->filePointer = @fopen($this->targetFilePath, 'wb');
-
 		if ($this->filePointer === FALSE) {
 			throw new t3lib_exception('Cannot open target file ' . $this->targetFilePath, 1320833203);
 		}
@@ -186,6 +176,7 @@ class t3lib_http_observer_Download implements SplObserver {
 		$this->filePointer = FALSE;
 		t3lib_div::fixPermissions($this->targetFilePath);
 	}
+
 }
 
 ?>

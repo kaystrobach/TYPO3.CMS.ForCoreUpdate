@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Handle loading and writing of global and local (instance specific)
  * configuration.
@@ -42,33 +41,29 @@ class t3lib_Configuration {
 	 * Path to default TYPO3_CONF_VARS file, relative to PATH_site
 	 */
 	const DEFAULT_CONFIGURATION_FILE = 't3lib/stddb/DefaultConfiguration.php';
-
 	/**
 	 * Path to local overload TYPO3_CONF_VARS file, relative to PATH_site
 	 */
 	const LOCAL_CONFIGURATION_FILE = 'typo3conf/LocalConfiguration.php';
-
 	/**
 	 * Path to additional local file, relative to PATH_site
 	 */
 	const ADDITIONAL_CONFIGURATION_FILE = 'typo3conf/AdditionalConfiguration.php';
-
 	/**
 	 * Path to legacy localconf.php file, relative to PATH_site
 	 */
 	const LOCALCONF_FILE = 'typo3conf/localconf.php';
-
 	/**
 	 * Writing to these configuration pathes is always allowed,
 	 * even if the requested sub path does not exist yet.
 	 *
 	 * @var array
 	 */
-	protected static $whiteListedLocalConfigurationPaths = array(
+	static protected $whiteListedLocalConfigurationPaths = array(
 		'EXT/extConf',
 		'EXTCONF',
 		'INSTALL/wizardDone',
-		'DB',
+		'DB'
 	);
 
 	/**
@@ -76,8 +71,8 @@ class t3lib_Configuration {
 	 *
 	 * @return array
 	 */
-	public static function getDefaultConfiguration() {
-		return require(PATH_site . static::DEFAULT_CONFIGURATION_FILE);
+	static public function getDefaultConfiguration() {
+		return require PATH_site . static::DEFAULT_CONFIGURATION_FILE;
 	}
 
 	/**
@@ -85,8 +80,8 @@ class t3lib_Configuration {
 	 *
 	 * @return array Content array of local configuration file
 	 */
-	public static function getLocalConfiguration() {
-		return require(PATH_site . static::LOCAL_CONFIGURATION_FILE);
+	static public function getLocalConfiguration() {
+		return require PATH_site . static::LOCAL_CONFIGURATION_FILE;
 	}
 
 	/**
@@ -95,11 +90,8 @@ class t3lib_Configuration {
 	 * @param array $configurationToMerge Override configuration array
 	 * @return void
 	 */
-	public static function updateLocalConfiguration(array $configurationToMerge) {
-		$newLocalConfiguration = t3lib_div::array_merge_recursive_overrule(
-			static::getLocalConfiguration(),
-			$configurationToMerge
-		);
+	static public function updateLocalConfiguration(array $configurationToMerge) {
+		$newLocalConfiguration = t3lib_div::array_merge_recursive_overrule(static::getLocalConfiguration(), $configurationToMerge);
 		static::writeLocalConfiguration($newLocalConfiguration);
 	}
 
@@ -109,11 +101,8 @@ class t3lib_Configuration {
 	 * @param string $path Path to search for
 	 * @return mixed Value at path
 	 */
-	public static function getDefaultConfigurationValueByPath($path) {
-		return t3lib_utility_Array::getValueByPath(
-			static::getDefaultConfiguration(),
-			$path
-		);
+	static public function getDefaultConfigurationValueByPath($path) {
+		return t3lib_utility_Array::getValueByPath(static::getDefaultConfiguration(), $path);
 	}
 
 	/**
@@ -122,11 +111,8 @@ class t3lib_Configuration {
 	 * @param string $path Path to search for
 	 * @return mixed Value at path
 	 */
-	public static function getLocalConfigurationValueByPath($path) {
-		return t3lib_utility_Array::getValueByPath(
-			static::getLocalConfiguration(),
-			$path
-		);
+	static public function getLocalConfigurationValueByPath($path) {
+		return t3lib_utility_Array::getValueByPath(static::getLocalConfiguration(), $path);
 	}
 
 	/**
@@ -136,14 +122,8 @@ class t3lib_Configuration {
 	 * @param string $path Path to search for
 	 * @return mixed
 	 */
-	public static function getConfigurationValueByPath($path) {
-		return t3lib_utility_Array::getValueByPath(
-			t3lib_div::array_merge_recursive_overrule(
-				static::getDefaultConfiguration(),
-				static::getLocalConfiguration()
-			),
-			$path
-		);
+	static public function getConfigurationValueByPath($path) {
+		return t3lib_utility_Array::getValueByPath(t3lib_div::array_merge_recursive_overrule(static::getDefaultConfiguration(), static::getLocalConfiguration()), $path);
 	}
 
 	/**
@@ -153,15 +133,11 @@ class t3lib_Configuration {
 	 * @param mixed $value Value to set
 	 * @return boolean TRUE on success
 	 */
-	public static function setLocalConfigurationValueByPath($path, $value) {
+	static public function setLocalConfigurationValueByPath($path, $value) {
 		$result = FALSE;
 		if (static::isValidLocalConfigurationPath($path)) {
 			$localConfiguration = static::getLocalConfiguration();
-			$localConfiguration = t3lib_utility_Array::setValueByPath(
-				$localConfiguration,
-				$path,
-				$value
-			);
+			$localConfiguration = t3lib_utility_Array::setValueByPath($localConfiguration, $path, $value);
 			$result = static::writeLocalConfiguration($localConfiguration);
 		}
 		return $result;
@@ -173,15 +149,11 @@ class t3lib_Configuration {
 	 * @param array $pairs Key is path, value is value to set
 	 * @return boolean TRUE on success
 	 */
-	public static function setLocalConfigurationValuesByPathValuePairs(array $pairs) {
+	static public function setLocalConfigurationValuesByPathValuePairs(array $pairs) {
 		$localConfiguration = static::getLocalConfiguration();
 		foreach ($pairs as $path => $value) {
 			if (static::isValidLocalConfigurationPath($path)) {
-				$localConfiguration = t3lib_utility_Array::setValueByPath(
-					$localConfiguration,
-					$path,
-					$value
-				);
+				$localConfiguration = t3lib_utility_Array::setValueByPath($localConfiguration, $path, $value);
 			}
 		}
 		return static::writeLocalConfiguration($localConfiguration);
@@ -193,13 +165,10 @@ class t3lib_Configuration {
 	 * @param array $configuration The local configuration to be written
 	 * @return boolean TRUE on success
 	 */
-	protected static function writeLocalConfiguration(array $configuration) {
+	static protected function writeLocalConfiguration(array $configuration) {
 		$configuration = t3lib_utility_Array::sortByKeyRecursive($configuration);
-		$result = t3lib_div::writeFile(
-			PATH_site . static::LOCAL_CONFIGURATION_FILE,
-			'<?php' . LF . 'return ' . t3lib_utility_Array::arrayExport($configuration) . ';' . LF . '?>'
-		);
-		return ($result === FALSE) ? FALSE : TRUE;
+		$result = t3lib_div::writeFile(PATH_site . static::LOCAL_CONFIGURATION_FILE, ((((('<?php' . LF) . 'return ') . t3lib_utility_Array::arrayExport($configuration)) . ';') . LF) . '?>');
+		return $result === FALSE ? FALSE : TRUE;
 	}
 
 	/**
@@ -208,17 +177,16 @@ class t3lib_Configuration {
 	 * @param string $path Path to search for
 	 * @return boolean TRUE if access is allowed
 	 */
-	protected static function isValidLocalConfigurationPath($path) {
-			// Early return for white listed paths
+	static protected function isValidLocalConfigurationPath($path) {
+		// Early return for white listed paths
 		foreach (static::$whiteListedLocalConfigurationPaths as $whiteListedPath) {
 			if (t3lib_div::isFirstPartOfStr($path, $whiteListedPath)) {
 				return TRUE;
 			}
 		}
-		return t3lib_utility_Array::isValidPath(
-			static::getDefaultConfiguration(),
-			$path
-		);
+		return t3lib_utility_Array::isValidPath(static::getDefaultConfiguration(), $path);
 	}
+
 }
+
 ?>

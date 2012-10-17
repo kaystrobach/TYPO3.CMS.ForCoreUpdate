@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An exception which represents a PHP error.
  *
@@ -32,6 +31,7 @@
  * @subpackage error
  */
 class t3lib_error_Exception extends t3lib_exception {
+
 
 }
 

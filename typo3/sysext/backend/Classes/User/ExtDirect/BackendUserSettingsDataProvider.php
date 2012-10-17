@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * ExtDirect DataProvider for BE User Settings
  *
@@ -46,7 +45,7 @@ class extDirect_DataProvider_BackendUserSettings {
 		if (strpos($key, '.') !== FALSE) {
 			$return = $this->getFromDottedNotation($key);
 		} else {
-			$return = ($key === '' ? $GLOBALS['BE_USER']->uc : $GLOBALS['BE_USER']->uc[$key]);
+			$return = $key === '' ? $GLOBALS['BE_USER']->uc : $GLOBALS['BE_USER']->uc[$key];
 		}
 		return $return;
 	}
@@ -70,7 +69,7 @@ class extDirect_DataProvider_BackendUserSettings {
 	/**
 	 * Sets user settings by array and merges them with current settings
 	 *
-	 * @param  array $array
+	 * @param array $array
 	 * @return void
 	 */
 	public function setFromArray(array $array) {
@@ -90,7 +89,7 @@ class extDirect_DataProvider_BackendUserSettings {
 	/**
 	 * Unsets a key in user settings
 	 *
-	 * @param  string $key
+	 * @param string $key
 	 * @return void
 	 */
 	public function unsetKey($key) {
@@ -182,6 +181,7 @@ class extDirect_DataProvider_BackendUserSettings {
 		$subkeys = t3lib_div::trimExplode('.', $key, TRUE);
 		return $subkeys[count($subkeys) - 1];
 	}
+
 }
 
 ?>

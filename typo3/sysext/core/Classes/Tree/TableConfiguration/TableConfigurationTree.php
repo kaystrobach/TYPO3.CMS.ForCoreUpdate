@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class for tca tree
  *
@@ -51,6 +50,7 @@ class t3lib_tree_Tca_TcaTree extends t3lib_tree_AbstractTree {
 	public function render() {
 		return $this->nodeRenderer->renderTree($this);
 	}
+
 }
 
 ?>

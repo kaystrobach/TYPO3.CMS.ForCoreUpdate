@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * view helper
  *
@@ -33,8 +31,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper
-	extends Tx_Fluid_ViewHelpers_FormViewHelper {
+class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_FormViewHelper {
 
 	/**
 	 * @var string
@@ -51,10 +48,9 @@ class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper
 		$installPaths = Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallPaths();
 		$pathSelector = '<ul>';
 		foreach ($installPaths as $installPathType => $installPath) {
-			$pathSelector .= '<li>
-				<input type="radio" id="' . $extension->getExtensionKey() .'-downloadPath-' . $installPathType . '" name="' . $this->getFieldNamePrefix('downloadPath') . '[downloadPath]" class="downloadPath" value="' . $installPathType . '"' .
-				($installPathType == 'Local' ? 'checked="checked"' : '') . '/>
-				<label for="' . $extension->getExtensionKey() .'-downloadPath-' . $installPathType . '">' . $installPathType . '</label>
+			$pathSelector .= ((((((((((((((('<li>
+				<input type="radio" id="' . $extension->getExtensionKey()) . '-downloadPath-') . $installPathType) . '" name="') . $this->getFieldNamePrefix('downloadPath')) . '[downloadPath]" class="downloadPath" value="') . $installPathType) . '"') . ($installPathType == 'Local' ? 'checked="checked"' : '')) . '/>
+				<label for="') . $extension->getExtensionKey()) . '-downloadPath-') . $installPathType) . '">') . $installPathType) . '</label>
 			</li>';
 		}
 		$pathSelector .= '</ul>';
@@ -69,7 +65,9 @@ class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper
 		$label = '<input type="submit" value="Import and Install" />';
 		$this->tag->setContent($label . $pathSelector);
 		$this->tag->addAttribute('class', 'download');
-
-		return '<div id="' . $extension->getExtensionKey() . '-downloadFromTer" class="downloadFromTer">' . $this->tag->render() . '</div>';
+		return ((('<div id="' . $extension->getExtensionKey()) . '-downloadFromTer" class="downloadFromTer">') . $this->tag->render()) . '</div>';
 	}
+
 }
+
+?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A cache frontend tailored to PHP code.
  *
@@ -58,26 +57,17 @@ class t3lib_cache_frontend_PhpFrontend extends t3lib_cache_frontend_StringFronte
 	 */
 	public function set($entryIdentifier, $sourceCode, array $tags = array(), $lifetime = NULL) {
 		if (!$this->isValidEntryIdentifier($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'"' . $entryIdentifier . '" is not a valid cache entry identifier.',
-				1264023823
-			);
+			throw new \InvalidArgumentException(('"' . $entryIdentifier) . '" is not a valid cache entry identifier.', 1264023823);
 		}
 		if (!is_string($sourceCode)) {
-			throw new \t3lib_cache_exception_InvalidData(
-				'The given source code is not a valid string.',
-				1264023824
-			);
+			throw new \t3lib_cache_exception_InvalidData('The given source code is not a valid string.', 1264023824);
 		}
 		foreach ($tags as $tag) {
 			if (!$this->isValidTag($tag)) {
-				throw new \InvalidArgumentException(
-					'"' . $tag . '" is not a valid tag for a cache entry.',
-					1264023825
-				);
+				throw new \InvalidArgumentException(('"' . $tag) . '" is not a valid tag for a cache entry.', 1264023825);
 			}
 		}
-		$sourceCode = '<?php' . chr(10) . $sourceCode . chr(10) . '#';
+		$sourceCode = ((('<?php' . chr(10)) . $sourceCode) . chr(10)) . '#';
 		$this->backend->set($entryIdentifier, $sourceCode, $tags, $lifetime);
 	}
 
@@ -91,5 +81,7 @@ class t3lib_cache_frontend_PhpFrontend extends t3lib_cache_frontend_StringFronte
 	public function requireOnce($entryIdentifier) {
 		return $this->backend->requireOnce($entryIdentifier);
 	}
+
 }
+
 ?>

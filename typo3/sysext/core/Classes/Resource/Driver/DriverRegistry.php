@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Registry for driver classes.
  *
@@ -49,15 +48,9 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 	 */
 	public function __construct() {
 		$driverConfigurations = $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'];
-
 		foreach ($driverConfigurations as $shortName => $driverConfig) {
-			$shortName = ($shortName ? : $driverConfig['shortName']);
-			$this->registerDriverClass(
-				$driverConfig['class'],
-				$shortName,
-				$driverConfig['label'],
-				$driverConfig['flexFormDS']
-			);
+			$shortName = $shortName ?: $driverConfig['shortName'];
+			$this->registerDriverClass($driverConfig['class'], $shortName, $driverConfig['label'], $driverConfig['flexFormDS']);
 		}
 	}
 
@@ -71,19 +64,16 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 	 * @return boolean TRUE if registering succeeded
 	 */
 	public function registerDriverClass($className, $shortName = NULL, $label = NULL, $flexFormDataStructurePathAndFilename = NULL) {
-			// check if the class is available for TYPO3 before registering the driver
+		// check if the class is available for TYPO3 before registering the driver
 		if (!class_exists($className)) {
-			throw new InvalidArgumentException('Class ' . $className . ' does not exist.', 1314979197);
+			throw new InvalidArgumentException(('Class ' . $className) . ' does not exist.', 1314979197);
 		}
-
 		if ($shortName === '') {
 			$shortName = $className;
 		}
-
 		if (array_key_exists($shortName, $this->drivers)) {
-			throw new InvalidArgumentException('Driver ' . $shortName . ' is already registered.', 1314979451);
+			throw new InvalidArgumentException(('Driver ' . $shortName) . ' is already registered.', 1314979451);
 		}
-
 		$this->drivers[$shortName] = $className;
 		$this->driverConfigurations[$shortName] = array(
 			'class' => $className,
@@ -91,7 +81,6 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 			'label' => $label,
 			'flexFormDS' => $flexFormDataStructurePathAndFilename
 		);
-
 		return TRUE;
 	}
 
@@ -99,20 +88,17 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function addDriversToTCA() {
-			// Add driver to TCA of sys_file_storage
+		// Add driver to TCA of sys_file_storage
 		if (TYPO3_MODE !== 'BE') {
 			return;
 		}
-
 		foreach ($this->driverConfigurations as $driver) {
-			$label = $driver['label'] ? : $driver['class'];
-
+			$label = $driver['label'] ?: $driver['class'];
 			t3lib_div::loadTCA('sys_file_storage');
-			$driverFieldConfig = &$GLOBALS['TCA']['sys_file_storage']['columns']['driver']['config'];
+			$driverFieldConfig =& $GLOBALS['TCA']['sys_file_storage']['columns']['driver']['config'];
 			$driverFieldConfig['items'][] = array($label, $driver['shortName']);
-
 			if ($driver['flexFormDS']) {
-				$configurationFieldConfig = &$GLOBALS['TCA']['sys_file_storage']['columns']['configuration']['config'];
+				$configurationFieldConfig =& $GLOBALS['TCA']['sys_file_storage']['columns']['configuration']['config'];
 				$configurationFieldConfig['ds'][$driver['shortName']] = $driver['flexFormDS'];
 			}
 		}
@@ -128,13 +114,12 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 		if (class_exists($shortName) && in_array($shortName, $this->drivers)) {
 			return $shortName;
 		}
-
 		if (!array_key_exists($shortName, $this->drivers)) {
 			throw new InvalidArgumentException('Desired storage is not in the list of available storages.', 1314085990);
 		}
-
 		return $this->drivers[$shortName];
 	}
+
 }
 
 ?>

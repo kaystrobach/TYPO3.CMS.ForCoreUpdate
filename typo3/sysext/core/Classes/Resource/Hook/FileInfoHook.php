@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility class to render TCEforms information about a sys_file record
  *
@@ -43,27 +42,24 @@ class t3lib_file_Utility_FileInfo {
 	 */
 	public function renderFileInfo(array $PA, t3lib_TCEforms $tceformsObj) {
 		$fileRecord = $PA['row'];
-
 		if ($fileRecord['uid'] > 0) {
 			$fileObject = t3lib_file_Factory::getInstance()->getFileObject($fileRecord['uid']);
 			$processedFile = $fileObject->process(t3lib_file_ProcessedFile::CONTEXT_IMAGEPREVIEW, array('width' => 150, 'height' => 150));
 			$previewImage = $processedFile->getPublicUrl(TRUE);
-
 			$content = '';
-
 			if ($previewImage) {
-				$content .= '<img src="' . htmlspecialchars($previewImage) . '" alt="" class="t3-tceforms-sysfile-imagepreview" />';
+				$content .= ('<img src="' . htmlspecialchars($previewImage)) . '" alt="" class="t3-tceforms-sysfile-imagepreview" />';
 			}
-
-			$content .= '<strong>' . htmlspecialchars($fileObject->getName()) . '</strong> (' . htmlspecialchars(t3lib_div::formatSize($fileObject->getSize())) . ')<br />';
-			$content .= t3lib_BEfunc::getProcessedValue($PA['table'], 'type', $fileObject->getType()) . ' (' . $fileObject->getMimeType() . ')<br />';
-			$content .= $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.xlf:fileMetaDataLocation', TRUE) . ': ' . htmlspecialchars($fileObject->getStorage()->getName()) . ' - ' . htmlspecialchars($fileObject->getIdentifier()) . '<br />';
+			$content .= ((('<strong>' . htmlspecialchars($fileObject->getName())) . '</strong> (') . htmlspecialchars(t3lib_div::formatSize($fileObject->getSize()))) . ')<br />';
+			$content .= ((t3lib_BEfunc::getProcessedValue($PA['table'], 'type', $fileObject->getType()) . ' (') . $fileObject->getMimeType()) . ')<br />';
+			$content .= (((($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.xlf:fileMetaDataLocation', TRUE) . ': ') . htmlspecialchars($fileObject->getStorage()->getName())) . ' - ') . htmlspecialchars($fileObject->getIdentifier())) . '<br />';
 			$content .= '<br />';
 		} else {
-			$content = '<h2>' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.xlf:fileMetaErrorInvalidRecord', TRUE) . '</h2>';
+			$content = ('<h2>' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.xlf:fileMetaErrorInvalidRecord', TRUE)) . '</h2>';
 		}
-
 		return $content;
 	}
+
 }
+
 ?>

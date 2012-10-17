@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A class to store and retrieve entries in a registry database table.
  *
@@ -44,7 +43,7 @@
 class t3lib_Registry implements t3lib_Singleton {
 
 	/**
-	 * @var	array
+	 * @var 	array
 	 */
 	protected $entries = array();
 
@@ -61,7 +60,6 @@ class t3lib_Registry implements t3lib_Singleton {
 		if (!isset($this->entries[$namespace])) {
 			$this->loadEntriesByNamespace($namespace);
 		}
-
 		return isset($this->entries[$namespace][$key]) ? $this->entries[$namespace][$key] : $defaultValue;
 	}
 
@@ -85,33 +83,18 @@ class t3lib_Registry implements t3lib_Singleton {
 	public function set($namespace, $key, $value) {
 		$this->validateNamespace($namespace);
 		$serializedValue = serialize($value);
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid',
-			'sys_registry',
-			'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')
-			. ' AND entry_key = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($key, 'sys_registry')
-		);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'sys_registry', (('entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')) . ' AND entry_key = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr($key, 'sys_registry'));
 		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) < 1) {
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery(
-				'sys_registry',
-				array(
-					'entry_namespace' => $namespace,
-					'entry_key' => $key,
-					'entry_value' => $serializedValue
-				)
-			);
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_registry', array(
+				'entry_namespace' => $namespace,
+				'entry_key' => $key,
+				'entry_value' => $serializedValue
+			));
 		} else {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				'sys_registry',
-				'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')
-				. ' AND entry_key = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($key, 'sys_registry'),
-				array(
-					'entry_value' => $serializedValue
-				)
-			);
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('sys_registry', (('entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')) . ' AND entry_key = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr($key, 'sys_registry'), array(
+				'entry_value' => $serializedValue
+			));
 		}
-
 		$this->entries[$namespace][$key] = $value;
 	}
 
@@ -125,13 +108,7 @@ class t3lib_Registry implements t3lib_Singleton {
 	 */
 	public function remove($namespace, $key) {
 		$this->validateNamespace($namespace);
-
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			'sys_registry',
-			'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')
-			. ' AND entry_key = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($key, 'sys_registry')
-		);
-
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_registry', (('entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')) . ' AND entry_key = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr($key, 'sys_registry'));
 		unset($this->entries[$namespace][$key]);
 	}
 
@@ -144,12 +121,7 @@ class t3lib_Registry implements t3lib_Singleton {
 	 */
 	public function removeAllByNamespace($namespace) {
 		$this->validateNamespace($namespace);
-
-		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			'sys_registry',
-			'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')
-		);
-
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('sys_registry', 'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry'));
 		unset($this->entries[$namespace]);
 	}
 
@@ -162,13 +134,7 @@ class t3lib_Registry implements t3lib_Singleton {
 	 */
 	protected function loadEntriesByNamespace($namespace) {
 		$this->validateNamespace($namespace);
-
-		$storedEntries = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'*',
-			'sys_registry',
-			'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry')
-		);
-
+		$storedEntries = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_registry', 'entry_namespace = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($namespace, 'sys_registry'));
 		foreach ($storedEntries as $storedEntry) {
 			$key = $storedEntry['entry_key'];
 			$this->entries[$namespace][$key] = unserialize($storedEntry['entry_value']);
@@ -188,12 +154,10 @@ class t3lib_Registry implements t3lib_Singleton {
 	 */
 	protected function validateNamespace($namespace) {
 		if (strlen($namespace) < 2) {
-			throw new InvalidArgumentException(
-				'Given namespace must be longer than two characters.',
-				1249755131
-			);
+			throw new InvalidArgumentException('Given namespace must be longer than two characters.', 1249755131);
 		}
 	}
+
 }
 
 ?>

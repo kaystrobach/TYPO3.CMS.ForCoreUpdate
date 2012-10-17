@@ -1,44 +1,4 @@
 <?php
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
-/**
- * Displays the page/file tree for browsing database records or files.
- * Used from TCEFORMS an other elements
- * In other words: This is the ELEMENT BROWSER!
- *
- * Revised for TYPO3 3.6 November/2003 by Kasper Skårhøj
- * XHTML compliant
- *
- * @author Kasper Skårhøj <kasperYYYY@typo3.com>
- */
-$BACK_PATH = '';
-require('init.php');
-$LANG->includeLLFile('EXT:lang/locallang_browse_links.xml');
-
 /**
  * Script class for the Element Browser window.
  *
@@ -57,8 +17,9 @@ class SC_browse_links {
 	 * "wizard" will allow you to browse for links (like "rte") which are passed back to TCEforms (see main_rte(1))
 	 *
 	 * @see main()
+	 * @todo Define visibility
 	 */
-	var $mode;
+	public $mode;
 
 	/**
 	 * Holds Instance of main browse_links class
@@ -66,31 +27,32 @@ class SC_browse_links {
 	 * Not the most nice solution but introduced since we don't have another general way to return class-instances or registry for now
 	 *
 	 * @var browse_links
+	 * @todo Define visibility
 	 */
-	var $browser;
+	public $browser;
 
 	/**
 	 * Document template object
 	 *
 	 * @var template
+	 * @todo Define visibility
 	 */
-	var $doc;
+	public $doc;
 
 	/**
 	 * Not really needed but for backwards compatibility ...
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function init() {
-
-			// Find "mode"
+	public function init() {
+		// Find "mode"
 		$this->mode = t3lib_div::_GP('mode');
 		if (!$this->mode) {
 			$this->mode = 'rte';
 		}
-
-			// Creating backend template object:
-			// this might not be needed but some classes refer to $GLOBALS['SOBE']->doc, so ...
+		// Creating backend template object:
+		// this might not be needed but some classes refer to $GLOBALS['SOBE']->doc, so ...
 		$this->doc = t3lib_div::makeInstance('template');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 	}
@@ -99,95 +61,93 @@ class SC_browse_links {
 	 * Main function, detecting the current mode of the element browser and branching out to internal methods.
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function main() {
-
+	public function main() {
 		// Clear temporary DB mounts
 		$tmpMount = t3lib_div::_GET('setTempDBmount');
 		if (isset($tmpMount)) {
 			$GLOBALS['BE_USER']->setAndSaveSessionData('pageTree_temporaryMountPoint', intval($tmpMount));
 		}
-
 		// Set temporary DB mounts
 		$tempDBmount = intval($GLOBALS['BE_USER']->getSessionData('pageTree_temporaryMountPoint'));
 		if ($tempDBmount) {
 			$altMountPoints = $tempDBmount;
 		}
-
 		if ($altMountPoints) {
 			$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
 			$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
 		}
-
 		$this->content = '';
+		// Look for alternative mountpoints
+		switch ((string) $this->mode) {
+		case 'rte':
 
-			// Look for alternative mountpoints
-		switch((string)$this->mode) {
-			case 'rte':
-			case 'db':
-			case 'wizard':
-					// Setting alternative browsing mounts (ONLY local to browse_links.php this script so they stay "read-only")
-				$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.altElementBrowserMountPoints'));
-				if ($altMountPoints) {
-					$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
-					$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
+		case 'db':
+
+		case 'wizard':
+			// Setting alternative browsing mounts (ONLY local to browse_links.php this script so they stay "read-only")
+			$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.altElementBrowserMountPoints'));
+			if ($altMountPoints) {
+				$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
+				$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
+			}
+		case 'file':
+
+		case 'filedrag':
+
+		case 'folder':
+			// Setting additional read-only browsing file mounts
+			// @todo: add this feature for FAL and TYPO3 6.0
+			$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.folderTree.altElementBrowserMountPoints'));
+			if ($altMountPoints) {
+				$altMountPoints = t3lib_div::trimExplode(',', $altMountPoints);
+				foreach ($altMountPoints as $filePathRelativeToFileadmindir) {
+					$GLOBALS['BE_USER']->addFileMount('', $filePathRelativeToFileadmindir, $filePathRelativeToFileadmindir, 1, 'readonly');
 				}
-			case 'file':
-			case 'filedrag':
-			case 'folder':
-					// Setting additional read-only browsing file mounts
-					// @todo: add this feature for FAL and TYPO3 6.0
-				$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.folderTree.altElementBrowserMountPoints'));
-				if ($altMountPoints) {
-					$altMountPoints = t3lib_div::trimExplode(',', $altMountPoints);
-					foreach ($altMountPoints as $filePathRelativeToFileadmindir) {
-						$GLOBALS['BE_USER']->addFileMount('', $filePathRelativeToFileadmindir, $filePathRelativeToFileadmindir, 1, 'readonly');
-					}
-					$GLOBALS['FILEMOUNTS'] = $GLOBALS['BE_USER']->returnFilemounts();
-				}
-				break;
+				$GLOBALS['FILEMOUNTS'] = $GLOBALS['BE_USER']->returnFilemounts();
+			}
+			break;
 		}
-
-			// Render type by user func
+		// Render type by user func
 		$browserRendered = FALSE;
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'] as $classRef) {
 				$browserRenderObj = t3lib_div::getUserObj($classRef);
-				if (is_object($browserRenderObj) && method_exists($browserRenderObj, 'isValid') && method_exists($browserRenderObj, 'render')) {
+				if ((is_object($browserRenderObj) && method_exists($browserRenderObj, 'isValid')) && method_exists($browserRenderObj, 'render')) {
 					if ($browserRenderObj->isValid($this->mode, $this)) {
-						$this->content.= $browserRenderObj->render($this->mode, $this);
+						$this->content .= $browserRenderObj->render($this->mode, $this);
 						$browserRendered = TRUE;
 						break;
 					}
 				}
 			}
 		}
-
-			// if type was not rendered use default rendering functions
+		// if type was not rendered use default rendering functions
 		if (!$browserRendered) {
 			$this->browser = t3lib_div::makeInstance('browse_links');
 			$this->browser->init();
 			$modData = $GLOBALS['BE_USER']->getModuleData('browse_links.php', 'ses');
 			list($modData, $store) = $this->browser->processSessionData($modData);
 			$GLOBALS['BE_USER']->pushModuleData('browse_links.php', $modData);
+			// Output the correct content according to $this->mode
+			switch ((string) $this->mode) {
+			case 'rte':
+				$this->content = $this->browser->main_rte();
+				break;
+			case 'db':
+				$this->content = $this->browser->main_db();
+				break;
+			case 'file':
 
-				// Output the correct content according to $this->mode
-			switch((string)$this->mode) {
-				case 'rte':
-					$this->content = $this->browser->main_rte();
+			case 'filedrag':
+				$this->content = $this->browser->main_file();
 				break;
-				case 'db':
-					$this->content = $this->browser->main_db();
+			case 'folder':
+				$this->content = $this->browser->main_folder();
 				break;
-				case 'file':
-				case 'filedrag':
-					$this->content = $this->browser->main_file();
-				break;
-				case 'folder':
-					$this->content = $this->browser->main_folder();
-				break;
-				case 'wizard':
-					$this->content = $this->browser->main_rte(1);
+			case 'wizard':
+				$this->content = $this->browser->main_rte(1);
 				break;
 			}
 		}
@@ -197,16 +157,12 @@ class SC_browse_links {
 	 * Print module content
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function printContent() {
+	public function printContent() {
 		echo $this->content;
 	}
-}
 
-	// Make instance:
-$SOBE = t3lib_div::makeInstance('SC_browse_links');
-$SOBE->init();
-$SOBE->main();
-$SOBE->printContent();
+}
 
 ?>

@@ -1,87 +1,78 @@
 <?php
-
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
+if (!defined('TYPO3_MODE')) {
+	die('Access denied.');
 }
-
-	// Register the Scheduler as a possible key for CLI calls
+// Register the Scheduler as a possible key for CLI calls
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][$_EXTKEY] = array(
-	'EXT:' . $_EXTKEY . '/cli/scheduler_cli_dispatch.php', '_CLI_scheduler'
+	('EXT:' . $_EXTKEY) . '/cli/scheduler_cli_dispatch.php',
+	'_CLI_scheduler'
 );
-
-	// Get the extensions's configuration
+// Get the extensions's configuration
 $extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['scheduler']);
-
-	// If sample tasks should be shown,
-	// register information for the test and sleep tasks
+// If sample tasks should be shown,
+// register information for the test and sleep tasks
 if (!empty($extConf['showSampleTasks'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TestTask'] = array(
-		'extension'        => $_EXTKEY,
-		'title'            => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:testTask.name',
-		'description'      => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:testTask.description',
+		'extension' => $_EXTKEY,
+		'title' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:testTask.name',
+		'description' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:testTask.description',
 		'additionalFields' => 'tx_scheduler_TestTask_AdditionalFieldProvider'
 	);
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_SleepTask'] = array(
-		'extension'        => $_EXTKEY,
-		'title'            => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:sleepTask.name',
-		'description'      => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:sleepTask.description',
+		'extension' => $_EXTKEY,
+		'title' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:sleepTask.name',
+		'description' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:sleepTask.description',
 		'additionalFields' => 'tx_scheduler_SleepTask_AdditionalFieldProvider'
 	);
 }
-
-	// Add caching framework garbage collection task
+// Add caching framework garbage collection task
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_CachingFrameworkGarbageCollection'] = array(
-	'extension'        => $_EXTKEY,
-	'title'            => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:cachingFrameworkGarbageCollection.name',
-	'description'      => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:cachingFrameworkGarbageCollection.description',
-	'additionalFields' => 'tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider',
+	'extension' => $_EXTKEY,
+	'title' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:cachingFrameworkGarbageCollection.name',
+	'description' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:cachingFrameworkGarbageCollection.description',
+	'additionalFields' => 'tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider'
 );
-
-	// Add file indexing task
+// Add file indexing task
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_FileIndexing'] = array(
-	'extension'        => $_EXTKEY,
-	'title'            => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:fileIndexing.name',
-	'description'      => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:fileIndexing.description',
+	'extension' => $_EXTKEY,
+	'title' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:fileIndexing.name',
+	'description' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:fileIndexing.description'
 );
-
-	// Add recycler directory cleanup task. Windows is not supported
-	// because "filectime" does not change after moving a file
+// Add recycler directory cleanup task. Windows is not supported
+// because "filectime" does not change after moving a file
 if (TYPO3_OS != 'WIN') {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_RecyclerGarbageCollection'] = array(
-		'extension'        => $_EXTKEY,
-		'title'            => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:recyclerGarbageCollection.name',
-		'description'      => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:recyclerGarbageCollection.description',
-		'additionalFields' => 'tx_scheduler_RecyclerGarbageCollection_AdditionalFieldProvider',
+		'extension' => $_EXTKEY,
+		'title' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:recyclerGarbageCollection.name',
+		'description' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:recyclerGarbageCollection.description',
+		'additionalFields' => 'tx_scheduler_RecyclerGarbageCollection_AdditionalFieldProvider'
 	);
 }
-
-	// Add table garbage collection task
+// Add table garbage collection task
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection'] = array(
-	'extension'        => $_EXTKEY,
-	'title'            => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:tableGarbageCollection.name',
-	'description'      => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:tableGarbageCollection.description',
-	'additionalFields' => 'tx_scheduler_TableGarbageCollection_AdditionalFieldProvider',
+	'extension' => $_EXTKEY,
+	'title' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:tableGarbageCollection.name',
+	'description' => ('LLL:EXT:' . $_EXTKEY) . '/locallang.xml:tableGarbageCollection.description',
+	'additionalFields' => 'tx_scheduler_TableGarbageCollection_AdditionalFieldProvider'
 );
-	// Initialize option array of table garbage collection task if not already done by some other extension or localconf.php
+// Initialize option array of table garbage collection task if not already done by some other extension or localconf.php
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options'] = array();
 }
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables'] = array();
 }
-	// Register sys_log and sys_history table in table garbage collection task
+// Register sys_log and sys_history table in table garbage collection task
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables']['sys_log'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables']['sys_log'] = array(
 		'dateField' => 'tstamp',
-		'expirePeriod' => 180,
+		'expirePeriod' => 180
 	);
 }
-
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables']['sys_history'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables']['sys_history'] = array(
 		'dateField' => 'tstamp',
-		'expirePeriod' => 30,
+		'expirePeriod' => 30
 	);
 }
-
 ?>

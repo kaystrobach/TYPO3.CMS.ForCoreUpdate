@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class t3lib_formprotection_Abstract.
  *
@@ -33,11 +32,11 @@
  *
  * @package TYPO3
  * @subpackage t3lib
- *
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
 abstract class t3lib_formprotection_Abstract {
+
 	/**
 	 * The session token which is used to be hashed during token generation.
 	 *
@@ -80,33 +79,15 @@ abstract class t3lib_formprotection_Abstract {
 	 * the same valid token during one user session.
 	 *
 	 * @param string $formName
-	 *		the name of the form, for example a table name like "tt_content",
-	 *		or some other identifier like "install_tool_password", must not be
-	 *		empty
 	 * @param string $action
-	 *		the name of the action of the form, for example "new", "delete" or
-	 *		"edit", may also be empty
 	 * @param string $formInstanceName
-	 *		a string used to differentiate two instances of the same form,
-	 *		form example a record UID or a comma-separated list of UIDs,
-	 *		may also be empty
-	 *
 	 * @return string the 32-character hex ID of the generated token
 	 */
-	public function generateToken(
-		$formName, $action = '', $formInstanceName = ''
-	) {
+	public function generateToken($formName, $action = '', $formInstanceName = '') {
 		if ($formName == '') {
 			throw new InvalidArgumentException('$formName must not be empty.', 1294586643);
 		}
-
-		$tokenId = t3lib_div::hmac(
-			$formName .
-			$action .
-			$formInstanceName .
-			$this->sessionToken
-		);
-
+		$tokenId = t3lib_div::hmac((($formName . $action) . $formInstanceName) . $this->sessionToken);
 		return $tokenId;
 	}
 
@@ -115,40 +96,21 @@ abstract class t3lib_formprotection_Abstract {
 	 * $formInstanceName.
 	 *
 	 * @param string $tokenId
-	 *		a form token to check, may also be empty or utterly malformed
 	 * @param string $formName
-	 *		the name of the form to check, for example "tt_content",
-	 *		may also be empty or utterly malformed
 	 * @param string $action
-	 *		the action of the form to check, for example "edit",
-	 *		may also be empty or utterly malformed
 	 * @param string $formInstanceName
-	 *		the instance name of the form to check, for example "42" or "foo"
-	 *		or "31,42", may also be empty or utterly malformed
-	 *
 	 * @return boolean
-	 *		 TRUE if $tokenId, $formName, $action and $formInstanceName match
 	 */
-	public function validateToken(
-		$tokenId, $formName, $action = '', $formInstanceName = ''
-	) {
-		$validTokenId = t3lib_div::hmac(
-			(string)$formName .
-			(string)$action .
-			(string)$formInstanceName .
-			$this->sessionToken
-		);
-
-		if ((string)$tokenId === $validTokenId) {
+	public function validateToken($tokenId, $formName, $action = '', $formInstanceName = '') {
+		$validTokenId = t3lib_div::hmac((((string) $formName . (string) $action) . (string) $formInstanceName) . $this->sessionToken);
+		if ((string) $tokenId === $validTokenId) {
 			$isValid = TRUE;
 		} else {
 			$isValid = FALSE;
 		}
-
 		if (!$isValid) {
 			$this->createValidationErrorMessage();
 		}
-
 		return $isValid;
 	}
 
@@ -176,7 +138,6 @@ abstract class t3lib_formprotection_Abstract {
 	 * Retrieves the session token.
 	 *
 	 * @return string
-	 *		 the saved session token, will be empty if no token has been saved
 	 */
 	abstract protected function retrieveSessionToken();
 
@@ -188,6 +149,7 @@ abstract class t3lib_formprotection_Abstract {
 	 * @return void
 	 */
 	abstract public function persistSessionToken();
+
 }
 
 ?>

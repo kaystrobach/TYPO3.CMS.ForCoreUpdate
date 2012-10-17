@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Tree
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_tree_AbstractTree {
+
 	/**
 	 * Data Provider
 	 *
@@ -83,6 +83,7 @@ abstract class t3lib_tree_AbstractTree {
 	 * @return t3lib_tree_Node
 	 */
 	abstract public function getRoot();
+
 }
 
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'value'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Value extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'value'.
 	 * Used with the elements input, option, button
@@ -49,8 +49,9 @@ class tx_form_Domain_Model_Attributes_Value extends tx_form_Domain_Model_Attribu
 	 */
 	public function getValue() {
 		$attribute = (string) $this->value;
-
 		return $attribute;
 	}
+
 }
+
 ?>

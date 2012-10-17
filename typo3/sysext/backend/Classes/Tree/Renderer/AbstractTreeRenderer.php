@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Renderer
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_tree_Renderer_Abstract {
+
 	/**
 	 * Renders a node recursive or just a single instance
 	 *
@@ -59,6 +59,7 @@ abstract class t3lib_tree_Renderer_Abstract {
 	 * @return mixed
 	 */
 	abstract public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE);
+
 }
 
 ?>

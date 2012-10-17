@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Model for configuration subcategories
  *
@@ -49,7 +48,6 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 	 */
 	public function __construct() {
 		$this->items = new Tx_Extbase_Persistence_ObjectStorage();
-
 	}
 
 	/**
@@ -91,5 +89,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 	public function getName() {
 		return $this->name;
 	}
+
 }
+
 ?>

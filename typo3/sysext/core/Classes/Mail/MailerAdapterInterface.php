@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Mailer Adapter interface
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_mail_MailerAdapter {
-
+interface t3lib_mail_MailerAdapter
+{
 	/**
 	 * Mail sending function
 	 *
@@ -48,5 +47,4 @@ interface t3lib_mail_MailerAdapter {
 	public function mail($to, $subject, $messageBody, $additionalHeaders = NULL, $additionalParameters = NULL, $fakeSending = FALSE);
 
 }
-
 ?>

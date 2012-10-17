@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract class for the form elements view
  *
@@ -70,9 +69,8 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	public function __construct(tx_form_Domain_Model_Element_Abstract $model) {
 		if ($this->isValidModel($model) === FALSE) {
-			throw new RuntimeException('Unexpected model "' . get_class($model) . '".');
+			throw new RuntimeException(('Unexpected model "' . get_class($model)) . '".');
 		}
-
 		$this->model = $model;
 	}
 
@@ -97,7 +95,6 @@ abstract class tx_form_View_Form_Element_Abstract {
 			$specificName = tx_form_Common::getInstance()->getLastPartOfClassName($this);
 			$this->expectedModelName = 'tx_form_Domain_Model_Element_' . $specificName;
 		}
-
 		return $this->expectedModelName;
 	}
 
@@ -113,98 +110,105 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	protected function parseXML(DOMDocument $dom, DOMNode $reference) {
 		$node = $reference->firstChild;
-
 		while (!is_null($node)) {
 			$deleteNode = FALSE;
 			$nodeType = $node->nodeType;
 			$nodeName = $node->nodeName;
 			switch ($nodeType) {
-				case XML_TEXT_NODE:
+			case XML_TEXT_NODE:
+				break;
+			case XML_ELEMENT_NODE:
+				switch ($nodeName) {
+				case 'containerWrap':
+					$this->replaceNodeWithFragment($dom, $node, $this->render('containerWrap'));
+					$deleteNode = TRUE;
 					break;
-				case XML_ELEMENT_NODE:
-					switch($nodeName) {
-						case 'containerWrap':
-							$this->replaceNodeWithFragment($dom, $node, $this->render('containerWrap'));
+				case 'elements':
+					$replaceNode = $this->getChildElements($dom);
+					$node->parentNode->replaceChild($replaceNode, $node);
+					break;
+				case 'button':
+
+				case 'fieldset':
+
+				case 'form':
+
+				case 'input':
+
+				case 'optgroup':
+
+				case 'select':
+					$this->setAttributes($node);
+					break;
+				case 'label':
+					if (!strstr(get_class($this), '_Additional_')) {
+						if ($this->model->additionalIsSet($nodeName)) {
+							$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('label'));
+						}
+						$deleteNode = TRUE;
+					} else {
+						if ($this->model->additionalIsSet($nodeName)) {
+							$this->setAttributeWithValueofOtherAttribute($node, 'for', 'id');
+						} else {
 							$deleteNode = TRUE;
-							break;
-						case 'elements':
-							$replaceNode = $this->getChildElements($dom);
-							$node->parentNode->replaceChild($replaceNode, $node);
-							break;
-						case 'button':
-						case 'fieldset':
-						case 'form':
-						case 'input':
-						case 'optgroup':
-						case 'select':
-							$this->setAttributes($node);
-							break;
-						case 'label':
-							if (!strstr(get_class($this), '_Additional_')) {
-								if ($this->model->additionalIsSet($nodeName)) {
-									$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('label'));
-								}
-								$deleteNode = TRUE;
-							} else {
-								if ($this->model->additionalIsSet($nodeName)) {
-									$this->setAttributeWithValueofOtherAttribute($node, 'for', 'id');
-								} else {
-									$deleteNode = TRUE;
-								}
-							}
-							break;
-						case 'legend':
-							if (!strstr(get_class($this), '_Additional_')) {
-								if ($this->model->additionalIsSet($nodeName)) {
-									$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('legend'));
-								}
-								$deleteNode = TRUE;
-							}
-							break;
-						case 'textarea':
-						case 'option':
-							$this->setAttributes($node);
-							$appendNode = $dom->createTextNode($this->getElementData());
-							$node->appendChild($appendNode);
-							break;
-						case 'errorvalue':
-						case 'labelvalue':
-						case 'legendvalue':
-						case 'mandatoryvalue':
-							$replaceNode = $dom->createTextNode($this->getAdditionalValue());
-							$node->parentNode->insertBefore($replaceNode, $node);
-							$deleteNode = TRUE;
-							break;
-						case 'mandatory':
-						case 'error':
-							if ($this->model->additionalIsSet($nodeName)) {
-								$this->replaceNodeWithFragment($dom, $node, $this->getAdditional($nodeName));
-							}
-							$deleteNode = TRUE;
-							break;
-						case 'content':
-						case 'header':
-						case 'textblock':
-							$replaceNode = $dom->createTextNode($this->getElementData(FALSE));
-							$node->parentNode->insertBefore($replaceNode, $node);
-							$deleteNode = TRUE;
-							break;
+						}
 					}
 					break;
-			}
+				case 'legend':
+					if (!strstr(get_class($this), '_Additional_')) {
+						if ($this->model->additionalIsSet($nodeName)) {
+							$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('legend'));
+						}
+						$deleteNode = TRUE;
+					}
+					break;
+				case 'textarea':
 
-				// Parse the child nodes of this node if available
+				case 'option':
+					$this->setAttributes($node);
+					$appendNode = $dom->createTextNode($this->getElementData());
+					$node->appendChild($appendNode);
+					break;
+				case 'errorvalue':
+
+				case 'labelvalue':
+
+				case 'legendvalue':
+
+				case 'mandatoryvalue':
+					$replaceNode = $dom->createTextNode($this->getAdditionalValue());
+					$node->parentNode->insertBefore($replaceNode, $node);
+					$deleteNode = TRUE;
+					break;
+				case 'mandatory':
+
+				case 'error':
+					if ($this->model->additionalIsSet($nodeName)) {
+						$this->replaceNodeWithFragment($dom, $node, $this->getAdditional($nodeName));
+					}
+					$deleteNode = TRUE;
+					break;
+				case 'content':
+
+				case 'header':
+
+				case 'textblock':
+					$replaceNode = $dom->createTextNode($this->getElementData(FALSE));
+					$node->parentNode->insertBefore($replaceNode, $node);
+					$deleteNode = TRUE;
+					break;
+				}
+				break;
+			}
+			// Parse the child nodes of this node if available
 			if ($node->hasChildNodes()) {
 				$this->parseXML($dom, $node);
 			}
-
-				// Get the current node for deletion if replaced. We need this because nextSibling can be empty
+			// Get the current node for deletion if replaced. We need this because nextSibling can be empty
 			$oldNode = $node;
-
-				// Go to next sibling to parse
+			// Go to next sibling to parse
 			$node = $node->nextSibling;
-
-				// Delete the old node. This can only be done after going to the next sibling
+			// Delete the old node. This can only be done after going to the next sibling
 			if ($deleteNode) {
 				$oldNode->parentNode->removeChild($oldNode);
 			}
@@ -220,14 +224,11 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	public function render($type = 'element', $returnFirstChild = TRUE) {
 		$useLayout = $this->getLayout((string) $type);
-
 		$dom = new DOMDocument('1.0', 'utf-8');
 		$dom->formatOutput = TRUE;
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->loadXML($useLayout);
-
 		$this->parseXML($dom, $dom);
-
 		if ($returnFirstChild) {
 			return $dom->firstChild;
 		} else {
@@ -244,34 +245,29 @@ abstract class tx_form_View_Form_Element_Abstract {
 	public function getLayout($type) {
 		/** @var $layoutHandler tx_form_System_Layout */
 		$layoutHandler = t3lib_div::makeInstance('tx_form_System_Layout');
-
-		switch($type) {
-			case 'element':
-				$layoutDefault = $this->layout;
-				$objectClass = get_class($this);
-				$type = tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE);
-
-				if (strstr($objectClass, '_Additional_')) {
-					$additionalModel = $this->model->getAdditionalObjectByKey($type);
-					$layoutOverride = $additionalModel->getLayout();
-				} else {
-					$layoutOverride = $this->model->getLayout();
-				}
-
-				$layout = $layoutHandler->getLayoutByObject($type, $layoutDefault, $layoutOverride);
-				break;
-			case 'elementWrap':
-				$layoutDefault = $this->elementWrap;
-				$elementWrap = $layoutHandler->getLayoutByObject($type, $layoutDefault, $layoutOverride);
-
-				$layout = str_replace('<element />', $this->getLayout('element'), $elementWrap);
-				break;
-			case 'containerWrap':
-				$layoutDefault = $this->containerWrap;
-				$layout = $layoutHandler->getLayoutByObject($type, $layoutDefault, $layoutOverride);
-				break;
+		switch ($type) {
+		case 'element':
+			$layoutDefault = $this->layout;
+			$objectClass = get_class($this);
+			$type = tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE);
+			if (strstr($objectClass, '_Additional_')) {
+				$additionalModel = $this->model->getAdditionalObjectByKey($type);
+				$layoutOverride = $additionalModel->getLayout();
+			} else {
+				$layoutOverride = $this->model->getLayout();
+			}
+			$layout = $layoutHandler->getLayoutByObject($type, $layoutDefault, $layoutOverride);
+			break;
+		case 'elementWrap':
+			$layoutDefault = $this->elementWrap;
+			$elementWrap = $layoutHandler->getLayoutByObject($type, $layoutDefault, $layoutOverride);
+			$layout = str_replace('<element />', $this->getLayout('element'), $elementWrap);
+			break;
+		case 'containerWrap':
+			$layoutDefault = $this->containerWrap;
+			$layout = $layoutHandler->getLayoutByObject($type, $layoutDefault, $layoutOverride);
+			break;
 		}
-
 		return $layout;
 	}
 
@@ -318,7 +314,6 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	public function setAttribute(DOMElement $domElement, $key) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $key), ENT_QUOTES);
-
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
 		}
@@ -335,7 +330,6 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	public function setAttributeWithValueofOtherAttribute(DOMElement $domElement, $key, $other) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $other), ENT_QUOTES);
-
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
 		}
@@ -350,7 +344,6 @@ abstract class tx_form_View_Form_Element_Abstract {
 	protected function createAdditional($class) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_View_Form_Additional_' . ucfirst($class);
-
 		return t3lib_div::makeInstance($className, $this->model);
 	}
 
@@ -375,11 +368,9 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	public function getElementData($encodeSpecialCharacters = TRUE) {
 		$elementData = $this->model->getData();
-
 		if ($encodeSpecialCharacters) {
 			$elementData = htmlspecialchars($elementData, ENT_QUOTES);
 		}
-
 		return $elementData;
 	}
 
@@ -390,9 +381,8 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @return string
 	 */
 	public function getElementWrapId() {
-		$elementId = (integer) $this->model->getElementId();
+		$elementId = (int) $this->model->getElementId();
 		$wrapId = 'csc-form-' . $elementId;
-
 		return $wrapId;
 	}
 
@@ -403,11 +393,8 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @return string
 	 */
 	public function getElementWrapType() {
-		$elementType = strtolower(
-			tx_form_Common::getInstance()->getLastPartOfClassName($this)
-		);
+		$elementType = strtolower(tx_form_Common::getInstance()->getLastPartOfClassName($this));
 		$wrapType = 'csc-form-element csc-form-element-' . $elementType;
-
 		return $wrapType;
 	}
 
@@ -419,9 +406,8 @@ abstract class tx_form_View_Form_Element_Abstract {
 	public function getElementWraps() {
 		$wraps = array(
 			$this->getElementWrapId(),
-			$this->getElementWrapType(),
+			$this->getElementWrapType()
 		);
-
 		return implode(' ', $wraps);
 	}
 
@@ -435,5 +421,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	public function noWrap() {
 		return $this->noWrap;
 	}
+
 }
+
 ?>

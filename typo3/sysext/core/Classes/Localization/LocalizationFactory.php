@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Provides a language parser factory.
  *
@@ -63,7 +62,6 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 	 */
 	protected function initialize() {
 		$this->store = t3lib_div::makeInstance('t3lib_l10n_Store');
-
 		$this->initializeCache();
 	}
 
@@ -88,61 +86,41 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 	 */
 	public function getParsedData($fileReference, $languageKey, $charset, $errorMode, $isLocalizationOverride = FALSE) {
 		try {
-			$hash = md5($fileReference . $languageKey . $charset);
+			$hash = md5(($fileReference . $languageKey) . $charset);
 			$this->errorMode = $errorMode;
-
-				// English is the default language
-			$languageKey = ($languageKey === 'en') ? 'default' : $languageKey;
-
-				// Check if the default language is processed before processing other language
+			// English is the default language
+			$languageKey = $languageKey === 'en' ? 'default' : $languageKey;
+			// Check if the default language is processed before processing other language
 			if (!$this->store->hasData($fileReference, 'default') && $languageKey !== 'default') {
 				$this->getParsedData($fileReference, 'default', $charset, $this->errorMode);
 			}
-
-				// If the content is parsed (local cache), use it
+			// If the content is parsed (local cache), use it
 			if ($this->store->hasData($fileReference, $languageKey)) {
 				return $this->store->getData($fileReference);
 			}
-
-				// If the content is in cache (system cache), use it
+			// If the content is in cache (system cache), use it
 			if ($this->cacheInstance->has($hash)) {
-					// Load data from the caching framework
+				// Load data from the caching framework
 				$this->store->setData($fileReference, $languageKey, $this->cacheInstance->get($hash));
-
 				return $this->store->getData($fileReference, $languageKey);
 			}
-
 			$this->store->setConfiguration($fileReference, $languageKey, $charset);
-
 			/** @var $parser t3lib_l10n_parser */
 			$parser = $this->store->getParserInstance($fileReference);
-
-				// Get parsed data
-			$LOCAL_LANG = $parser->getParsedData(
-				$this->store->getAbsoluteFileReference($fileReference),
-				$languageKey,
-				$charset
-			);
-
-				// Override localization
+			// Get parsed data
+			$LOCAL_LANG = $parser->getParsedData($this->store->getAbsoluteFileReference($fileReference), $languageKey, $charset);
+			// Override localization
 			if (!$isLocalizationOverride && isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['locallangXMLOverride'])) {
 				$this->localizationOverride($fileReference, $languageKey, $charset, $errorMode, $LOCAL_LANG);
 			}
-
-				// Save parsed data in cache
-			$this->store->setData(
-				$fileReference,
-				$languageKey,
-				$LOCAL_LANG[$languageKey]
-			);
-
-				// Cache processed data
+			// Save parsed data in cache
+			$this->store->setData($fileReference, $languageKey, $LOCAL_LANG[$languageKey]);
+			// Cache processed data
 			$this->cacheInstance->set($hash, $this->store->getDataByLanguage($fileReference, $languageKey));
 		} catch (t3lib_l10n_exception_FileNotFound $exception) {
-				// Source localization file not found
+			// Source localization file not found
 			$this->store->setData($fileReference, $languageKey, array());
 		}
-
 		return $this->store->getData($fileReference);
 	}
 
@@ -161,26 +139,22 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 	protected function localizationOverride($fileReference, $languageKey, $charset, $errorMode, array &$LOCAL_LANG) {
 		$overrides = array();
 		$fileReferenceWithoutExtension = $this->store->getFileReferenceWithoutExtension($fileReference);
-
 		$locallangXMLOverride = $GLOBALS['TYPO3_CONF_VARS']['SYS']['locallangXMLOverride'];
 		foreach ($this->store->getSupportedExtensions() as $extension) {
-			if (isset($locallangXMLOverride[$languageKey][$fileReferenceWithoutExtension . '.' . $extension]) && is_array($locallangXMLOverride[$languageKey][$fileReferenceWithoutExtension . '.' . $extension])) {
-				$overrides = array_merge($overrides, $locallangXMLOverride[$languageKey][$fileReferenceWithoutExtension . '.' . $extension]);
-			} elseif (isset($locallangXMLOverride[$fileReferenceWithoutExtension . '.' . $extension]) && is_array($locallangXMLOverride[$fileReferenceWithoutExtension . '.' . $extension])) {
-				$overrides = array_merge($overrides, $locallangXMLOverride[$fileReferenceWithoutExtension . '.' . $extension]);
+			if (isset($locallangXMLOverride[$languageKey][($fileReferenceWithoutExtension . '.') . $extension]) && is_array($locallangXMLOverride[$languageKey][($fileReferenceWithoutExtension . '.') . $extension])) {
+				$overrides = array_merge($overrides, $locallangXMLOverride[$languageKey][($fileReferenceWithoutExtension . '.') . $extension]);
+			} elseif (isset($locallangXMLOverride[($fileReferenceWithoutExtension . '.') . $extension]) && is_array($locallangXMLOverride[($fileReferenceWithoutExtension . '.') . $extension])) {
+				$overrides = array_merge($overrides, $locallangXMLOverride[($fileReferenceWithoutExtension . '.') . $extension]);
 			}
 		}
-
 		if (count($overrides) > 0) {
 			foreach ($overrides as $overrideFile) {
 				$languageOverrideFileName = t3lib_div::getFileAbsFileName($overrideFile);
-				$LOCAL_LANG = t3lib_div::array_merge_recursive_overrule(
-					$LOCAL_LANG,
-					$this->getParsedData($languageOverrideFileName, $languageKey, $charset, $errorMode, TRUE)
-				);
+				$LOCAL_LANG = t3lib_div::array_merge_recursive_overrule($LOCAL_LANG, $this->getParsedData($languageOverrideFileName, $languageKey, $charset, $errorMode, TRUE));
 			}
 		}
 	}
+
 }
 
 ?>

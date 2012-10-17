@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Context Menu
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_contextmenu_AbstractContextMenu {
+
 	/**
 	 * Data Provider
 	 *
@@ -62,6 +62,7 @@ abstract class t3lib_contextmenu_AbstractContextMenu {
 	 * @return array
 	 */
 	abstract public function getActionsForNode(t3lib_tree_Node $node);
+
 }
 
 ?>

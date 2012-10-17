@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for collection class being sortable
  *
@@ -38,8 +37,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Sortable {
-
+interface t3lib_collection_Sortable
+{
 	/**
 	 * Sorts collection via given callBackFunction
 	 *
@@ -63,6 +62,6 @@ interface t3lib_collection_Sortable {
 	 * @return void
 	 */
 	public function moveItemAt($currentPosition, $newPosition = 0);
-}
 
+}
 ?>

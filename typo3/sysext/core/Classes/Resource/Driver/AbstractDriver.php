@@ -24,15 +24,13 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * An abstract implementation of a storage driver.
  *
  * @author Ingmar Schlecht <ingmar.schlecht@typo3.org>
- * @author  Andreas Wolf <andreas.wolf@ikt-werk.de>
- * @package	TYPO3
- * @subpackage	t3lib
+ * @author Andreas Wolf <andreas.wolf@ikt-werk.de>
+ * @package 	TYPO3
+ * @subpackage 	t3lib
  */
 abstract class t3lib_file_Driver_AbstractDriver {
 
@@ -115,10 +113,9 @@ abstract class t3lib_file_Driver_AbstractDriver {
 		if (strpos($fileName, '/') !== FALSE) {
 			return FALSE;
 		}
-		if (!preg_match('/^[\pL\d[:blank:]._-]*$/u', $fileName)) {
+		if (!preg_match('/^[\\pL\\d[:blank:]._-]*$/u', $fileName)) {
 			return FALSE;
 		}
-
 		return TRUE;
 	}
 
@@ -141,7 +138,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * @param array $configuration
 	 * @return void
 	 */
-	abstract public static function verifyConfiguration(array $configuration);
+	static abstract public function verifyConfiguration(array $configuration);
 
 	/**
 	 * processes the configuration, should be overridden by subclasses
@@ -173,13 +170,12 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * @return array
 	 */
 	protected function getDirectoryItemList($path, $start, $numberOfItems, array $filterMethods, $itemHandlerMethod, $itemRows = array()) {
-		// This is not abstract because PHPUnit cannot mock abstract protected/private methods
+
 	}
 
 	/*******************
 	 * CAPABILITIES
 	 *******************/
-
 	/**
 	 * The capabilities of this driver. See Storage::CAPABILITY_* constants for possible values. This value should be set
 	 * in the constructor of derived classes.
@@ -205,14 +201,12 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * @return boolean
 	 */
 	public function hasCapability($capability) {
-		return ($this->capabilities & $capability == $capability);
+		return $this->capabilities & $capability == $capability;
 	}
-
 
 	/*******************
 	 * FILE FUNCTIONS
 	 *******************/
-
 	/**
 	 * Returns a temporary path for a given file, including the file extension.
 	 *
@@ -220,8 +214,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * @return string
 	 */
 	protected function getTemporaryPathForFile(t3lib_file_FileInterface $file) {
-		return t3lib_div::tempnam('fal-tempfile-') . '.' . $file->getExtension();
-		// @todo: we need to remove the temporary file again
+		return (t3lib_div::tempnam('fal-tempfile-') . '.') . $file->getExtension();
 	}
 
 	/**
@@ -250,7 +243,6 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * @param t3lib_file_FileInterface $file
 	 * @param string $hashAlgorithm The hash algorithm to use
 	 * @return string
-	 * TODO switch parameter order?
 	 */
 	abstract public function hash(t3lib_file_FileInterface $file, $hashAlgorithm);
 
@@ -402,13 +394,11 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 */
 	public function getFile($identifier) {
 		$fileObject = NULL;
-
 		if (!$this->fileExists($identifier)) {
 			throw new t3lib_file_exception_FileDoesNotExistException();
 		}
 		$fileInfo = $this->getFileInfoByIdentifier($identifier);
 		$fileObject = $this->getFileObject($fileInfo);
-
 		return $fileObject;
 	}
 
@@ -420,7 +410,6 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 */
 	protected function getFileObject(array $fileData) {
 		$fileObject = t3lib_file_Factory::getInstance()->createFileObject($fileData);
-
 		return $fileObject;
 	}
 
@@ -432,12 +421,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 */
 	public function getFolder($identifier) {
 		$name = $this->getNameFromIdentifier($identifier);
-
-		return t3lib_file_Factory::getInstance()->createFolderObject(
-			$this->storage,
-			$identifier,
-			$name
-		);
+		return t3lib_file_Factory::getInstance()->createFolderObject($this->storage, $identifier, $name);
 	}
 
 	/**
@@ -465,17 +449,15 @@ abstract class t3lib_file_Driver_AbstractDriver {
 		foreach ($filterMethods as $filter) {
 			if (is_array($filter)) {
 				$result = call_user_func($filter, $itemName, $itemIdentifier, $parentIdentifier, $additionalInformation, $this);
-
-					// We have to use -1 as the „don't include“ return value, as call_user_func() will return FALSE
-					// If calling the method succeeded and thus we can't use that as a return value.
+				// We have to use -1 as the „don't include“ return value, as call_user_func() will return FALSE
+				// If calling the method succeeded and thus we can't use that as a return value.
 				if ($result === -1) {
 					return FALSE;
 				} elseif ($result === FALSE) {
-					throw new RuntimeException('Could not apply file/folder name filter ' . $filter[0] . '::' . $filter[1]);
+					throw new RuntimeException((('Could not apply file/folder name filter ' . $filter[0]) . '::') . $filter[1]);
 				}
 			}
 		}
-
 		return TRUE;
 	}
 
@@ -596,7 +578,6 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	/*******************
 	 * FOLDER FUNCTIONS
 	 *******************/
-
 	/**
 	 * Returns the root level folder of the storage.
 	 *
@@ -683,6 +664,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * @return boolean TRUE if there are no files and folders within $folder
 	 */
 	abstract public function isFolderEmpty(t3lib_file_Folder $folder);
+
 }
 
 ?>

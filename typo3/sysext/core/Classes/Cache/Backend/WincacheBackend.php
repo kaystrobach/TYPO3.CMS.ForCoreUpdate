@@ -21,19 +21,18 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which stores cache entries by using wincache.
  *
  * This backend uses the following types of keys:
  * - tag_xxx
- *   xxx is tag name, value is array of associated identifiers identifier. This
- *   is "forward" tag index. It is mainly used for obtaining content by tag
- *   (get identifier by tag -> get content by identifier)
+ * xxx is tag name, value is array of associated identifiers identifier. This
+ * is "forward" tag index. It is mainly used for obtaining content by tag
+ * (get identifier by tag -> get content by identifier)
  * - ident_xxx
- *   xxx is identifier, value is array of associated tags. This is "reverse" tag
- *   index. It provides quick access for all tags associated with this identifier
- *   and used when removing the identifier
+ * xxx is identifier, value is array of associated tags. This is "reverse" tag
+ * index. It provides quick access for all tags associated with this identifier
+ * and used when removing the identifier
  *
  * Each key is prepended with a prefix. By default prefix consists from two parts
  * separated by underscore character and ends in yet another underscore character:
@@ -63,12 +62,8 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	public function __construct($options = array()) {
 		if (!extension_loaded('wincache')) {
-			throw new \t3lib_cache_Exception(
-				'The PHP extension "wincache" must be installed and loaded in order to use the wincache backend.',
-				1343331520
-			);
+			throw new \t3lib_cache_Exception('The PHP extension "wincache" must be installed and loaded in order to use the wincache backend.', 1343331520);
 		}
-
 		parent::__construct($options);
 	}
 
@@ -86,31 +81,19 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception(
-				'No cache frontend has been set yet via setCache().',
-				1343331521
-			);
+			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1343331521);
 		}
-
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(
-				'The specified data is of type "' . gettype($data) . '" but a string is expected.',
-				1343331522
-			);
+			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1343331522);
 		}
-
 		$tags[] = '%WCBE%' . $this->cache->getIdentifier();
 		$expiration = $lifetime !== NULL ? $lifetime : $this->defaultLifetime;
-
 		$success = wincache_ucache_set($this->identifierPrefix . $entryIdentifier, $data, $expiration);
 		if ($success === TRUE) {
 			$this->removeIdentifierFromAllTags($entryIdentifier);
 			$this->addIdentifierToTags($entryIdentifier, $tags);
 		} else {
-			throw new t3lib_cache_Exception(
-				'Could not set value.',
-				1343331523
-			);
+			throw new t3lib_cache_Exception('Could not set value.', 1343331523);
 		}
 	}
 
@@ -123,8 +106,7 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	public function get($entryIdentifier) {
 		$success = FALSE;
 		$value = wincache_ucache_get($this->identifierPrefix . $entryIdentifier, $success);
-
-		return ($success ? $value : $success);
+		return $success ? $value : $success;
 	}
 
 	/**
@@ -149,7 +131,6 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	public function remove($entryIdentifier) {
 		$this->removeIdentifierFromAllTags($entryIdentifier);
-
 		return wincache_ucache_delete($this->identifierPrefix . $entryIdentifier);
 	}
 
@@ -162,8 +143,7 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	public function findIdentifiersByTag($tag) {
 		$success = FALSE;
-		$identifiers = wincache_ucache_get($this->identifierPrefix . 'tag_' . $tag, $success);
-
+		$identifiers = wincache_ucache_get(($this->identifierPrefix . 'tag_') . $tag, $success);
 		if ($success === FALSE) {
 			return array();
 		} else {
@@ -180,9 +160,8 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	protected function findTagsByIdentifier($identifier) {
 		$success = FALSE;
-		$tags = wincache_ucache_get($this->identifierPrefix . 'ident_' . $identifier, $success);
-
-		return ($success ? (array)$tags : array());
+		$tags = wincache_ucache_get(($this->identifierPrefix . 'ident_') . $identifier, $success);
+		return $success ? (array) $tags : array();
 	}
 
 	/**
@@ -192,12 +171,8 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	public function flush() {
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new t3lib_cache_Exception(
-				'Yet no cache frontend has been set via setCache().',
-				1343331524
-			);
+			throw new t3lib_cache_Exception('Yet no cache frontend has been set via setCache().', 1343331524);
 		}
-
 		$this->flushByTag('%WCBE%' . $this->cache->getIdentifier());
 	}
 
@@ -210,7 +185,6 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	public function flushByTag($tag) {
 		$identifiers = $this->findIdentifiersByTag($tag);
-
 		foreach ($identifiers as $identifier) {
 			$this->remove($identifier);
 		}
@@ -237,18 +211,16 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 */
 	protected function addIdentifierToTags($entryIdentifier, array $tags) {
 		foreach ($tags as $tag) {
-				// Update tag-to-identifier index
+			// Update tag-to-identifier index
 			$identifiers = $this->findIdentifiersByTag($tag);
-
 			if (array_search($entryIdentifier, $identifiers) === FALSE) {
 				$identifiers[] = $entryIdentifier;
-				wincache_ucache_set($this->identifierPrefix . 'tag_' . $tag, $identifiers);
+				wincache_ucache_set(($this->identifierPrefix . 'tag_') . $tag, $identifiers);
 			}
-
-				// Update identifier-to-tag index
+			// Update identifier-to-tag index
 			$existingTags = $this->findTagsByIdentifier($entryIdentifier);
 			if (array_search($entryIdentifier, $existingTags) === FALSE) {
-				wincache_ucache_set($this->identifierPrefix . 'ident_' . $entryIdentifier, array_merge($existingTags, $tags));
+				wincache_ucache_set(($this->identifierPrefix . 'ident_') . $entryIdentifier, array_merge($existingTags, $tags));
 			}
 		}
 	}
@@ -260,27 +232,27 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 * @return void
 	 */
 	protected function removeIdentifierFromAllTags($entryIdentifier) {
-			// Get tags for this identifier
+		// Get tags for this identifier
 		$tags = $this->findTagsByIdentifier($entryIdentifier);
-			// Deassociate tags with this identifier
+		// Deassociate tags with this identifier
 		foreach ($tags as $tag) {
 			$identifiers = $this->findIdentifiersByTag($tag);
-				// Formally array_search() below should never return false due to
-				// the behavior of findTagsByIdentifier(). But if reverse index is
-				// corrupted, we still can get 'false' from array_search(). This is
-				// not a problem because we are removing this identifier from
-				// anywhere.
+			// Formally array_search() below should never return false due to
+			// the behavior of findTagsByIdentifier(). But if reverse index is
+			// corrupted, we still can get 'false' from array_search(). This is
+			// not a problem because we are removing this identifier from
+			// anywhere.
 			if (($key = array_search($entryIdentifier, $identifiers)) !== FALSE) {
 				unset($identifiers[$key]);
 				if (count($identifiers)) {
-					wincache_ucache_set($this->identifierPrefix . 'tag_' . $tag, $identifiers);
+					wincache_ucache_set(($this->identifierPrefix . 'tag_') . $tag, $identifiers);
 				} else {
-					wincache_ucache_delete($this->identifierPrefix . 'tag_' . $tag);
+					wincache_ucache_delete(($this->identifierPrefix . 'tag_') . $tag);
 				}
 			}
 		}
-			// Clear reverse tag index for this identifier
-		wincache_ucache_delete($this->identifierPrefix . 'ident_' . $entryIdentifier);
+		// Clear reverse tag index for this identifier
+		wincache_ucache_delete(($this->identifierPrefix . 'ident_') . $entryIdentifier);
 	}
 
 	/**
@@ -289,6 +261,9 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 * @return void
 	 */
 	public function collectGarbage() {
+
 	}
+
 }
+
 ?>

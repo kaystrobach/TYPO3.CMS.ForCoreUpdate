@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains COA class object.
  *
@@ -59,5 +58,7 @@ class tslib_content_ContentObjectArray extends tslib_content_Abstract {
 			$GLOBALS['TT']->setTSlogMessage('No elements in this content object array (COBJ_ARRAY, COA).', 2);
 		}
 	}
+
 }
+
 ?>

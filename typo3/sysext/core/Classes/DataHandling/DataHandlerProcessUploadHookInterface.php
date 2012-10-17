@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into TCEmain and do additional processing
  * after the upload of a file.
@@ -33,8 +32,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_TCEmain_processUploadHook {
-
+interface t3lib_TCEmain_processUploadHook
+{
 	/**
 	 * Post-process a file upload.
 	 *
@@ -45,5 +44,4 @@ interface t3lib_TCEmain_processUploadHook {
 	public function processUpload_postProcessAction(&$filename, t3lib_TCEmain $parentObject);
 
 }
-
 ?>

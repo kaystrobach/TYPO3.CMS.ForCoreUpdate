@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Context Menu Data Provider for the Page Tree
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_AbstractDataProvider {
+
 	/**
 	 * Old Context Menu Options (access mapping)
 	 *
@@ -43,7 +43,7 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 	protected $legacyContextMenuMapping = array(
 		'hide' => 'disable',
 		'paste' => 'pasteInto,pasteAfter',
-		'mount_as_treeroot' => 'mountAsTreeroot',
+		'mount_as_treeroot' => 'mountAsTreeroot'
 	);
 
 	/**
@@ -52,28 +52,22 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 	 * @return array
 	 */
 	protected function getDisableActions() {
-		$tsConfig = $GLOBALS['BE_USER']->getTSConfig(
-			'options.contextMenu.' . $this->getContextMenuType() . '.disableItems'
-		);
-
+		$tsConfig = $GLOBALS['BE_USER']->getTSConfig(('options.contextMenu.' . $this->getContextMenuType()) . '.disableItems');
 		$disableItems = array();
 		if (trim($tsConfig['value']) !== '') {
 			$disableItems = t3lib_div::trimExplode(',', $tsConfig['value']);
 		}
-
 		$tsConfig = $GLOBALS['BE_USER']->getTSConfig('options.contextMenu.pageTree.disableItems');
 		$oldDisableItems = array();
 		if (trim($tsConfig['value']) !== '') {
 			$oldDisableItems = t3lib_div::trimExplode(',', $tsConfig['value']);
 		}
-
 		$additionalItems = array();
 		foreach ($oldDisableItems as $item) {
 			if (!isset($this->legacyContextMenuMapping[$item])) {
 				$additionalItems[] = $item;
 				continue;
 			}
-
 			if (strpos($this->legacyContextMenuMapping[$item], ',')) {
 				$actions = t3lib_div::trimExplode(',', $this->legacyContextMenuMapping[$item]);
 				$additionalItems = array_merge($additionalItems, $actions);
@@ -81,7 +75,6 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 				$additionalItems[] = $item;
 			}
 		}
-
 		return array_merge($disableItems, $additionalItems);
 	}
 
@@ -98,9 +91,9 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 		if (is_array($configuration)) {
 			$contextMenuActions = $this->getNextContextMenuLevel($configuration, $node);
 		}
-
 		return $contextMenuActions;
 	}
+
 }
 
 ?>

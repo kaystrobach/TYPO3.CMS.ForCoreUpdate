@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Get workspace title from workspace id
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_WorkspaceTitleViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
 	/**
 	 * @var Tx_Belog_Domain_Repository_WorkspaceRepository
 	 */
@@ -55,23 +55,21 @@ class Tx_Belog_ViewHelpers_WorkspaceTitleViewHelper extends Tx_Fluid_Core_ViewHe
 	 */
 	public function render($uid) {
 		if ($uid === 0) {
-			return Tx_Extbase_Utility_Localization::translate(
-				'live', $this->controllerContext->getRequest()->getControllerExtensionName()
-			);
+			return Tx_Extbase_Utility_Localization::translate('live', $this->controllerContext->getRequest()->getControllerExtensionName());
 		}
 		if (!t3lib_extMgm::isLoaded('workspaces')) {
 			return '';
 		}
-
 		/** @var $workspace Tx_Belog_Domain_Model_Workspace */
 		$workspace = $this->workspaceRepository->findByUid($uid);
 		if ($workspace !== NULL) {
-			$title =  $workspace->getTitle();
+			$title = $workspace->getTitle();
 		} else {
 			$title = '';
 		}
-
 		return $title;
 	}
+
 }
+
 ?>

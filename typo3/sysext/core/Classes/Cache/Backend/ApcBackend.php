@@ -21,19 +21,18 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which stores cache entries by using APC.
  *
  * This backend uses the following types of keys:
  * - tag_xxx
- *   xxx is tag name, value is array of associated identifiers identifier. This
- *   is "forward" tag index. It is mainly used for obtaining content by tag
- *   (get identifier by tag -> get content by identifier)
+ * xxx is tag name, value is array of associated identifiers identifier. This
+ * is "forward" tag index. It is mainly used for obtaining content by tag
+ * (get identifier by tag -> get content by identifier)
  * - ident_xxx
- *   xxx is identifier, value is array of associated tags. This is "reverse" tag
- *   index. It provides quick access for all tags associated with this identifier
- *   and used when removing the identifier
+ * xxx is identifier, value is array of associated tags. This is "reverse" tag
+ * index. It provides quick access for all tags associated with this identifier
+ * and used when removing the identifier
  *
  * Each key is prepended with a prefix. By default prefix consists from two parts
  * separated by underscore character and ends in yet another underscore character:
@@ -56,6 +55,7 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 
 	/**
 	 * A prefix to seperate stored data from other data possible stored in the APC
+	 *
 	 * @var string
 	 */
 	protected $identifierPrefix;
@@ -69,12 +69,8 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	public function __construct($context, array $options = array()) {
 		if (!extension_loaded('apc')) {
-			throw new \t3lib_cache_Exception(
-				'The PHP extension "apc" must be installed and loaded in order to use the APC backend.',
-				1232985414
-			);
+			throw new \t3lib_cache_Exception('The PHP extension "apc" must be installed and loaded in order to use the APC backend.', 1232985414);
 		}
-
 		parent::__construct($context, $options);
 	}
 
@@ -87,7 +83,7 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	public function setCache(t3lib_cache_frontend_Frontend $cache) {
 		parent::setCache($cache);
 		$processUser = extension_loaded('posix') ? posix_getpwuid(posix_geteuid()) : array('name' => 'default');
-		$pathHash = t3lib_div::shortMD5(PATH_site . $processUser['name'] . $this->context, 12);
+		$pathHash = t3lib_div::shortMD5((PATH_site . $processUser['name']) . $this->context, 12);
 		$this->identifierPrefix = 'TYPO3_' . $pathHash;
 	}
 
@@ -105,31 +101,19 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception(
-				'No cache frontend has been set yet via setCache().',
-				1232986818
-			);
+			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1232986818);
 		}
-
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(
-				'The specified data is of type "' . gettype($data) . '" but a string is expected.',
-				1232986825
-			);
+			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1232986825);
 		}
-
 		$tags[] = '%APCBE%' . $this->cacheIdentifier;
 		$expiration = $lifetime !== NULL ? $lifetime : $this->defaultLifetime;
-
 		$success = apc_store($this->identifierPrefix . $entryIdentifier, $data, $expiration);
 		if ($success === TRUE) {
 			$this->removeIdentifierFromAllTags($entryIdentifier);
 			$this->addIdentifierToTags($entryIdentifier, $tags);
 		} else {
-			throw new \t3lib_cache_Exception(
-				'Could not set value.',
-				1232986877
-			);
+			throw new \t3lib_cache_Exception('Could not set value.', 1232986877);
 		}
 	}
 
@@ -143,8 +127,7 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	public function get($entryIdentifier) {
 		$success = FALSE;
 		$value = apc_fetch($this->identifierPrefix . $entryIdentifier, $success);
-
-		return ($success ? $value : $success);
+		return $success ? $value : $success;
 	}
 
 	/**
@@ -184,7 +167,7 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	public function findIdentifiersByTag($tag) {
 		$success = FALSE;
-		$identifiers = apc_fetch($this->identifierPrefix . 'tag_' . $tag, $success);
+		$identifiers = apc_fetch(($this->identifierPrefix . 'tag_') . $tag, $success);
 		if ($success === FALSE) {
 			return array();
 		} else {
@@ -201,8 +184,8 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	protected function findTagsByIdentifier($identifier) {
 		$success = FALSE;
-		$tags = apc_fetch($this->identifierPrefix . 'ident_' . $identifier, $success);
-		return ($success ? (array)$tags : array());
+		$tags = apc_fetch(($this->identifierPrefix . 'ident_') . $identifier, $success);
+		return $success ? (array) $tags : array();
 	}
 
 	/**
@@ -214,12 +197,8 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	public function flush() {
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception(
-				'Yet no cache frontend has been set via setCache().',
-				1232986971
-			);
+			throw new \t3lib_cache_Exception('Yet no cache frontend has been set via setCache().', 1232986971);
 		}
-
 		$this->flushByTag('%APCBE%' . $this->cacheIdentifier);
 	}
 
@@ -246,19 +225,17 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	protected function addIdentifierToTags($entryIdentifier, array $tags) {
 		foreach ($tags as $tag) {
-				// Update tag-to-identifier index
+			// Update tag-to-identifier index
 			$identifiers = $this->findIdentifiersByTag($tag);
 			if (array_search($entryIdentifier, $identifiers) === FALSE) {
 				$identifiers[] = $entryIdentifier;
-				apc_store($this->identifierPrefix . 'tag_' . $tag, $identifiers);
+				apc_store(($this->identifierPrefix . 'tag_') . $tag, $identifiers);
 			}
-
-				// Update identifier-to-tag index
+			// Update identifier-to-tag index
 			$existingTags = $this->findTagsByIdentifier($entryIdentifier);
 			if (array_search($entryIdentifier, $existingTags) === FALSE) {
-				apc_store($this->identifierPrefix . 'ident_' . $entryIdentifier, array_merge($existingTags, $tags));
+				apc_store(($this->identifierPrefix . 'ident_') . $entryIdentifier, array_merge($existingTags, $tags));
 			}
-
 		}
 	}
 
@@ -269,27 +246,27 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 * @return void
 	 */
 	protected function removeIdentifierFromAllTags($entryIdentifier) {
-			// Get tags for this identifier
+		// Get tags for this identifier
 		$tags = $this->findTagsByIdentifier($entryIdentifier);
-			// Deassociate tags with this identifier
+		// Deassociate tags with this identifier
 		foreach ($tags as $tag) {
 			$identifiers = $this->findIdentifiersByTag($tag);
-				// Formally array_search() below should never return FALSE due to
-				// the behavior of findTagsByIdentifier(). But if reverse index is
-				// corrupted, we still can get 'FALSE' from array_search(). This is
-				// not a problem because we are removing this identifier from
-				// anywhere.
+			// Formally array_search() below should never return FALSE due to
+			// the behavior of findTagsByIdentifier(). But if reverse index is
+			// corrupted, we still can get 'FALSE' from array_search(). This is
+			// not a problem because we are removing this identifier from
+			// anywhere.
 			if (($key = array_search($entryIdentifier, $identifiers)) !== FALSE) {
 				unset($identifiers[$key]);
 				if (count($identifiers)) {
-					apc_store($this->identifierPrefix . 'tag_' . $tag, $identifiers);
+					apc_store(($this->identifierPrefix . 'tag_') . $tag, $identifiers);
 				} else {
-					apc_delete($this->identifierPrefix . 'tag_' . $tag);
+					apc_delete(($this->identifierPrefix . 'tag_') . $tag);
 				}
 			}
 		}
-			// Clear reverse tag index for this identifier
-		apc_delete($this->identifierPrefix . 'ident_' . $entryIdentifier);
+		// Clear reverse tag index for this identifier
+		apc_delete(($this->identifierPrefix . 'ident_') . $entryIdentifier);
 	}
 
 	/**
@@ -300,5 +277,7 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	public function collectGarbage() {
 
 	}
+
 }
+
 ?>

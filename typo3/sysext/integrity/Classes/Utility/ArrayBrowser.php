@@ -32,7 +32,6 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * Class for displaying an array as a tree
  * See the extension 'lowlevel' /config (Backend module 'Tools > Configuration')
@@ -43,15 +42,55 @@
  * @see SC_mod_tools_config_index::main()
  */
 class t3lib_arrayBrowser {
-	var $expAll = FALSE; // If set, will expand all (depthKeys is obsolete then) (and no links are applied)
-	var $dontLinkVar = FALSE; // If set, the variable keys are not linked.
-	var $depthKeys = array(); // Array defining which keys to expand. Typically set from outside from some session variable - otherwise the array will collapse.
-	var $searchKeys = array(); // After calling the getSearchKeys function this array is populated with the key-positions in the array which contains values matching the search.
-	var $fixedLgd = 1; // If set, the values are truncated with "..." appended if longer than a certain length.
-	var $regexMode = 0; // If set, search for string with regex, otherwise stristr()
-	var $searchKeysToo = FALSE; // If set, array keys are subject to the search too.
-	var $varName = ''; // Set var name here if you want links to the variable name.
 
+	/**
+	 * @todo Define visibility
+	 */
+	public $expAll = FALSE;
+
+	// If set, will expand all (depthKeys is obsolete then) (and no links are applied)
+	/**
+	 * @todo Define visibility
+	 */
+	public $dontLinkVar = FALSE;
+
+	// If set, the variable keys are not linked.
+	/**
+	 * @todo Define visibility
+	 */
+	public $depthKeys = array();
+
+	// Array defining which keys to expand. Typically set from outside from some session variable - otherwise the array will collapse.
+	/**
+	 * @todo Define visibility
+	 */
+	public $searchKeys = array();
+
+	// After calling the getSearchKeys function this array is populated with the key-positions in the array which contains values matching the search.
+	/**
+	 * @todo Define visibility
+	 */
+	public $fixedLgd = 1;
+
+	// If set, the values are truncated with "..." appended if longer than a certain length.
+	/**
+	 * @todo Define visibility
+	 */
+	public $regexMode = 0;
+
+	// If set, search for string with regex, otherwise stristr()
+	/**
+	 * @todo Define visibility
+	 */
+	public $searchKeysToo = FALSE;
+
+	// If set, array keys are subject to the search too.
+	/**
+	 * @todo Define visibility
+	 */
+	public $varName = '';
+
+	// Set var name here if you want links to the variable name.
 	/**
 	 * Make browsable tree
 	 * Before calling this function you may want to set some of the internal vars like depthKeys, regexMode and fixedLgd.
@@ -62,65 +101,53 @@ class t3lib_arrayBrowser {
 	 * @param string $depthData Depth-data - basically a prefix for the icons. For calling this function from outside, let it stay blank.
 	 * @return string HTML for the tree
 	 * @see SC_mod_tools_config_index::main()
+	 * @todo Define visibility
 	 */
-	function tree($arr, $depth_in, $depthData) {
+	public function tree($arr, $depth_in, $depthData) {
 		$HTML = '';
 		$a = 0;
-
 		if ($depth_in) {
 			$depth_in = $depth_in . '.';
 		}
-
 		$c = count($arr);
 		foreach ($arr as $key => $value) {
 			$a++;
 			$depth = $depth_in . $key;
 			$goto = 'a' . substr(md5($depth), 0, 6);
 			if (is_object($arr[$key])) {
-				$arr[$key] = (array)$arr[$key];
+				$arr[$key] = (array) $arr[$key];
 			}
 			$isArray = is_array($arr[$key]);
-			$deeper = ($isArray && ($this->depthKeys[$depth] || $this->expAll));
+			$deeper = $isArray && ($this->depthKeys[$depth] || $this->expAll);
 			$PM = 'join';
-			$LN = ($a == $c) ? 'blank' : 'line';
-			$BTM = ($a == $c) ? 'bottom' : '';
+			$LN = $a == $c ? 'blank' : 'line';
+			$BTM = $a == $c ? 'bottom' : '';
 			$PM = $isArray ? ($deeper ? 'minus' : 'plus') : 'join';
-
 			$HTML .= $depthData;
-			$theIcon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/ol/' . $PM . $BTM . '.gif', 'width="18" height="16"') .
-				' align="top" border="0" alt="" />';
+			$theIcon = ('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" border="0" alt="" />';
 			if ($PM == 'join') {
 				$HTML .= $theIcon;
 			} else {
-				$HTML .=
-						($this->expAll ? '' : '<a id="' . $goto . '" href="' . htmlspecialchars(t3lib_BEfunc::getModuleUrl(t3lib_div::_GP('M')) . '&node[' .
-								$depth . ']=' . ($deeper ? 0 : 1) . '#' . $goto) . '">') .
-								$theIcon .
-								($this->expAll ? '' : '</a>');
+				$HTML .= (($this->expAll ? '' : ((('<a id="' . $goto) . '" href="') . htmlspecialchars(((((((t3lib_BEfunc::getModuleUrl(t3lib_div::_GP('M')) . '&node[') . $depth) . ']=') . ($deeper ? 0 : 1)) . '#') . $goto))) . '">') . $theIcon) . ($this->expAll ? '' : '</a>');
 			}
-
 			$label = $key;
 			$HTML .= $this->wrapArrayKey($label, $depth, !$isArray ? $arr[$key] : '');
-
 			if (!$isArray) {
 				$theValue = $arr[$key];
 				if ($this->fixedLgd) {
 					$imgBlocks = ceil(1 + strlen($depthData) / 77);
-					$lgdChars = 68 - ceil(strlen('[' . $key . ']') * 0.8) - $imgBlocks * 3;
+					$lgdChars = (68 - ceil(strlen((('[' . $key) . ']')) * 0.8)) - $imgBlocks * 3;
 					$theValue = $this->fixed_lgd($theValue, $lgdChars);
 				}
 				if ($this->searchKeys[$depth]) {
-					$HTML .= '=<span style="color:red;">' . $this->wrapValue($theValue, $depth) . '</span>';
+					$HTML .= ('=<span style="color:red;">' . $this->wrapValue($theValue, $depth)) . '</span>';
 				} else {
 					$HTML .= '=' . $this->wrapValue($theValue, $depth);
 				}
 			}
 			$HTML .= '<br />';
-
 			if ($deeper) {
-				$HTML .= $this->tree($arr[$key], $depth, $depthData . '<img' .
-					t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/ol/' . $LN . '.gif', 'width="18" height="16"') .
-					' align="top" alt="" />');
+				$HTML .= $this->tree($arr[$key], $depth, (($depthData . '<img') . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />');
 			}
 		}
 		return $HTML;
@@ -132,11 +159,12 @@ class t3lib_arrayBrowser {
 	 * @param string $theValue The title string
 	 * @param string $depth Depth path
 	 * @return string Title string, htmlspecialchars()'ed
+	 * @todo Define visibility
 	 */
-	function wrapValue($theValue, $depth) {
+	public function wrapValue($theValue, $depth) {
 		$wrappedValue = '';
 		if (strlen($theValue) > 0) {
-			$wrappedValue = '<strong>' . htmlspecialchars($theValue) . '</strong>';
+			$wrappedValue = ('<strong>' . htmlspecialchars($theValue)) . '</strong>';
 		}
 		return $wrappedValue;
 	}
@@ -148,21 +176,18 @@ class t3lib_arrayBrowser {
 	 * @param string $depth Depth path
 	 * @param string $theValue The value for the array entry.
 	 * @return string Title string, htmlspecialchars()'ed
+	 * @todo Define visibility
 	 */
-	function wrapArrayKey($label, $depth, $theValue) {
-
-			// Protect label:
+	public function wrapArrayKey($label, $depth, $theValue) {
+		// Protect label:
 		$label = htmlspecialchars($label);
-
-			// If varname is set:
+		// If varname is set:
 		if ($this->varName && !$this->dontLinkVar) {
-			$variableName = $this->varName . '[\'' . str_replace('.', '\'][\'', $depth) . '\'] = ' .
-				(!t3lib_utility_Math::canBeInterpretedAsInteger($theValue) ? '\'' . addslashes($theValue) . '\'' : $theValue) . '; ';
-			$label = '<a href="' . htmlspecialchars(t3lib_BEfunc::getModuleUrl(t3lib_div::_GP('M')) . '&varname=' . urlencode($variableName)) . '#varname">' . $label . '</a>';
+			$variableName = (((($this->varName . '[\'') . str_replace('.', '\'][\'', $depth)) . '\'] = ') . (!t3lib_utility_Math::canBeInterpretedAsInteger($theValue) ? ('\'' . addslashes($theValue)) . '\'' : $theValue)) . '; ';
+			$label = ((('<a href="' . htmlspecialchars(((t3lib_BEfunc::getModuleUrl(t3lib_div::_GP('M')) . '&varname=') . urlencode($variableName)))) . '#varname">') . $label) . '</a>';
 		}
-
-			// Return:
-		return '[' . $label . ']';
+		// Return:
+		return ('[' . $label) . ']';
 	}
 
 	/**
@@ -173,27 +198,25 @@ class t3lib_arrayBrowser {
 	 * @param string $searchString The string to search for
 	 * @param array $keyArray Key array, for first call pass empty array
 	 * @return array
+	 * @todo Define visibility
 	 */
-	function getSearchKeys($keyArr, $depth_in, $searchString, $keyArray) {
+	public function getSearchKeys($keyArr, $depth_in, $searchString, $keyArray) {
 		$c = count($keyArr);
 		if ($depth_in) {
 			$depth_in = $depth_in . '.';
 		}
-
 		foreach ($keyArr as $key => $value) {
 			$depth = $depth_in . $key;
 			$deeper = is_array($keyArr[$key]);
-
 			if ($this->regexMode) {
-				if (preg_match('/' . $searchString . '/', $keyArr[$key]) || ($this->searchKeysToo && preg_match('/' . $searchString . '/', $key))) {
+				if (preg_match(('/' . $searchString) . '/', $keyArr[$key]) || $this->searchKeysToo && preg_match(('/' . $searchString) . '/', $key)) {
 					$this->searchKeys[$depth] = 1;
 				}
 			} else {
-				if ((!$deeper && stristr($keyArr[$key], $searchString)) || ($this->searchKeysToo && stristr($key, $searchString))) {
+				if (!$deeper && stristr($keyArr[$key], $searchString) || $this->searchKeysToo && stristr($key, $searchString)) {
 					$this->searchKeys[$depth] = 1;
 				}
 			}
-
 			if ($deeper) {
 				$cS = count($this->searchKeys);
 				$keyArray = $this->getSearchKeys($keyArr[$key], $depth, $searchString, $keyArray);
@@ -211,11 +234,12 @@ class t3lib_arrayBrowser {
 	 * @param string $string String to process
 	 * @param integer $chars Max number of chars
 	 * @return string Processed string
+	 * @todo Define visibility
 	 */
-	function fixed_lgd($string, $chars) {
+	public function fixed_lgd($string, $chars) {
 		if ($chars >= 4) {
 			if (strlen($string) > $chars) {
-				return substr($string, 0, $chars - 3) . '...';
+				return substr($string, 0, ($chars - 3)) . '...';
 			}
 		}
 		return $string;
@@ -228,8 +252,9 @@ class t3lib_arrayBrowser {
 	 * @param array $settings Input depth_key array
 	 * @return array Output depth_key array with entries added/removed based on $arr
 	 * @see SC_mod_tools_config_index::main()
+	 * @todo Define visibility
 	 */
-	function depthKeys($arr, $settings) {
+	public function depthKeys($arr, $settings) {
 		$tsbrArray = array();
 		foreach ($arr as $theK => $theV) {
 			$theKeyParts = explode('.', $theK);
@@ -239,10 +264,10 @@ class t3lib_arrayBrowser {
 			foreach ($theKeyParts as $p) {
 				$a++;
 				$depth .= ($depth ? '.' : '') . $p;
-				$tsbrArray[$depth] = ($c == $a) ? $theV : 1;
+				$tsbrArray[$depth] = $c == $a ? $theV : 1;
 			}
 		}
-			// Modify settings
+		// Modify settings
 		foreach ($tsbrArray as $theK => $theV) {
 			if ($theV) {
 				$settings[$theK] = 1;
@@ -252,6 +277,7 @@ class t3lib_arrayBrowser {
 		}
 		return $settings;
 	}
+
 }
 
 ?>

@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into t3lib_TCEforms_inline.
  *
@@ -32,7 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tceformsInlineHook {
+interface t3lib_tceformsInlineHook
+{
 	/**
 	 * Initializes this hook object.
 	 *
@@ -66,6 +66,6 @@ interface t3lib_tceformsInlineHook {
 	 * @return void
 	 */
 	public function renderForeignRecordHeaderControl_postProcess($parentUid, $foreignTable, array $childRecord, array $childConfig, $isVirtual, array &$controlItems);
-}
 
+}
 ?>

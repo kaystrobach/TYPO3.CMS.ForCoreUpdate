@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Main controller for Forms.  All requests come through this class
  * and are routed to the model and view layers for processing.
@@ -67,16 +66,11 @@ class tx_form_Controller_Form {
 	 * @return void
 	 */
 	public function initialize(array $typoscript) {
-		t3lib_div::makeInstance(
-			'tx_form_System_Localization',
-			'LLL:EXT:form/Resources/Private/Language/locallang_controller.xml'
-		);
-
+		t3lib_div::makeInstance('tx_form_System_Localization', 'LLL:EXT:form/Resources/Private/Language/locallang_controller.xml');
 		$this->typoscriptFactory = t3lib_div::makeInstance('tx_form_Domain_Factory_Typoscript');
 		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
 		$this->requestHandler = $this->typoscriptFactory->setRequestHandler($typoscript);
 		$this->validate = $this->typoscriptFactory->setRules($typoscript);
-
 		$this->typoscript = $typoscript;
 	}
 
@@ -97,52 +91,31 @@ class tx_form_Controller_Form {
 	 * @param tslib_cObj $contentObject reference
 	 * @return string HTML output
 	 */
-	public function cObjGetSingleExt(
-		$typoScriptObjectName,
-		array $typoScript,
-		$typoScriptKey,
-		tslib_cObj $contentObject
-	) {
+	public function cObjGetSingleExt($typoScriptObjectName, array $typoScript, $typoScriptKey, tslib_cObj $contentObject) {
 		$content = '';
-
 		if ($typoScriptObjectName === 'FORM') {
 			if ($contentObject->data['CType'] === 'mailform') {
 				$bodytext = $contentObject->data['bodytext'];
-
 				/** @var $typoScriptParser t3lib_tsparser */
 				$typoScriptParser = t3lib_div::makeInstance('t3lib_tsparser');
 				$typoScriptParser->parse($bodytext);
-				$mergedTypoScript = t3lib_div::array_merge_recursive_overrule(
-					(array) $typoScriptParser->setup,
-					(array) $typoScript
-				);
-
+				$mergedTypoScript = t3lib_div::array_merge_recursive_overrule((array) $typoScriptParser->setup, (array) $typoScript);
 				// Disables content elements since TypoScript is handled that could contain insecure settings:
 				$mergedTypoScript[tx_form_Domain_Factory_Typoscript::PROPERTY_DisableContentElement] = TRUE;
 			}
-
 			$newTypoScript = array(
 				'10' => 'FORM_INT',
-				'10.' => $mergedTypoScript,
+				'10.' => $mergedTypoScript
 			);
-
 			$content = $contentObject->COBJ_ARRAY($newTypoScript, 'INT');
-
-				// Only apply stdWrap to TypoScript that was NOT created by the wizard:
+			// Only apply stdWrap to TypoScript that was NOT created by the wizard:
 			if (isset($typoScript['stdWrap.'])) {
-				$content = $contentObject->stdWrap(
-					$content,
-					$typoScript['stdWrap.']
-				);
+				$content = $contentObject->stdWrap($content, $typoScript['stdWrap.']);
 			}
-
-			// The FORM_INT object is basically created with the wizard and thus
-			// must not allow any stdWrap handling nor any custom TypoScript!
 		} elseif ($typoScriptObjectName === 'FORM_INT') {
 			$this->initialize($typoScript);
 			$content = $this->execute();
 		}
-
 		return $content;
 	}
 
@@ -152,19 +125,14 @@ class tx_form_Controller_Form {
 	 * @return string HTML Output
 	 */
 	public function execute() {
-			// Form
+		// Form
 		if ($this->showForm()) {
 			$content = $this->renderForm();
-
-			// Confirmation screen
 		} elseif ($this->showConfirmation()) {
 			$content = $this->renderConfirmation();
-
-			// We need the post processing
 		} else {
 			$content = $this->doPostProcessing();
 		}
-
 		return $content;
 	}
 
@@ -179,29 +147,10 @@ class tx_form_Controller_Form {
 	 */
 	protected function showForm() {
 		$show = FALSE;
-
 		$submittedByPrefix = $this->requestHandler->getByMethod();
-
-		if (
-				// Nothing has been submitted
-			$submittedByPrefix === NULL ||
-
-				// Submitted but not valid
-			(
-				!empty($submittedByPrefix) &&
-				!$this->validate->isValid()
-			) ||
-
-				// Submitted, valid, but not confirmed
-			(
-				!empty($submittedByPrefix) &&
-				$this->validate->isValid() &&
-				$this->requestHandler->getPost('confirmation-false', NULL) !== NULL
-			)
-		) {
+		if (($submittedByPrefix === NULL || !empty($submittedByPrefix) && !$this->validate->isValid()) || (!empty($submittedByPrefix) && $this->validate->isValid()) && $this->requestHandler->getPost('confirmation-false', NULL) !== NULL) {
 			$show = TRUE;
 		}
-
 		return $show;
 	}
 
@@ -212,12 +161,9 @@ class tx_form_Controller_Form {
 	 */
 	protected function renderForm() {
 		$this->requestHandler->destroySession();
-
 		$form = $this->typoscriptFactory->buildModelFromTyposcript($this->typoscript);
-
 		/** @var $view tx_form_View_Form */
 		$view = t3lib_div::makeInstance('tx_form_View_Form', $form);
-
 		return $view->get();
 	}
 
@@ -233,15 +179,9 @@ class tx_form_Controller_Form {
 	 */
 	protected function showConfirmation() {
 		$show = FALSE;
-
-		if (
-			isset($this->typoscript['confirmation']) &&
-			$this->typoscript['confirmation'] == 1 &&
-			$this->requestHandler->getPost('confirmation-true', NULL) === NULL
-		) {
+		if ((isset($this->typoscript['confirmation']) && $this->typoscript['confirmation'] == 1) && $this->requestHandler->getPost('confirmation-true', NULL) === NULL) {
 			$show = TRUE;
 		}
-
 		return $show;
 	}
 
@@ -254,21 +194,13 @@ class tx_form_Controller_Form {
 	 */
 	protected function renderConfirmation() {
 		$form = $this->typoscriptFactory->buildModelFromTyposcript($this->typoscript);
-
 		$this->requestHandler->storeSession();
-
 		$confirmationTyposcript = array();
 		if (isset($this->typoscript['confirmation.'])) {
 			$confirmationTyposcript = $this->typoscript['confirmation.'];
 		}
-
 		/** @var $view tx_form_View_Confirmation */
-		$view = t3lib_div::makeInstance(
-			'tx_form_View_Confirmation',
-			$form,
-			$confirmationTyposcript
-		);
-
+		$view = t3lib_div::makeInstance('tx_form_View_Confirmation', $form, $confirmationTyposcript);
 		return $view->get();
 	}
 
@@ -281,22 +213,17 @@ class tx_form_Controller_Form {
 	 */
 	protected function doPostProcessing() {
 		$form = $this->typoscriptFactory->buildModelFromTyposcript($this->typoscript);
-
 		$postProcessorTypoScript = array();
 		if (isset($this->typoscript['postProcessor.'])) {
 			$postProcessorTypoScript = $this->typoscript['postProcessor.'];
 		}
-
 		/** @var $postProcessor tx_form_System_Postprocessor */
-		$postProcessor = t3lib_div::makeInstance(
-			'tx_form_System_Postprocessor',
-			$form,
-			$postProcessorTypoScript
-		);
+		$postProcessor = t3lib_div::makeInstance('tx_form_System_Postprocessor', $form, $postProcessorTypoScript);
 		$content = $postProcessor->process();
 		$this->requestHandler->destroySession();
-
 		return $content;
 	}
+
 }
+
 ?>

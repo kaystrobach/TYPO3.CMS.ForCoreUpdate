@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains OTABLE class object.
  *
@@ -43,25 +42,18 @@ class tslib_content_OffsetTable extends tslib_content_Abstract {
 	public function render($conf = array()) {
 		/** @var $controlTable tslib_tableOffset */
 		$controlTable = t3lib_div::makeInstance('tslib_tableOffset');
-
-		$tableParams = isset($conf['tableParams.'])
-			? $this->cObj->stdWrap($conf['tableParams'], $conf['tableParams.'])
-			: $conf['tableParams'];
+		$tableParams = isset($conf['tableParams.']) ? $this->cObj->stdWrap($conf['tableParams'], $conf['tableParams.']) : $conf['tableParams'];
 		if ($tableParams) {
 			$controlTable->tableParams = $tableParams;
 		}
-
-		$offset = isset($conf['offset.'])
-			? $this->cObj->stdWrap($conf['offset'], $conf['offset.'])
-			: $conf['offset'];
-
+		$offset = isset($conf['offset.']) ? $this->cObj->stdWrap($conf['offset'], $conf['offset.']) : $conf['offset'];
 		$content = $controlTable->start($this->cObj->cObjGet($conf), $offset);
-
 		if (isset($conf['stdWrap.'])) {
 			$content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
 		}
-
 		return $content;
 	}
+
 }
+
 ?>

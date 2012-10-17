@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A helper class for handling PDO databases
  * Backport of FLOW3 class PdoHelper, last synced version: 3528
@@ -50,12 +49,10 @@ class t3lib_PdoHelper {
 	 */
 	static public function importSql(PDO $databaseHandle, $pdoDriver, $pathAndFilename) {
 		$sql = file($pathAndFilename, FILE_IGNORE_NEW_LINES & FILE_SKIP_EMPTY_LINES);
-
-			// Remove MySQL style key length delimiters (yuck!) if we are not setting up a MySQL db
+		// Remove MySQL style key length delimiters (yuck!) if we are not setting up a MySQL db
 		if ($pdoDriver !== 'mysql') {
-			$sql = preg_replace('/"\([0-9]+\)/', '"', $sql);
+			$sql = preg_replace('/"\\([0-9]+\\)/', '"', $sql);
 		}
-
 		$statement = '';
 		foreach ($sql as $line) {
 			$statement .= ' ' . trim($line);
@@ -65,6 +62,7 @@ class t3lib_PdoHelper {
 			}
 		}
 	}
+
 }
 
 ?>

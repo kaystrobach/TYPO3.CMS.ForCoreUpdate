@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A TS-Config parsing class which performs condition evaluation
  *
@@ -34,8 +33,9 @@
  * @subpackage t3lib
  */
 class t3lib_TSparser_TSconfig extends t3lib_TSparser {
+
 	/**
-	 * @var	array
+	 * @var 	array
 	 */
 	protected $rootLine = array();
 
@@ -53,20 +53,18 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 		$this->type = $type;
 		$this->id = $id;
 		$this->rootLine = $rootLine;
-		$hash = md5($type . ':' . $TStext);
+		$hash = md5(($type . ':') . $TStext);
 		$cachedContent = t3lib_BEfunc::getHash($hash, 0);
-
 		if ($cachedContent) {
 			$storedData = unserialize($cachedContent);
 			$storedMD5 = substr($cachedContent, -strlen($hash));
 			$storedData['match'] = array();
 			$storedData = $this->matching($storedData);
 			$checkMD5 = md5(serialize($storedData));
-
 			if ($checkMD5 == $storedMD5) {
 				$res = array(
 					'TSconfig' => $storedData['TSconfig'],
-					'cached' => 1,
+					'cached' => 1
 				);
 			} else {
 				$shash = md5($checkMD5 . $hash);
@@ -75,7 +73,7 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 					$storedData = unserialize($cachedSpec);
 					$res = array(
 						'TSconfig' => $storedData['TSconfig'],
-						'cached' => 1,
+						'cached' => 1
 					);
 				} else {
 					$storeData = $this->parseWithConditions($TStext);
@@ -83,7 +81,7 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 					t3lib_BEfunc::storeHash($shash, $serData, $type . '_TSconfig');
 					$res = array(
 						'TSconfig' => $storeData['TSconfig'],
-						'cached' => 0,
+						'cached' => 0
 					);
 				}
 			}
@@ -94,10 +92,9 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 			t3lib_BEfunc::storeHash($hash, $serData . $md5, $type . '_TSconfig');
 			$res = array(
 				'TSconfig' => $storeData['TSconfig'],
-				'cached' => 0,
+				'cached' => 0
 			);
 		}
-
 		return $res;
 	}
 
@@ -112,18 +109,14 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 		$matchObj = t3lib_div::makeInstance('t3lib_matchCondition_backend');
 		$matchObj->setRootline($this->rootLine);
 		$matchObj->setPageId($this->id);
-
 		$this->parse($TSconfig, $matchObj);
-
 		$storeData = array(
 			'TSconfig' => $this->setup,
 			'sections' => $this->sections,
-			'match' => $this->sectionsMatch,
+			'match' => $this->sectionsMatch
 		);
-
 		return $storeData;
 	}
-
 
 	/**
 	 * Is just going through an array of conditions to determine which are matching (for getting correct cache entry)
@@ -137,15 +130,15 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 			$matchObj = t3lib_div::makeInstance('t3lib_matchCondition_backend');
 			$matchObj->setRootline($this->rootLine);
 			$matchObj->setPageId($this->id);
-
 			foreach ($cc['sections'] as $key => $pre) {
 				if ($matchObj->match($pre)) {
 					$cc['match'][$key] = $pre;
 				}
 			}
 		}
-
 		return $cc;
 	}
+
 }
+
 ?>

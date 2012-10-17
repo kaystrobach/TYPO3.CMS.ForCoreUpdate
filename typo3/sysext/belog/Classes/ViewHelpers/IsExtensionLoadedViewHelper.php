@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Returns true, if a specific extension is loaded
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_IsExtensionLoadedViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
 	/**
 	 * Checks whether an extension is loaded.
 	 *
@@ -41,5 +41,7 @@ class Tx_Belog_ViewHelpers_IsExtensionLoadedViewHelper extends Tx_Fluid_Core_Vie
 	public function render($extensionKey) {
 		return t3lib_extMgm::isLoaded($extensionKey);
 	}
+
 }
+
 ?>

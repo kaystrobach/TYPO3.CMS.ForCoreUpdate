@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains USER_INT class object.
  *
@@ -43,13 +42,9 @@ class tslib_content_UserInternal extends tslib_content_Abstract {
 	public function render($conf = array()) {
 		$this->cObj->setUserObjectType(tslib_cObj::OBJECTTYPE_USER_INT);
 		$substKey = 'INT_SCRIPT.' . $GLOBALS['TSFE']->uniqueHash();
-		$content = '<!--' . $substKey . '-->';
-
-		$includeLibs = isset($conf['includeLibs.'])
-			? $this->cObj->stdWrap($conf['includeLibs'], $conf['includeLibs.'])
-			: $conf['includeLibs'];
-
-		$GLOBALS['TSFE']->config['INTincScript'][$substKey] = array (
+		$content = ('<!--' . $substKey) . '-->';
+		$includeLibs = isset($conf['includeLibs.']) ? $this->cObj->stdWrap($conf['includeLibs'], $conf['includeLibs.']) : $conf['includeLibs'];
+		$GLOBALS['TSFE']->config['INTincScript'][$substKey] = array(
 			'file' => $includeLibs,
 			'conf' => $conf,
 			'cObj' => serialize($this->cObj),
@@ -58,5 +53,7 @@ class tslib_content_UserInternal extends tslib_content_Abstract {
 		$this->cObj->setUserObjectType(FALSE);
 		return $content;
 	}
+
 }
+
 ?>

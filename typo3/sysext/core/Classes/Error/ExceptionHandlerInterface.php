@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contract for an exception handler
  *
@@ -31,8 +30,8 @@
  * @package TYPO3
  * @subpackage error
  */
-interface t3lib_error_ExceptionHandlerInterface {
-
+interface t3lib_error_ExceptionHandlerInterface
+{
 	/**
 	 * Constructs this exception handler - registers itself as the default exception handler.
 	 */
@@ -49,7 +48,7 @@ interface t3lib_error_ExceptionHandlerInterface {
 	/**
 	 * Formats and echoes the exception as XHTML.
 	 *
-	 * @param  Exception $exception The exception object
+	 * @param Exception $exception The exception object
 	 * @return void
 	 */
 	public function echoExceptionWeb(Exception $exception);
@@ -63,5 +62,4 @@ interface t3lib_error_ExceptionHandlerInterface {
 	public function echoExceptionCLI(Exception $exception);
 
 }
-
 ?>

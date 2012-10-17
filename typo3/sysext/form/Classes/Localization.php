@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to handle localizations
  *
@@ -55,12 +54,13 @@ class tx_form_System_Localization implements t3lib_Singleton {
 	 */
 	public function getLocalLanguageLabel($labelKey) {
 		if (TYPO3_MODE === 'FE') {
-			$output = $GLOBALS['TSFE']->sL($this->localLanguageFile . ':' . $labelKey);
+			$output = $GLOBALS['TSFE']->sL(($this->localLanguageFile . ':') . $labelKey);
 		} else {
-			$output = $GLOBALS['LANG']->sL($this->localLanguageFile . ':' . $labelKey);
+			$output = $GLOBALS['LANG']->sL(($this->localLanguageFile . ':') . $labelKey);
 		}
-
 		return $output;
 	}
+
 }
+
 ?>

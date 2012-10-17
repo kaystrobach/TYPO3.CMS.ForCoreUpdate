@@ -21,8 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log writer interface
  *
@@ -30,8 +28,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_log_writer_Writer {
-
+interface t3lib_log_writer_Writer
+{
 	/**
 	 * Writes the log record
 	 *
@@ -42,6 +40,4 @@ interface t3lib_log_writer_Writer {
 	public function writeLog(t3lib_log_Record $record);
 
 }
-
-
 ?>

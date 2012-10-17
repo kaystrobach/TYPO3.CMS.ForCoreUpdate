@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Alphanumeric rule
  *
@@ -46,7 +45,6 @@ class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstr
 	 */
 	public function __construct($arguments) {
 		$this->setAllowWhiteSpace($arguments['allowWhiteSpace']);
-
 		parent::__construct($arguments);
 	}
 
@@ -63,9 +61,7 @@ class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstr
 				$className = 'tx_form_System_Filter_Alphanumeric';
 				$this->filter = t3lib_div::makeInstance($className);
 			}
-
 			$this->filter->setAllowWhiteSpace($this->allowWhiteSpace);
-
 			if ($this->filter->filter($value) !== $value) {
 				return FALSE;
 			}
@@ -83,9 +79,8 @@ class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstr
 		if ($allowWhiteSpace === NULL) {
 			$this->allowWhiteSpace = FALSE;
 		} else {
-			$this->allowWhiteSpace = (boolean) $allowWhiteSpace;
+			$this->allowWhiteSpace = (bool) $allowWhiteSpace;
 		}
-
 		return $this;
 	}
 
@@ -99,13 +94,13 @@ class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstr
 	protected function getLocalLanguageLabel() {
 		$label = strtolower(get_class($this)) . '.message';
 		$messages[] = $this->localizationHandler->getLocalLanguageLabel($label);
-
 		if ($this->allowWhiteSpace) {
 			$messages[] = $this->localizationHandler->getLocalLanguageLabel($label . '2');
 		}
-
 		$message = implode(', ', $messages);
 		return $message;
 	}
+
 }
+
 ?>

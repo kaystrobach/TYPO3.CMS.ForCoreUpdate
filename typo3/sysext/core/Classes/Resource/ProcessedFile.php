@@ -24,8 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Representation of a specific processing of a file.
  *
@@ -38,20 +36,17 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	/*********************************************
 	 * FILE PROCESSING CONTEXTS
 	 *********************************************/
-
 	/**
 	 * Basic processing context to get a processed image with smaller
 	 * width/height to render a preview
 	 */
 	const CONTEXT_IMAGEPREVIEW = 'image.preview';
-
 	/**
 	 * Standard processing context for the frontend, that was previously
 	 * in tslib_cObj::getImgResource which only takes croping, masking and scaling
 	 * into account
 	 */
 	const CONTEXT_IMAGECROPSCALEMASK = 'image.cropscalemask';
-
 	/**
 	 * Processing context
 	 *
@@ -96,9 +91,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 
 	/*******************************
 	 * VARIOUS FILE PROPERTY GETTERS
-	 ************************
-
-	/**
+	 ************************/**
 	 * Returns the checksum that makes the processed configuration unique
 	 * also takes the mtime and the uid into account, to find out if the
 	 * process needs to be done again
@@ -106,19 +99,12 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	 * @return string
 	 */
 	public function calculateChecksum() {
-		return t3lib_div::shortMD5(
-			$this->originalFile->getUid()
-			. $this->originalFile->getModificationTime()	// take the modtime into account
-			. $this->context
-			. serialize($GLOBALS['TYPO3_CONF_VARS']['GFX'])	// make sure to take any IM changes into account
-			. serialize($this->processingConfiguration)
-		);
+		return t3lib_div::shortMD5(((($this->originalFile->getUid() . $this->originalFile->getModificationTime()) . $this->context) . serialize($GLOBALS['TYPO3_CONF_VARS']['GFX'])) . serialize($this->processingConfiguration));
 	}
 
 	/******************
 	 * CONTENTS RELATED
 	 ******************/
-
 	/**
 	 * Replace the current file contents with the given string
 	 *
@@ -132,7 +118,6 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	/****************************************
 	 * STORAGE AND MANAGEMENT RELATED METHDOS
 	 ****************************************/
-
 	/**
 	 * Returns TRUE if this file is indexed
 	 *
@@ -161,7 +146,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	 * @return void
 	 */
 	public function setProcessed($isProcessed) {
-		$this->processed = (boolean) $isProcessed;
+		$this->processed = (bool) $isProcessed;
 	}
 
 	/**
@@ -228,10 +213,11 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 
 	/**
 	 * basic array function for the DB update
+	 *
 	 * @return array
 	 */
 	public function toArray() {
-			// @todo: define what we need here
+		// @todo: define what we need here
 		return array(
 			'storage' => $this->getStorage()->getUid(),
 			'identifier' => $this->getIdentifier(),
@@ -245,6 +231,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 			'height' => $this->getProperty('height')
 		);
 	}
+
 }
 
 ?>

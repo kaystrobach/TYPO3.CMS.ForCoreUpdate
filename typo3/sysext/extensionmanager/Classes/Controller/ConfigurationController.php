@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Controller for configuration related actions.
  *
@@ -44,9 +42,7 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 	 * @param Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
 	 * @return void
 	 */
-	public function injectConfigurationItemRepository(
-		Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
-	) {
+	public function injectConfigurationItemRepository(Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository) {
 		$this->configurationItemRepository = $configurationItemRepository;
 	}
 
@@ -60,9 +56,7 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 		$extension = $this->request->getArgument('extension');
 		$extension = array_merge($extension, $GLOBALS['TYPO3_LOADED_EXT'][$extension['key']]);
 		$configuration = $this->configurationItemRepository->findByExtension($extension);
-		$this->view
-			->assign('configuration', $configuration)
-			->assign('extension', $extension);
+		$this->view->assign('configuration', $configuration)->assign('extension', $extension);
 	}
 
 	/**
@@ -78,14 +72,10 @@ class Tx_Extensionmanager_Controller_ConfigurationController extends Tx_Extensio
 		$configurationUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
 		$currentFullConfiguration = $configurationUtility->getCurrentConfiguration($extensionKey);
 		$newConfiguration = t3lib_div::array_merge_recursive_overrule($currentFullConfiguration, $config);
-
-		$configurationUtility->writeConfiguration(
-			$configurationUtility->convertValuedToNestedConfiguration($newConfiguration),
-			$extensionKey
-		);
+		$configurationUtility->writeConfiguration($configurationUtility->convertValuedToNestedConfiguration($newConfiguration), $extensionKey);
 		$this->redirect('showConfigurationForm', NULL, NULL, array('extension' => array('key' => $extensionKey)));
 	}
 
-
 }
+
 ?>

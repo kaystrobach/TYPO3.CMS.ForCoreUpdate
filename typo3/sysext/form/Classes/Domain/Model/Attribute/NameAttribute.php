@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'name'
  *
@@ -52,17 +51,13 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	 */
 	public function getValueWithoutPrefix() {
 		$value = (string) $this->value;
-
-			// Change spaces into hyphens
-		$value = preg_replace('/\s/', '-', $value);
-
-			// Remove non-word characters
-		$value = preg_replace('/[^a-zA-Z0-9_\-]+/', '', $value);
-
+		// Change spaces into hyphens
+		$value = preg_replace('/\\s/', '-', $value);
+		// Remove non-word characters
+		$value = preg_replace('/[^a-zA-Z0-9_\\-]+/', '', $value);
 		if (empty($value)) {
 			$value = $this->elementId;
 		}
-
 		return $value;
 	}
 
@@ -82,14 +77,12 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	 */
 	public function getValue() {
 		$value = $this->getValueWithoutPrefix();
-
 		if ($this->returnValueWithoutPrefix === FALSE) {
 			$requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
-			$attribute = $requestHandler->getPrefix() . '[' . $value . ']' . $this->addition;
+			$attribute = ((($requestHandler->getPrefix() . '[') . $value) . ']') . $this->addition;
 		} else {
 			$attribute = $value;
 		}
-
 		return $attribute;
 	}
 
@@ -102,7 +95,6 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	 */
 	public function setAddition($addition) {
 		$this->addition = (string) $addition;
-
 		return $this;
 	}
 
@@ -114,7 +106,9 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	 * @return void
 	 */
 	public function setReturnValueWithoutPrefix($parameter) {
-		$this->returnValueWithoutPrefix = (boolean) $parameter;
+		$this->returnValueWithoutPrefix = (bool) $parameter;
 	}
+
 }
+
 ?>

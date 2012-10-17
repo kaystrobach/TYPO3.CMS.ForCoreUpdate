@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * JSON element abstract
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_JSON_Element {
+
 	/**
 	 * The ExtJS xtype of the element
 	 *
@@ -69,21 +69,21 @@ class tx_form_Domain_Model_JSON_Element {
 	public function setParameters(array $parameters) {
 		foreach ($this->configuration as $key => $value) {
 			switch ($key) {
-				case 'attributes':
-					$this->setAttributes($parameters);
-					break;
-				case 'filters':
-					$this->setFilters($parameters);
-					break;
-				case 'label':
-					$this->setLabel($parameters);
-					break;
-				case 'layout':
-					$this->setLayout($parameters);
-					break;
-				case 'validation':
-					$this->setValidation($parameters);
-					break;
+			case 'attributes':
+				$this->setAttributes($parameters);
+				break;
+			case 'filters':
+				$this->setFilters($parameters);
+				break;
+			case 'label':
+				$this->setLabel($parameters);
+				break;
+			case 'layout':
+				$this->setLayout($parameters);
+				break;
+			case 'validation':
+				$this->setValidation($parameters);
+				break;
 			}
 		}
 	}
@@ -122,7 +122,6 @@ class tx_form_Domain_Model_JSON_Element {
 	protected function setFilters(array $parameters) {
 		if (isset($parameters['filters.']) && is_array($parameters['filters.'])) {
 			$filters = $parameters['filters.'];
-
 			foreach ($filters as $key => $filterName) {
 				if (intval($key) && !strstr($key, '.')) {
 					$filterConfiguration = array();
@@ -180,5 +179,7 @@ class tx_form_Domain_Model_JSON_Element {
 			$this->configuration['validation'] = new stdClass();
 		}
 	}
+
 }
+
 ?>

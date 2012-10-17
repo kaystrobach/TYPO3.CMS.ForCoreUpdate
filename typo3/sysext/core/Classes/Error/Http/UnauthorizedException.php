@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Exception for Error 401 - Unauthorized
  *
@@ -56,9 +55,9 @@ class t3lib_error_http_UnauthorizedException extends t3lib_error_http_AbstractCl
 		if (!empty($message)) {
 			$this->message = $message;
 		}
-
 		parent::__construct($this->statusHeaders, $this->message, $this->title, $code);
 	}
+
 }
 
 ?>

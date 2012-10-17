@@ -1,30 +1,30 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  (c) 2009-2011 Benjamin Mack (benni.typo3.org)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
+ *  (c) 2009-2011 Benjamin Mack (benni.typo3.org)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Gateway for TCE (TYPO3 Core Engine) file-handling through POST forms.
  * This script serves as the fileadministration part of the TYPO3 Core Engine.
@@ -49,23 +49,28 @@
  */
 class TYPO3_tcefile {
 
-		// Internal, static: GPvar:
-		// Array of file-operations.
+	// Internal, static: GPvar:
+	// Array of file-operations.
 	protected $file;
-		// Clipboard operations array
+
+	// Clipboard operations array
 	protected $CB;
-		// If existing files should be overridden.
+
+	// If existing files should be overridden.
 	protected $overwriteExistingFiles;
-		// VeriCode - a hash of server specific value and other things which
-		// identifies if a submission is OK. (see $GLOBALS['BE_USER']->veriCode())
+
+	// VeriCode - a hash of server specific value and other things which
+	// identifies if a submission is OK. (see $GLOBALS['BE_USER']->veriCode())
 	protected $vC;
-		// the page where the user should be redirected after everything is done
+
+	// the page where the user should be redirected after everything is done
 	protected $redirect;
 
-		// Internal, dynamic:
-		// File processor object
+	// Internal, dynamic:
+	// File processor object
 	protected $fileProcessor;
-		// the result array from the file processor
+
+	// the result array from the file processor
 	protected $fileData;
 
 	/**
@@ -74,13 +79,12 @@ class TYPO3_tcefile {
 	 * @return void
 	 */
 	public function init() {
-			// Set the GPvars from outside
+		// Set the GPvars from outside
 		$this->file = t3lib_div::_GP('file');
 		$this->CB = t3lib_div::_GP('CB');
 		$this->overwriteExistingFiles = t3lib_div::_GP('overwriteExistingFiles');
 		$this->vC = t3lib_div::_GP('vC');
 		$this->redirect = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('redirect'));
-
 		$this->initClipboard();
 	}
 
@@ -111,19 +115,15 @@ class TYPO3_tcefile {
 	 * @return void
 	 */
 	public function main() {
-			// Initializing:
+		// Initializing:
 		$this->fileProcessor = t3lib_div::makeInstance('t3lib_extFileFunctions');
 		$this->fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 		$this->fileProcessor->init_actionPerms($GLOBALS['BE_USER']->getFileoperationPermissions());
-		$this->fileProcessor->dontCheckForUnique = ($this->overwriteExistingFiles ? 1 : 0);
-
-			// Checking referrer / executing:
+		$this->fileProcessor->dontCheckForUnique = $this->overwriteExistingFiles ? 1 : 0;
+		// Checking referrer / executing:
 		$refInfo = parse_url(t3lib_div::getIndpEnv('HTTP_REFERER'));
 		$httpHost = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
-		if ($httpHost != $refInfo['host']
-			&& $this->vC != $GLOBALS['BE_USER']->veriCode()
-			&& !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']
-			&& $GLOBALS['CLIENT']['BROWSER'] != 'flash') {
+		if ((($httpHost != $refInfo['host'] && $this->vC != $GLOBALS['BE_USER']->veriCode()) && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']) && $GLOBALS['CLIENT']['BROWSER'] != 'flash') {
 			$this->fileProcessor->writeLog(0, 2, 1, 'Referrer host "%s" and server host "%s" did not match!', array($refInfo['host'], $httpHost));
 		} else {
 			$this->fileProcessor->start($this->file);
@@ -138,7 +138,7 @@ class TYPO3_tcefile {
 	 * @return void
 	 */
 	public function finish() {
-			// Prints errors, if there are any
+		// Prints errors, if there are any
 		$this->fileProcessor->printLogErrorMessages($this->redirect);
 		t3lib_BEfunc::setUpdateSignal('updateFolderTree');
 		if ($this->redirect) {
@@ -170,5 +170,7 @@ class TYPO3_tcefile {
 			$ajaxObj->setContentFormat('json');
 		}
 	}
+
 }
+
 ?>

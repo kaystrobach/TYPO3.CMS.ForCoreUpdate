@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Rendering of framesets
  *
@@ -40,30 +39,31 @@ class tslib_frameset {
 	 * @param array $setup The TypoScript properties of the PAGE object property "frameSet.". See link.
 	 * @return string A <frameset> tag.
 	 * @see TSpagegen::renderContentWithHeader()
+	 * @todo Define visibility
 	 */
-	function make($setup) {
+	public function make($setup) {
 		$content = '';
 		if (is_array($setup)) {
 			$sKeyArray = t3lib_TStemplate::sortedKeyList($setup);
 			foreach ($sKeyArray as $theKey) {
 				$theValue = $setup[$theKey];
-				if (intval($theKey) && $conf = $setup[$theKey . '.']) {
+				if (intval($theKey) && ($conf = $setup[$theKey . '.'])) {
 					switch ($theValue) {
-						case 'FRAME' :
-							$typeNum = intval($GLOBALS['TSFE']->tmpl->setup[$conf['obj'] . '.']['typeNum']);
-							if (!$conf['src'] && !$typeNum) {
-								$typeNum = -1;
-							}
-							$content .= '<frame' . $this->frameParams($conf, $typeNum) . ' />' . LF;
+					case 'FRAME':
+						$typeNum = intval($GLOBALS['TSFE']->tmpl->setup[$conf['obj'] . '.']['typeNum']);
+						if (!$conf['src'] && !$typeNum) {
+							$typeNum = -1;
+						}
+						$content .= (('<frame' . $this->frameParams($conf, $typeNum)) . ' />') . LF;
 						break;
-						case 'FRAMESET' :
-							$frameset = t3lib_div::makeInstance('tslib_frameset');
-							$content .= $frameset->make($conf) . LF;
+					case 'FRAMESET':
+						$frameset = t3lib_div::makeInstance('tslib_frameset');
+						$content .= $frameset->make($conf) . LF;
 						break;
 					}
 				}
 			}
-			return '<frameset' . $this->framesetParams($setup) . '>' . LF . $content . '</frameset>';
+			return (((('<frameset' . $this->framesetParams($setup)) . '>') . LF) . $content) . '</frameset>';
 		}
 	}
 
@@ -76,34 +76,26 @@ class tslib_frameset {
 	 * @access private
 	 * @link http://typo3.org/documentation/document-library/references/doc_core_tsref/current/view/7/9/
 	 * @see make(), t3lib_TStemplate::linkData()
+	 * @todo Define visibility
 	 */
-	function frameParams($setup, $typeNum) {
+	public function frameParams($setup, $typeNum) {
 		$paramStr = '';
 		$name = $setup['obj'];
-
 		if ($setup['src'] || $setup['src.']) {
 			$src = $setup['src'];
 			if (is_array($setup['src.'])) {
 				$src = $GLOBALS['TSFE']->cObj->stdWrap($src, $setup['src.']);
 			}
-			$paramStr .= ' src="' . htmlspecialchars($src) . '"';
+			$paramStr .= (' src="' . htmlspecialchars($src)) . '"';
 		} else {
-			$LD = $GLOBALS['TSFE']->tmpl->linkData(
-				$GLOBALS['TSFE']->page,
-				'',
-				$GLOBALS['TSFE']->no_cache,
-				'',
-				'',
-				($setup['options'] ? '&' . $setup['options'] : '') .
-					$GLOBALS['TSFE']->cObj->getClosestMPvalueForPage($GLOBALS['TSFE']->page['uid']), intval($typeNum)
-			);
+			$LD = $GLOBALS['TSFE']->tmpl->linkData($GLOBALS['TSFE']->page, '', $GLOBALS['TSFE']->no_cache, '', '', ($setup['options'] ? '&' . $setup['options'] : '') . $GLOBALS['TSFE']->cObj->getClosestMPvalueForPage($GLOBALS['TSFE']->page['uid']), intval($typeNum));
 			$finalURL = $LD['totalURL'];
-			$paramStr .= ' src="' . htmlspecialchars($finalURL) . '"';
+			$paramStr .= (' src="' . htmlspecialchars($finalURL)) . '"';
 		}
 		if ($setup['name']) {
-			$paramStr .= ' name="' . $setup['name'] . '"';
+			$paramStr .= (' name="' . $setup['name']) . '"';
 		} else {
-			$paramStr .= ' name="' . $name . '"';
+			$paramStr .= (' name="' . $name) . '"';
 		}
 		if ($setup['params']) {
 			$paramStr .= ' ' . $setup['params'];
@@ -118,19 +110,22 @@ class tslib_frameset {
 	 * @return string Attributes with preceeding space.
 	 * @access private
 	 * @see make()
+	 * @todo Define visibility
 	 */
-	function framesetParams($setup) {
+	public function framesetParams($setup) {
 		$paramStr = '';
 		if ($setup['cols']) {
-			$paramStr .= ' cols="' . $setup['cols'] . '"';
+			$paramStr .= (' cols="' . $setup['cols']) . '"';
 		}
 		if ($setup['rows']) {
-			$paramStr .= ' rows="' . $setup['rows'] . '"';
+			$paramStr .= (' rows="' . $setup['rows']) . '"';
 		}
 		if ($setup['params']) {
 			$paramStr .= ' ' . $setup['params'];
 		}
 		return $paramStr;
 	}
+
 }
+
 ?>

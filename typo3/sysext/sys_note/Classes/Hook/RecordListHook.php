@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Hook for the list module
  *
@@ -40,10 +39,10 @@ class Tx_SysNote_Hooks_RecordList {
 	 */
 	public function render(array $params = array(), SC_db_list $parentObject) {
 		$renderer = t3lib_div::makeInstance('Tx_SysNote_SysNote');
-
 		$sysNotes = $renderer->renderByPid($parentObject->id);
 		return $sysNotes;
 	}
+
 }
 
 ?>

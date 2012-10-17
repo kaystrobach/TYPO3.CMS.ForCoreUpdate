@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * HTTP Server Error Exception (Error 5xx)
  *
@@ -30,6 +29,7 @@
  * @subpackage error
  */
 abstract class t3lib_error_http_AbstractServerErrorException extends t3lib_error_http_StatusException {
+
 
 }
 

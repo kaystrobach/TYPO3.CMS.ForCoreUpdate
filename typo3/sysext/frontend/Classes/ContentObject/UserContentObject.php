@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains USER class object.
  *
@@ -45,10 +44,9 @@ class tslib_content_User extends tslib_content_Abstract {
 			$GLOBALS['TT']->setTSlogMessage('USER_INT without configuration.', 2);
 			return '';
 		}
-
 		$content = '';
 		if ($this->cObj->getUserObjectType() === FALSE) {
-				// Come here only if we are not called from $TSFE->INTincScript_process()!
+			// Come here only if we are not called from $TSFE->INTincScript_process()!
 			$this->cObj->setUserObjectType(tslib_cObj::OBJECTTYPE_USER);
 		}
 		$this->cObj->includeLibs($conf);
@@ -65,5 +63,7 @@ class tslib_content_User extends tslib_content_Abstract {
 		$this->cObj->setUserObjectType(FALSE);
 		return $content;
 	}
+
 }
+
 ?>

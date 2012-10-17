@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Kai Vogel <kai.vogel@speedprogs.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Kai Vogel <kai.vogel@speedprogs.de>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Additional BE fields for recycler garbage collection task.
  *
@@ -41,7 +40,6 @@ class tx_scheduler_RecyclerGarbageCollection_AdditionalFieldProvider implements 
 	 */
 	protected $defaultNumberOfDays = 30;
 
-
 	/**
 	 * Add an integer input field for difference between scheduler run time
 	 * and file modification time in days to select from
@@ -52,29 +50,25 @@ class tx_scheduler_RecyclerGarbageCollection_AdditionalFieldProvider implements 
 	 * @return array Array containing all the information pertaining to the additional fields
 	 */
 	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
-			// Initialize selected fields
+		// Initialize selected fields
 		if (!isset($taskInfo['scheduler_recyclerGarbageCollection_numberOfDays'])) {
 			$taskInfo['scheduler_recyclerGarbageCollection_numberOfDays'] = $this->defaultNumberOfDays;
 			if ($parentObject->CMD === 'edit') {
 				$taskInfo['scheduler_recyclerGarbageCollection_numberOfDays'] = $task->numberOfDays;
 			}
 		}
-
-		$fieldName    = 'tx_scheduler[scheduler_recyclerGarbageCollection_numberOfDays]';
-		$fieldId      = 'task_recyclerGarbageCollection_numberOfDays';
-		$fieldValue   = intval($taskInfo['scheduler_recyclerGarbageCollection_numberOfDays']);
-		$fieldHtml    = '<input type="text" name="' . $fieldName . '" id="' . $fieldId . '" value="' . htmlspecialchars($fieldValue) . '" />';
-
+		$fieldName = 'tx_scheduler[scheduler_recyclerGarbageCollection_numberOfDays]';
+		$fieldId = 'task_recyclerGarbageCollection_numberOfDays';
+		$fieldValue = intval($taskInfo['scheduler_recyclerGarbageCollection_numberOfDays']);
+		$fieldHtml = ((((('<input type="text" name="' . $fieldName) . '" id="') . $fieldId) . '" value="') . htmlspecialchars($fieldValue)) . '" />';
 		$additionalFields[$fieldId] = array(
-			'code'     => $fieldHtml,
-			'label'    => 'LLL:EXT:scheduler/mod1/locallang.xml:label.recyclerGarbageCollection.numberOfDays',
-			'cshKey'   => '_MOD_tools_txschedulerM1',
-			'cshLabel' => $fieldId,
+			'code' => $fieldHtml,
+			'label' => 'LLL:EXT:scheduler/mod1/locallang.xml:label.recyclerGarbageCollection.numberOfDays',
+			'cshKey' => '_MOD_tools_txschedulerM1',
+			'cshLabel' => $fieldId
 		);
-
 		return $additionalFields;
 	}
-
 
 	/**
 	 * Checks if the given value is an integer
@@ -85,16 +79,14 @@ class tx_scheduler_RecyclerGarbageCollection_AdditionalFieldProvider implements 
 	 */
 	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $parentObject) {
 		$result = TRUE;
-			// Check if number of days is indeed a number and greater or equals to 0
-			// If not, fail validation and issue error message
-		if (!is_numeric($submittedData['scheduler_recyclerGarbageCollection_numberOfDays']) ||
-			intval($submittedData['scheduler_recyclerGarbageCollection_numberOfDays']) < 0) {
+		// Check if number of days is indeed a number and greater or equals to 0
+		// If not, fail validation and issue error message
+		if (!is_numeric($submittedData['scheduler_recyclerGarbageCollection_numberOfDays']) || intval($submittedData['scheduler_recyclerGarbageCollection_numberOfDays']) < 0) {
 			$result = FALSE;
 			$parentObject->addMessage($GLOBALS['LANG']->sL('LLL:EXT:scheduler/mod1/locallang.xml:msg.invalidNumberOfDays'), t3lib_FlashMessage::ERROR);
 		}
 		return $result;
 	}
-
 
 	/**
 	 * Saves given integer value in task object
@@ -106,5 +98,7 @@ class tx_scheduler_RecyclerGarbageCollection_AdditionalFieldProvider implements 
 	public function saveAdditionalFields(array $submittedData, tx_scheduler_Task $task) {
 		$task->numberOfDays = intval($submittedData['scheduler_recyclerGarbageCollection_numberOfDays']);
 	}
+
 }
+
 ?>

@@ -42,15 +42,14 @@ final class t3lib_utility_Math {
 	 * @param integer $defaultValue Default value if input is FALSE.
 	 * @return integer The input value forced into the boundaries of $min and $max
 	 */
-	public static function forceIntegerInRange($theInt, $min, $max = 2000000000, $defaultValue = 0) {
-			// Returns $theInt as an integer in the integerspace from $min to $max
+	static public function forceIntegerInRange($theInt, $min, $max = 2000000000, $defaultValue = 0) {
+		// Returns $theInt as an integer in the integerspace from $min to $max
 		$theInt = intval($theInt);
-			// If the input value is zero after being converted to integer,
-			// defaultValue may set another default value for it.
+		// If the input value is zero after being converted to integer,
+		// defaultValue may set another default value for it.
 		if ($defaultValue && !$theInt) {
 			$theInt = $defaultValue;
 		}
-
 		if ($theInt < $min) {
 			$theInt = $min;
 		}
@@ -66,7 +65,7 @@ final class t3lib_utility_Math {
 	 * @param integer $theInt Integer string to process
 	 * @return integer
 	 */
-	public static function convertToPositiveInteger($theInt) {
+	static public function convertToPositiveInteger($theInt) {
 		$theInt = intval($theInt);
 		if ($theInt < 0) {
 			$theInt = 0;
@@ -78,13 +77,13 @@ final class t3lib_utility_Math {
 	 * Tests if the input can be interpreted as integer.
 	 *
 	 * Note: Integer casting from objects or arrays is considered undefined and thus will return false.
-	 * @see http://php.net/manual/en/language.types.integer.php#language.types.integer.casting.from-other
 	 *
+	 * @see http://php.net/manual/en/language.types.integer.php#language.types.integer.casting.from-other
 	 * @param mixed $var Any input variable to test
 	 * @return boolean Returns TRUE if string is an integer
 	 */
-	public static function canBeInterpretedAsInteger($var) {
-		if ($var === '' || is_object($var) || is_array($var)) {
+	static public function canBeInterpretedAsInteger($var) {
+		if (($var === '' || is_object($var)) || is_array($var)) {
 			return FALSE;
 		}
 		return (string) intval($var) === (string) $var;
@@ -93,34 +92,32 @@ final class t3lib_utility_Math {
 	/**
 	 * Calculates the input by +,-,*,/,%,^ with priority to + and -
 	 *
-	 * @param string $string Input string, eg "123 + 456 / 789 - 4"
+	 * @param string $string Input string, eg "123 + 456 / 789 - 4
 	 * @return integer Calculated value. Or error string.
 	 * @see t3lib_utility_Math::calculateWithParentheses()
 	 */
-	public static function calculateWithPriorityToAdditionAndSubtraction($string) {
-			// Removing all whitespace
+	static public function calculateWithPriorityToAdditionAndSubtraction($string) {
+		// Removing all whitespace
 		$string = preg_replace('/[[:space:]]*/', '', $string);
-			// Ensuring an operator for the first entrance
+		// Ensuring an operator for the first entrance
 		$string = '+' . $string;
-		$qm = '\*\/\+-^%';
-		$regex = '([' . $qm . '])([' . $qm . ']?[0-9\.]*)';
-			// Split the expression here:
+		$qm = '\\*\\/\\+-^%';
+		$regex = ((('([' . $qm) . '])([') . $qm) . ']?[0-9\\.]*)';
+		// Split the expression here:
 		$reg = array();
-		preg_match_all('/' . $regex . '/', $string, $reg);
-
+		preg_match_all(('/' . $regex) . '/', $string, $reg);
 		reset($reg[2]);
 		$number = 0;
 		$Msign = '+';
 		$err = '';
 		$buffer = doubleval(current($reg[2]));
-			// Advance pointer
+		// Advance pointer
 		next($reg[2]);
-
 		while (list($k, $v) = each($reg[2])) {
 			$v = doubleval($v);
 			$sign = $reg[1][$k];
 			if ($sign == '+' || $sign == '-') {
-				$Msign == '-' ? $number -= $buffer : $number += $buffer;
+				$Msign == '-' ? ($number -= $buffer) : ($number += $buffer);
 				$Msign = $sign;
 				$buffer = $v;
 			} else {
@@ -146,30 +143,30 @@ final class t3lib_utility_Math {
 				}
 			}
 		}
-		$number = $Msign == '-' ? $number -= $buffer : $number += $buffer;
+		$number = $Msign == '-' ? ($number -= $buffer) : ($number += $buffer);
 		return $err ? 'ERROR: ' . $err : $number;
 	}
 
 	/**
 	 * Calculates the input with parenthesis levels
 	 *
-	 * @param string $string Input string, eg "(123 + 456) / 789 - 4"
+	 * @param string $string Input string, eg "(123 + 456) / 789 - 4
 	 * @return integer Calculated value. Or error string.
 	 * @see calculateWithPriorityToAdditionAndSubtraction(), tslib_cObj::stdWrap()
 	 */
-	public static function calculateWithParentheses($string) {
+	static public function calculateWithParentheses($string) {
 		$securC = 100;
 		do {
 			$valueLenO = strcspn($string, '(');
 			$valueLenC = strcspn($string, ')');
 			if ($valueLenC == strlen($string) || $valueLenC < $valueLenO) {
 				$value = self::calculateWithPriorityToAdditionAndSubtraction(substr($string, 0, $valueLenC));
-				$string = $value . substr($string, $valueLenC + 1);
+				$string = $value . substr($string, ($valueLenC + 1));
 				return $string;
 			} else {
-				$string = substr($string, 0, $valueLenO) . self::calculateWithParentheses(substr($string, $valueLenO + 1));
+				$string = substr($string, 0, $valueLenO) . self::calculateWithParentheses(substr($string, ($valueLenO + 1)));
 			}
-				// Security:
+			// Security:
 			$securC--;
 			if ($securC <= 0) {
 				break;
@@ -186,17 +183,17 @@ final class t3lib_utility_Math {
 	 * @param integer $maximum Upper boundary of the range
 	 * @return boolean
 	 */
-	public static function isIntegerInRange($value, $minimum, $maximum) {
+	static public function isIntegerInRange($value, $minimum, $maximum) {
 		$value = filter_var($value, FILTER_VALIDATE_INT, array(
 			'options' => array(
 				'min_range' => $minimum,
 				'max_range' => $maximum
 			)
 		));
-
 		$isInRange = is_int($value);
 		return $isInRange;
 	}
+
 }
 
 ?>

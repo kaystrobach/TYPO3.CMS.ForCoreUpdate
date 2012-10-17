@@ -24,13 +24,13 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains FILES content object
  *
  * @author Ingmar Schlecht <ingmar@typo3.org>
  */
 class tslib_content_Files extends tslib_content_Abstract {
+
 	/**
 	 * Rendering the cObject FILES
 	 *
@@ -40,62 +40,46 @@ class tslib_content_Files extends tslib_content_Abstract {
 	public function render($conf = array()) {
 		/** @var t3lib_file_Repository_FileRepository $fileRepository */
 		$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
-
 		$fileObjects = array();
-
-			// Getting the files
+		// Getting the files
 		if ($conf['references'] || $conf['references.']) {
 			/*
-			The TypoScript could look like this:
-
-			# all items related to the page.media field:
+			The TypoScript could look like this:# all items related to the page.media field:
 			references {
-				table = pages
-				uid.data = page:uid
-				fieldName = media
-			}
-
-			# or: sys_file_references with uid 27:
+			table = pages
+			uid.data = page:uid
+			fieldName = media
+			}# or: sys_file_references with uid 27:
 			references = 27
-			*/
-
+			 */
 			$referencesUid = $this->stdWrapValue('references', $conf);
 			if ($referencesUid) {
 				$this->addToArray($fileRepository->findFileReferenceByUid($referencesUid), $fileObjects);
 			}
-
-				// It's important that this always stays "fieldName" and not be renamed to "field" as it would otherwise collide with the stdWrap key of that name
+			// It's important that this always stays "fieldName" and not be renamed to "field" as it would otherwise collide with the stdWrap key of that name
 			$referencesFieldName = $this->stdWrapValue('fieldName', $conf['references.']);
 			if ($referencesFieldName) {
 				$referencesForeignTable = $this->stdWrapValue('table', $conf['references.'], $this->cObj->getCurrentTable());
 				$referencesForeignUid = $this->stdWrapValue('uid', $conf['references.'], $this->cObj->data['uid']);
-
 				$this->addToArray($fileRepository->findByRelation($referencesForeignTable, $referencesFieldName, $referencesForeignUid), $fileObjects);
 			}
 		}
-
 		if ($conf['files'] || $conf['files.']) {
 			/*
 			The TypoScript could look like this:
 			# with sys_file UIDs:
-			files = 12,14,15
-
-			# using stdWrap:
+			files = 12,14,15# using stdWrap:
 			files.field = some_field
-			*/
-
+			 */
 			$fileUids = t3lib_div::trimExplode(',', $this->stdWrapValue('files', $conf), TRUE);
 			foreach ($fileUids as $fileUid) {
 				$this->addToArray($fileRepository->findByUid($fileUid), $fileObjects);
 			}
 		}
-
 		if ($conf['collections'] || $conf['collections.']) {
 			$collectionUids = t3lib_div::trimExplode(',', $this->stdWrapValue('collections', $conf), TRUE);
-
 			/** @var t3lib_file_Repository_FileCollectionRepository $collectionRepository */
 			$collectionRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileCollectionRepository');
-
 			foreach ($collectionUids as $collectionUid) {
 				$fileCollection = $collectionRepository->findByUid($collectionUid);
 				if ($fileCollection instanceof t3lib_file_Collection_AbstractFileCollection) {
@@ -104,13 +88,10 @@ class tslib_content_Files extends tslib_content_Abstract {
 				}
 			}
 		}
-
 		if ($conf['folders'] || $conf['folders.']) {
 			$folderIdentifiers = t3lib_div::trimExplode(',', $this->stdWrapValue('folders', $conf));
-
 			/** @var t3lib_file_Factory $fileFactory */
 			$fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
-
 			foreach ($folderIdentifiers as $folderIdentifier) {
 				if ($folderIdentifier) {
 					$folder = $fileFactory->getFolderObjectFromCombinedIdentifier($folderIdentifier);
@@ -120,20 +101,15 @@ class tslib_content_Files extends tslib_content_Abstract {
 				}
 			}
 		}
-
-			// Rendering the files
+		// Rendering the files
 		$content = '';
-
-			// optionSplit applied to conf to allow differnt settings per file
+		// optionSplit applied to conf to allow differnt settings per file
 		$splitConf = $GLOBALS['TSFE']->tmpl->splitConfArray($conf, count($fileObjects));
-
 		foreach ($fileObjects as $key => $fileObject) {
 			$this->cObj->setCurrentFile($fileObject);
 			$content .= $this->cObj->cObjGetSingle($splitConf[$key]['renderObj'], $splitConf[$key]['renderObj.']);
 		}
-
 		$content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
-
 		return $content;
 	}
 
@@ -160,9 +136,9 @@ class tslib_content_Files extends tslib_content_Abstract {
 	 * @return string Value of the config variable
 	 */
 	protected function stdWrapValue($key, array $config, $defaultValue = '') {
-		return $this->cObj->stdWrap($config[$key], $config[$key.'.'])?
-			$this->cObj->stdWrap($config[$key], $config[$key.'.']):
-			$defaultValue;
+		return $this->cObj->stdWrap($config[$key], $config[$key . '.']) ? $this->cObj->stdWrap($config[$key], $config[$key . '.']) : $defaultValue;
 	}
+
 }
+
 ?>

@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Request Handler for Form
  *
@@ -68,9 +67,8 @@ class tx_form_System_Request implements t3lib_Singleton {
 		if (empty($prefix)) {
 			$prefix = 'tx_form';
 		}
-
-		$prefix = preg_replace('/\s/', '_', (string) $prefix);
-		$this->prefix = preg_replace('/[^a-zA-Z0-9_\-]/', '', $prefix);
+		$prefix = preg_replace('/\\s/', '_', (string) $prefix);
+		$this->prefix = preg_replace('/[^a-zA-Z0-9_\\-]/', '', $prefix);
 	}
 
 	/**
@@ -95,23 +93,18 @@ class tx_form_System_Request implements t3lib_Singleton {
 			'get',
 			'session'
 		);
-
 		$method = strtolower((string) $method);
-
-		if ($GLOBALS['TSFE']->loginUser){
+		if ($GLOBALS['TSFE']->loginUser) {
 			$this->sessionData = $GLOBALS['TSFE']->fe_user->getKey('user', $this->prefix);
 		} else {
 			$this->sessionData = $GLOBALS['TSFE']->fe_user->getKey('ses', $this->prefix);
 		}
-
 		if (!empty($this->sessionData)) {
 			$method = 'session';
 		}
-
 		if (!in_array($method, $allowedMethods)) {
 			$method = 'post';
 		}
-
 		$this->method = $method;
 	}
 
@@ -134,14 +127,14 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 */
 	public function get($key) {
 		switch (TRUE) {
-			case $this->method === 'get' && isset($_GET[$this->prefix][$key]):
-				return $_GET[$this->prefix][$key];
-			case $this->method === 'post' && isset($_POST[$this->prefix][$key]):
-				return $_POST[$this->prefix][$key];
-			case $this->method === 'session' && isset($this->sessionData[$key]):
-				return $this->sessionData[$key];
-			default:
-				return NULL;
+		case $this->method === 'get' && isset($_GET[$this->prefix][$key]):
+			return $_GET[$this->prefix][$key];
+		case $this->method === 'post' && isset($_POST[$this->prefix][$key]):
+			return $_POST[$this->prefix][$key];
+		case $this->method === 'session' && isset($this->sessionData[$key]):
+			return $this->sessionData[$key];
+		default:
+			return NULL;
 		}
 	}
 
@@ -153,14 +146,14 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 */
 	public function has($key) {
 		switch (TRUE) {
-			case $this->method === 'get' && isset($_GET[$this->prefix][$key]):
-				return TRUE;
-			case $this->method === 'post' && isset($_POST[$this->prefix][$key]):
-				return TRUE;
-			case $this->method === 'session' && isset($this->sessionData[$key]):
-				return TRUE;
-			default:
-				return FALSE;
+		case $this->method === 'get' && isset($_GET[$this->prefix][$key]):
+			return TRUE;
+		case $this->method === 'post' && isset($_POST[$this->prefix][$key]):
+			return TRUE;
+		case $this->method === 'session' && isset($this->sessionData[$key]):
+			return TRUE;
+		default:
+			return FALSE;
 		}
 	}
 
@@ -171,14 +164,14 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 */
 	public function hasRequest() {
 		switch (TRUE) {
-			case $this->method === 'get' && isset($_GET[$this->prefix]):
-				return TRUE;
-			case $this->method === 'post' && isset($_POST[$this->prefix]):
-				return TRUE;
-			case $this->method === 'session' && !empty($this->sessionData):
-				return TRUE;
-			default:
-				return FALSE;
+		case $this->method === 'get' && isset($_GET[$this->prefix]):
+			return TRUE;
+		case $this->method === 'post' && isset($_POST[$this->prefix]):
+			return TRUE;
+		case $this->method === 'session' && !empty($this->sessionData):
+			return TRUE;
+		default:
+			return FALSE;
 		}
 	}
 
@@ -195,7 +188,7 @@ class tx_form_System_Request implements t3lib_Singleton {
 		if ($key === NULL) {
 			return $_GET[$this->prefix];
 		}
-		return (isset($_GET[$this->prefix][$key])) ? $_GET[$this->prefix][$key] : $default;
+		return isset($_GET[$this->prefix][$key]) ? $_GET[$this->prefix][$key] : $default;
 	}
 
 	/**
@@ -211,7 +204,7 @@ class tx_form_System_Request implements t3lib_Singleton {
 		if ($key === NULL) {
 			return $_POST[$this->prefix];
 		}
-		return (isset($_POST[$this->prefix][$key])) ? $_POST[$this->prefix][$key] : $default;
+		return isset($_POST[$this->prefix][$key]) ? $_POST[$this->prefix][$key] : $default;
 	}
 
 	/**
@@ -227,7 +220,7 @@ class tx_form_System_Request implements t3lib_Singleton {
 		if ($key === NULL) {
 			return $this->sessionData;
 		}
-		return (isset($this->sessionData[$key])) ? $this->sessionData[$key] : $default;
+		return isset($this->sessionData[$key]) ? $this->sessionData[$key] : $default;
 	}
 
 	/**
@@ -258,18 +251,10 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function storeSession() {
-		if ($GLOBALS['TSFE']->loginUser){
-			$GLOBALS['TSFE']->fe_user->setKey(
-				'user',
-				$this->prefix,
-				$this->getByMethod()
-			);
+		if ($GLOBALS['TSFE']->loginUser) {
+			$GLOBALS['TSFE']->fe_user->setKey('user', $this->prefix, $this->getByMethod());
 		} else {
-			$GLOBALS['TSFE']->fe_user->setKey(
-				'ses',
-				$this->prefix,
-				$this->getByMethod()
-			);
+			$GLOBALS['TSFE']->fe_user->setKey('ses', $this->prefix, $this->getByMethod());
 		}
 		$GLOBALS['TSFE']->storeSessionData();
 	}
@@ -281,18 +266,10 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 */
 	public function destroySession() {
 		$this->removeFiles();
-		if ($GLOBALS['TSFE']->loginUser){
-			$GLOBALS['TSFE']->fe_user->setKey(
-				'user',
-				$this->prefix,
-				NULL
-			);
+		if ($GLOBALS['TSFE']->loginUser) {
+			$GLOBALS['TSFE']->fe_user->setKey('user', $this->prefix, NULL);
 		} else {
-			$GLOBALS['TSFE']->fe_user->setKey(
-				'ses',
-				$this->prefix,
-				NULL
-			);
+			$GLOBALS['TSFE']->fe_user->setKey('ses', $this->prefix, NULL);
 		}
 		$GLOBALS['TSFE']->storeSessionData();
 	}
@@ -305,7 +282,6 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 */
 	public function storeFiles() {
 		$formData = $this->getByMethod();
-
 		if (isset($_FILES[$this->prefix]) && is_array($_FILES[$this->prefix])) {
 			foreach ($_FILES[$this->prefix]['tmp_name'] as $fieldName => $uploadedFile) {
 				if (is_uploaded_file($uploadedFile)) {
@@ -313,34 +289,31 @@ class tx_form_System_Request implements t3lib_Singleton {
 					if (TYPO3_OS === 'WIN') {
 						$tempFilename = t3lib_div::fixWindowsFilePath($tempFilename);
 					}
-
 					if ($tempFilename !== '') {
-							// Use finfo to get the mime type
+						// Use finfo to get the mime type
 						$finfo = finfo_open(FILEINFO_MIME_TYPE);
 						$mimeType = finfo_file($finfo, $tempFilename);
 						finfo_close($finfo);
-
 						$formData[$fieldName] = array(
 							'tempFilename' => $tempFilename,
 							'originalFilename' => $_FILES[$this->prefix]['name'][$fieldName],
 							'type' => $mimeType,
-							'size' => (integer) $_FILES[$this->prefix]['size'][$fieldName],
+							'size' => (int) $_FILES[$this->prefix]['size'][$fieldName]
 						);
 					}
 				}
 			}
 		}
-
-		switch($this->getMethod()) {
-			case 'post':
-				$_POST[$this->prefix] = $formData;
-				break;
-			case 'get':
-				$_GET[$this->prefix] = $formData;
-				break;
-			case 'session':
-				$this->sessionData = $formData;
-				break;
+		switch ($this->getMethod()) {
+		case 'post':
+			$_POST[$this->prefix] = $formData;
+			break;
+		case 'get':
+			$_GET[$this->prefix] = $formData;
+			break;
+		case 'session':
+			$this->sessionData = $formData;
+			break;
 		}
 	}
 
@@ -351,14 +324,15 @@ class tx_form_System_Request implements t3lib_Singleton {
 	 */
 	protected function removeFiles() {
 		$values = $this->getByMethod();
-
 		if (is_array($values)) {
 			foreach ($values as $value) {
-				if (is_array($value) && (isset($value['tempFilename']))) {
+				if (is_array($value) && isset($value['tempFilename'])) {
 					t3lib_div::unlink_tempfile($value['tempFilename']);
 				}
 			}
 		}
 	}
+
 }
+
 ?>

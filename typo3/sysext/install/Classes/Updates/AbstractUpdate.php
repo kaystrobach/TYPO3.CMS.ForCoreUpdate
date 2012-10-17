@@ -1,36 +1,34 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2011 Benjamin Mack <benni@typo3.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
-
+ *  Copyright notice
+ *
+ *  (c) 2010-2011 Benjamin Mack <benni@typo3.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Generic class that every update wizard class inherits from.
  * Used by the update wizard in the install tool.
  *
- * @author	Benjamin Mack <benni@typo3.org>
+ * @author 	Benjamin Mack <benni@typo3.org>
  */
 abstract class Tx_Install_Updates_Base {
 
@@ -41,6 +39,7 @@ abstract class Tx_Install_Updates_Base {
 
 	/**
 	 * parent object
+	 *
 	 * @var tx_install
 	 */
 	public $pObj;
@@ -57,16 +56,13 @@ abstract class Tx_Install_Updates_Base {
 	public $versionNumber;
 
 	/**
-	 *
 	 * Helper functions, getters and setters
-	 *
-	 **/
-
+	 */
 	/**
 	 * returns the title attribute
 	 *
-	 * @return	the title of this update wizard
-	 **/
+	 * @return 	the title of this update wizard
+	 */
 	public function getTitle() {
 		if ($this->title) {
 			return $this->title;
@@ -78,19 +74,18 @@ abstract class Tx_Install_Updates_Base {
 	/**
 	 * sets the title attribute
 	 *
-	 * @param	$title	the title of this update wizard
-	 * @return	void
-	 **/
+	 * @param 	$title	the title of this update wizard
+	 * @return 	void
+	 */
 	public function setTitle($title) {
 		$this->title = $title;
 	}
 
-
 	/**
 	 * returns the identifier of this class
 	 *
-	 * @return	the identifier of this update wizard
-	 **/
+	 * @return 	the identifier of this update wizard
+	 */
 	public function getIdentifier() {
 		return $this->identifier;
 	}
@@ -98,9 +93,9 @@ abstract class Tx_Install_Updates_Base {
 	/**
 	 * sets the identifier attribute
 	 *
-	 * @param	$identifier	the identifier of this update wizard
-	 * @return	void
-	 **/
+	 * @param 	$identifier	the identifier of this update wizard
+	 * @return 	void
+	 */
 	public function setIdentifier($identifier) {
 		$this->identifier = $identifier;
 	}
@@ -110,14 +105,14 @@ abstract class Tx_Install_Updates_Base {
 	 * layer that some update wizards don't have a second parameter
 	 * thus, it evaluates everything already
 	 *
-	 * @return	boolean	if the wizard should be shown at all on the overview page
+	 * @return 	boolean	if the wizard should be shown at all on the overview page
 	 * @see checkForUpdate()
 	 */
 	public function shouldRenderWizard() {
 		$showUpdate = 0;
 		$explanation = '';
 		$res = $this->checkForUpdate($explanation, $showUpdate);
-		return ($showUpdate > 0 || $res == TRUE);
+		return $showUpdate > 0 || $res == TRUE;
 	}
 
 	/**
@@ -125,14 +120,14 @@ abstract class Tx_Install_Updates_Base {
 	 * this feature is cool if you want to tell the user that the update wizard
 	 * is working fine, just as output (useful for the character set / utf8 wizard)
 	 *
-	 * @return	boolean	if the wizard should render the Next() button on the overview page
+	 * @return 	boolean	if the wizard should render the Next() button on the overview page
 	 * @see checkForUpdate()
 	 */
 	public function shouldRenderNextButton() {
 		$showUpdate = 0;
 		$explanation = '';
 		$res = $this->checkForUpdate($explanation, $showUpdate);
-		return ($showUpdate != 2 || $res == TRUE);
+		return $showUpdate != 2 || $res == TRUE;
 	}
 
 	/**
@@ -142,13 +137,13 @@ abstract class Tx_Install_Updates_Base {
 	 * @return tx_em_Connection_ExtDirectServer EM connection instance
 	 */
 	public function getExtensionManagerConnection() {
-			// Create an instance of language, if necessary.
-			// Needed in order to make the em_index work
+		// Create an instance of language, if necessary.
+		// Needed in order to make the em_index work
 		if (!is_object($GLOBALS['LANG'])) {
 			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
 			$GLOBALS['LANG']->csConvObj = t3lib_div::makeInstance('t3lib_cs');
 		}
-			// Create an instance of a connection class to the EM
+		// Create an instance of a connection class to the EM
 		$extensionManagerConnection = t3lib_div::makeInstance('tx_em_Connection_ExtDirectServer', FALSE);
 		return $extensionManagerConnection;
 	}
@@ -176,10 +171,7 @@ abstract class Tx_Install_Updates_Base {
 	 * @return void
 	 */
 	protected function markWizardAsDone($confValue = 1) {
-		t3lib_Configuration::setLocalConfigurationValueByPath(
-			'INSTALL/wizardDone/' . get_class($this),
-			$confValue
-		);
+		t3lib_Configuration::setLocalConfigurationValueByPath('INSTALL/wizardDone/' . get_class($this), $confValue);
 	}
 
 	/**
@@ -190,11 +182,12 @@ abstract class Tx_Install_Updates_Base {
 	protected function isWizardDone() {
 		$wizardClassName = get_class($this);
 		$done = FALSE;
-		if (isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone'][$wizardClassName]) &&
-			$GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone'][$wizardClassName]) {
+		if (isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone'][$wizardClassName]) && $GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone'][$wizardClassName]) {
 			$done = TRUE;
 		}
 		return $done;
 	}
+
 }
+
 ?>

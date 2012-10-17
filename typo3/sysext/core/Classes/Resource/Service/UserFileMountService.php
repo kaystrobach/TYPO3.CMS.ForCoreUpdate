@@ -36,7 +36,6 @@
  */
 class t3lib_file_Service_UserfilemountService {
 
-
 	/**
 	 * User function for sys_filemounts (the userfilemounts)
 	 * to render a dropdown for selecting a folder
@@ -47,10 +46,10 @@ class t3lib_file_Service_UserfilemountService {
 	 * @return string The HTML code for the TCEform field
 	 */
 	public function renderTceformsSelectDropdown(&$PA, &$tceformsObj) {
-			// If working for sys_filemounts table
+		// If working for sys_filemounts table
 		$storageUid = intval($PA['row']['base']);
 		if (!$storageUid) {
-				// If working for sys_file_collection table
+			// If working for sys_file_collection table
 			$storageUid = intval($PA['row']['storage']);
 		}
 		if ($storageUid > 0) {
@@ -58,10 +57,8 @@ class t3lib_file_Service_UserfilemountService {
 			$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
 			/** @var $storage t3lib_file_Storage */
 			$storage = $storageRepository->findByUid($storageUid);
-
 			$rootLevelFolder = $storage->getRootLevelFolder();
 			$folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
-
 			foreach ($folderItems as $item) {
 				$PA['items'][] = array(
 					htmlspecialchars($item->getIdentifier()),
@@ -83,22 +80,19 @@ class t3lib_file_Service_UserfilemountService {
 	 */
 	protected function getSubfoldersForOptionList(t3lib_file_Folder $parentFolder, $level = 0) {
 		$level++;
-
-			// hard break on recursion
+		// hard break on recursion
 		if ($level > 99) {
 			return array();
 		}
-
 		$allFolderItems = array($parentFolder);
 		$subFolders = $parentFolder->getSubfolders();
-
 		foreach ($subFolders as $subFolder) {
 			$subFolderItems = $this->getSubfoldersForOptionList($subFolder, $level);
 			$allFolderItems = array_merge($allFolderItems, $subFolderItems);
 		}
-
 		return $allFolderItems;
 	}
+
 }
 
 ?>

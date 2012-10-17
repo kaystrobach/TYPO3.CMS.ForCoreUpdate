@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Context Menu Data Provider
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_contextmenu_AbstractDataProvider {
+
 	/**
 	 * List of actions that are generally disabled
 	 *
@@ -80,10 +80,7 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 	 * @return array
 	 */
 	protected function getConfiguration() {
-		$contextMenuActions = $GLOBALS['BE_USER']->getTSConfig(
-			'options.contextMenu.' . $this->contextMenuType . '.items'
-		);
-
+		$contextMenuActions = $GLOBALS['BE_USER']->getTSConfig(('options.contextMenu.' . $this->contextMenuType) . '.items');
 		return $contextMenuActions['properties'];
 	}
 
@@ -103,61 +100,54 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 		if ($displayCondition === '') {
 			return TRUE;
 		}
-
-			// Parse condition string
+		// Parse condition string
 		$conditions = array();
-		preg_match_all('/(.+?)(>=|<=|!=|=|>|<)(.+?)(\|\||&&|$)/is', $displayCondition, $conditions);
-
+		preg_match_all('/(.+?)(>=|<=|!=|=|>|<)(.+?)(\\|\\||&&|$)/is', $displayCondition, $conditions);
 		$lastResult = FALSE;
 		$chainType = '';
 		$amountOfConditions = count($conditions[0]);
 		for ($i = 0; $i < $amountOfConditions; ++$i) {
-				// Check method for existence
+			// Check method for existence
 			$method = trim($conditions[1][$i]);
 			list($method, $index) = explode('|', $method);
 			if (!method_exists($node, $method)) {
 				continue;
 			}
-
-				// Fetch compare value
+			// Fetch compare value
 			$returnValue = call_user_func(array($node, $method));
 			if (is_array($returnValue)) {
 				$returnValue = $returnValue[$index];
 			}
-
-				// Compare fetched and expected values
+			// Compare fetched and expected values
 			$operator = trim($conditions[2][$i]);
 			$expected = trim($conditions[3][$i]);
 			if ($operator === '=') {
-				$returnValue = ($returnValue == $expected);
+				$returnValue = $returnValue == $expected;
 			} elseif ($operator === '>') {
-				$returnValue = ($returnValue > $expected);
+				$returnValue = $returnValue > $expected;
 			} elseif ($operator === '<') {
-				$returnValue = ($returnValue < $expected);
+				$returnValue = $returnValue < $expected;
 			} elseif ($operator === '>=') {
-				$returnValue = ($returnValue >= $expected);
+				$returnValue = $returnValue >= $expected;
 			} elseif ($operator === '<=') {
-				$returnValue = ($returnValue <= $expected);
+				$returnValue = $returnValue <= $expected;
 			} elseif ($operator === '!=') {
-				$returnValue = ($returnValue != $expected);
+				$returnValue = $returnValue != $expected;
 			} else {
 				$returnValue = FALSE;
 				$lastResult = FALSE;
 			}
-
-				// Chain last result and the current if requested
+			// Chain last result and the current if requested
 			if ($chainType === '||') {
-				$lastResult = ($lastResult || $returnValue);
+				$lastResult = $lastResult || $returnValue;
 			} elseif ($chainType === '&&') {
-				$lastResult = ($lastResult && $returnValue);
+				$lastResult = $lastResult && $returnValue;
 			} else {
 				$lastResult = $returnValue;
 			}
-
-				// Save chain type for the next condition
+			// Save chain type for the next condition
 			$chainType = trim($conditions[4][$i]);
 		}
-
 		return $lastResult;
 	}
 
@@ -172,11 +162,9 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 	protected function getNextContextMenuLevel(array $actions, t3lib_tree_Node $node, $level = 0) {
 		/** @var $actionCollection t3lib_contextmenu_ActionCollection */
 		$actionCollection = t3lib_div::makeInstance('t3lib_contextmenu_ActionCollection');
-
 		if ($level > 5) {
 			return $actionCollection;
 		}
-
 		$type = '';
 		foreach ($actions as $index => $actionConfiguration) {
 			if (substr($index, -1) !== '.') {
@@ -185,59 +173,43 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 					continue;
 				}
 			}
-
 			if (!in_array($type, array('DIVIDER', 'SUBMENU', 'ITEM'))) {
 				continue;
 			}
-
 			/** @var $action t3lib_contextmenu_Action */
 			$action = t3lib_div::makeInstance('t3lib_contextmenu_Action');
 			$action->setId($index);
-
 			if ($type === 'DIVIDER') {
 				$action->setType('divider');
 			} else {
-				if (in_array($actionConfiguration['name'], $this->disableItems)
-					|| (isset($actionConfiguration['displayCondition'])
-						&& trim($actionConfiguration['displayCondition']) !== ''
-						&& !$this->evaluateDisplayCondition($node, $actionConfiguration['displayCondition'])
-					)
-				) {
+				if (in_array($actionConfiguration['name'], $this->disableItems) || (isset($actionConfiguration['displayCondition']) && trim($actionConfiguration['displayCondition']) !== '') && !$this->evaluateDisplayCondition($node, $actionConfiguration['displayCondition'])) {
 					unset($action);
 					continue;
 				}
-
 				$label = $GLOBALS['LANG']->sL($actionConfiguration['label'], TRUE);
 				if ($type === 'SUBMENU') {
 					$action->setType('submenu');
-					$action->setChildActions(
-						$this->getNextContextMenuLevel($actionConfiguration, $node, $level + 1)
-					);
+					$action->setChildActions($this->getNextContextMenuLevel($actionConfiguration, $node, $level + 1));
 				} else {
 					$action->setType('action');
 					$action->setCallbackAction($actionConfiguration['callbackAction']);
-
 					if (is_array($actionConfiguration['customAttributes.'])) {
 						$action->setCustomAttributes($actionConfiguration['customAttributes.']);
 					}
 				}
-
 				$action->setLabel($label);
 				if (isset($actionConfiguration['icon']) && trim($actionConfiguration['icon']) !== '') {
 					$action->setIcon($actionConfiguration['icon']);
 				} elseif (isset($actionConfiguration['spriteIcon'])) {
-					$action->setClass(
-						t3lib_iconWorks::getSpriteIconClasses($actionConfiguration['spriteIcon'])
-					);
+					$action->setClass(t3lib_iconWorks::getSpriteIconClasses($actionConfiguration['spriteIcon']));
 				}
 			}
-
 			$actionCollection->offsetSet($level . intval($index), $action);
 			$actionCollection->ksort();
 		}
-
 		return $actionCollection;
 	}
+
 }
 
 ?>

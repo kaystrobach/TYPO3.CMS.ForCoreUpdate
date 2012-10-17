@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class t3lib_formprotection_DisabledFormProtection.
  *
@@ -30,7 +29,6 @@
  *
  * @package TYPO3
  * @subpackage t3lib
- *
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
 class t3lib_formprotection_DisabledFormProtection extends t3lib_formprotection_Abstract {
@@ -39,15 +37,13 @@ class t3lib_formprotection_DisabledFormProtection extends t3lib_formprotection_A
 	 * Disable parent constructor
 	 */
 	public function __construct() {
-		// Do nothing.
+
 	}
 
 	/**
 	 * Disable parent method
 	 */
-	public function generateToken(
-		$formName, $action = '', $formInstanceName = ''
-	) {
+	public function generateToken($formName, $action = '', $formInstanceName = '') {
 		return 'dummyToken';
 	}
 
@@ -57,9 +53,7 @@ class t3lib_formprotection_DisabledFormProtection extends t3lib_formprotection_A
 	 *
 	 * @return boolean
 	 */
-	public function validateToken(
-		$tokenId, $formName, $action = '', $formInstanceName = ''
-	) {
+	public function validateToken($tokenId, $formName, $action = '', $formInstanceName = '') {
 		return TRUE;
 	}
 
@@ -67,22 +61,23 @@ class t3lib_formprotection_DisabledFormProtection extends t3lib_formprotection_A
 	 * Dummy implementation
 	 */
 	protected function createValidationErrorMessage() {
-		// Do nothing.
+
 	}
 
 	/**
 	 * Dummy implementation
 	 */
 	protected function retrieveSessionToken() {
-		// Do nothing.
+
 	}
 
 	/**
 	 * Dummy implementation
 	 */
 	public function persistSessionToken() {
-		// Do nothing.
+
 	}
+
 }
 
 ?>

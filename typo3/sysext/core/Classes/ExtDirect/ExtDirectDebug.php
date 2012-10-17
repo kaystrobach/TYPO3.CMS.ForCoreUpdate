@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Ext Direct Debug
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_extjs_ExtDirectDebug {
+
 	/**
 	 * Internal debug message array
 	 *
@@ -50,7 +50,7 @@ class t3lib_extjs_ExtDirectDebug {
 	 * @see http://forge.typo3.org/issues/25278
 	 */
 	public function __destruct() {
-		// Currently empty
+
 	}
 
 	/**
@@ -73,9 +73,9 @@ class t3lib_extjs_ExtDirectDebug {
 		if (count($this->debugMessages)) {
 			$messagesAsString = t3lib_utility_Debug::viewArray($this->debugMessages);
 		}
-
 		return $messagesAsString;
 	}
+
 }
 
 ?>

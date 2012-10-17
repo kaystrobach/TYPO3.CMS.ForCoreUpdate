@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Data Provider of the Page Tree
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractExtJsTree {
+
 	/**
 	 * Data Provider
 	 *
@@ -59,7 +59,6 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 	public function getRoot() {
 		$this->initDataProvider();
 		$node = $this->dataProvider->getRoot();
-
 		return $node->toArray();
 	}
 
@@ -72,16 +71,13 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 	 */
 	public function getNextTreeLevel($nodeId, $nodeData) {
 		$this->initDataProvider();
-
 		/** @var $node t3lib_tree_pagetree_Node */
 		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
-
 		if ($nodeId === 'root') {
 			$nodeCollection = $this->dataProvider->getTreeMounts();
 		} else {
 			$nodeCollection = $this->dataProvider->getNodes($node, $node->getMountPoint());
 		}
-
 		return $nodeCollection->toArray();
 	}
 
@@ -97,17 +93,14 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 		if (strval($searchFilter) === '') {
 			return array();
 		}
-
 		/** @var $node t3lib_tree_pagetree_Node */
 		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
-
 		$this->initDataProvider();
 		if ($nodeId === 'root') {
 			$nodeCollection = $this->dataProvider->getTreeMounts($searchFilter);
 		} else {
 			$nodeCollection = $this->dataProvider->getFilteredNodes($node, $searchFilter, $node->getMountPoint());
 		}
-
 		return $nodeCollection->toArray();
 	}
 
@@ -130,11 +123,7 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 			254 => 'LLL:EXT:lang/locallang_tca.php:doktype.I.folder',
 			255 => 'LLL:EXT:lang/locallang_tca.php:doktype.I.2'
 		);
-
-		$doktypes = t3lib_div::trimExplode(
-			',', $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.doktypesToShowInNewPageDragArea')
-		);
-
+		$doktypes = t3lib_div::trimExplode(',', $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.doktypesToShowInNewPageDragArea'));
 		$output = array();
 		$allowedDoktypes = t3lib_div::trimExplode(',', $GLOBALS['BE_USER']->groupData['pagetypes_select']);
 		$isAdmin = $GLOBALS['BE_USER']->isAdmin();
@@ -142,21 +131,16 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 			if (!$isAdmin && !in_array($doktype, $allowedDoktypes)) {
 				continue;
 			}
-
 			$label = $GLOBALS['LANG']->sL($map[$doktype], TRUE);
-			$spriteIcon = t3lib_iconWorks::getSpriteIconClasses(
-				$GLOBALS['TCA']['pages']['ctrl']['typeicon_classes'][$doktype]
-			);
-
+			$spriteIcon = t3lib_iconWorks::getSpriteIconClasses($GLOBALS['TCA']['pages']['ctrl']['typeicon_classes'][$doktype]);
 			$output[] = array(
 				'nodeType' => $doktype,
 				'cls' => 'typo3-pagetree-topPanel-button',
 				'iconCls' => $spriteIcon,
 				'title' => $label,
-				'tooltip' => $label,
+				'tooltip' => $label
 			);
 		}
-
 		return $output;
 	}
 
@@ -170,10 +154,9 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 		$indicatorProvider = t3lib_div::makeInstance('t3lib_tree_pagetree_Indicator');
 		$indicatorHtmlArr = $indicatorProvider->getAllIndicators();
 		$indicator = array(
-				'html' => implode(' ', $indicatorHtmlArr),
-				'_COUNT' => count($indicatorHtmlArr)
+			'html' => implode(' ', $indicatorHtmlArr),
+			'_COUNT' => count($indicatorHtmlArr)
 		);
-
 		return $indicator;
 	}
 
@@ -200,20 +183,16 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 				'temporaryMountPointIndicatorInfo' => $GLOBALS['LANG']->sl($file . 'labels.temporaryDBmount', TRUE),
 				'deleteDialogTitle' => $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:deleteItem', TRUE),
 				'deleteDialogMessage' => $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:deleteWarning', TRUE),
-				'recursiveDeleteDialogMessage' => $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:recursiveDeleteWarning', TRUE),
+				'recursiveDeleteDialogMessage' => $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:recursiveDeleteWarning', TRUE)
 			),
-
 			'Configuration' => array(
 				'hideFilter' => $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.hideFilter'),
 				'displayDeleteConfirmation' => $GLOBALS['BE_USER']->jsConfirmation(4),
 				'canDeleteRecursivly' => $GLOBALS['BE_USER']->uc['recursiveDelete'] == TRUE,
-				'disableIconLinkToContextmenu' => $GLOBALS['BE_USER']->getTSConfigVal(
-					'options.pageTree.disableIconLinkToContextmenu'
-				),
+				'disableIconLinkToContextmenu' => $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.disableIconLinkToContextmenu'),
 				'indicator' => $indicators['html'],
-				'temporaryMountPoint' => t3lib_tree_pagetree_Commands::getMountPointPath(),
+				'temporaryMountPoint' => t3lib_tree_pagetree_Commands::getMountPointPath()
 			),
-
 			'Sprites' => array(
 				'Filter' => t3lib_iconWorks::getSpriteIconClasses('actions-system-tree-search-open'),
 				'NewNode' => t3lib_iconWorks::getSpriteIconClasses('actions-page-new'),
@@ -221,12 +200,12 @@ class t3lib_tree_pagetree_extdirect_Tree extends t3lib_tree_ExtDirect_AbstractEx
 				'InputClear' => t3lib_iconWorks::getSpriteIconClasses('actions-input-clear'),
 				'TrashCan' => t3lib_iconWorks::getSpriteIconClasses('actions-edit-delete'),
 				'TrashCanRestore' => t3lib_iconWorks::getSpriteIconClasses('actions-edit-restore'),
-				'Info' => t3lib_iconWorks::getSpriteIconClasses('actions-document-info'),
+				'Info' => t3lib_iconWorks::getSpriteIconClasses('actions-document-info')
 			)
 		);
-
 		return $configuration;
 	}
+
 }
 
 ?>

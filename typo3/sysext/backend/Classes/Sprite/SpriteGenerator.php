@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Sprite generator
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_spritemanager_SpriteGenerator {
+
 	/**
 	 * Template creating CSS for the spritefile
 	 *
@@ -47,7 +47,6 @@ class t3lib_spritemanager_SpriteGenerator {
 ';
 
 	/**
-	 *
 	 * Template creating CSS for position and size of a single icon
 	 *
 	 * @var string
@@ -81,6 +80,7 @@ class t3lib_spritemanager_SpriteGenerator {
 
 	/**
 	 * Calculated height of the sprite
+	 *
 	 * @var integer
 	 */
 	protected $spriteHeight = 0;
@@ -262,11 +262,8 @@ class t3lib_spritemanager_SpriteGenerator {
 	public function generateSpriteFromFolder(array $inputFolder) {
 		$iconArray = array();
 		foreach ($inputFolder as $folder) {
-				// Detect all files to be included in sprites
-			$iconArray = array_merge(
-				$iconArray,
-				$this->getFolder($folder)
-			);
+			// Detect all files to be included in sprites
+			$iconArray = array_merge($iconArray, $this->getFolder($folder));
 		}
 		return $this->generateSpriteFromArray($iconArray);
 	}
@@ -283,21 +280,16 @@ class t3lib_spritemanager_SpriteGenerator {
 		if (!$this->ommitSpriteNameInIconName) {
 			$this->spriteBases[] = $this->spriteName;
 		}
-
 		$this->buildFileInformationCache($files);
-			// Calculate Icon Position in sprite
+		// Calculate Icon Position in sprite
 		$this->calculateSpritePositions();
-
 		$this->generateGraphic();
-
 		$this->generateCSS();
-
 		$iconNames = array_keys($this->iconsData);
 		natsort($iconNames);
-
 		return array(
-			'spriteImage' => PATH_site . $this->spriteFolder . $this->spriteName . '.png',
-			'cssFile' => PATH_site . $this->cssFolder . $this->spriteName . '.css',
+			'spriteImage' => ((PATH_site . $this->spriteFolder) . $this->spriteName) . '.png',
+			'cssFile' => ((PATH_site . $this->cssFolder) . $this->spriteName) . '.css',
 			'iconNames' => $iconNames
 		);
 	}
@@ -309,29 +301,24 @@ class t3lib_spritemanager_SpriteGenerator {
 	 */
 	protected function generateCSS() {
 		$cssData = '';
-
 		if ($this->includeTimestampInCSS) {
 			$timestamp = '?' . time();
 		} else {
 			$timestamp = '';
 		}
-
 		$spritePathForCSS = $this->resolveSpritePath();
-
 		$markerArray = array(
 			'###NAMESPACE###' => $this->nameSpace,
 			'###DEFAULTWIDTH###' => $this->defaultWidth,
 			'###DEFAULTHEIGHT###' => $this->defaultHeight,
 			'###SPRITENAME###' => '',
-			'###SPRITEURL###' => ($spritePathForCSS ? $spritePathForCSS . '/' : '')
+			'###SPRITEURL###' => $spritePathForCSS ? $spritePathForCSS . '/' : ''
 		);
-		$markerArray['###SPRITEURL###'] .= $this->spriteName . '.png' . $timestamp;
-
+		$markerArray['###SPRITEURL###'] .= ($this->spriteName . '.png') . $timestamp;
 		foreach ($this->spriteBases as $base) {
 			$markerArray['###SPRITENAME###'] = $base;
 			$cssData .= t3lib_parsehtml::substituteMarkerArray($this->templateSprite, $markerArray);
 		}
-
 		foreach ($this->iconsData as $key => $data) {
 			$temp = $data['iconNameParts'];
 			array_shift($temp);
@@ -344,16 +331,14 @@ class t3lib_spritemanager_SpriteGenerator {
 				'###SIZE_INFO###' => ''
 			);
 			if ($data['height'] != $this->defaultHeight) {
-				$markerArrayIcons['###SIZE_INFO###'] .= TAB . 'height: ' . $data['height'] . 'px;' . LF;
+				$markerArrayIcons['###SIZE_INFO###'] .= (((TAB . 'height: ') . $data['height']) . 'px;') . LF;
 			}
 			if ($data['width'] != $this->defaultWidth) {
-				$markerArrayIcons['###SIZE_INFO###'] .= TAB . 'width: ' . $data['width'] . 'px;' . LF;
+				$markerArrayIcons['###SIZE_INFO###'] .= (((TAB . 'width: ') . $data['width']) . 'px;') . LF;
 			}
 			$cssData .= t3lib_parsehtml::substituteMarkerArray($this->templateIcon, $markerArrayIcons);
-
 		}
-
-		t3lib_div::writeFile(PATH_site . $this->cssFolder . $this->spriteName . '.css', $cssData);
+		t3lib_div::writeFile(((PATH_site . $this->cssFolder) . $this->spriteName) . '.css', $cssData);
 	}
 
 	/**
@@ -362,16 +347,13 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * @return string
 	 */
 	protected function resolveSpritePath() {
-			// Fix window paths
+		// Fix window paths
 		$this->cssFolder = str_replace('\\', '/', $this->cssFolder);
 		$this->spriteFolder = str_replace('\\', '/', $this->spriteFolder);
-
 		$cssPathSegments = t3lib_div::trimExplode('/', trim($this->cssFolder, '/'));
 		$graphicPathSegments = t3lib_div::trimExplode('/', trim($this->spriteFolder, '/'));
-
 		$i = 0;
-		while (isset($cssPathSegments[$i]) && isset($graphicPathSegments[$i]) &&
-			$cssPathSegments[$i] == $graphicPathSegments[$i]) {
+		while ((isset($cssPathSegments[$i]) && isset($graphicPathSegments[$i])) && $cssPathSegments[$i] == $graphicPathSegments[$i]) {
 			unset($cssPathSegments[$i]);
 			unset($graphicPathSegments[$i]);
 			++$i;
@@ -391,14 +373,13 @@ class t3lib_spritemanager_SpriteGenerator {
 	 */
 	protected function generateGraphic() {
 		$tempSprite = t3lib_div::tempnam($this->spriteName);
-
 		$filePath = array(
-			'mainFile' => PATH_site . $this->spriteFolder . $this->spriteName . '.png',
+			'mainFile' => ((PATH_site . $this->spriteFolder) . $this->spriteName) . '.png'
 		);
-			// Create black true color image with given size
+		// Create black true color image with given size
 		$newSprite = imagecreatetruecolor($this->spriteWidth, $this->spriteHeight);
 		imagesavealpha($newSprite, TRUE);
-			// Make it transparent
+		// Make it transparent
 		imagefill($newSprite, 0, 0, imagecolorallocatealpha($newSprite, 0, 255, 255, 127));
 		foreach ($this->iconsData as $icon) {
 			$function = 'imagecreatefrom' . strtolower($icon['fileExtension']);
@@ -408,7 +389,6 @@ class t3lib_spritemanager_SpriteGenerator {
 			}
 		}
 		imagepng($newSprite, $tempSprite . '.png');
-
 		t3lib_div::upload_copy_move($tempSprite . '.png', $filePath['mainFile']);
 		t3lib_div::unlink_tempfile($tempSprite . '.png');
 	}
@@ -420,7 +400,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	protected function calculateSpritePositions() {
 		$currentLeft = 0;
 		$currentTop = 0;
-			// Calculate width of every icon-size-group
+		// Calculate width of every icon-size-group
 		$sizes = array();
 		foreach ($this->iconSizes as $sizeTag => $count) {
 			$size = $this->explodeSizeTag($sizeTag);
@@ -430,20 +410,17 @@ class t3lib_spritemanager_SpriteGenerator {
 			}
 			$sizes[$rowWidth] = $sizeTag;
 		}
-			// Reverse sorting: widest group to top
+		// Reverse sorting: widest group to top
 		krsort($sizes);
-			// Integerate all icons grouped by icons size into the sprite
+		// Integerate all icons grouped by icons size into the sprite
 		foreach ($sizes as $sizeTag) {
 			$size = $this->explodeSizeTag($sizeTag);
 			$currentLeft = 0;
 			$rowCounter = 0;
-
 			$rowSize = ceil(sqrt($this->iconSizes[$sizeTag]));
-
 			$rowWidth = $rowSize * $size['width'] + ($rowSize - 1) * $this->space;
-			$this->spriteWidth = ($rowWidth > $this->spriteWidth ? $rowWidth : $this->spriteWidth);
+			$this->spriteWidth = $rowWidth > $this->spriteWidth ? $rowWidth : $this->spriteWidth;
 			$firstLine = TRUE;
-
 			natsort($this->iconNamesPerSize[$sizeTag]);
 			foreach ($this->iconNamesPerSize[$sizeTag] as $iconName) {
 				if ($rowCounter == $rowSize - 1) {
@@ -458,10 +435,8 @@ class t3lib_spritemanager_SpriteGenerator {
 				}
 				$this->iconsData[$iconName]['left'] = $currentLeft;
 				$this->iconsData[$iconName]['top'] = $currentTop;
-
 				$currentLeft += $size['width'];
 				$currentLeft += $this->space;
-
 				$rowCounter++;
 			}
 			$currentTop += $size['height'];
@@ -483,22 +458,19 @@ class t3lib_spritemanager_SpriteGenerator {
 			$subFolders[] = '';
 		}
 		$resultArray = array();
-
 		foreach ($subFolders as $folder) {
 			if ($folder !== '.svn') {
-				$icons = t3lib_div::getFilesInDir(PATH_site . $directoryPath . $folder . '/', 'gif,png,jpg');
-				if (!in_array($folder, $this->spriteBases) && count($icons) && $folder !== '') {
+				$icons = t3lib_div::getFilesInDir(((PATH_site . $directoryPath) . $folder) . '/', 'gif,png,jpg');
+				if ((!in_array($folder, $this->spriteBases) && count($icons)) && $folder !== '') {
 					$this->spriteBases[] = $folder;
 				}
 				foreach ($icons as $icon) {
 					$fileInfo = pathinfo($icon);
-
 					$iconName = ($folder ? $folder . '-' : '') . $fileInfo['filename'];
 					if (!$this->ommitSpriteNameInIconName) {
-						$iconName = $this->spriteName . '-' . $iconName;
+						$iconName = ($this->spriteName . '-') . $iconName;
 					}
-
-					$resultArray[$iconName] = $directoryPath . $folder . '/' . $icon;
+					$resultArray[$iconName] = (($directoryPath . $folder) . '/') . $icon;
 				}
 			}
 		}
@@ -513,14 +485,12 @@ class t3lib_spritemanager_SpriteGenerator {
 	 */
 	protected function buildFileInformationCache(array $files) {
 		foreach ($files as $iconName => $iconFile) {
-
 			$iconNameParts = t3lib_div::trimExplode('-', $iconName);
 			if (!in_array($iconNameParts[0], $this->spriteBases)) {
 				$this->spriteBases[] = $iconNameParts[0];
 			}
-			$fileInfo = @pathinfo(PATH_site . $iconFile);
-			$imageInfo = @getimagesize(PATH_site . $iconFile);
-
+			$fileInfo = @pathinfo((PATH_site . $iconFile));
+			$imageInfo = @getimagesize((PATH_site . $iconFile));
 			$this->iconsData[$iconName] = array(
 				'iconName' => $iconName,
 				'iconNameParts' => $iconNameParts,
@@ -532,8 +502,7 @@ class t3lib_spritemanager_SpriteGenerator {
 				'left' => 0,
 				'top' => 0
 			);
-
-			$sizeTag = $imageInfo[0] . 'x' . $imageInfo[1];
+			$sizeTag = ($imageInfo[0] . 'x') . $imageInfo[1];
 			if (isset($this->iconSizes[$sizeTag])) {
 				$this->iconSizes[$sizeTag] += 1;
 			} else {
@@ -542,7 +511,7 @@ class t3lib_spritemanager_SpriteGenerator {
 			}
 			$this->iconNamesPerSize[$sizeTag][] = $iconName;
 		}
-			// Find most common image size, save it as default
+		// Find most common image size, save it as default
 		asort($this->iconSizes);
 		$defaultSize = $this->explodeSizeTag(array_pop(array_keys($this->iconSizes)));
 		$this->defaultWidth = $defaultSize['width'];
@@ -562,6 +531,7 @@ class t3lib_spritemanager_SpriteGenerator {
 			'height' => $size[1]
 		);
 	}
+
 }
 
 ?>

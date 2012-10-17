@@ -24,21 +24,22 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which provide a pagetree indicator.
  *
  * @author Susanne Moog <typo3@susanne-moog.de>
- * @package	TYPO3
+ * @package 	TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_pagetree_interfaces_IndicatorProvider {
+interface t3lib_tree_pagetree_interfaces_IndicatorProvider
+{
 	/**
 	 * Returns the indicator html code
 	 *
 	 * @return string
+	 * @todo Define visibility
 	 */
-	function getIndicator();
-}
+	public function getIndicator();
 
+}
 ?>

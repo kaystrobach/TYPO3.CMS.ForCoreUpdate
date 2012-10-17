@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Stub model for sys history - only properties required for belog module are added currently
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_Domain_Model_HistoryEntry extends Tx_Extbase_DomainObject_AbstractEntity {
+
 	/**
 	 * list of changed fields
 	 *
@@ -58,5 +58,7 @@ class Tx_Belog_Domain_Model_HistoryEntry extends Tx_Extbase_DomainObject_Abstrac
 	public function getFieldlist() {
 		return $this->fieldlist;
 	}
+
 }
+
 ?>

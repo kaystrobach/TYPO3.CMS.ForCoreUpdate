@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface all handlers in t3lib_spritemanager have to implement.
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_spritemanager_SpriteIconGenerator {
-
+interface t3lib_spritemanager_SpriteIconGenerator
+{
 	/**
 	 * the implementation of this function has to do the main task
 	 * this function will be called if the extension list changed or
@@ -50,6 +49,6 @@ interface t3lib_spritemanager_SpriteIconGenerator {
 	 * @return array All generated/detected sprite-icon-names
 	 */
 	public function getAvailableIconNames();
-}
 
+}
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Additional 'mandatory'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Additional_Mandatory extends tx_form_Domain_Model_Additional_Abstract {
+
 	/**
 	 * Return the value of the object
 	 *
@@ -37,14 +37,13 @@ class tx_form_Domain_Model_Additional_Mandatory extends tx_form_Domain_Model_Add
 	 */
 	public function getValue() {
 		$messages = array();
-
 		foreach ($this->value as $message) {
 			$messages[] = $this->localCobj->cObjGetSingle($this->type, $message);
 		}
-
 		$value = implode(' - ', $messages);
-
 		return $value;
 	}
+
 }
+
 ?>

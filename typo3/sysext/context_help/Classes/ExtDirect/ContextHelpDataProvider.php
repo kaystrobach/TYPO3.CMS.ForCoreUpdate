@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * ExtDirect DataProvider for ContextHelp
  *
@@ -37,8 +36,8 @@ class extDirect_DataProvider_ContextHelp {
 	/**
 	 * Fetch the context help for the given table/field parameters
 	 *
-	 * @param  string $table Table identifier
-	 * @param  string $field Field identifier
+	 * @param string $table Table identifier
+	 * @param string $field Field identifier
 	 * @return array complete Help information
 	 */
 	public function getContextHelp($table, $field) {
@@ -46,10 +45,9 @@ class extDirect_DataProvider_ContextHelp {
 		$moreIcon = $helpTextArray['moreInfo'] ? t3lib_iconWorks::getSpriteIcon('actions-view-go-forward') : '';
 		return array(
 			'title' => $helpTextArray['title'],
-			'description' => '<p class="t3-help-short' . ($moreIcon ? ' tipIsLinked' : '') . '">' .
-					$helpTextArray['description'] . $moreIcon . '</p>',
-			'id' => $table . '.' . $field,
-			'moreInfo' =>  $helpTextArray['moreInfo']
+			'description' => (((('<p class="t3-help-short' . ($moreIcon ? ' tipIsLinked' : '')) . '">') . $helpTextArray['description']) . $moreIcon) . '</p>',
+			'id' => ($table . '.') . $field,
+			'moreInfo' => $helpTextArray['moreInfo']
 		);
 	}
 
@@ -71,28 +69,25 @@ class extDirect_DataProvider_ContextHelp {
 					'description' => NULL,
 					'title' => NULL,
 					'moreInfo' => FALSE,
-					'id' => $table . '.' . $field,
+					'id' => ($table . '.') . $field
 				);
-
-					// Add alternative title, if defined
+				// Add alternative title, if defined
 				if ($data['alttitle']) {
 					$output[$field]['title'] = $data['alttitle'];
 				}
-
-					// If we have more information to show
-				if ($data['image_descr'] || $data['seeAlso'] || $data['details'] || $data['syntax']) {
+				// If we have more information to show
+				if ((($data['image_descr'] || $data['seeAlso']) || $data['details']) || $data['syntax']) {
 					$output[$field]['moreInfo'] = TRUE;
 				}
-
-					// Add description
+				// Add description
 				if ($data['description']) {
 					$output[$field]['description'] = $data['description'] . ($output[$field]['moreInfo'] ? $arrow : '');
 				}
 			}
 		}
-
 		return $output;
 	}
+
 }
 
 ?>

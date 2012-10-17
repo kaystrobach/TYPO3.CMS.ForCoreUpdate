@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class for pagetree indicator
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_pagetree_Indicator {
+
 	/**
 	 * Indicator Providers
 	 *
@@ -55,7 +55,6 @@ class t3lib_tree_pagetree_Indicator {
 		if (!is_array($providers)) {
 			return;
 		}
-
 		foreach ($providers as $indicatorProvider) {
 			/** @var $indicatorProviderInstance t3lib_tree_pagetree_interfaces_IndicatorProvider */
 			$indicatorProviderInstance = t3lib_div::makeInstance($indicatorProvider);
@@ -78,9 +77,9 @@ class t3lib_tree_pagetree_Indicator {
 				$indicators[] = $indicator;
 			}
 		}
-
 		return $indicators;
 	}
+
 }
 
 ?>

@@ -1,29 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Generating gif/png-files from TypoScript
  * Used by the menu-objects and imgResource in TypoScript.
@@ -32,7 +32,6 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * GIFBUILDER extension class.
  * This class allows for advanced rendering of images with various layers of images, text and graphical primitives.
@@ -57,27 +56,74 @@
  */
 class tslib_gifBuilder extends t3lib_stdGraphic {
 
-		// Internal
-		// the main image
-	var $im = '';
-		// the image-width
-	var $w = 0;
-		// the image-height
-	var $h = 0;
-		// map-data
-	var $map;
-	var $workArea;
-		// This holds the operational setup for gifbuilder. Basically this is a TypoScript array with properties.
-	var $setup = array();
-		// Contains all text strings used on this image
-	var $combinedTextStrings = array();
-		// Contains all filenames (basename without extension) used on this image
-	var $combinedFileNames = array();
-		// This is the array from which data->field: [key] is fetched. So this is the current record!
-	var $data = array();
-	var $objBB = array();
-	var $myClassName = 'gifbuilder';
-	var $charRangeMap = array();
+	// Internal
+	// the main image
+	/**
+	 * @todo Define visibility
+	 */
+	public $im = '';
+
+	// the image-width
+	/**
+	 * @todo Define visibility
+	 */
+	public $w = 0;
+
+	// the image-height
+	/**
+	 * @todo Define visibility
+	 */
+	public $h = 0;
+
+	// map-data
+	/**
+	 * @todo Define visibility
+	 */
+	public $map;
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $workArea;
+
+	// This holds the operational setup for gifbuilder. Basically this is a TypoScript array with properties.
+	/**
+	 * @todo Define visibility
+	 */
+	public $setup = array();
+
+	// Contains all text strings used on this image
+	/**
+	 * @todo Define visibility
+	 */
+	public $combinedTextStrings = array();
+
+	// Contains all filenames (basename without extension) used on this image
+	/**
+	 * @todo Define visibility
+	 */
+	public $combinedFileNames = array();
+
+	// This is the array from which data->field: [key] is fetched. So this is the current record!
+	/**
+	 * @todo Define visibility
+	 */
+	public $data = array();
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $objBB = array();
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $myClassName = 'gifbuilder';
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $charRangeMap = array();
 
 	/**
 	 * Initialization of the GIFBUILDER objects, in particular TEXT and IMAGE. This includes finding the bounding box, setting dimensions and offset values before the actual rendering is started.
@@ -89,221 +135,198 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @param array $data The current data record from tslib_cObj. Stored internally in the variable ->data
 	 * @return void
 	 * @see tslib_cObj::getImgResource(), tslib_gmenu::makeGifs(), tslib_gmenu::findLargestDims()
+	 * @todo Define visibility
 	 */
-	function start($conf, $data) {
-
+	public function start($conf, $data) {
 		if (is_array($conf)) {
 			$this->setup = $conf;
 			$this->data = $data;
-			$this->cObj =t3lib_div::makeInstance('tslib_cObj');
+			$this->cObj = t3lib_div::makeInstance('tslib_cObj');
 			$this->cObj->start($this->data);
-
 			// Hook preprocess gifbuilder conf
-		 	// Added by Julle for 3.8.0
+			// Added by Julle for 3.8.0
 			//
 			// Let's you pre-process the gifbuilder configuration. for
 			// example you can split a string up into lines and render each
 			// line as TEXT obj, see extension julle_gifbconf
-			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_gifbuilder.php']['gifbuilder-ConfPreProcess']))    {
-				foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_gifbuilder.php']['gifbuilder-ConfPreProcess'] as $_funcRef)    {
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_gifbuilder.php']['gifbuilder-ConfPreProcess'])) {
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_gifbuilder.php']['gifbuilder-ConfPreProcess'] as $_funcRef) {
 					$_params = $this->setup;
 					$this->setup = t3lib_div::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
-
-				// Initializing global Char Range Map
+			// Initializing global Char Range Map
 			$this->charRangeMap = array();
 			if (is_array($GLOBALS['TSFE']->tmpl->setup['_GIFBUILDER.']['charRangeMap.'])) {
-				foreach($GLOBALS['TSFE']->tmpl->setup['_GIFBUILDER.']['charRangeMap.'] as $cRMcfgkey => $cRMcfg) {
+				foreach ($GLOBALS['TSFE']->tmpl->setup['_GIFBUILDER.']['charRangeMap.'] as $cRMcfgkey => $cRMcfg) {
 					if (is_array($cRMcfg)) {
-
-							// Initializing:
+						// Initializing:
 						$cRMkey = $GLOBALS['TSFE']->tmpl->setup['_GIFBUILDER.']['charRangeMap.'][substr($cRMcfgkey, 0, -1)];
 						$this->charRangeMap[$cRMkey] = array();
-						$this->charRangeMap[$cRMkey]['charMapConfig'] =  $cRMcfg['charMapConfig.'];
+						$this->charRangeMap[$cRMkey]['charMapConfig'] = $cRMcfg['charMapConfig.'];
 						$this->charRangeMap[$cRMkey]['cfgKey'] = substr($cRMcfgkey, 0, -1);
-						$this->charRangeMap[$cRMkey]['multiplicator'] = (double)$cRMcfg['fontSizeMultiplicator'];
+						$this->charRangeMap[$cRMkey]['multiplicator'] = (double) $cRMcfg['fontSizeMultiplicator'];
 						$this->charRangeMap[$cRMkey]['pixelSpace'] = intval($cRMcfg['pixelSpaceFontSizeRef']);
 					}
 				}
 			}
-
-				// Getting sorted list of TypoScript keys from setup.
-			$sKeyArray=t3lib_TStemplate::sortedKeyList($this->setup);
-
-				// Setting the background color, passing it through stdWrap
+			// Getting sorted list of TypoScript keys from setup.
+			$sKeyArray = t3lib_TStemplate::sortedKeyList($this->setup);
+			// Setting the background color, passing it through stdWrap
 			if ($conf['backColor.'] || $conf['backColor']) {
-				$this->setup['backColor'] = isset($this->setup['backColor.'])
-					? trim($this->cObj->stdWrap($this->setup['backColor'], $this->setup['backColor.']))
-					: $this->setup['backColor'];
+				$this->setup['backColor'] = isset($this->setup['backColor.']) ? trim($this->cObj->stdWrap($this->setup['backColor'], $this->setup['backColor.'])) : $this->setup['backColor'];
 			}
-			if (!$this->setup['backColor'])	{ $this->setup['backColor']='white'; }
-
+			if (!$this->setup['backColor']) {
+				$this->setup['backColor'] = 'white';
+			}
 			if ($conf['transparentColor.'] || $conf['transparentColor']) {
-				$this->setup['transparentColor_array'] = isset($this->setup['transparentColor.'])
-					? explode('|', trim($this->cObj->stdWrap($this->setup['transparentColor'], $this->setup['transparentColor.'])))
-					: explode('|', trim($this->setup['transparentColor']));
+				$this->setup['transparentColor_array'] = isset($this->setup['transparentColor.']) ? explode('|', trim($this->cObj->stdWrap($this->setup['transparentColor'], $this->setup['transparentColor.']))) : explode('|', trim($this->setup['transparentColor']));
 			}
-
 			if (isset($this->setup['transparentBackground.'])) {
 				$this->setup['transparentBackground'] = $this->cObj->stdWrap($this->setup['transparentBackground'], $this->setup['transparentBackground.']);
 			}
 			if (isset($this->setup['reduceColors.'])) {
 				$this->setup['reduceColors'] = $this->cObj->stdWrap($this->setup['reduceColors'], $this->setup['reduceColors.']);
 			}
-
-				// Set default dimensions
+			// Set default dimensions
 			if (isset($this->setup['XY.'])) {
 				$this->setup['XY'] = $this->cObj->stdWrap($this->setup['XY'], $this->setup['XY.']);
 			}
-			if (!$this->setup['XY'])	{$this->setup['XY']='120,50';}
-
-				// Checking TEXT and IMAGE objects for files. If any errors the objects are cleared.
-				// The Bounding Box for the objects is stored in an array
-			foreach($sKeyArray as $theKey) {
+			if (!$this->setup['XY']) {
+				$this->setup['XY'] = '120,50';
+			}
+			// Checking TEXT and IMAGE objects for files. If any errors the objects are cleared.
+			// The Bounding Box for the objects is stored in an array
+			foreach ($sKeyArray as $theKey) {
 				$theValue = $this->setup[$theKey];
-
-				if (intval($theKey) && $conf=$this->setup[$theKey.'.']) {
-						// Swipes through TEXT and IMAGE-objects
-					switch($theValue) {
-						case 'TEXT':
-							if ($this->setup[$theKey.'.'] = $this->checkTextObj($conf)) {
-
-									// Adjust font width if max size is set:
-								$maxWidth = isset($this->setup[$theKey.'.']['maxWidth.'])
-									? $this->cObj->stdWrap($this->setup[$theKey.'.']['maxWidth'], $this->setup[$theKey.'.']['maxWidth.'])
-									: $this->setup[$theKey.'.']['maxWidth'];
-								if ($maxWidth) {
-									$this->setup[$theKey.'.']['fontSize'] = $this->fontResize($this->setup[$theKey.'.']); //RTF - this has to be done before calcBBox
-								}
-
-									// Calculate bounding box:
-								$txtInfo=$this->calcBBox($this->setup[$theKey.'.']);
-								$this->setup[$theKey.'.']['BBOX'] = $txtInfo;
-								$this->objBB[$theKey] = $txtInfo;
-								$this->setup[$theKey.'.']['imgMap'] = 0;
+				if (intval($theKey) && ($conf = $this->setup[$theKey . '.'])) {
+					// Swipes through TEXT and IMAGE-objects
+					switch ($theValue) {
+					case 'TEXT':
+						if ($this->setup[$theKey . '.'] = $this->checkTextObj($conf)) {
+							// Adjust font width if max size is set:
+							$maxWidth = isset($this->setup[$theKey . '.']['maxWidth.']) ? $this->cObj->stdWrap($this->setup[$theKey . '.']['maxWidth'], $this->setup[$theKey . '.']['maxWidth.']) : $this->setup[$theKey . '.']['maxWidth'];
+							if ($maxWidth) {
+								$this->setup[$theKey . '.']['fontSize'] = $this->fontResize($this->setup[$theKey . '.']);
 							}
+							// Calculate bounding box:
+							$txtInfo = $this->calcBBox($this->setup[$theKey . '.']);
+							$this->setup[$theKey . '.']['BBOX'] = $txtInfo;
+							$this->objBB[$theKey] = $txtInfo;
+							$this->setup[$theKey . '.']['imgMap'] = 0;
+						}
 						break;
-						case 'IMAGE':
-							$fileInfo = $this->getResource($conf['file'], $conf['file.']);
-							if ($fileInfo) {
-								$this->combinedFileNames[] = preg_replace('/\.[[:alnum:]]+$/', '', basename($fileInfo[3]));
-								$this->setup[$theKey.'.']['file'] = $fileInfo[3];
-								$this->setup[$theKey.'.']['BBOX'] = $fileInfo;
-								$this->objBB[$theKey] = $fileInfo;
-								if ($conf['mask']) {
-									$maskInfo = $this->getResource($conf['mask'], $conf['mask.']);
-									if ($maskInfo) {
-										$this->setup[$theKey.'.']['mask'] = $maskInfo[3];
-									} else {
-										$this->setup[$theKey.'.']['mask'] = '';
-									}
+					case 'IMAGE':
+						$fileInfo = $this->getResource($conf['file'], $conf['file.']);
+						if ($fileInfo) {
+							$this->combinedFileNames[] = preg_replace('/\\.[[:alnum:]]+$/', '', basename($fileInfo[3]));
+							$this->setup[$theKey . '.']['file'] = $fileInfo[3];
+							$this->setup[$theKey . '.']['BBOX'] = $fileInfo;
+							$this->objBB[$theKey] = $fileInfo;
+							if ($conf['mask']) {
+								$maskInfo = $this->getResource($conf['mask'], $conf['mask.']);
+								if ($maskInfo) {
+									$this->setup[$theKey . '.']['mask'] = $maskInfo[3];
+								} else {
+									$this->setup[$theKey . '.']['mask'] = '';
 								}
-							} else {
-								unset($this->setup[$theKey.'.']);
 							}
+						} else {
+							unset($this->setup[$theKey . '.']);
+						}
 						break;
 					}
-						// Checks if disabled is set... (this is also done in menu.php / imgmenu!!)
+					// Checks if disabled is set... (this is also done in menu.php / imgmenu!!)
 					if ($conf['if.']) {
-						$cObj =t3lib_div::makeInstance('tslib_cObj');
+						$cObj = t3lib_div::makeInstance('tslib_cObj');
 						$cObj->start($this->data);
-
 						if (!$cObj->checkIf($conf['if.'])) {
 							unset($this->setup[$theKey]);
-							unset($this->setup[$theKey.'.']);
+							unset($this->setup[$theKey . '.']);
 						}
 					}
 				}
 			}
-
-				// Calculate offsets on elements
+			// Calculate offsets on elements
 			$this->setup['XY'] = $this->calcOffset($this->setup['XY']);
-
 			if (isset($this->setup['offset.'])) {
 				$this->setup['offset'] = $this->cObj->stdWrap($this->setup['offset'], $this->setup['offset.']);
 			}
 			$this->setup['offset'] = $this->calcOffset($this->setup['offset']);
-
 			if (isset($this->setup['workArea.'])) {
 				$this->setup['workArea'] = $this->cObj->stdWrap($this->setup['workArea'], $this->setup['workArea.']);
 			}
 			$this->setup['workArea'] = $this->calcOffset($this->setup['workArea']);
-
 			foreach ($sKeyArray as $theKey) {
-				$theValue=$this->setup[$theKey];
+				$theValue = $this->setup[$theKey];
+				if (intval($theKey) && ($conf = $this->setup[$theKey . '.'])) {
+					switch ($theValue) {
+					case 'TEXT':
 
-				if (intval($theKey) && $conf=$this->setup[$theKey.'.']) {
-					switch($theValue) {
-						case 'TEXT':
-						case 'IMAGE':
-							if (isset($this->setup[$theKey.'.']['offset.'])) {
-								$this->setup[$theKey.'.']['offset'] = $this->cObj->stdWrap($this->setup[$theKey.'.']['offset'], $this->setup[$theKey.'.']['offset.']);
-							}
-							if ($this->setup[$theKey.'.']['offset']) {
-								$this->setup[$theKey.'.']['offset'] = $this->calcOffset($this->setup[$theKey.'.']['offset']);
-							}
+					case 'IMAGE':
+						if (isset($this->setup[$theKey . '.']['offset.'])) {
+							$this->setup[$theKey . '.']['offset'] = $this->cObj->stdWrap($this->setup[$theKey . '.']['offset'], $this->setup[$theKey . '.']['offset.']);
+						}
+						if ($this->setup[$theKey . '.']['offset']) {
+							$this->setup[$theKey . '.']['offset'] = $this->calcOffset($this->setup[$theKey . '.']['offset']);
+						}
 						break;
-						case 'BOX':
-						case 'ELLIPSE':
-							if (isset($this->setup[$theKey.'.']['dimensions.'])) {
-								$this->setup[$theKey.'.']['dimensions'] = $this->cObj->stdWrap($this->setup[$theKey.'.']['dimensions'], $this->setup[$theKey.'.']['dimensions.']);
-							}
-							if ($this->setup[$theKey.'.']['dimensions']) {
-								$this->setup[$theKey.'.']['dimensions'] = $this->calcOffset($this->setup[$theKey.'.']['dimensions']);
-							}
+					case 'BOX':
+
+					case 'ELLIPSE':
+						if (isset($this->setup[$theKey . '.']['dimensions.'])) {
+							$this->setup[$theKey . '.']['dimensions'] = $this->cObj->stdWrap($this->setup[$theKey . '.']['dimensions'], $this->setup[$theKey . '.']['dimensions.']);
+						}
+						if ($this->setup[$theKey . '.']['dimensions']) {
+							$this->setup[$theKey . '.']['dimensions'] = $this->calcOffset($this->setup[$theKey . '.']['dimensions']);
+						}
 						break;
-						case 'WORKAREA':
-							if (isset($this->setup[$theKey.'.']['set.'])) {
-								$this->setup[$theKey.'.']['set'] = $this->cObj->stdWrap($this->setup[$theKey.'.']['set'], $this->setup[$theKey.'.']['set.']);
-							}
-							if ($this->setup[$theKey.'.']['set']) {
-								$this->setup[$theKey.'.']['set'] = $this->calcOffset($this->setup[$theKey.'.']['set']);
-							}
+					case 'WORKAREA':
+						if (isset($this->setup[$theKey . '.']['set.'])) {
+							$this->setup[$theKey . '.']['set'] = $this->cObj->stdWrap($this->setup[$theKey . '.']['set'], $this->setup[$theKey . '.']['set.']);
+						}
+						if ($this->setup[$theKey . '.']['set']) {
+							$this->setup[$theKey . '.']['set'] = $this->calcOffset($this->setup[$theKey . '.']['set']);
+						}
 						break;
-						case 'CROP':
-							if (isset($this->setup[$theKey.'.']['crop.'])) {
-								$this->setup[$theKey.'.']['crop'] = $this->cObj->stdWrap($this->setup[$theKey.'.']['crop'], $this->setup[$theKey.'.']['crop.']);
-							}
-							if ($this->setup[$theKey.'.']['crop']) {
-								$this->setup[$theKey.'.']['crop'] = $this->calcOffset($this->setup[$theKey.'.']['crop']);
-							}
+					case 'CROP':
+						if (isset($this->setup[$theKey . '.']['crop.'])) {
+							$this->setup[$theKey . '.']['crop'] = $this->cObj->stdWrap($this->setup[$theKey . '.']['crop'], $this->setup[$theKey . '.']['crop.']);
+						}
+						if ($this->setup[$theKey . '.']['crop']) {
+							$this->setup[$theKey . '.']['crop'] = $this->calcOffset($this->setup[$theKey . '.']['crop']);
+						}
 						break;
-						case 'SCALE':
-							if (isset($this->setup[$theKey.'.']['width.'])) {
-								$this->setup[$theKey.'.']['width'] = $this->cObj->stdWrap($this->setup[$theKey.'.']['width'], $this->setup[$theKey.'.']['width.']);
-							}
-							if ($this->setup[$theKey.'.']['width']) {
-								$this->setup[$theKey.'.']['width'] = $this->calcOffset($this->setup[$theKey.'.']['width']);
-							}
-							if (isset($this->setup[$theKey.'.']['height.'])) {
-								$this->setup[$theKey.'.']['height'] = $this->cObj->stdWrap($this->setup[$theKey.'.']['height'], $this->setup[$theKey.'.']['height.']);
-							}
-							if ($this->setup[$theKey.'.']['height']) {
-								$this->setup[$theKey.'.']['height'] = $this->calcOffset($this->setup[$theKey.'.']['height']);
-							}
+					case 'SCALE':
+						if (isset($this->setup[$theKey . '.']['width.'])) {
+							$this->setup[$theKey . '.']['width'] = $this->cObj->stdWrap($this->setup[$theKey . '.']['width'], $this->setup[$theKey . '.']['width.']);
+						}
+						if ($this->setup[$theKey . '.']['width']) {
+							$this->setup[$theKey . '.']['width'] = $this->calcOffset($this->setup[$theKey . '.']['width']);
+						}
+						if (isset($this->setup[$theKey . '.']['height.'])) {
+							$this->setup[$theKey . '.']['height'] = $this->cObj->stdWrap($this->setup[$theKey . '.']['height'], $this->setup[$theKey . '.']['height.']);
+						}
+						if ($this->setup[$theKey . '.']['height']) {
+							$this->setup[$theKey . '.']['height'] = $this->calcOffset($this->setup[$theKey . '.']['height']);
+						}
 						break;
 					}
 				}
 			}
-				// Get trivial data
+			// Get trivial data
 			$XY = t3lib_div::intExplode(',', $this->setup['XY']);
-			$maxWidth = isset($this->setup['maxWidth.'])
-				? intval($this->cObj->stdWrap($this->setup['maxWidth'], $this->setup['maxWidth.']))
-				: intval($this->setup['maxWidth']);
-			$maxHeight = isset($this->setup['maxHeight.'])
-				? intval($this->cObj->stdWrap($this->setup['maxHeight'], $this->setup['maxHeight.']))
-				: intval($this->setup['maxHeight']);
-
-			$XY[0] = t3lib_utility_Math::forceIntegerInRange($XY[0], 1, $maxWidth?$maxWidth:2000);
-			$XY[1] = t3lib_utility_Math::forceIntegerInRange($XY[1], 1, $maxHeight?$maxHeight:2000);
+			$maxWidth = isset($this->setup['maxWidth.']) ? intval($this->cObj->stdWrap($this->setup['maxWidth'], $this->setup['maxWidth.'])) : intval($this->setup['maxWidth']);
+			$maxHeight = isset($this->setup['maxHeight.']) ? intval($this->cObj->stdWrap($this->setup['maxHeight'], $this->setup['maxHeight.'])) : intval($this->setup['maxHeight']);
+			$XY[0] = t3lib_utility_Math::forceIntegerInRange($XY[0], 1, $maxWidth ? $maxWidth : 2000);
+			$XY[1] = t3lib_utility_Math::forceIntegerInRange($XY[1], 1, $maxHeight ? $maxHeight : 2000);
 			$this->XY = $XY;
 			$this->w = $XY[0];
 			$this->h = $XY[1];
 			$this->OFFSET = t3lib_div::intExplode(',', $this->setup['offset']);
-				// this sets the workArea
+			// this sets the workArea
 			$this->setWorkArea($this->setup['workArea']);
-				// this sets the default to the current;
+			// this sets the default to the current;
 			$this->defaultWorkArea = $this->workArea;
 		}
 	}
@@ -313,20 +336,19 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * Gets filename from fileName() and if file exists in typo3temp/ dir it will - of course - not be rendered again.
 	 * Otherwise rendering means calling ->make(), then ->output(), then ->destroy()
 	 *
-	 * @return string The filename for the created GIF/PNG file. The filename will be prefixed "GB_"
+	 * @return string The filename for the created GIF/PNG file. The filename will be prefixed "GB_
 	 * @see make(), fileName()
+	 * @todo Define visibility
 	 */
-	function gifBuild() {
+	public function gifBuild() {
 		if ($this->setup) {
-				// Relative to PATH_site
+			// Relative to PATH_site
 			$gifFileName = $this->fileName('GB/');
-				// File exists
-			if (!file_exists($gifFileName))	{
-
-					// Create temporary directory if not done:
+			// File exists
+			if (!file_exists($gifFileName)) {
+				// Create temporary directory if not done:
 				$this->createTempSubDir('GB/');
-
-					// Create file:
+				// Create file:
 				$this->make();
 				$this->output($gifFileName);
 				$this->destroy();
@@ -344,176 +366,153 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @return void
 	 * @access private
 	 * @see gifBuild()
+	 * @todo Define visibility
 	 */
-	function make() {
-			// Get trivial data
+	public function make() {
+		// Get trivial data
 		$XY = $this->XY;
-
-			// Reset internal properties
+		// Reset internal properties
 		$this->saveAlphaLayer = FALSE;
-
-			// Gif-start
+		// Gif-start
 		$this->im = imagecreatetruecolor($XY[0], $XY[1]);
 		$this->w = $XY[0];
 		$this->h = $XY[1];
-
-			// Transparent layer as background if set and requirements are met
-		if (!empty($this->setup['backColor'])
-			&& $this->setup['backColor'] === 'transparent'
-			&& $this->png_truecolor
-			&& !$this->setup['reduceColors']
-			&& (empty($this->setup['format']) || $this->setup['format'] === 'png')) {
-
-				// Set transparency properties
+		// Transparent layer as background if set and requirements are met
+		if ((((!empty($this->setup['backColor']) && $this->setup['backColor'] === 'transparent') && $this->png_truecolor) && !$this->setup['reduceColors']) && (empty($this->setup['format']) || $this->setup['format'] === 'png')) {
+			// Set transparency properties
 			imagesavealpha($this->im, TRUE);
-
-				// Fill with a transparent background
+			// Fill with a transparent background
 			$transparentColor = imagecolorallocatealpha($this->im, 0, 0, 0, 127);
 			imagefill($this->im, 0, 0, $transparentColor);
-
-				// Set internal properties to keep the transparency over the rendering process
+			// Set internal properties to keep the transparency over the rendering process
 			$this->saveAlphaLayer = TRUE;
-				// Force PNG in case no format is set
+			// Force PNG in case no format is set
 			$this->setup['format'] = 'png';
 		} else {
-
-				// Fill the background with the given color
+			// Fill the background with the given color
 			$BGcols = $this->convertColor($this->setup['backColor']);
 			$Bcolor = ImageColorAllocate($this->im, $BGcols[0], $BGcols[1], $BGcols[2]);
 			ImageFilledRectangle($this->im, 0, 0, $XY[0], $XY[1], $Bcolor);
 		}
-
-			// Traverse the GIFBUILDER objects an render each one:
+		// Traverse the GIFBUILDER objects an render each one:
 		if (is_array($this->setup)) {
-			$sKeyArray=t3lib_TStemplate::sortedKeyList($this->setup);
-			foreach($sKeyArray as $theKey) {
-				$theValue=$this->setup[$theKey];
-				if (intval($theKey) && $conf=$this->setup[$theKey.'.']) {
+			$sKeyArray = t3lib_TStemplate::sortedKeyList($this->setup);
+			foreach ($sKeyArray as $theKey) {
+				$theValue = $this->setup[$theKey];
+				if (intval($theKey) && ($conf = $this->setup[$theKey . '.'])) {
 					$isStdWrapped = array();
-					foreach($conf as $key => $value) {
+					foreach ($conf as $key => $value) {
 						$parameter = rtrim($key, '.');
-						if (!$isStdWrapped[$parameter] && isset($conf[$parameter.'.'])) {
-							$conf[$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter.'.']);
+						if (!$isStdWrapped[$parameter] && isset($conf[$parameter . '.'])) {
+							$conf[$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter . '.']);
 							$isStdWrapped[$parameter] = 1;
 						}
 					}
-					switch($theValue) {
-							// Images
-						case 'IMAGE':
-							if ($conf['mask']) {
-								$this->maskImageOntoImage($this->im, $conf, $this->workArea);
-							} else {
-								$this->copyImageOntoImage($this->im, $conf, $this->workArea);
-							}
+					switch ($theValue) {
+					case 'IMAGE':
+						if ($conf['mask']) {
+							$this->maskImageOntoImage($this->im, $conf, $this->workArea);
+						} else {
+							$this->copyImageOntoImage($this->im, $conf, $this->workArea);
+						}
 						break;
-
-							// Text
-						case 'TEXT':
-							if (!$conf['hide']) {
-								if (is_array($conf['shadow.'])) {
-									$isStdWrapped = array();
-									foreach($conf['shadow.'] as $key => $value) {
-										$parameter = rtrim($key, '.');
-										if (!$isStdWrapped[$parameter] && isset($conf[$parameter.'.'])) {
-											$conf['shadow.'][$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter.'.']);
-											$isStdWrapped[$parameter] = 1;
-										}
+					case 'TEXT':
+						if (!$conf['hide']) {
+							if (is_array($conf['shadow.'])) {
+								$isStdWrapped = array();
+								foreach ($conf['shadow.'] as $key => $value) {
+									$parameter = rtrim($key, '.');
+									if (!$isStdWrapped[$parameter] && isset($conf[$parameter . '.'])) {
+										$conf['shadow.'][$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter . '.']);
+										$isStdWrapped[$parameter] = 1;
 									}
-									$this->makeShadow($this->im, $conf['shadow.'], $this->workArea, $conf);
 								}
-								if (is_array($conf['emboss.'])) {
-									$isStdWrapped = array();
-									foreach($conf['emboss.'] as $key => $value) {
-										$parameter = rtrim($key, '.');
-										if (!$isStdWrapped[$parameter] && isset($conf[$parameter.'.'])) {
-											$conf['emboss.'][$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter.'.']);
-											$isStdWrapped[$parameter] = 1;
-										}
+								$this->makeShadow($this->im, $conf['shadow.'], $this->workArea, $conf);
+							}
+							if (is_array($conf['emboss.'])) {
+								$isStdWrapped = array();
+								foreach ($conf['emboss.'] as $key => $value) {
+									$parameter = rtrim($key, '.');
+									if (!$isStdWrapped[$parameter] && isset($conf[$parameter . '.'])) {
+										$conf['emboss.'][$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter . '.']);
+										$isStdWrapped[$parameter] = 1;
 									}
-									$this->makeEmboss($this->im, $conf['emboss.'], $this->workArea, $conf);
 								}
-								if (is_array($conf['outline.'])) {
-									$isStdWrapped = array();
-									foreach($conf['outline.'] as $key => $value) {
-										$parameter = rtrim($key, '.');
-										if (!$isStdWrapped[$parameter] && isset($conf[$parameter.'.'])) {
-											$conf['outline.'][$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter.'.']);
-											$isStdWrapped[$parameter] = 1;
-										}
+								$this->makeEmboss($this->im, $conf['emboss.'], $this->workArea, $conf);
+							}
+							if (is_array($conf['outline.'])) {
+								$isStdWrapped = array();
+								foreach ($conf['outline.'] as $key => $value) {
+									$parameter = rtrim($key, '.');
+									if (!$isStdWrapped[$parameter] && isset($conf[$parameter . '.'])) {
+										$conf['outline.'][$parameter] = $this->cObj->stdWrap($conf[$parameter], $conf[$parameter . '.']);
+										$isStdWrapped[$parameter] = 1;
 									}
-									$this->makeOutline($this->im, $conf['outline.'], $this->workArea, $conf);
 								}
-								$conf['imgMap']=1;
-								$this->makeText($this->im, $conf, $this->workArea);
+								$this->makeOutline($this->im, $conf['outline.'], $this->workArea, $conf);
 							}
+							$conf['imgMap'] = 1;
+							$this->makeText($this->im, $conf, $this->workArea);
+						}
 						break;
-
-							// Text effects:
-						case 'OUTLINE':
-							if ($this->setup[$conf['textObjNum']]=='TEXT' && $txtConf=$this->checkTextObj($this->setup[$conf['textObjNum'].'.'])) {
-								$this->makeOutline($this->im, $conf, $this->workArea, $txtConf);
-							}
+					case 'OUTLINE':
+						if ($this->setup[$conf['textObjNum']] == 'TEXT' && ($txtConf = $this->checkTextObj($this->setup[$conf['textObjNum'] . '.']))) {
+							$this->makeOutline($this->im, $conf, $this->workArea, $txtConf);
+						}
 						break;
-						case 'EMBOSS':
-							if ($this->setup[$conf['textObjNum']]=='TEXT' && $txtConf=$this->checkTextObj($this->setup[$conf['textObjNum'].'.'])) {
-								$this->makeEmboss($this->im, $conf, $this->workArea, $txtConf);
-							}
+					case 'EMBOSS':
+						if ($this->setup[$conf['textObjNum']] == 'TEXT' && ($txtConf = $this->checkTextObj($this->setup[$conf['textObjNum'] . '.']))) {
+							$this->makeEmboss($this->im, $conf, $this->workArea, $txtConf);
+						}
 						break;
-						case 'SHADOW':
-							if ($this->setup[$conf['textObjNum']]=='TEXT' && $txtConf=$this->checkTextObj($this->setup[$conf['textObjNum'].'.'])) {
-								$this->makeShadow($this->im, $conf, $this->workArea, $txtConf);
-							}
+					case 'SHADOW':
+						if ($this->setup[$conf['textObjNum']] == 'TEXT' && ($txtConf = $this->checkTextObj($this->setup[$conf['textObjNum'] . '.']))) {
+							$this->makeShadow($this->im, $conf, $this->workArea, $txtConf);
+						}
 						break;
-
-							// Other
-						case 'BOX':
-							$this->makeBox($this->im, $conf, $this->workArea);
+					case 'BOX':
+						$this->makeBox($this->im, $conf, $this->workArea);
 						break;
-						case 'EFFECT':
-							$this->makeEffect($this->im, $conf);
+					case 'EFFECT':
+						$this->makeEffect($this->im, $conf);
 						break;
-						case 'ADJUST':
-							$this->adjust($this->im, $conf);
+					case 'ADJUST':
+						$this->adjust($this->im, $conf);
 						break;
-						case 'CROP':
-							$this->crop($this->im, $conf);
+					case 'CROP':
+						$this->crop($this->im, $conf);
 						break;
-						case 'SCALE':
-							$this->scale($this->im, $conf);
+					case 'SCALE':
+						$this->scale($this->im, $conf);
 						break;
-						case 'WORKAREA':
-							if ($conf['set']) {
-									// this sets the workArea
-								$this->setWorkArea($conf['set']);
-							}
-							if (isset($conf['clear'])) {
-									// This sets the current to the default;
-								$this->workArea = $this->defaultWorkArea;
-							}
+					case 'WORKAREA':
+						if ($conf['set']) {
+							// this sets the workArea
+							$this->setWorkArea($conf['set']);
+						}
+						if (isset($conf['clear'])) {
+							// This sets the current to the default;
+							$this->workArea = $this->defaultWorkArea;
+						}
 						break;
-						case 'ELLIPSE':
-							$this->makeEllipse($this->im, $conf, $this->workArea);
+					case 'ELLIPSE':
+						$this->makeEllipse($this->im, $conf, $this->workArea);
 						break;
 					}
 				}
 			}
 		}
-
-			// Preserve alpha transparency
+		// Preserve alpha transparency
 		if (!$this->saveAlphaLayer) {
 			if ($this->setup['transparentBackground']) {
-					// Auto transparent background is set
+				// Auto transparent background is set
 				$Bcolor = ImageColorClosest($this->im, $BGcols[0], $BGcols[1], $BGcols[2]);
 				imagecolortransparent($this->im, $Bcolor);
 			} elseif (is_array($this->setup['transparentColor_array'])) {
-					// Multiple transparent colors are set. This is done via the trick that all transparent colors get
-					// converted to one color and then this one gets set as transparent as png/gif can just have one
-					// transparent color.
-				$Tcolor = $this->unifyColors(
-					$this->im,
-					$this->setup['transparentColor_array'],
-					intval($this->setup['transparentColor.']['closest'])
-				);
+				// Multiple transparent colors are set. This is done via the trick that all transparent colors get
+				// converted to one color and then this one gets set as transparent as png/gif can just have one
+				// transparent color.
+				$Tcolor = $this->unifyColors($this->im, $this->setup['transparentColor_array'], intval($this->setup['transparentColor.']['closest']));
 				if ($Tcolor >= 0) {
 					imagecolortransparent($this->im, $Tcolor);
 				}
@@ -526,7 +525,6 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * Various helper functions
 	 *
 	 ********************************************/
-
 	/**
 	 * Initializing/Cleaning of TypoScript properties for TEXT GIFBUILDER objects
 	 *
@@ -537,20 +535,20 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @param array $conf GIFBUILDER object TypoScript properties
 	 * @return array Modified $conf array IF the "text" property is not blank
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function checkTextObj($conf) {
+	public function checkTextObj($conf) {
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($this->data);
-
 		$isStdWrapped = array();
-		foreach($conf as $key => $value) {
+		foreach ($conf as $key => $value) {
 			$parameter = rtrim($key, '.');
-			if (!$isStdWrapped[$parameter] && isset($conf[$parameter.'.'])) {
+			if (!$isStdWrapped[$parameter] && isset($conf[$parameter . '.'])) {
 				$conf[$parameter] = $cObj->stdWrap($conf[$parameter], $conf[$parameter . '.']);
 				$isStdWrapped[$parameter] = 1;
 			}
 		}
-		$conf['fontFile']=$this->checkFile($conf['fontFile']);
+		$conf['fontFile'] = $this->checkFile($conf['fontFile']);
 		if (!$conf['fontFile']) {
 			$conf['fontFile'] = 't3lib/fonts/nimbus.ttf';
 		}
@@ -560,63 +558,59 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 		if (!$conf['fontSize']) {
 			$conf['fontSize'] = 12;
 		}
-			// If any kind of spacing applys, we cannot use angles!!
+		// If any kind of spacing applys, we cannot use angles!!
 		if ($conf['spacing'] || $conf['wordSpacing']) {
 			$conf['angle'] = 0;
 		}
-		if (!isset($conf['antiAlias'])){$conf['antiAlias']=1;}
-
+		if (!isset($conf['antiAlias'])) {
+			$conf['antiAlias'] = 1;
+		}
 		$conf['fontColor'] = trim($conf['fontColor']);
-			// Strip HTML
+		// Strip HTML
 		if (!$conf['doNotStripHTML']) {
 			$conf['text'] = strip_tags($conf['text']);
 		}
 		$this->combinedTextStrings[] = strip_tags($conf['text']);
-
-			// Max length = 100 if automatic line braks are not defined:
+		// Max length = 100 if automatic line braks are not defined:
 		if (!isset($conf['breakWidth']) || !$conf['breakWidth']) {
-			$tlen = (intval($conf['textMaxLength']) ? intval($conf['textMaxLength']) : 100);
+			$tlen = intval($conf['textMaxLength']) ? intval($conf['textMaxLength']) : 100;
 			if ($this->nativeCharset) {
 				$conf['text'] = $this->csConvObj->substr($this->nativeCharset, $conf['text'], 0, $tlen);
 			} else {
 				$conf['text'] = substr($conf['text'], 0, $tlen);
 			}
 		}
-		if ((string)$conf['text']!='') {
-
-				// Char range map thingie:
+		if ((string) $conf['text'] != '') {
+			// Char range map thingie:
 			$fontBaseName = basename($conf['fontFile']);
 			if (is_array($this->charRangeMap[$fontBaseName])) {
-
-					// Initialize splitRendering array:
+				// Initialize splitRendering array:
 				if (!is_array($conf['splitRendering.'])) {
 					$conf['splitRendering.'] = array();
 				}
-
 				$cfgK = $this->charRangeMap[$fontBaseName]['cfgKey'];
-					// Do not impose settings if a splitRendering object already exists:
+				// Do not impose settings if a splitRendering object already exists:
 				if (!isset($conf['splitRendering.'][$cfgK])) {
-						// Set configuration:
+					// Set configuration:
 					$conf['splitRendering.'][$cfgK] = 'charRange';
-					$conf['splitRendering.'][$cfgK.'.'] = $this->charRangeMap[$fontBaseName]['charMapConfig'];
-
-						// Multiplicator of fontsize:
+					$conf['splitRendering.'][$cfgK . '.'] = $this->charRangeMap[$fontBaseName]['charMapConfig'];
+					// Multiplicator of fontsize:
 					if ($this->charRangeMap[$fontBaseName]['multiplicator']) {
-						$conf['splitRendering.'][$cfgK.'.']['fontSize'] = round($conf['fontSize'] * $this->charRangeMap[$fontBaseName]['multiplicator']);
+						$conf['splitRendering.'][$cfgK . '.']['fontSize'] = round($conf['fontSize'] * $this->charRangeMap[$fontBaseName]['multiplicator']);
 					}
-						// Multiplicator of pixelSpace:
+					// Multiplicator of pixelSpace:
 					if ($this->charRangeMap[$fontBaseName]['pixelSpace']) {
 						$travKeys = array('xSpaceBefore', 'xSpaceAfter', 'ySpaceBefore', 'ySpaceAfter');
-						foreach($travKeys as $pxKey) {
-							if (isset($conf['splitRendering.'][$cfgK.'.'][$pxKey])) {
-								$conf['splitRendering.'][$cfgK.'.'][$pxKey] = round($conf['splitRendering.'][$cfgK.'.'][$pxKey] * ($conf['fontSize'] / $this->charRangeMap[$fontBaseName]['pixelSpace']));
+						foreach ($travKeys as $pxKey) {
+							if (isset($conf['splitRendering.'][$cfgK . '.'][$pxKey])) {
+								$conf['splitRendering.'][$cfgK . '.'][$pxKey] = round($conf['splitRendering.'][($cfgK . '.')][$pxKey] * ($conf['fontSize'] / $this->charRangeMap[$fontBaseName]['pixelSpace']));
 							}
 						}
 					}
 				}
 			}
 			if (is_array($conf['splitRendering.'])) {
-				foreach($conf['splitRendering.'] as $key => $value) {
+				foreach ($conf['splitRendering.'] as $key => $value) {
 					if (is_array($conf['splitRendering.'][$key])) {
 						if (isset($conf['splitRendering.'][$key]['fontFile'])) {
 							$conf['splitRendering.'][$key]['fontFile'] = $this->checkFile($conf['splitRendering.'][$key]['fontFile']);
@@ -624,7 +618,6 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 					}
 				}
 			}
-
 			return $conf;
 		}
 	}
@@ -639,19 +632,18 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @param string $string The string to resolve/calculate the result of. The string is divided by a comma first and each resulting part is calculated into an integer.
 	 * @return string The resolved string with each part (separated by comma) returned separated by comma
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function calcOffset($string) {
+	public function calcOffset($string) {
 		$value = array();
 		$numbers = t3lib_div::trimExplode(',', $this->calculateFunctions($string));
-
 		foreach ($numbers as $key => $val) {
-			if ((string)$val == (string)intval($val)) {
+			if ((string) $val == (string) intval($val)) {
 				$value[$key] = intval($val);
 			} else {
 				$value[$key] = $this->calculateValue($val);
 			}
 		}
-
 		$string = implode(',', $value);
 		return $string;
 	}
@@ -659,17 +651,18 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	/**
 	 * Returns an "imgResource" creating an instance of the tslib_cObj class and calling tslib_cObj::getImgResource
 	 *
-	 * @param string $file Filename value OR the string "GIFBUILDER", see documentation in TSref for the "datatype" called "imgResource"
+	 * @param string $file Filename value OR the string "GIFBUILDER", see documentation in TSref for the "datatype" called "imgResource
 	 * @param array $fileArray TypoScript properties passed to the function. Either GIFBUILDER properties or imgResource properties, depending on the value of $file (whether that is "GIFBUILDER" or a file reference)
 	 * @return array Returns an array with file information if an image was returned. Otherwise FALSE.
 	 * @access private
 	 * @see tslib_cObj::getImgResource()
+	 * @todo Define visibility
 	 */
-	function getResource($file, $fileArray) {
+	public function getResource($file, $fileArray) {
 		if (!t3lib_div::inList($this->imageFileExt, $fileArray['ext'])) {
 			$fileArray['ext'] = $this->gifExtension;
 		}
-		$cObj =t3lib_div::makeInstance('tslib_cObj');
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($this->data);
 		return $cObj->getImgResource($file, $fileArray);
 	}
@@ -681,26 +674,25 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @return string Returns the relative filepath
 	 * @access private
 	 * @see t3lib_TStemplate::getFileName()
+	 * @todo Define visibility
 	 */
-	function checkFile($file) {
+	public function checkFile($file) {
 		return $GLOBALS['TSFE']->tmpl->getFileName($file);
 	}
 
 	/**
 	 * Calculates the GIFBUILDER output filename/path based on a serialized, hashed value of this->setup
 	 *
-	 * @param string $pre Filename prefix, eg. "GB_"
+	 * @param string $pre Filename prefix, eg. "GB_
 	 * @return string The relative filepath (relative to PATH_site)
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function fileName($pre) {
-
+	public function fileName($pre) {
 		$meaningfulPrefix = '';
-
 		if ($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']) {
 			/** @var $basicFileFunctions t3lib_basicFileFunctions */
 			$basicFileFunctions = t3lib_div::makeInstance('t3lib_basicFileFunctions');
-
 			$meaningfulPrefix = implode('_', array_merge($this->combinedTextStrings, $this->combinedFileNames));
 			$meaningfulPrefix = $basicFileFunctions->cleanFileName($meaningfulPrefix);
 			$meaningfulPrefixLength = intval($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']);
@@ -713,38 +705,35 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 			}
 			$meaningfulPrefix .= '_';
 		}
-
-			// WARNING: In PHP5 I discovered that rendering with freetype of Japanese letters was totally corrupt.
-			// Not only the wrong glyphs are printed but also some memory stack overflow resulted in strange additional
-			// chars - and finally the reason for this investigation: The Bounding box data was changing all the time
-			// resulting in new images being generated all the time. With PHP4 it works fine.
-		return $this->tempPath .
-				$pre .
-				$meaningfulPrefix .
-				t3lib_div::shortMD5(serialize($this->setup)) .
-				'.' . $this->extension();
+		// WARNING: In PHP5 I discovered that rendering with freetype of Japanese letters was totally corrupt.
+		// Not only the wrong glyphs are printed but also some memory stack overflow resulted in strange additional
+		// chars - and finally the reason for this investigation: The Bounding box data was changing all the time
+		// resulting in new images being generated all the time. With PHP4 it works fine.
+		return (((($this->tempPath . $pre) . $meaningfulPrefix) . t3lib_div::shortMD5(serialize($this->setup))) . '.') . $this->extension();
 	}
 
 	/**
 	 * Returns the file extension used in the filename
 	 *
-	 * @return string Extension; "jpg" or "gif"/"png"
+	 * @return string Extension; "jpg" or "gif"/"png
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function extension() {
-		switch(strtolower($this->setup['format'])) {
-			case 'jpg':
-			case 'jpeg':
-				return 'jpg';
+	public function extension() {
+		switch (strtolower($this->setup['format'])) {
+		case 'jpg':
+
+		case 'jpeg':
+			return 'jpg';
 			break;
-			case 'png':
-				return 'png';
+		case 'png':
+			return 'png';
 			break;
-			case 'gif':
-				return 'gif';
+		case 'gif':
+			return 'gif';
 			break;
-			default:
-				return $this->gifExtension;
+		default:
+			return $this->gifExtension;
 			break;
 		}
 	}
@@ -759,14 +748,12 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	protected function calculateValue($string) {
 		$calculatedValue = 0;
 		$parts = t3lib_div::splitCalc($string, '+-*/%');
-
 		foreach ($parts as $part) {
 			$theVal = $part[1];
 			$sign = $part[0];
-
-			if ((string)intval($theVal) == (string)$theVal) {
+			if ((string) intval($theVal) == (string) $theVal) {
 				$theVal = intval($theVal);
-			} elseif ('[' . substr($theVal, 1, -1) . ']' == $theVal) {
+			} elseif (('[' . substr($theVal, 1, -1)) . ']' == $theVal) {
 				$objParts = explode('.', substr($theVal, 1, -1));
 				$theVal = 0;
 				if (isset($this->objBB[$objParts[0]])) {
@@ -784,20 +771,18 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 			} else {
 				$theVal = 0;
 			}
-
 			if ($sign == '-') {
-				$calculatedValue-= $theVal;
+				$calculatedValue -= $theVal;
 			} elseif ($sign == '+') {
-				$calculatedValue+= $theVal;
+				$calculatedValue += $theVal;
 			} elseif ($sign == '/' && $theVal) {
 				$calculatedValue = $calculatedValue / $theVal;
 			} elseif ($sign == '*') {
 				$calculatedValue = $calculatedValue * $theVal;
 			} elseif ($sign == '%' && $theVal) {
-				$calculatedValue%= $theVal;
+				$calculatedValue %= $theVal;
 			}
 		}
-
 		return round($calculatedValue);
 	}
 
@@ -809,18 +794,11 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @return string The calculated values
 	 */
 	protected function calculateFunctions($string) {
-		if (preg_match_all('#max\(([^)]+)\)#', $string, $matches)) {
+		if (preg_match_all('#max\\(([^)]+)\\)#', $string, $matches)) {
 			foreach ($matches[1] as $index => $maxExpression) {
-				$string = str_replace(
-					$matches[0][$index],
-					$this->calculateMaximum(
-						$maxExpression
-					),
-					$string
-				);
+				$string = str_replace($matches[0][$index], $this->calculateMaximum($maxExpression), $string);
 			}
 		}
-
 		return $string;
 	}
 
@@ -832,8 +810,10 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 */
 	protected function calculateMaximum($string) {
 		$parts = t3lib_div::trimExplode(',', $this->calcOffset($string), TRUE);
-		$maximum = (count($parts) ? max($parts) : 0);
+		$maximum = count($parts) ? max($parts) : 0;
 		return $maximum;
 	}
+
 }
+
 ?>

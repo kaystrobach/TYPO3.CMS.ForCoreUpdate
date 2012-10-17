@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Parent class for 'Extension Objects' in backend modules.
  *
@@ -50,12 +49,12 @@
  * This can be seen in the extension 'cms' where the info module have a
  * function added. In 'ext_tables.php' this is done by this function call:
  *
- *	t3lib_extMgm::insertModuleFunction(
- *		'web_info',
- *		'tx_cms_webinfo_page',
- *		t3lib_extMgm::extPath($_EXTKEY).'web_info/class.tx_cms_webinfo.php',
- *		'LLL:EXT:cms/locallang_tca.php:mod_tx_cms_webinfo_page'
- *	);
+ * t3lib_extMgm::insertModuleFunction(
+ * 'web_info',
+ * 'tx_cms_webinfo_page',
+ * t3lib_extMgm::extPath($_EXTKEY).'web_info/class.tx_cms_webinfo.php',
+ * 'LLL:EXT:cms/locallang_tca.php:mod_tx_cms_webinfo_page'
+ * );
  *
  * EXAMPLE: Two levels.
  * This is the advanced example. You can see it with the extension 'func_wizards'
@@ -65,33 +64,33 @@
  * In the 'ext_tables.php' file of an extension ('wizard_crpages') which uses the
  * framework provided by 'func_wizards' this looks like this:
  *
- *	t3lib_extMgm::insertModuleFunction(
- *		'web_func',
- *		'tx_wizardcrpages_webfunc_2',
- *		t3lib_extMgm::extPath($_EXTKEY).'class.tx_wizardcrpages_webfunc_2.php',
- *		'LLL:EXT:wizard_crpages/locallang.php:wiz_crMany',
- *		'wiz'
- *	);
+ * t3lib_extMgm::insertModuleFunction(
+ * 'web_func',
+ * 'tx_wizardcrpages_webfunc_2',
+ * t3lib_extMgm::extPath($_EXTKEY).'class.tx_wizardcrpages_webfunc_2.php',
+ * 'LLL:EXT:wizard_crpages/locallang.php:wiz_crMany',
+ * 'wiz'
+ * );
  *
  * But for this two-level thing to work it also requires that the parent
  * module (the real backend module) supports it.
  * This is the case for the modules web_func and web_info since they have two
  * times inclusion sections in their index.php scripts. For example (from web_func):
  *
- *		// Make instance:
- *	$SOBE = t3lib_div::makeInstance("SC_mod_web_func_index");
- *	$SOBE->init();
+ * Make instance:
+ * $SOBE = t3lib_div::makeInstance("SC_mod_web_func_index");
+ * $SOBE->init();
  *
- *		// Include files?
- *	foreach($SOBE->include_once as $INC_FILE)	include_once($INC_FILE);
- *	$SOBE->checkExtObj();	// Checking for first level external objects
+ * Include files?
+ * foreach($SOBE->include_once as $INC_FILE)	include_once($INC_FILE);
+ * $SOBE->checkExtObj();	// Checking for first level external objects
  *
- *		// Repeat Include files! - if any files has been added by second-level extensions
- *	foreach($SOBE->include_once as $INC_FILE)	include_once($INC_FILE);
- *	$SOBE->checkSubExtObj(); // Checking second level external objects
+ * Repeat Include files! - if any files has been added by second-level extensions
+ * foreach($SOBE->include_once as $INC_FILE)	include_once($INC_FILE);
+ * $SOBE->checkSubExtObj(); // Checking second level external objects
  *
- *	$SOBE->main();
- *	$SOBE->printContent();
+ * $SOBE->main();
+ * $SOBE->printContent();
  *
  * Notice that the first part is as usual: Include classes and call
  * $SOBE->checkExtObj() to initialize any level-1 sub-modules.
@@ -104,19 +103,19 @@
  * Anyways, the final interesting thing is to see what the framework
  * "func_wizard" actually does:
  *
- *	class tx_funcwizards_webfunc extends t3lib_extobjbase {
- *		var $localLangFile = "locallang.php";
- *		var $function_key = "wiz";
- *		function init(&$pObj, $conf) {
- *				// OK, handles ordinary init. This includes setting up the
- *				// menu array with ->modMenu
- *			parent::init($pObj,$conf);
- *				// Making sure that any further external classes are added to the
- *				// include_once array. Notice that inclusion happens twice
- *				// in the main script because of this!!!
- *			$this->handleExternalFunctionValue();
- *		 }
- *	 }
+ * class tx_funcwizards_webfunc extends t3lib_extobjbase {
+ * var $localLangFile = "locallang.php";
+ * var $function_key = "wiz";
+ * function init(&$pObj, $conf) {
+ * OK, handles ordinary init. This includes setting up the
+ * menu array with ->modMenu
+ * parent::init($pObj,$conf);
+ * Making sure that any further external classes are added to the
+ * include_once array. Notice that inclusion happens twice
+ * in the main script because of this!!!
+ * $this->handleExternalFunctionValue();
+ * }
+ * }
  *
  * Notice that the handleExternalFunctionValue of this class (t3lib_extobjbase)
  * is called and that the ->function_key internal var is set!
@@ -139,27 +138,33 @@ abstract class t3lib_extobjbase {
 	 *
 	 * @var t3lib_SCbase
 	 * @see init()
+	 * @todo Define visibility
 	 */
-	var $pObj;
+	public $pObj;
 
 	/**
 	 * Set to the directory name of this class file.
+	 *
 	 * @see init()
+	 * @todo Define visibility
 	 */
-	var $thisPath = '';
+	public $thisPath = '';
 
 	/**
 	 * Can be hardcoded to the name of a locallang.php file (from the same directory as the class file) to use/load
+	 *
 	 * @see incLocalLang()
+	 * @todo Define visibility
 	 */
-	var $localLangFile = 'locallang.php';
+	public $localLangFile = 'locallang.php';
 
 	/**
 	 * Contains module configuration parts from TBE_MODULES_EXT if found
 	 *
 	 * @see handleExternalFunctionValue()
+	 * @todo Define visibility
 	 */
-	var $extClassConf;
+	public $extClassConf;
 
 	/**
 	 * If this value is set it points to a key in the TBE_MODULES_EXT array (not on the top level..) where another classname/filepath/title can be defined for sub-subfunctions.
@@ -167,8 +172,9 @@ abstract class t3lib_extobjbase {
 	 * The extension 'func_wizards' has this description: 'Adds the 'Wizards' item to the function menu in Web>Func. This is just a framework for wizard extensions.' - so as you can see it is designed to allow further connectivity - 'level 2'
 	 *
 	 * @see handleExternalFunctionValue(), tx_funcwizards_webfunc
+	 * @todo Define visibility
 	 */
-	var $function_key = '';
+	public $function_key = '';
 
 	/**
 	 * Initialize the object
@@ -177,24 +183,19 @@ abstract class t3lib_extobjbase {
 	 * @param array $conf The configuration set for this module - from global array TBE_MODULES_EXT
 	 * @return void
 	 * @see t3lib_SCbase::checkExtObj()
+	 * @todo Define visibility
 	 */
-	function init(&$pObj, $conf) {
+	public function init(&$pObj, $conf) {
 		$this->pObj = $pObj;
-
-			// Path of this script:
+		// Path of this script:
 		$this->thisPath = dirname($conf['path']);
 		if (!@is_dir($this->thisPath)) {
-			throw new RuntimeException(
-				'TYPO3 Fatal Error: Extension "' . $this->thisPath . ' was not a directory as expected...',
-				1270853912
-			);
+			throw new RuntimeException(('TYPO3 Fatal Error: Extension "' . $this->thisPath) . ' was not a directory as expected...', 1270853912);
 		}
-
-			// Local lang:
+		// Local lang:
 		$this->incLocalLang();
-
-			// Setting MOD_MENU items as we need them for logging:
-		$this->pObj->MOD_MENU = array_merge($this->pObj->MOD_MENU, $this->modMenu()); // Candidate for t3lib_div::array_merge() if integer-keys will some day make trouble...
+		// Setting MOD_MENU items as we need them for logging:
+		$this->pObj->MOD_MENU = array_merge($this->pObj->MOD_MENU, $this->modMenu());
 	}
 
 	/**
@@ -202,9 +203,10 @@ abstract class t3lib_extobjbase {
 	 *
 	 * @return void
 	 * @see $function_key, tx_funcwizards_webfunc::init()
+	 * @todo Define visibility
 	 */
-	function handleExternalFunctionValue() {
-			// Must clean first to make sure the correct key is set...
+	public function handleExternalFunctionValue() {
+		// Must clean first to make sure the correct key is set...
 		$this->pObj->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->pObj->MOD_MENU, t3lib_div::_GP('SET'), $this->pObj->MCONF['name']);
 		if ($this->function_key) {
 			$this->extClassConf = $this->pObj->getExternalItemConfig($this->pObj->MCONF['name'], $this->function_key, $this->pObj->MOD_SETTINGS[$this->function_key]);
@@ -218,15 +220,11 @@ abstract class t3lib_extobjbase {
 	 * Including any locallang file configured and merging its content over the current global LOCAL_LANG array (which is EXPECTED to exist!!!)
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function incLocalLang() {
-		if ($this->localLangFile && (
-				@is_file($this->thisPath . '/' . $this->localLangFile)
-				|| @is_file($this->thisPath . '/' . substr($this->localLangFile, 0, -4) . '.xml')
-				|| @is_file($this->thisPath . '/' . substr($this->localLangFile, 0, -4) . '.xlf')
-			)
-		) {
-			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile($this->thisPath . '/' . $this->localLangFile, FALSE);
+	public function incLocalLang() {
+		if ($this->localLangFile && ((@is_file((($this->thisPath . '/') . $this->localLangFile)) || @is_file(((($this->thisPath . '/') . substr($this->localLangFile, 0, -4)) . '.xml'))) || @is_file(((($this->thisPath . '/') . substr($this->localLangFile, 0, -4)) . '.xlf')))) {
+			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(($this->thisPath . '/') . $this->localLangFile, FALSE);
 			if (is_array($LOCAL_LANG)) {
 				$GLOBALS['LOCAL_LANG'] = t3lib_div::array_merge_recursive_overrule((array) $GLOBALS['LOCAL_LANG'], $LOCAL_LANG);
 			}
@@ -238,13 +236,13 @@ abstract class t3lib_extobjbase {
 	 *
 	 * @return void
 	 * @see t3lib_SCbase::checkExtObj()
+	 * @todo Define visibility
 	 */
-	function checkExtObj() {
+	public function checkExtObj() {
 		if (is_array($this->extClassConf) && $this->extClassConf['name']) {
 			$this->extObj = t3lib_div::makeInstance($this->extClassConf['name']);
 			$this->extObj->init($this->pObj, $this->extClassConf);
-
-				// Re-write:
+			// Re-write:
 			$this->pObj->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->pObj->MOD_MENU, t3lib_div::_GP('SET'), $this->pObj->MCONF['name']);
 		}
 	}
@@ -253,8 +251,9 @@ abstract class t3lib_extobjbase {
 	 * Calls the main function inside ANOTHER sub-submodule which might exist.
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function extObjContent() {
+	public function extObjContent() {
 		if (is_object($this->extObj)) {
 			return $this->extObj->main();
 		}
@@ -266,10 +265,12 @@ abstract class t3lib_extobjbase {
 	 *
 	 * @return array A MOD_MENU array which will be merged together with the one from the parent object
 	 * @see init(), tx_cms_webinfo_page::modMenu()
+	 * @todo Define visibility
 	 */
-	function modMenu() {
+	public function modMenu() {
 		return array();
 	}
+
 }
 
 ?>

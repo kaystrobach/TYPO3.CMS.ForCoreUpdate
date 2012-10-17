@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A collection containing a a set files to be represented as a (virtual) folder.
  * This collection is persisted to the database with the accordant folder reference.
@@ -38,17 +37,17 @@ class t3lib_file_Collection_FolderBasedFileCollection extends t3lib_file_Collect
 	/**
 	 * @var string
 	 */
-	protected static $storageTableName = 'sys_file_collection';
+	static protected $storageTableName = 'sys_file_collection';
 
 	/**
 	 * @var string
 	 */
-	protected static $type = 'folder';
+	static protected $type = 'folder';
 
 	/**
 	 * @var string
 	 */
-	protected static $itemsCriteriaField = 'folder';
+	static protected $itemsCriteriaField = 'folder';
 
 	/**
 	 * The folder
@@ -109,21 +108,20 @@ class t3lib_file_Collection_FolderBasedFileCollection extends t3lib_file_Collect
 	 * @param array $array
 	 */
 	public function fromArray(array $array) {
-		$this->uid			= $array['uid'];
-		$this->title		= $array['title'];
-		$this->description	= $array['description'];
-
+		$this->uid = $array['uid'];
+		$this->title = $array['title'];
+		$this->description = $array['description'];
 		if (!empty($array['folder']) && !empty($array['storage'])) {
-			/**  @var $storageRepository t3lib_file_Repository_StorageRepository */
+			/** @var $storageRepository t3lib_file_Repository_StorageRepository */
 			$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
-			/**  @var $storage t3lib_file_Storage */
+			/** @var $storage t3lib_file_Storage */
 			$storage = $storageRepository->findByUid($array['storage']);
-
 			if ($storage) {
 				$this->folder = $storage->getFolder($array['folder']);
 			}
 		}
 	}
+
 }
 
 ?>

@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2012 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2010-2012 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Page tree data provider.
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
+
 	/**
 	 * Node limit that should be loaded for this request per mount
 	 *
@@ -71,12 +71,7 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 			$nodeLimit = $GLOBALS['TYPO3_CONF_VARS']['BE']['pageTree']['preloadLimit'];
 		}
 		$this->nodeLimit = abs(intval($nodeLimit));
-
-		$this->hiddenRecords = t3lib_div::trimExplode(
-			',',
-			$GLOBALS['BE_USER']->getTSConfigVal('options.hideRecords.pages')
-		);
-
+		$this->hiddenRecords = t3lib_div::trimExplode(',', $GLOBALS['BE_USER']->getTSConfigVal('options.hideRecords.pages'));
 		$hookElements = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/tree/pagetree/class.t3lib_tree_pagetree_dataprovider.php']['postProcessCollections'];
 		if (is_array($hookElements)) {
 			foreach ($hookElements as $classRef) {
@@ -99,7 +94,6 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node');
 		$node->setId('root');
 		$node->setExpanded(TRUE);
-
 		return $node;
 	}
 
@@ -114,50 +108,42 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	public function getNodes(t3lib_tree_Node $node, $mountPoint = 0, $level = 0) {
 		/** @var $nodeCollection t3lib_tree_pagetree_NodeCollection */
 		$nodeCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
-
 		if ($level >= 99) {
 			return $nodeCollection;
 		}
-
 		$subpages = $this->getSubpages($node->getId());
-
-			// check if fetching subpages the "root"-page
-			// and in case of a virtual root return the mountpoints as virtual "subpages"
+		// check if fetching subpages the "root"-page
+		// and in case of a virtual root return the mountpoints as virtual "subpages"
 		if (intval($node->getId()) === 0) {
-				// check no temporary mountpoint is used
+			// check no temporary mountpoint is used
 			if (!intval($GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint'])) {
 				$mountPoints = array_map('intval', $GLOBALS['BE_USER']->returnWebmounts());
 				$mountPoints = array_unique($mountPoints);
 				if (!in_array(0, $mountPoints)) {
-						// using a virtual root node
-						// so then return the mount points here as "subpages" of the first node
+					// using a virtual root node
+					// so then return the mount points here as "subpages" of the first node
 					$subpages = array();
 					foreach ($mountPoints as $webMountPoint) {
 						$subpages[] = array(
 							'uid' => $webMountPoint,
-							'isMountPoint' => TRUE,
+							'isMountPoint' => TRUE
 						);
 					}
 				}
 			}
 		}
-
 		if (is_array($subpages) && count($subpages) > 0) {
 			foreach ($subpages as $subpage) {
 				if (in_array($subpage['uid'], $this->hiddenRecords)) {
 					continue;
 				}
-
-					// must be calculated above getRecordWithWorkspaceOverlay,
-					// because the information is lost otherwise
-				$isMountPoint = ($subpage['isMountPoint'] === TRUE);
-
+				// must be calculated above getRecordWithWorkspaceOverlay,
+				// because the information is lost otherwise
+				$isMountPoint = $subpage['isMountPoint'] === TRUE;
 				$subpage = $this->getRecordWithWorkspaceOverlay($subpage['uid'], TRUE);
-
 				if (!$subpage) {
 					continue;
 				}
-
 				$subNode = t3lib_tree_pagetree_Commands::getNewNode($subpage, $mountPoint);
 				$subNode->setIsMountPoint($isMountPoint);
 				if ($this->nodeCounter < $this->nodeLimit) {
@@ -167,16 +153,13 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				} else {
 					$subNode->setLeaf(!$this->hasNodeSubPages($subNode->getId()));
 				}
-
 				$nodeCollection->append($subNode);
 			}
 		}
-
 		foreach ($this->processCollectionHookObjects as $hookObject) {
 			/** @var $hookObject t3lib_tree_pagetree_interfaces_collectionprocessor */
 			$hookObject->postProcessGetNodes($node, $mountPoint, $level, $nodeCollection);
 		}
-
 		return $nodeCollection;
 	}
 
@@ -202,15 +185,13 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	public function getFilteredNodes(t3lib_tree_Node $node, $searchFilter, $mountPoint = 0) {
 		/** @var $nodeCollection t3lib_tree_pagetree_NodeCollection */
 		$nodeCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
-
 		$records = $this->getSubpages(-1, $searchFilter);
 		if (!is_array($records) || !count($records)) {
 			return $nodeCollection;
 		} elseif (count($records) > 500) {
 			return $nodeCollection;
 		}
-
-			// check no temporary mountpoint is used
+		// check no temporary mountpoint is used
 		$mountPoints = intval($GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint']);
 		if (!$mountPoints) {
 			$mountPoints = array_map('intval', $GLOBALS['BE_USER']->returnWebmounts());
@@ -218,23 +199,18 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 		} else {
 			$mountPoints = array($mountPoints);
 		}
-
-		$isNumericSearchFilter = (is_numeric($searchFilter) && $searchFilter > 0);
+		$isNumericSearchFilter = is_numeric($searchFilter) && $searchFilter > 0;
 		$nodeId = intval($node->getId());
 		foreach ($records as $record) {
 			$record = t3lib_tree_pagetree_Commands::getNodeRecord($record['uid']);
 			if (intval($record['pid']) === -1 || in_array($record['uid'], $this->hiddenRecords)) {
 				continue;
 			}
-
-			$rootline = t3lib_BEfunc::BEgetRootLine(
-				$record['uid'], '', ($GLOBALS['BE_USER']->workspace != 0)
-			);
+			$rootline = t3lib_BEfunc::BEgetRootLine($record['uid'], '', $GLOBALS['BE_USER']->workspace != 0);
 			$rootline = array_reverse($rootline);
 			if ($nodeId === 0) {
 				array_shift($rootline);
 			}
-
 			if ($mountPoints != array(0)) {
 				$isInsideMountPoints = FALSE;
 				foreach ($rootline as $rootlineElement) {
@@ -243,13 +219,11 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 						break;
 					}
 				}
-
 				if (!$isInsideMountPoints) {
 					continue;
 				}
 			}
 			$reference = $nodeCollection;
-
 			$inFilteredRootline = FALSE;
 			$amountOfRootlineElements = count($rootline);
 			for ($i = 0; $i < $amountOfRootlineElements; ++$i) {
@@ -257,11 +231,9 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				if (intval($rootlineElement['pid']) === $nodeId || intval($rootlineElement['uid']) === $nodeId) {
 					$inFilteredRootline = TRUE;
 				}
-
 				if (!$inFilteredRootline) {
 					continue;
 				}
-
 				$rootlineElement = t3lib_tree_pagetree_Commands::getNodeRecord($rootlineElement['uid']);
 				$ident = intval($rootlineElement['sorting']) . intval($rootlineElement['uid']);
 				if ($reference && $reference->offsetExists($ident)) {
@@ -269,7 +241,6 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 					$refNode = $reference->offsetGet($ident);
 					$refNode->setExpanded(TRUE);
 					$refNode->setLeaf(FALSE);
-
 					$reference = $refNode->getChildNodes();
 					if ($reference == NULL) {
 						$reference = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
@@ -281,20 +252,12 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 					if ($isNumericSearchFilter && intval($rootlineElement['uid']) === intval($searchFilter)) {
 						$text = str_replace('$1', $refNode->getText(), $replacement);
 					} else {
-						$text = preg_replace('/(' . $searchFilter . ')/i', $replacement, $refNode->getText());
+						$text = preg_replace(('/(' . $searchFilter) . ')/i', $replacement, $refNode->getText());
 					}
-
-					$refNode->setText(
-						$text,
-						$refNode->getTextSourceField(),
-						$refNode->getPrefix(),
-						$refNode->getSuffix()
-					);
-
+					$refNode->setText($text, $refNode->getTextSourceField(), $refNode->getPrefix(), $refNode->getSuffix());
 					/** @var $childCollection t3lib_tree_pagetree_NodeCollection */
 					$childCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
-
-					if (($i + 1) >= $amountOfRootlineElements) {
+					if ($i + 1 >= $amountOfRootlineElements) {
 						$childNodes = $this->getNodes($refNode, $mountPoint);
 						foreach ($childNodes as $childNode) {
 							/** @var $childNode t3lib_tree_pagetree_Node */
@@ -304,21 +267,17 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 						}
 						$refNode->setChildNodes($childNodes);
 					}
-
 					$refNode->setChildNodes($childCollection);
 					$reference->offsetSet($ident, $refNode);
 					$reference->ksort();
-
 					$reference = $childCollection;
 				}
 			}
 		}
-
 		foreach ($this->processCollectionHookObjects as $hookObject) {
 			/** @var $hookObject t3lib_tree_pagetree_interfaces_collectionprocessor */
 			$hookObject->postProcessFilteredNodes($node, $searchFilter, $mountPoint, $nodeCollection);
 		}
-
 		return $nodeCollection;
 	}
 
@@ -333,7 +292,6 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	public function getTreeMounts($searchFilter = '') {
 		/** @var $nodeCollection t3lib_tree_pagetree_NodeCollection */
 		$nodeCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
-
 		$isTemporaryMountPoint = FALSE;
 		$rootNodeIsVirtual = FALSE;
 		$mountPoints = intval($GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint']);
@@ -342,20 +300,18 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 			$mountPoints = array_unique($mountPoints);
 			if (!in_array(0, $mountPoints)) {
 				$rootNodeIsVirtual = TRUE;
-					// use a virtual root
-					// the real mountpoints will be fetched in getNodes() then
-					// since those will be the "subpages" of the virtual root
+				// use a virtual root
+				// the real mountpoints will be fetched in getNodes() then
+				// since those will be the "subpages" of the virtual root
 				$mountPoints = array(0);
 			}
 		} else {
 			$isTemporaryMountPoint = TRUE;
 			$mountPoints = array($mountPoints);
 		}
-
 		if (!count($mountPoints)) {
 			return $nodeCollection;
 		}
-
 		$showRootlineAboveMounts = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showPathAboveMounts');
 		foreach ($mountPoints as $mountPoint) {
 			if ($mountPoint === 0) {
@@ -363,10 +319,9 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] !== '') {
 					$sitename = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'];
 				}
-
 				$record = array(
 					'uid' => 0,
-					'title' => $sitename,
+					'title' => $sitename
 				);
 				$subNode = t3lib_tree_pagetree_Commands::getNewNode($record);
 				$subNode->setLabelIsEditable(FALSE);
@@ -381,43 +336,35 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				if (in_array($mountPoint, $this->hiddenRecords)) {
 					continue;
 				}
-
 				$record = $this->getRecordWithWorkspaceOverlay($mountPoint);
 				if (!$record) {
 					continue;
 				}
-
 				$subNode = t3lib_tree_pagetree_Commands::getNewNode($record, $mountPoint);
 				if ($showRootlineAboveMounts && !$isTemporaryMountPoint) {
 					$rootline = t3lib_tree_pagetree_Commands::getMountPointPath($record['uid']);
 					$subNode->setReadableRootline($rootline);
 				}
 			}
-
 			if (count($mountPoints) <= 1) {
 				$subNode->setExpanded(TRUE);
 				$subNode->setCls('typo3-pagetree-node-notExpandable');
 			}
-
 			$subNode->setIsMountPoint(TRUE);
 			$subNode->setDraggable(FALSE);
-
 			if ($searchFilter === '') {
 				$childNodes = $this->getNodes($subNode, $mountPoint);
 			} else {
 				$childNodes = $this->getFilteredNodes($subNode, $searchFilter, $mountPoint);
 				$subNode->setExpanded(TRUE);
 			}
-
 			$subNode->setChildNodes($childNodes);
 			$nodeCollection->append($subNode);
 		}
-
 		foreach ($this->processCollectionHookObjects as $hookObject) {
 			/** @var $hookObject t3lib_tree_pagetree_interfaces_collectionprocessor */
 			$hookObject->postProcessGetTreeMounts($searchFilter, $nodeCollection);
 		}
-
 		return $nodeCollection;
 	}
 
@@ -429,32 +376,23 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	 * @return string
 	 */
 	protected function getWhereClause($id, $searchFilter = '') {
-		$where = $GLOBALS['BE_USER']->getPagePermsClause(1) .
-			t3lib_BEfunc::deleteClause('pages') .
-			t3lib_BEfunc::versioningPlaceholderClause('pages');
-
+		$where = ($GLOBALS['BE_USER']->getPagePermsClause(1) . t3lib_BEfunc::deleteClause('pages')) . t3lib_BEfunc::versioningPlaceholderClause('pages');
 		if (is_numeric($id) && $id >= 0) {
 			$where .= ' AND pid= ' . $GLOBALS['TYPO3_DB']->fullQuoteStr(intval($id), 'pages');
 		}
-
 		if ($searchFilter !== '') {
 			if (is_numeric($searchFilter) && $searchFilter > 0) {
-				$searchWhere .= 'uid = ' . intval($searchFilter) . ' OR ';
+				$searchWhere .= ('uid = ' . intval($searchFilter)) . ' OR ';
 			}
-
-			$searchFilter = $GLOBALS['TYPO3_DB']->fullQuoteStr('%' . $searchFilter . '%', 'pages');
+			$searchFilter = $GLOBALS['TYPO3_DB']->fullQuoteStr(('%' . $searchFilter) . '%', 'pages');
 			$useNavTitle = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showNavTitle');
-
 			if ($useNavTitle) {
-				$searchWhere .= '(nav_title LIKE ' . $searchFilter .
-					' OR (nav_title = "" AND title LIKE ' . $searchFilter . '))';
+				$searchWhere .= ((('(nav_title LIKE ' . $searchFilter) . ' OR (nav_title = "" AND title LIKE ') . $searchFilter) . '))';
 			} else {
 				$searchWhere .= 'title LIKE ' . $searchFilter;
 			}
-
-			$where .= ' AND (' . $searchWhere . ')';
+			$where .= (' AND (' . $searchWhere) . ')';
 		}
-
 		return $where;
 	}
 
@@ -467,9 +405,7 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	 */
 	protected function getSubpages($id, $searchFilter = '') {
 		$where = $this->getWhereClause($id, $searchFilter);
-		return $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'uid', 'pages', $where, '', 'sorting', '', 'uid'
-		);
+		return $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'pages', $where, '', 'sorting', '', 'uid');
 	}
 
 	/**
@@ -480,16 +416,14 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	 */
 	protected function hasNodeSubPages($id) {
 		$where = $this->getWhereClause($id);
-		$subpage = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-			'uid', 'pages', $where, '', 'sorting', '', 'uid'
-		);
-
+		$subpage = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', 'pages', $where, '', 'sorting', '', 'uid');
 		$returnValue = TRUE;
 		if (!$subpage['uid']) {
 			$returnValue = FALSE;
 		}
-
 		return $returnValue;
 	}
+
 }
+
 ?>

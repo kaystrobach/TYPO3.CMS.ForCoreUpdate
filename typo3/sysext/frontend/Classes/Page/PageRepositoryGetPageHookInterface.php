@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into pageSelect and do additional getPage processing
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_pageSelect_getPageHook {
-
+interface t3lib_pageSelect_getPageHook
+{
 	/**
 	 * Modifies the DB params
 	 *
@@ -45,5 +44,4 @@ interface t3lib_pageSelect_getPageHook {
 	public function getPage_preProcess(&$uid, &$disableGroupAccessCheck, t3lib_pageSelect $parentObject);
 
 }
-
 ?>

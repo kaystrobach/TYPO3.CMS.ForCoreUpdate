@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Web log processor to automatically add web request related data to a log
  * record.
@@ -45,7 +43,6 @@ class t3lib_log_processor_Web extends t3lib_log_processor_Abstract {
 	 */
 	public function processLogRecord(t3lib_log_Record $logRecord) {
 		$logRecord->addData(t3lib_div::getIndpEnv('_ARRAY'));
-
 		return $logRecord;
 	}
 

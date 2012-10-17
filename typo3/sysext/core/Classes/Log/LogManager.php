@@ -23,9 +23,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
-
 /**
  * Global LogManager that keeps track of global logging information.
  *
@@ -43,12 +40,10 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 * @var string
 	 */
 	const CONFIGURATION_TYPE_WRITER = 'writer';
-
 	/**
 	 * @var string
 	 */
 	const CONFIGURATION_TYPE_PROCESSOR = 'processor';
-
 	/**
 	 * Loggers to retrieve them for repeated use.
 	 *
@@ -63,12 +58,11 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 */
 	protected $rootLogger = NULL;
 
-
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->rootLogger  = t3lib_div::makeInstance('t3lib_log_Logger', '');
+		$this->rootLogger = t3lib_div::makeInstance('t3lib_log_Logger', '');
 		$this->loggers[''] = $this->rootLogger;
 	}
 
@@ -94,26 +88,20 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 * @return t3lib_log_Logger Logger with name $name
 	 */
 	public function getLogger($name = '') {
-
 		/** @var $logger t3lib_log_Logger */
 		$logger = NULL;
-
-			// Transform class names to the dot-name style
+		// Transform class names to the dot-name style
 		$name = str_replace('_', '.', $name);
-
 		if (isset($this->loggers[$name])) {
 			$logger = $this->loggers[$name];
 		} else {
-
-				// Lazy instantiation
+			// Lazy instantiation
 			/** @var $logger t3lib_log_Logger */
 			$logger = t3lib_div::makeInstance('t3lib_log_Logger', $name);
 			$this->loggers[$name] = $logger;
-
 			$this->setWritersForLogger($logger);
 			$this->setProcessorsForLogger($logger);
 		}
-
 		return $logger;
 	}
 
@@ -145,17 +133,15 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 */
 	protected function setWritersForLogger(t3lib_log_Logger $logger) {
 		$configuration = $this->getConfigurationForLogger(self::CONFIGURATION_TYPE_WRITER, $logger->getName());
-
 		foreach ($configuration as $severityLevel => $writer) {
 			foreach ($writer as $logWriterClassName => $logWriterOptions) {
-
 				/** @var $logWriter t3lib_log_writer_Writer */
 				$logWriter = NULL;
 				try {
 					$logWriter = t3lib_div::makeInstance($logWriterClassName, $logWriterOptions);
 					$logger->addWriter($severityLevel, $logWriter);
 				} catch (RangeException $e) {
-					$logger->warning('Instantiation of LogWriter "' . $logWriterClassName . '" failed for logger ' . $logger->getName() . ' (' . $e->getMessage() . ')');
+					$logger->warning(((((('Instantiation of LogWriter "' . $logWriterClassName) . '" failed for logger ') . $logger->getName()) . ' (') . $e->getMessage()) . ')');
 				}
 			}
 		}
@@ -170,17 +156,15 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 */
 	protected function setProcessorsForLogger(t3lib_log_Logger $logger) {
 		$configuration = $this->getConfigurationForLogger(self::CONFIGURATION_TYPE_PROCESSOR, $logger->getName());
-
 		foreach ($configuration as $severityLevel => $processor) {
 			foreach ($processor as $logProcessorClassName => $logProcessorOptions) {
-
 				/** @var $logProcessor t3lib_log_processor_Processor */
 				$logProcessor = NULL;
 				try {
 					$logProcessor = t3lib_div::makeInstance($logProcessorClassName, $logProcessorOptions);
 					$logger->addProcessor($severityLevel, $logProcessor);
 				} catch (RangeException $e) {
-					$logger->warning('Instantiation of LogProcessor "' . $logProcessorClassName . '" failed for logger ' . $logger->getName() . ' (' . $e->getMessage() . ')');
+					$logger->warning(((((('Instantiation of LogProcessor "' . $logProcessorClassName) . '" failed for logger ') . $logger->getName()) . ' (') . $e->getMessage()) . ')');
 				}
 			}
 		}
@@ -196,42 +180,32 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 * @return array
 	 */
 	protected function getConfigurationForLogger($configurationType, $loggerName) {
-
-			// Split up the logger name (dot-separated) into its parts
+		// Split up the logger name (dot-separated) into its parts
 		$explodedName = explode('.', $loggerName);
-
-			// Search in the $TYPO3_CONF_VARS['LOG'] array
-			// for these keys, for example "writerConfiguration"
+		// Search in the $TYPO3_CONF_VARS['LOG'] array
+		// for these keys, for example "writerConfiguration"
 		$configurationKey = $configurationType . 'Configuration';
-
 		$configuration = $GLOBALS['TYPO3_CONF_VARS']['LOG'];
-
-		$result = (!empty($configuration[$configurationKey]) ? $configuration[$configurationKey] : array());
-
-			// Walk from general to special (t3lib, t3lib.db, t3lib.db.foo)
-			// and search for the most specific configuration
+		$result = !empty($configuration[$configurationKey]) ? $configuration[$configurationKey] : array();
+		// Walk from general to special (t3lib, t3lib.db, t3lib.db.foo)
+		// and search for the most specific configuration
 		foreach ($explodedName as $partOfClassName) {
 			if (!empty($configuration[$partOfClassName][$configurationKey])) {
 				$result = $configuration[$partOfClassName][$configurationKey];
 			}
 			$configuration = $configuration[$partOfClassName];
 		}
-
-			// Validate the config
+		// Validate the config
 		foreach ($result as $level => $unused) {
 			try {
 				t3lib_log_Level::validateLevel($level);
 			} catch (RangeException $e) {
-				throw new RangeException(
-					'The given severity level "' . htmlspecialchars($level) . '" for ' . $configurationKey . ' of logger "' .
-						$loggerName . '" is not valid.',
-					1326406447
-				);
+				throw new RangeException(((((('The given severity level "' . htmlspecialchars($level)) . '" for ') . $configurationKey) . ' of logger "') . $loggerName) . '" is not valid.', 1326406447);
 			}
 		}
-
 		return $result;
 	}
+
 }
 
 ?>

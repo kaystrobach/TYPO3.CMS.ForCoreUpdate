@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Encapsulate install tool specific bootstrap methods.
  *
@@ -33,38 +32,34 @@
  * @subpackage core
  */
 class Typo3_Bootstrap_Install {
+
 	/**
 	 * Check ENABLE_INSTALL_TOOL and FIRST_INSTALL file in typo3conf
 	 * or exit the script if conditions to access the install tool are not met.
 	 *
 	 * @return void
 	 */
-	public static function checkEnabledInstallToolOrDie() {
+	static public function checkEnabledInstallToolOrDie() {
 		$quickstartFile = PATH_site . 'typo3conf/FIRST_INSTALL';
 		$enableInstallToolFile = PATH_site . 'typo3conf/ENABLE_INSTALL_TOOL';
-
-			// If typo3conf/FIRST_INSTALL is present and can be deleted, automatically create typo3conf/ENABLE_INSTALL_TOOL
-		if (is_file($quickstartFile) && is_writeable($quickstartFile) && unlink($quickstartFile)) {
+		// If typo3conf/FIRST_INSTALL is present and can be deleted, automatically create typo3conf/ENABLE_INSTALL_TOOL
+		if ((is_file($quickstartFile) && is_writeable($quickstartFile)) && unlink($quickstartFile)) {
 			touch($enableInstallToolFile);
 		}
-
-			// Additional security measure if ENABLE_INSTALL_TOOL file cannot, but
-			// should be deleted (in case it is write-protected, for example).
+		// Additional security measure if ENABLE_INSTALL_TOOL file cannot, but
+		// should be deleted (in case it is write-protected, for example).
 		$removeInstallToolFileFailed = FALSE;
-
-			// Only allow Install Tool access if the file "typo3conf/ENABLE_INSTALL_TOOL" is found
-		if (is_file($enableInstallToolFile) && (time() - filemtime($enableInstallToolFile) > 3600)) {
+		// Only allow Install Tool access if the file "typo3conf/ENABLE_INSTALL_TOOL" is found
+		if (is_file($enableInstallToolFile) && time() - filemtime($enableInstallToolFile) > 3600) {
 			$content = file_get_contents($enableInstallToolFile);
 			$verifyString = 'KEEP_FILE';
-
 			if (trim($content) !== $verifyString) {
-					// Delete the file if it is older than 3600s (1 hour)
+				// Delete the file if it is older than 3600s (1 hour)
 				if (!@unlink($enableInstallToolFile)) {
 					$removeInstallToolFileFailed = TRUE;
 				}
 			}
 		}
-
 		if (!is_file($enableInstallToolFile) || $removeInstallToolFileFailed) {
 			self::dieWithLockedInstallToolMessage();
 		}
@@ -75,20 +70,15 @@ class Typo3_Bootstrap_Install {
 	 *
 	 * @return void
 	 */
-	protected static function dieWithLockedInstallToolMessage() {
-		require_once(PATH_site . 't3lib/class.t3lib_parsehtml.php');
-
-			// Define the stylesheet
-		$stylesheet = '<link rel="stylesheet" type="text/css" href="' .
-			'../stylesheets/install/install.css" />';
-		$javascript = '<script type="text/javascript" src="' .
-			'../contrib/prototype/prototype.js"></script>';
-		$javascript .= '<script type="text/javascript" src="' .
-			'../sysext/install/Resources/Public/Javascript/install.js"></script>';
-
-			// Get the template file
-		$template = @file_get_contents(PATH_site . 'typo3/templates/install.html');
-			// Define the markers content
+	static protected function dieWithLockedInstallToolMessage() {
+		require_once PATH_site . 't3lib/class.t3lib_parsehtml.php';
+		// Define the stylesheet
+		$stylesheet = '<link rel="stylesheet" type="text/css" href="' . '../stylesheets/install/install.css" />';
+		$javascript = '<script type="text/javascript" src="' . '../contrib/prototype/prototype.js"></script>';
+		$javascript .= '<script type="text/javascript" src="' . '../sysext/install/Resources/Public/Javascript/install.js"></script>';
+		// Get the template file
+		$template = @file_get_contents((PATH_site . 'typo3/templates/install.html'));
+		// Define the markers content
 		$markers = array(
 			'styleSheet' => $stylesheet,
 			'javascript' => $javascript,
@@ -117,20 +107,16 @@ class Typo3_Bootstrap_Install {
 				</p>
 			'
 		);
-			// Fill the markers
-		$content = t3lib_parsehtml::substituteMarkerArray(
-			$template,
-			$markers,
-			'###|###',
-			1,
-			1
-		);
-			// Output the warning message and exit
+		// Fill the markers
+		$content = t3lib_parsehtml::substituteMarkerArray($template, $markers, '###|###', 1, 1);
+		// Output the warning message and exit
 		header('Content-Type: text/html; charset=utf-8');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Pragma: no-cache');
 		echo $content;
-		exit();
+		die;
 	}
+
 }
+
 ?>

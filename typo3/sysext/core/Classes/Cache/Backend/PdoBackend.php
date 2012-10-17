@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A PDO database cache backend
  *
@@ -115,52 +114,25 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception(
-				'No cache frontend has been set yet via setCache().',
-				1259515600
-			);
+			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1259515600);
 		}
-
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(
-				'The specified data is of type "' . gettype($data) . '" but a string is expected.',
-				1259515601
-			);
+			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1259515601);
 		}
-
 		if ($this->has($entryIdentifier)) {
 			$this->remove($entryIdentifier);
 		}
-
-		$lifetime = ($lifetime === NULL) ? $this->defaultLifetime : $lifetime;
-
-		$statementHandle = $this->databaseHandle->prepare(
-			'INSERT INTO "cache" ("identifier", "context", "cache", "created", "lifetime", "content") VALUES (?, ?, ?, ?, ?, ?)'
-		);
-		$result = $statementHandle->execute(
-			array($entryIdentifier, $this->context, $this->cacheIdentifier, $GLOBALS['EXEC_TIME'], $lifetime, $data)
-		);
-
+		$lifetime = $lifetime === NULL ? $this->defaultLifetime : $lifetime;
+		$statementHandle = $this->databaseHandle->prepare('INSERT INTO "cache" ("identifier", "context", "cache", "created", "lifetime", "content") VALUES (?, ?, ?, ?, ?, ?)');
+		$result = $statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier, $GLOBALS['EXEC_TIME'], $lifetime, $data));
 		if ($result === FALSE) {
-			throw new \t3lib_cache_Exception(
-				'The cache entry "' . $entryIdentifier . '" could not be written.',
-				1259530791
-			);
+			throw new \t3lib_cache_Exception(('The cache entry "' . $entryIdentifier) . '" could not be written.', 1259530791);
 		}
-
-		$statementHandle = $this->databaseHandle->prepare(
-			'INSERT INTO "tags" ("identifier", "context", "cache", "tag") VALUES (?, ?, ?, ?)'
-		);
-
+		$statementHandle = $this->databaseHandle->prepare('INSERT INTO "tags" ("identifier", "context", "cache", "tag") VALUES (?, ?, ?, ?)');
 		foreach ($tags as $tag) {
-			$result = $statementHandle->execute(
-				array($entryIdentifier, $this->context, $this->cacheIdentifier, $tag)
-			);
+			$result = $statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier, $tag));
 			if ($result === FALSE) {
-				throw new \t3lib_cache_Exception(
-					'The tag "' . $tag . ' for cache entry "' . $entryIdentifier . '" could not be written.',
-					1259530751
-				);
+				throw new \t3lib_cache_Exception(((('The tag "' . $tag) . ' for cache entry "') . $entryIdentifier) . '" could not be written.', 1259530751);
 			}
 		}
 	}
@@ -173,12 +145,8 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @api
 	 */
 	public function get($entryIdentifier) {
-		$statementHandle = $this->databaseHandle->prepare(
-			'SELECT "content" FROM "cache" WHERE "identifier"=? AND "context"=? AND "cache"=?' . $this->getNotExpiredStatement()
-		);
-		$statementHandle->execute(
-			array($entryIdentifier, $this->context, $this->cacheIdentifier)
-		);
+		$statementHandle = $this->databaseHandle->prepare('SELECT "content" FROM "cache" WHERE "identifier"=? AND "context"=? AND "cache"=?' . $this->getNotExpiredStatement());
+		$statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier));
 		return $statementHandle->fetchColumn();
 	}
 
@@ -190,13 +158,9 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @api
 	 */
 	public function has($entryIdentifier) {
-		$statementHandle = $this->databaseHandle->prepare(
-			'SELECT COUNT("identifier") FROM "cache" WHERE "identifier"=? AND "context"=? AND "cache"=?' . $this->getNotExpiredStatement()
-		);
-		$statementHandle->execute(
-			array($entryIdentifier, $this->context, $this->cacheIdentifier)
-		);
-		return ($statementHandle->fetchColumn() > 0);
+		$statementHandle = $this->databaseHandle->prepare('SELECT COUNT("identifier") FROM "cache" WHERE "identifier"=? AND "context"=? AND "cache"=?' . $this->getNotExpiredStatement());
+		$statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier));
+		return $statementHandle->fetchColumn() > 0;
 	}
 
 	/**
@@ -209,21 +173,11 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @api
 	 */
 	public function remove($entryIdentifier) {
-		$statementHandle = $this->databaseHandle->prepare(
-			'DELETE FROM "tags" WHERE "identifier"=? AND "context"=? AND "cache"=?'
-		);
-		$statementHandle->execute(
-			array($entryIdentifier, $this->context, $this->cacheIdentifier)
-		);
-
-		$statementHandle = $this->databaseHandle->prepare(
-			'DELETE FROM "cache" WHERE "identifier"=? AND "context"=? AND "cache"=?'
-		);
-		$statementHandle->execute(
-			array($entryIdentifier, $this->context, $this->cacheIdentifier)
-		);
-
-		return ($statementHandle->rowCount() > 0);
+		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "tags" WHERE "identifier"=? AND "context"=? AND "cache"=?');
+		$statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier));
+		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "cache" WHERE "identifier"=? AND "context"=? AND "cache"=?');
+		$statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier));
+		return $statementHandle->rowCount() > 0;
 	}
 
 	/**
@@ -235,7 +189,6 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	public function flush() {
 		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "tags" WHERE "context"=? AND "cache"=?');
 		$statementHandle->execute(array($this->context, $this->cacheIdentifier));
-
 		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "cache" WHERE "context"=? AND "cache"=?');
 		$statementHandle->execute(array($this->context, $this->cacheIdentifier));
 	}
@@ -248,19 +201,10 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @api
 	 */
 	public function flushByTag($tag) {
-		$statementHandle = $this->databaseHandle->prepare(
-			'DELETE FROM "cache" WHERE "context"=? AND "cache"=? AND "identifier" IN (SELECT "identifier" FROM "tags" WHERE "context"=? AND "cache"=? AND "tag"=?)'
-		);
-		$statementHandle->execute(
-			array($this->context, $this->cacheIdentifier, $this->context, $this->cacheIdentifier, $tag)
-		);
-
-		$statementHandle = $this->databaseHandle->prepare(
-			'DELETE FROM "tags" WHERE "context"=? AND "cache"=? AND "tag"=?'
-		);
-		$statementHandle->execute(
-			array($this->context, $this->cacheIdentifier, $tag)
-		);
+		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "cache" WHERE "context"=? AND "cache"=? AND "identifier" IN (SELECT "identifier" FROM "tags" WHERE "context"=? AND "cache"=? AND "tag"=?)');
+		$statementHandle->execute(array($this->context, $this->cacheIdentifier, $this->context, $this->cacheIdentifier, $tag));
+		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "tags" WHERE "context"=? AND "cache"=? AND "tag"=?');
+		$statementHandle->execute(array($this->context, $this->cacheIdentifier, $tag));
 	}
 
 	/**
@@ -272,12 +216,8 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @api
 	 */
 	public function findIdentifiersByTag($tag) {
-		$statementHandle = $this->databaseHandle->prepare(
-			'SELECT "identifier" FROM "tags" WHERE "context"=?  AND "cache"=? AND "tag"=?'
-		);
-		$statementHandle->execute(
-			array($this->context, $this->cacheIdentifier, $tag)
-		);
+		$statementHandle = $this->databaseHandle->prepare('SELECT "identifier" FROM "tags" WHERE "context"=?  AND "cache"=? AND "tag"=?');
+		$statementHandle->execute(array($this->context, $this->cacheIdentifier, $tag));
 		return $statementHandle->fetchAll(\PDO::FETCH_COLUMN);
 	}
 
@@ -288,20 +228,10 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @api
 	 */
 	public function collectGarbage() {
-		$statementHandle = $this->databaseHandle->prepare(
-			'DELETE FROM "tags" WHERE "context"=? AND "cache"=? AND "identifier" IN ' .
-			'(SELECT "identifier" FROM "cache" WHERE "context"=? AND "cache"=? AND "lifetime" > 0 AND "created" + "lifetime" < ' . $GLOBALS['EXEC_TIME'] . ')'
-		);
-		$statementHandle->execute(
-			array($this->context, $this->cacheIdentifier, $this->context, $this->cacheIdentifier)
-		);
-
-		$statementHandle = $this->databaseHandle->prepare(
-			'DELETE FROM "cache" WHERE "context"=? AND "cache"=? AND "lifetime" > 0 AND "created" + "lifetime" < ' . $GLOBALS['EXEC_TIME']
-		);
-		$statementHandle->execute(
-			array($this->context, $this->cacheIdentifier)
-		);
+		$statementHandle = $this->databaseHandle->prepare((('DELETE FROM "tags" WHERE "context"=? AND "cache"=? AND "identifier" IN ' . '(SELECT "identifier" FROM "cache" WHERE "context"=? AND "cache"=? AND "lifetime" > 0 AND "created" + "lifetime" < ') . $GLOBALS['EXEC_TIME']) . ')');
+		$statementHandle->execute(array($this->context, $this->cacheIdentifier, $this->context, $this->cacheIdentifier));
+		$statementHandle = $this->databaseHandle->prepare('DELETE FROM "cache" WHERE "context"=? AND "cache"=? AND "lifetime" > 0 AND "created" + "lifetime" < ' . $GLOBALS['EXEC_TIME']);
+		$statementHandle->execute(array($this->context, $this->cacheIdentifier));
 	}
 
 	/**
@@ -310,7 +240,7 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @return string
 	 */
 	protected function getNotExpiredStatement() {
-		return ' AND ("lifetime" = 0 OR "created" + "lifetime" >= ' . $GLOBALS['EXEC_TIME'] . ')';
+		return (' AND ("lifetime" = 0 OR "created" + "lifetime" >= ' . $GLOBALS['EXEC_TIME']) . ')';
 	}
 
 	/**
@@ -323,24 +253,18 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 		try {
 			$splitdsn = explode(':', $this->dataSourceName, 2);
 			$this->pdoDriver = $splitdsn[0];
-
 			if ($this->pdoDriver === 'sqlite' && !file_exists($splitdsn[1])) {
 				$this->databaseHandle = t3lib_div::makeInstance('PDO', $this->dataSourceName, $this->username, $this->password);
 				$this->createCacheTables();
 			} else {
 				$this->databaseHandle = t3lib_div::makeInstance('PDO', $this->dataSourceName, $this->username, $this->password);
 			}
-
 			$this->databaseHandle->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
 			if ($this->pdoDriver === 'mysql') {
 				$this->databaseHandle->exec('SET SESSION sql_mode=\'ANSI\';');
 			}
 		} catch (\PDOException $e) {
-			throw new \RuntimeException(
-				'Could not connect to cache table with DSN "' . $this->dataSourceName . '". PDO error: ' . $e->getMessage(),
-				1334736164
-			);
+			throw new \RuntimeException((('Could not connect to cache table with DSN "' . $this->dataSourceName) . '". PDO error: ') . $e->getMessage(), 1334736164);
 		}
 	}
 
@@ -354,11 +278,10 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 		try {
 			t3lib_PdoHelper::importSql($this->databaseHandle, $this->pdoDriver, PATH_t3lib . 'cache/backend/resources/ddl.sql');
 		} catch (\PDOException $e) {
-			throw new \RuntimeException(
-				'Could not create cache tables with DSN "' . $this->dataSourceName . '". PDO error: ' . $e->getMessage(),
-				1259576985
-			);
+			throw new \RuntimeException((('Could not create cache tables with DSN "' . $this->dataSourceName) . '". PDO error: ') . $e->getMessage(), 1259576985);
 		}
 	}
+
 }
+
 ?>

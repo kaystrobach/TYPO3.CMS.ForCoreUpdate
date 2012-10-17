@@ -33,37 +33,56 @@
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  * @internal
  */
-
 /**
  * Load Backend Interface modules
  *
  * Typically instantiated like this:
- *		 $this->loadModules = t3lib_div::makeInstance('t3lib_loadModules');
- *		 $this->loadModules->load($TBE_MODULES);
+ * $this->loadModules = t3lib_div::makeInstance('t3lib_loadModules');
+ * $this->loadModules->load($TBE_MODULES);
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  * @package TYPO3
  * @subpackage t3lib
  */
 class t3lib_loadModules {
-		// After the init() function this array will contain the structure of available modules for the backend user.
-	var $modules = array();
-		// Array with paths pointing to the location of modules from extensions
-	var $absPathArray = array();
 
-		// This array will hold the elements that should go into the select-list of modules for groups...
-	var $modListGroup = array();
-		// This array will hold the elements that should go into the select-list of modules for users...
-	var $modListUser = array();
+	// After the init() function this array will contain the structure of available modules for the backend user.
+	/**
+	 * @todo Define visibility
+	 */
+	public $modules = array();
+
+	// Array with paths pointing to the location of modules from extensions
+	/**
+	 * @todo Define visibility
+	 */
+	public $absPathArray = array();
+
+	// This array will hold the elements that should go into the select-list of modules for groups...
+	/**
+	 * @todo Define visibility
+	 */
+	public $modListGroup = array();
+
+	// This array will hold the elements that should go into the select-list of modules for users...
+	/**
+	 * @todo Define visibility
+	 */
+	public $modListUser = array();
 
 	/**
 	 * The backend user for use internally
 	 *
 	 * @var t3lib_beUserAuth
+	 * @todo Define visibility
 	 */
-	var $BE_USER;
-		// If set TRUE, workspace "permissions" will be observed so non-allowed modules will not be included in the array of modules.
-	var $observeWorkspaces = FALSE;
+	public $BE_USER;
+
+	// If set TRUE, workspace "permissions" will be observed so non-allowed modules will not be included in the array of modules.
+	/**
+	 * @todo Define visibility
+	 */
+	public $observeWorkspaces = FALSE;
 
 	/**
 	 * Contains the registered navigation components
@@ -80,107 +99,97 @@ class t3lib_loadModules {
 	 * @param array $modulesArray Should be the global var $TBE_MODULES, $BE_USER can optionally be set to an alternative Backend user object than the global var $BE_USER (which is the currently logged in user)
 	 * @param object $BE_USER Optional backend user object to use. If not set, the global BE_USER object is used.
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function load($modulesArray, $BE_USER = '') {
-			// Setting the backend user for use internally
+	public function load($modulesArray, $BE_USER = '') {
+		// Setting the backend user for use internally
 		if (is_object($BE_USER)) {
 			$this->BE_USER = $BE_USER;
 		} else {
 			$this->BE_USER = $GLOBALS['BE_USER'];
 		}
-
-		/*
-
-			$modulesArray might look like this when entering this function.
-			Notice the two modules added by extensions - they have a path attached
-
-			Array
-			(
-				[web] => list,info,perm,func
-				[file] => list
-				[user] =>
-				[tools] => em,install,txphpmyadmin
-				[help] => about
-				[_PATHS] => Array
-					(
-						[tools_install] => /www/htdocs/typo3/32/coreinstall/typo3/ext/install/mod/
-						[tools_txphpmyadmin] => /www/htdocs/typo3/32/coreinstall/typo3/ext/phpmyadmin/modsub/
-					)
-
-			)
+		/*$modulesArray might look like this when entering this function.
+		Notice the two modules added by extensions - they have a path attachedArray
+		(
+		[web] => list,info,perm,func
+		[file] => list
+		[user] =>
+		[tools] => em,install,txphpmyadmin
+		[help] => about
+		[_PATHS] => Array
+		(
+		[tools_install] => /www/htdocs/typo3/32/coreinstall/typo3/ext/install/mod/
+		[tools_txphpmyadmin] => /www/htdocs/typo3/32/coreinstall/typo3/ext/phpmyadmin/modsub/
+		))
 		 */
-
 		$this->absPathArray = $modulesArray['_PATHS'];
 		unset($modulesArray['_PATHS']);
-			// Unset the array for calling external backend module dispatchers in typo3/mod.php
+		// Unset the array for calling external backend module dispatchers in typo3/mod.php
 		unset($modulesArray['_dispatcher']);
-			// Unset the array for calling backend modules based on external backend module dispatchers in typo3/mod.php
+		// Unset the array for calling backend modules based on external backend module dispatchers in typo3/mod.php
 		unset($modulesArray['_configuration']);
-
 		$this->navigationComponents = $modulesArray['_navigationComponents'];
 		unset($modulesArray['_navigationComponents']);
-
 		$theMods = $this->parseModulesArray($modulesArray);
-
-			// Originally modules were found in typo3/mod/
-			// User defined modules were found in ../typo3conf/
-			// Today almost all modules reside in extensions and they are found by the _PATHS array of the incoming $TBE_MODULES array
-			// Setting paths for 1) core modules (old concept from mod/) and 2) user-defined modules (from ../typo3conf)
+		// Originally modules were found in typo3/mod/
+		// User defined modules were found in ../typo3conf/
+		// Today almost all modules reside in extensions and they are found by the _PATHS array of the incoming $TBE_MODULES array
+		// Setting paths for 1) core modules (old concept from mod/) and 2) user-defined modules (from ../typo3conf)
 		$paths = array();
-			// Path of static modules
+		// Path of static modules
 		$paths['defMods'] = PATH_typo3 . 'mod/';
-			// Local modules (maybe frontend specific)
+		// Local modules (maybe frontend specific)
 		$paths['userMods'] = PATH_typo3 . '../typo3conf/';
-
-			// Traverses the module setup and creates the internal array $this->modules
+		// Traverses the module setup and creates the internal array $this->modules
 		foreach ($theMods as $mods => $subMod) {
 			$path = NULL;
-
 			$extModRelPath = $this->checkExtensionModule($mods);
-				// EXTENSION module:
+			// EXTENSION module:
 			if ($extModRelPath) {
 				$theMainMod = $this->checkMod($mods, PATH_site . $extModRelPath);
 				if (is_array($theMainMod) || $theMainMod != 'notFound') {
-						// ... just so it goes on... submodules cannot be within this path!
+					// ... just so it goes on... submodules cannot be within this path!
 					$path = 1;
 				}
-			} else { // 'CLASSIC' module
-					// Checking for typo3/mod/ module existence...
+			} else {
+				// 'CLASSIC' module
+				// Checking for typo3/mod/ module existence...
 				$theMainMod = $this->checkMod($mods, $paths['defMods'] . $mods);
 				if (is_array($theMainMod) || $theMainMod != 'notFound') {
 					$path = $paths['defMods'];
 				} else {
-						// If not typo3/mod/ then it could be user-defined in typo3conf/ ...?
+					// If not typo3/mod/ then it could be user-defined in typo3conf/ ...?
 					$theMainMod = $this->checkMod($mods, $paths['userMods'] . $mods);
 					if (is_array($theMainMod) || $theMainMod != 'notFound') {
 						$path = $paths['userMods'];
 					}
 				}
 			}
-
-				// If $theMainMod is not set (FALSE) there is no access to the module !(?)
+			// If $theMainMod is not set (FALSE) there is no access to the module !(?)
 			if ($theMainMod && !is_null($path)) {
 				$this->modules[$mods] = $theMainMod;
-
-					// SUBMODULES - if any - are loaded
+				// SUBMODULES - if any - are loaded
 				if (is_array($subMod)) {
 					foreach ($subMod as $valsub) {
-						$extModRelPath = $this->checkExtensionModule($mods . '_' . $valsub);
-						if ($extModRelPath) { // EXTENSION submodule:
-							$theTempSubMod = $this->checkMod($mods . '_' . $valsub, PATH_site . $extModRelPath);
-								// Default sub-module in either main-module-path, be it the default or the userdefined.
+						$extModRelPath = $this->checkExtensionModule(($mods . '_') . $valsub);
+						if ($extModRelPath) {
+							// EXTENSION submodule:
+							$theTempSubMod = $this->checkMod(($mods . '_') . $valsub, PATH_site . $extModRelPath);
+							// Default sub-module in either main-module-path, be it the default or the userdefined.
 							if (is_array($theTempSubMod)) {
 								$this->modules[$mods]['sub'][$valsub] = $theTempSubMod;
 							}
-						} else { // 'CLASSIC' submodule
-								// Checking for typo3/mod/xxx/ module existence...
-								// FIXME what about $path = 1; from above and using $path as string here?
-							$theTempSubMod = $this->checkMod($mods . '_' . $valsub, $path . $mods . '/' . $valsub);
-								// Default sub-module in either main-module-path, be it the default or the userdefined.
+						} else {
+							// 'CLASSIC' submodule
+							// Checking for typo3/mod/xxx/ module existence...
+							// FIXME what about $path = 1; from above and using $path as string here?
+							$theTempSubMod = $this->checkMod(($mods . '_') . $valsub, (($path . $mods) . '/') . $valsub);
+							// Default sub-module in either main-module-path, be it the default or the userdefined.
 							if (is_array($theTempSubMod)) {
 								$this->modules[$mods]['sub'][$valsub] = $theTempSubMod;
-							} elseif ($path == $paths['defMods']) { // If the submodule did not exist in the default module path, then check if there is a submodule in the submodule path!
-								$theTempSubMod = $this->checkMod($mods . '_' . $valsub, $paths['userMods'] . $mods . '/' . $valsub);
+							} elseif ($path == $paths['defMods']) {
+								// If the submodule did not exist in the default module path, then check if there is a submodule in the submodule path!
+								$theTempSubMod = $this->checkMod(($mods . '_') . $valsub, (($paths['userMods'] . $mods) . '/') . $valsub);
 								if (is_array($theTempSubMod)) {
 									$this->modules[$mods]['sub'][$valsub] = $theTempSubMod;
 								}
@@ -188,11 +197,12 @@ class t3lib_loadModules {
 						}
 					}
 				}
-			} else { // This must be done in order to fill out the select-lists for modules correctly!!
+			} else {
+				// This must be done in order to fill out the select-lists for modules correctly!!
 				if (is_array($subMod)) {
 					foreach ($subMod as $valsub) {
-							// FIXME path can only be NULL here, or not?
-						$this->checkMod($mods . '_' . $valsub, $path . $mods . '/' . $valsub);
+						// FIXME path can only be NULL here, or not?
+						$this->checkMod(($mods . '_') . $valsub, (($path . $mods) . '/') . $valsub);
 					}
 				}
 			}
@@ -204,8 +214,9 @@ class t3lib_loadModules {
 	 *
 	 * @param string $name Module name
 	 * @return string If found, the relative path from PATH_site
+	 * @todo Define visibility
 	 */
-	function checkExtensionModule($name) {
+	public function checkExtensionModule($name) {
 		if (isset($this->absPathArray[$name])) {
 			return rtrim(substr($this->absPathArray[$name], strlen(PATH_site)), '/');
 		}
@@ -214,20 +225,20 @@ class t3lib_loadModules {
 	/**
 	 * Here we check for the module.
 	 * Return values:
-	 *	 'notFound':	If the module was not found in the path (no "conf.php" file)
-	 *	 FALSE:		If no access to the module (access check failed)
-	 *	 array():	Configuration array, in case a valid module where access IS granted exists.
+	 * 'notFound':	If the module was not found in the path (no "conf.php" file)
+	 * FALSE:		If no access to the module (access check failed)
+	 * array():	Configuration array, in case a valid module where access IS granted exists.
 	 *
 	 * @param string $name Module name
 	 * @param string $fullpath Absolute path to module
 	 * @return mixed See description of function
+	 * @todo Define visibility
 	 */
-	function checkMod($name, $fullpath) {
+	public function checkMod($name, $fullpath) {
 		if ($name == 'user_ws' && !t3lib_extMgm::isLoaded('version')) {
 			return FALSE;
 		}
-
-			// Check for own way of configuring module
+		// Check for own way of configuring module
 		if (is_array($GLOBALS['TBE_MODULES']['_configuration'][$name]['configureModuleFunction'])) {
 			$obj = $GLOBALS['TBE_MODULES']['_configuration'][$name]['configureModuleFunction'];
 			if (is_callable($obj)) {
@@ -238,96 +249,87 @@ class t3lib_loadModules {
 				return $MCONF;
 			}
 		}
-
-			// Check if this is a submodule
+		// Check if this is a submodule
 		if (strpos($name, '_') !== FALSE) {
 			list($mainModule, ) = explode('_', $name, 2);
 		}
-
 		$modconf = array();
-			// Because 'path/../path' does not work
-		$path = preg_replace('/\/[^\/.]+\/\.\.\//', '/', $fullpath);
+		// Because 'path/../path' does not work
+		$path = preg_replace('/\\/[^\\/.]+\\/\\.\\.\\//', '/', $fullpath);
 		if (@is_dir($path) && file_exists($path . '/conf.php')) {
 			$MCONF = array();
 			$MLANG = array();
-				// The conf-file is included. This must be valid PHP.
-			include($path . '/conf.php');
-			if (!$MCONF['shy'] && $this->checkModAccess($name, $MCONF) && $this->checkModWorkspace($name, $MCONF)) {
+			// The conf-file is included. This must be valid PHP.
+			include $path . '/conf.php';
+			if ((!$MCONF['shy'] && $this->checkModAccess($name, $MCONF)) && $this->checkModWorkspace($name, $MCONF)) {
 				$modconf['name'] = $name;
-					// Language processing. This will add module labels and image reference to the internal ->moduleLabels array of the LANG object.
+				// Language processing. This will add module labels and image reference to the internal ->moduleLabels array of the LANG object.
 				if (is_object($GLOBALS['LANG'])) {
-						// $MLANG['default']['tabs_images']['tab'] is for modules the reference to the module icon.
-						// Here the path is transformed to an absolute reference.
+					// $MLANG['default']['tabs_images']['tab'] is for modules the reference to the module icon.
+					// Here the path is transformed to an absolute reference.
 					if ($MLANG['default']['tabs_images']['tab']) {
-
-							// Initializing search for alternative icon:
-							// Alternative icon key (might have an alternative set in $TBE_STYLES['skinImg']
-						$altIconKey = 'MOD:' . $name . '/' . $MLANG['default']['tabs_images']['tab'];
+						// Initializing search for alternative icon:
+						// Alternative icon key (might have an alternative set in $TBE_STYLES['skinImg']
+						$altIconKey = (('MOD:' . $name) . '/') . $MLANG['default']['tabs_images']['tab'];
 						$altIconAbsPath = is_array($GLOBALS['TBE_STYLES']['skinImg'][$altIconKey]) ? t3lib_div::resolveBackPath(PATH_typo3 . $GLOBALS['TBE_STYLES']['skinImg'][$altIconKey][0]) : '';
-
-							// Setting icon, either default or alternative:
+						// Setting icon, either default or alternative:
 						if ($altIconAbsPath && @is_file($altIconAbsPath)) {
 							$MLANG['default']['tabs_images']['tab'] = $this->getRelativePath(PATH_typo3, $altIconAbsPath);
 						} else {
-								// Setting default icon:
-							$MLANG['default']['tabs_images']['tab'] = $this->getRelativePath(PATH_typo3, $fullpath . '/' . $MLANG['default']['tabs_images']['tab']);
+							// Setting default icon:
+							$MLANG['default']['tabs_images']['tab'] = $this->getRelativePath(PATH_typo3, ($fullpath . '/') . $MLANG['default']['tabs_images']['tab']);
 						}
-
-							// Finally, setting the icon with correct path:
+						// Finally, setting the icon with correct path:
 						if (substr($MLANG['default']['tabs_images']['tab'], 0, 3) == '../') {
 							$MLANG['default']['tabs_images']['tab'] = PATH_site . substr($MLANG['default']['tabs_images']['tab'], 3);
 						} else {
 							$MLANG['default']['tabs_images']['tab'] = PATH_typo3 . $MLANG['default']['tabs_images']['tab'];
 						}
 					}
-
-						// If LOCAL_LANG references are used for labels of the module:
+					// If LOCAL_LANG references are used for labels of the module:
 					if ($MLANG['default']['ll_ref']) {
-							// Now the 'default' key is loaded with the CURRENT language - not the english translation...
+						// Now the 'default' key is loaded with the CURRENT language - not the english translation...
 						$MLANG['default']['labels']['tablabel'] = $GLOBALS['LANG']->sL($MLANG['default']['ll_ref'] . ':mlang_labels_tablabel');
 						$MLANG['default']['labels']['tabdescr'] = $GLOBALS['LANG']->sL($MLANG['default']['ll_ref'] . ':mlang_labels_tabdescr');
 						$MLANG['default']['tabs']['tab'] = $GLOBALS['LANG']->sL($MLANG['default']['ll_ref'] . ':mlang_tabs_tab');
 						$GLOBALS['LANG']->addModuleLabels($MLANG['default'], $name . '_');
-					} else { // ... otherwise use the old way:
+					} else {
+						// ... otherwise use the old way:
 						$GLOBALS['LANG']->addModuleLabels($MLANG['default'], $name . '_');
 						$GLOBALS['LANG']->addModuleLabels($MLANG[$GLOBALS['LANG']->lang], $name . '_');
 					}
 				}
-
-					// Default script setup
+				// Default script setup
 				if ($MCONF['script'] === '_DISPATCH') {
 					if ($MCONF['extbase']) {
 						$modconf['script'] = 'mod.php?M=Tx_' . rawurlencode($name);
 					} else {
 						$modconf['script'] = 'mod.php?M=' . rawurlencode($name);
 					}
-				} elseif ($MCONF['script'] && file_exists($path . '/' . $MCONF['script'])) {
-					$modconf['script'] = $this->getRelativePath(PATH_typo3, $fullpath . '/' . $MCONF['script']);
+				} elseif ($MCONF['script'] && file_exists(($path . '/') . $MCONF['script'])) {
+					$modconf['script'] = $this->getRelativePath(PATH_typo3, ($fullpath . '/') . $MCONF['script']);
 				} else {
 					$modconf['script'] = 'dummy.php';
 				}
-					// Default tab setting
+				// Default tab setting
 				if ($MCONF['defaultMod']) {
 					$modconf['defaultMod'] = $MCONF['defaultMod'];
 				}
-					// Navigation Frame Script (GET params could be added)
+				// Navigation Frame Script (GET params could be added)
 				if ($MCONF['navFrameScript']) {
 					$navFrameScript = explode('?', $MCONF['navFrameScript']);
 					$navFrameScript = $navFrameScript[0];
-					if (file_exists($path . '/' . $navFrameScript)) {
-						$modconf['navFrameScript'] = $this->getRelativePath(PATH_typo3, $fullpath . '/' . $MCONF['navFrameScript']);
+					if (file_exists(($path . '/') . $navFrameScript)) {
+						$modconf['navFrameScript'] = $this->getRelativePath(PATH_typo3, ($fullpath . '/') . $MCONF['navFrameScript']);
 					}
 				}
-					// additional params for Navigation Frame Script: "&anyParam=value&moreParam=1"
+				// additional params for Navigation Frame Script: "&anyParam=value&moreParam=1"
 				if ($MCONF['navFrameScriptParam']) {
 					$modconf['navFrameScriptParam'] = $MCONF['navFrameScriptParam'];
 				}
-
-					// check if there is a navigation component (like the pagetree)
+				// check if there is a navigation component (like the pagetree)
 				if (is_array($this->navigationComponents[$name])) {
 					$modconf['navigationComponentId'] = $this->navigationComponents[$name]['componentId'];
-						// check if the parent has a navigation component that also
-						// goes down to the submodules (if they haven't overwritten it yet)
 				} elseif ($mainModule && is_array($this->navigationComponents[$mainModule])) {
 					$modconf['navigationComponentId'] = $this->navigationComponents[$mainModule]['componentId'];
 				}
@@ -346,32 +348,32 @@ class t3lib_loadModules {
 	 * @param string $name Module name
 	 * @param array $MCONF MCONF array (module configuration array) from the modules conf.php file (contains settings about what access level the module has)
 	 * @return boolean TRUE if access is granted for $this->BE_USER
+	 * @todo Define visibility
 	 */
-	function checkModAccess($name, $MCONF) {
+	public function checkModAccess($name, $MCONF) {
 		if ($MCONF['access']) {
 			$access = strtolower($MCONF['access']);
-				// Checking if admin-access is required
-				// If admin-permissions is required then return TRUE if user is admin
+			// Checking if admin-access is required
+			// If admin-permissions is required then return TRUE if user is admin
 			if (strstr($access, 'admin')) {
 				if ($this->BE_USER->isAdmin()) {
 					return TRUE;
 				}
 			}
-				// This will add modules to the select-lists of user and groups
+			// This will add modules to the select-lists of user and groups
 			if (strstr($access, 'user')) {
 				$this->modListUser[] = $name;
 			}
 			if (strstr($access, 'group')) {
 				$this->modListGroup[] = $name;
 			}
-				// This checks if a user is permitted to access the module
+			// This checks if a user is permitted to access the module
 			if ($this->BE_USER->isAdmin() || $this->BE_USER->check('modules', $name)) {
 				return TRUE;
-			} // If admin you can always access a module
-
+			}
 		} else {
 			return TRUE;
-		} // If conf[access] is not set, then permission IS granted!
+		}
 	}
 
 	/**
@@ -381,15 +383,14 @@ class t3lib_loadModules {
 	 * @param string $name Module name
 	 * @param array $MCONF MCONF array (module configuration array) from the modules conf.php file (contains settings about workspace restrictions)
 	 * @return boolean TRUE if access is granted for $this->BE_USER
+	 * @todo Define visibility
 	 */
-	function checkModWorkspace($name, $MCONF) {
+	public function checkModWorkspace($name, $MCONF) {
 		if ($this->observeWorkspaces) {
 			$status = TRUE;
 			if ($MCONF['workspaces']) {
 				$status = FALSE;
-				if (($this->BE_USER->workspace === 0 && t3lib_div::inList($MCONF['workspaces'], 'online')) ||
-					($this->BE_USER->workspace === -1 && t3lib_div::inList($MCONF['workspaces'], 'offline')) ||
-					($this->BE_USER->workspace > 0 && t3lib_div::inList($MCONF['workspaces'], 'custom'))) {
+				if (($this->BE_USER->workspace === 0 && t3lib_div::inList($MCONF['workspaces'], 'online') || $this->BE_USER->workspace === -1 && t3lib_div::inList($MCONF['workspaces'], 'offline')) || $this->BE_USER->workspace > 0 && t3lib_div::inList($MCONF['workspaces'], 'custom')) {
 					$status = TRUE;
 				}
 			} elseif ($this->BE_USER->workspace === -99) {
@@ -407,12 +408,13 @@ class t3lib_loadModules {
 	 *
 	 * @param array $arr ModuleArray ($TBE_MODULES)
 	 * @return array Output structure with available modules
+	 * @todo Define visibility
 	 */
-	function parseModulesArray($arr) {
+	public function parseModulesArray($arr) {
 		$theMods = array();
 		if (is_array($arr)) {
 			foreach ($arr as $mod => $subs) {
-					// Clean module name to alphanum
+				// Clean module name to alphanum
 				$mod = $this->cleanName($mod);
 				if ($mod) {
 					if ($subs) {
@@ -437,8 +439,9 @@ class t3lib_loadModules {
 	 *
 	 * @param string $str String to clean up
 	 * @return string
+	 * @todo Define visibility
 	 */
-	function cleanName($str) {
+	public function cleanName($str) {
 		return preg_replace('/[^a-z0-9]/i', '', $str);
 	}
 
@@ -448,20 +451,18 @@ class t3lib_loadModules {
 	 * @param string $baseDir Base directory
 	 * @param string $destDir Destination directory
 	 * @return string The relative path of destination compared to base.
+	 * @todo Define visibility
 	 */
-	function getRelativePath($baseDir, $destDir) {
-			// A special case , the dirs are equals
+	public function getRelativePath($baseDir, $destDir) {
+		// A special case , the dirs are equals
 		if ($baseDir == $destDir) {
 			return './';
 		}
-
-			// Remove beginning
+		// Remove beginning
 		$baseDir = ltrim($baseDir, '/');
 		$destDir = ltrim($destDir, '/');
-
 		$found = TRUE;
 		$slash_pos = 0;
-
 		do {
 			$slash_pos = strpos($destDir, '/');
 			if (substr($destDir, 0, $slash_pos) == substr($baseDir, 0, $slash_pos)) {
@@ -471,13 +472,13 @@ class t3lib_loadModules {
 				$found = FALSE;
 			}
 		} while ($found == TRUE);
-
 		$slashes = strlen($baseDir) - strlen(str_replace('/', '', $baseDir));
 		for ($i = 0; $i < $slashes; $i++) {
 			$destDir = '../' . $destDir;
 		}
 		return t3lib_div::resolveBackPath($destDir);
 	}
+
 }
 
 ?>

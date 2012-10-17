@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Tree Node Collection
  *
@@ -34,6 +33,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_NodeCollection extends ArrayObject {
+
 	/**
 	 * Constructor
 	 *
@@ -99,15 +99,13 @@ class t3lib_tree_NodeCollection extends ArrayObject {
 	 */
 	public function toArray() {
 		$arrayRepresentation = array(
-			'serializeClassName' => get_class($this),
+			'serializeClassName' => get_class($this)
 		);
-
 		$iterator = $this->getIterator();
 		while ($iterator->valid()) {
 			$arrayRepresentation[] = $iterator->current()->toArray();
 			$iterator->next();
 		}
-
 		return $arrayRepresentation;
 	}
 
@@ -124,6 +122,7 @@ class t3lib_tree_NodeCollection extends ArrayObject {
 			$this->offsetSet($index, $node);
 		}
 	}
+
 }
 
 ?>

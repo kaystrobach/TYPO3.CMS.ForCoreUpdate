@@ -25,12 +25,11 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Compressor
  * This merges and compresses CSS and JavaScript files of the TYPO3 Backend.
  *
- * @author	Steffen Gebert <steffen@steffen-gebert.de>
+ * @author 	Steffen Gebert <steffen@steffen-gebert.de>
  * @package TYPO3
  * @subpackage t3lib
  */
@@ -44,12 +43,13 @@ class t3lib_Compressor {
 
 	protected $backPath = '';
 
-		// gzipped versions are only created if $TYPO3_CONF_VARS[TYPO3_MODE]['compressionLevel'] is set
+	// gzipped versions are only created if $TYPO3_CONF_VARS[TYPO3_MODE]['compressionLevel'] is set
 	protected $createGzipped = FALSE;
-		// default compression level is -1
+
+	// default compression level is -1
 	protected $gzipCompressionLevel = -1;
 
-	protected $htaccessTemplate = '<FilesMatch "\.(js|css)(\.gzip)?$">
+	protected $htaccessTemplate = '<FilesMatch "\\.(js|css)(\\.gzip)?$">
 	<IfModule mod_expires.c>
 		ExpiresActive on
 		ExpiresDefault "access plus 7 days"
@@ -61,31 +61,28 @@ class t3lib_Compressor {
 	 * Constructor
 	 */
 	public function __construct() {
-			// we check for existence of our targetDirectory
-		if (!is_dir(PATH_site . $this->targetDirectory)) {
+		// we check for existence of our targetDirectory
+		if (!is_dir((PATH_site . $this->targetDirectory))) {
 			t3lib_div::mkdir(PATH_site . $this->targetDirectory);
 		}
-
-			// if enabled, we check whether we should auto-create the .htaccess file
+		// if enabled, we check whether we should auto-create the .htaccess file
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['generateApacheHtaccess']) {
-				// check whether .htaccess exists
-			$htaccessPath = PATH_site . $this->targetDirectory . '.htaccess';
+			// check whether .htaccess exists
+			$htaccessPath = (PATH_site . $this->targetDirectory) . '.htaccess';
 			if (!file_exists($htaccessPath)) {
 				t3lib_div::writeFile($htaccessPath, $this->htaccessTemplate);
 			}
 		}
-
-			// decide whether we should create gzipped versions or not
+		// decide whether we should create gzipped versions or not
 		$compressionLevel = $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['compressionLevel'];
-			// we need zlib for gzencode()
+		// we need zlib for gzencode()
 		if (extension_loaded('zlib') && $compressionLevel) {
 			$this->createGzipped = TRUE;
-				// $compressionLevel can also be TRUE
+			// $compressionLevel can also be TRUE
 			if (t3lib_utility_Math::canBeInterpretedAsInteger($compressionLevel)) {
 				$this->gzipCompressionLevel = intval($compressionLevel);
 			}
 		}
-
 		$this->setInitialPaths();
 	}
 
@@ -106,7 +103,7 @@ class t3lib_Compressor {
 	 * @return void
 	 */
 	protected function setInitialBackPath() {
-		$backPath = (TYPO3_MODE === 'BE' ? $GLOBALS['BACK_PATH'] : '');
+		$backPath = TYPO3_MODE === 'BE' ? $GLOBALS['BACK_PATH'] : '';
 		$this->setBackPath($backPath);
 	}
 
@@ -116,7 +113,7 @@ class t3lib_Compressor {
 	 * @return void
 	 */
 	protected function setInitialRootPath() {
-		$rootPath = (TYPO3_MODE === 'BE' ? PATH_typo3 : PATH_site);
+		$rootPath = TYPO3_MODE === 'BE' ? PATH_typo3 : PATH_site;
 		$this->setRootPath($rootPath);
 	}
 
@@ -126,7 +123,7 @@ class t3lib_Compressor {
 	 * @return void
 	 */
 	protected function setInitialRelativePath() {
-		$relativePath = (TYPO3_MODE === 'BE' ? $GLOBALS['BACK_PATH'] . '../' : '');
+		$relativePath = TYPO3_MODE === 'BE' ? $GLOBALS['BACK_PATH'] . '../' : '';
 		$this->setRelativePath($relativePath);
 	}
 
@@ -170,7 +167,7 @@ class t3lib_Compressor {
 	 * Concatenates the Stylesheet files
 	 *
 	 * Options:
-	 *   baseDirectories If set, only include files below one of the base directories
+	 * baseDirectories If set, only include files below one of the base directories
 	 *
 	 * @param array $cssFiles CSS files to process
 	 * @param array $options Additional options
@@ -179,23 +176,19 @@ class t3lib_Compressor {
 	public function concatenateCssFiles(array $cssFiles, array $options = array()) {
 		$filesToInclude = array();
 		foreach ($cssFiles as $key => $fileOptions) {
-				// no concatenation allowed for this file, so continue
+			// no concatenation allowed for this file, so continue
 			if (!empty($fileOptions['excludeFromConcatenation'])) {
 				continue;
 			}
-				// we remove BACK_PATH from $filename, so make it relative to root path
+			// we remove BACK_PATH from $filename, so make it relative to root path
 			$filenameFromMainDir = $this->getFilenameFromMainDir($fileOptions['file']);
-				// if $options['baseDirectories'] set, we only include files below these directories
-			if ((!isset($options['baseDirectories'])
-				|| $this->checkBaseDirectory($filenameFromMainDir, array_merge($options['baseDirectories'], array($this->targetDirectory))))
-				&& ($fileOptions['media'] === 'all')
-			) {
+			// if $options['baseDirectories'] set, we only include files below these directories
+			if ((!isset($options['baseDirectories']) || $this->checkBaseDirectory($filenameFromMainDir, array_merge($options['baseDirectories'], array($this->targetDirectory)))) && $fileOptions['media'] === 'all') {
 				$filesToInclude[] = $filenameFromMainDir;
-					// remove the file from the incoming file array
+				// remove the file from the incoming file array
 				unset($cssFiles[$key]);
 			}
 		}
-
 		if (count($filesToInclude)) {
 			$targetFile = $this->createMergedCssFile($filesToInclude);
 			$targetFileRelative = $this->relativePath . $targetFile;
@@ -203,9 +196,9 @@ class t3lib_Compressor {
 				'file' => $targetFileRelative,
 				'rel' => 'stylesheet',
 				'media' => 'all',
-				'compress' => TRUE,
+				'compress' => TRUE
 			);
-				// place the merged stylesheet on top of the stylesheets
+			// place the merged stylesheet on top of the stylesheets
 			$cssFiles = array_merge(array($targetFileRelative => $concatenatedOptions), $cssFiles);
 		}
 		return $cssFiles;
@@ -220,16 +213,15 @@ class t3lib_Compressor {
 	public function concatenateJsFiles(array $jsFiles) {
 		$filesToInclude = array();
 		foreach ($jsFiles as $key => $fileOptions) {
-				// invalid section found or no concatenation allowed, so continue
+			// invalid section found or no concatenation allowed, so continue
 			if (empty($fileOptions['section']) || !empty($fileOptions['excludeFromConcatenation'])) {
 				continue;
 			}
-				// we remove BACK_PATH from $filename, so make it relative to root path
+			// we remove BACK_PATH from $filename, so make it relative to root path
 			$filesToInclude[$fileOptions['section']][] = $this->getFilenameFromMainDir($fileOptions['file']);
-				// remove the file from the incoming file array
+			// remove the file from the incoming file array
 			unset($jsFiles[$key]);
 		}
-
 		if (!empty($filesToInclude)) {
 			foreach ($filesToInclude as $section => $files) {
 				$targetFile = $this->createMergedJsFile($files);
@@ -240,9 +232,9 @@ class t3lib_Compressor {
 					'section' => $section,
 					'compress' => TRUE,
 					'forceOnTop' => FALSE,
-					'allWrap' => '',
+					'allWrap' => ''
 				);
-					// place the merged javascript on top of the JS files
+				// place the merged javascript on top of the JS files
 				$jsFiles = array_merge(array($targetFileRelative => $concatenatedOptions), $jsFiles);
 			}
 		}
@@ -277,39 +269,36 @@ class t3lib_Compressor {
 	 * @return mixed Filename of the merged file
 	 */
 	protected function createMergedFile(array $filesToInclude, $type = 'css') {
-			// Get file type
+		// Get file type
 		$type = strtolower(trim($type, '. '));
 		if (empty($type)) {
 			throw new InvalidArgumentException('Error in t3lib_Compressor: No valid file type given for merged file', 1308957498);
 		}
-
-			// we add up the filenames, filemtimes and filsizes to later build a checksum over
-			// it and include it in the temporary file name
+		// we add up the filenames, filemtimes and filsizes to later build a checksum over
+		// it and include it in the temporary file name
 		$unique = '';
-
 		foreach ($filesToInclude as $key => $filename) {
 			if (t3lib_div::isValidUrl($filename)) {
 				$filesToInclude[$key] = $this->retrieveExternalFile($filename);
 				$filename = $filesToInclude[$key];
 			}
 			$filepath = t3lib_div::resolveBackPath($this->rootPath . $filename);
-			$unique .= $filename . filemtime($filepath) . filesize($filepath);
+			$unique .= ($filename . filemtime($filepath)) . filesize($filepath);
 		}
-		$targetFile = $this->targetDirectory . 'merged-' . md5($unique) . '.' . $type;
-
-			// if the file doesn't already exist, we create it
-		if (!file_exists(PATH_site . $targetFile)) {
+		$targetFile = ((($this->targetDirectory . 'merged-') . md5($unique)) . '.') . $type;
+		// if the file doesn't already exist, we create it
+		if (!file_exists((PATH_site . $targetFile))) {
 			$concatenated = '';
-				// concatenate all the files together
+			// concatenate all the files together
 			foreach ($filesToInclude as $filename) {
 				$contents = t3lib_div::getUrl(t3lib_div::resolveBackPath($this->rootPath . $filename));
-					// only fix paths if files aren't already in typo3temp (already processed)
+				// only fix paths if files aren't already in typo3temp (already processed)
 				if ($type === 'css' && !t3lib_div::isFirstPartOfStr($filename, $this->targetDirectory)) {
 					$contents = $this->cssFixRelativeUrlPaths($contents, dirname($filename) . '/');
 				}
 				$concatenated .= LF . $contents;
 			}
-				// move @charset, @import and @namespace statements to top of new file
+			// move @charset, @import and @namespace statements to top of new file
 			if ($type === 'css') {
 				$concatenated = $this->cssFixStatements($concatenated);
 			}
@@ -327,7 +316,7 @@ class t3lib_Compressor {
 	public function compressCssFiles(array $cssFiles) {
 		$filesAfterCompression = array();
 		foreach ($cssFiles as $key => $fileOptions) {
-				// if compression is enabled
+			// if compression is enabled
 			if ($fileOptions['compress']) {
 				$filename = $this->compressCssFile($fileOptions['file']);
 				$fileOptions['file'] = $filename;
@@ -343,7 +332,7 @@ class t3lib_Compressor {
 	 * Compresses a CSS file
 	 *
 	 * Options:
-	 *   baseDirectories If set, only include files below one of the base directories
+	 * baseDirectories If set, only include files below one of the base directories
 	 *
 	 * removes comments and whitespaces
 	 * Adopted from http://drupal.org/files/issues/minify_css.php__1.txt
@@ -352,19 +341,19 @@ class t3lib_Compressor {
 	 * @return string Compressed filename, relative to requested page
 	 */
 	public function compressCssFile($filename) {
-			// generate the unique name of the file
+		// generate the unique name of the file
 		$filenameAbsolute = t3lib_div::resolveBackPath($this->rootPath . $this->getFilenameFromMainDir($filename));
-		$unique = $filenameAbsolute . filemtime($filenameAbsolute) . filesize($filenameAbsolute);
-
+		$unique = ($filenameAbsolute . filemtime($filenameAbsolute)) . filesize($filenameAbsolute);
 		$pathinfo = pathinfo($filename);
-		$targetFile = $this->targetDirectory . $pathinfo['filename'] . '-' . md5($unique) . '.css';
-			// only create it, if it doesn't exist, yet
-		if (!file_exists(PATH_site . $targetFile) || ($this->createGzipped && !file_exists(PATH_site . $targetFile . '.gzip'))) {
+		$targetFile = ((($this->targetDirectory . $pathinfo['filename']) . '-') . md5($unique)) . '.css';
+		// only create it, if it doesn't exist, yet
+		if (!file_exists((PATH_site . $targetFile)) || $this->createGzipped && !file_exists(((PATH_site . $targetFile) . '.gzip'))) {
 			$contents = t3lib_div::getUrl($filenameAbsolute);
-				// Perform some safe CSS optimizations.
-			$contents = str_replace("\r", '', $contents); // Strip any and all carriage returns.
-				// Match and process strings, comments and everything else, one chunk at a time.
-				// To understand this regex, read: "Mastering Regular Expressions 3rd Edition" chapter 6.
+			// Perform some safe CSS optimizations.
+			$contents = str_replace('', '', $contents);
+			// Strip any and all carriage returns.
+			// Match and process strings, comments and everything else, one chunk at a time.
+			// To understand this regex, read: "Mastering Regular Expressions 3rd Edition" chapter 6.
 			$contents = preg_replace_callback('%
 				# One-regex-to-rule-them-all! - version: 20100220_0100
 				# Group 1: Match a double quoted string.
@@ -372,29 +361,34 @@ class t3lib_Compressor {
 				# Group 2: Match a single quoted string.
 				(\'[^\'\\\\]*+(?:\\\\.[^\'\\\\]*+)*+\') |  # or...
 				# Group 3: Match a regular non-MacIE5-hack comment.
-				(/\*[^\\\\*]*+\*++(?:[^\\\\*/][^\\\\*]*+\*++)*+/) |  # or...
+				(/\\*[^\\\\*]*+\\*++(?:[^\\\\*/][^\\\\*]*+\\*++)*+/) |  # or...
 				# Group 4: Match a MacIE5-type1 comment.
-				(/\*(?:[^*\\\\]*+\**+(?!/))*+\\\\[^*]*+\*++(?:[^*/][^*]*+\*++)*+/(?<!\\\\\*/)) |  # or...
+				(/\\*(?:[^*\\\\]*+\\**+(?!/))*+\\\\[^*]*+\\*++(?:[^*/][^*]*+\\*++)*+/(?<!\\\\\\*/)) |  # or...
 				# Group 5: Match a MacIE5-type2 comment.
-				(/\*[^*]*\*+(?:[^/*][^*]*\*+)*/(?<=\\\\\*/))  # folllowed by...
+				(/\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/(?<=\\\\\\*/))  # folllowed by...
 				# Group 6: Match everything up to final closing regular comment
-				([^/]*+(?:(?!\*)/[^/]*+)*?)
+				([^/]*+(?:(?!\\*)/[^/]*+)*?)
 				# Group 7: Match final closing regular comment
-				(/\*[^/]++(?:(?<!\*)/(?!\*)[^/]*+)*+/(?<=(?<!\\\\)\*/)) |  # or...
+				(/\\*[^/]++(?:(?<!\\*)/(?!\\*)[^/]*+)*+/(?<=(?<!\\\\)\\*/)) |  # or...
 				# Group 8: Match regular non-string, non-comment text.
-				([^"\'/]*+(?:(?!/\*)/[^"\'/]*+)*+)
-				%Ssx', array('self', 'compressCssPregCallback'), $contents); // Do it!
-			$contents = preg_replace('/^\s++/', '', $contents); // Strip leading whitespace.
-			$contents = preg_replace('/[ \t]*+\n\s*+/S', "\n", $contents); // Consolidate multi-lines space.
-			$contents = preg_replace('/(?<!\s)\s*+$/S', "\n", $contents); // Ensure file ends in newline.
-				// we have to fix relative paths, if we aren't working on a file in our target directory
+				([^"\'/]*+(?:(?!/\\*)/[^"\'/]*+)*+)
+				%Ssx', array('self', 'compressCssPregCallback'), $contents);
+			// Do it!
+			$contents = preg_replace('/^\\s++/', '', $contents);
+			// Strip leading whitespace.
+			$contents = preg_replace('/[ \\t]*+\\n\\s*+/S', '
+', $contents);
+			// Consolidate multi-lines space.
+			$contents = preg_replace('/(?<!\\s)\\s*+$/S', '
+', $contents);
+			// Ensure file ends in newline.
+			// we have to fix relative paths, if we aren't working on a file in our target directory
 			if (strpos($filename, $this->targetDirectory) === FALSE) {
 				$filenameRelativeToMainDir = substr($filename, strlen($this->backPath));
 				$contents = $this->cssFixRelativeUrlPaths($contents, dirname($filenameRelativeToMainDir) . '/');
 			}
 			$this->writeFileAndCompressed($targetFile, $contents);
 		}
-
 		return $this->relativePath . $this->returnFileReference($targetFile);
 	}
 
@@ -405,31 +399,55 @@ class t3lib_Compressor {
 	 * @param array $matches
 	 * @return string the compressed string
 	 */
-	public static function compressCssPregCallback($matches) {
-		if ($matches[1]) { // Group 1: Double quoted string.
-			return $matches[1]; // Return the string unmodified.
-		} elseif ($matches[2]) { // Group 2: Single quoted string.
-			return $matches[2]; // Return the string unmodified.
-		} elseif ($matches[3]) { // Group 3: Regular non-MacIE5-hack comment.
-			return "\n"; // Return single space.
-		} elseif ($matches[4]) { // Group 4: MacIE5-hack-type-1 comment.
-			return "\n/*\\T1*/\n"; // Return minimal MacIE5-hack-type-1 comment.
-		}
-		elseif ($matches[5]) { // Group 5,6,7: MacIE5-hack-type-2 comment
-			$matches[6] = preg_replace('/\s++([+>{};,)])/S', '$1', $matches[6]); // Clean pre-punctuation.
-			$matches[6] = preg_replace('/([+>{}:;,(])\s++/S', '$1', $matches[6]); // Clean post-punctuation.
-			$matches[6] = preg_replace('/;?\}/S', "}\n", $matches[6]); // Add a touch of formatting.
-			return "\n/*T2\\*/" . $matches[6] . "\n/*T2E*/\n"; // Minify and reassemble composite type2 comment.
-		} elseif (isset($matches[8])) { // Group 8: Non-string, non-comment. Safe to clean whitespace here.
-			$matches[8] = preg_replace('/^\s++/', '', $matches[8]); // Strip all leading whitespace.
-			$matches[8] = preg_replace('/\s++$/', '', $matches[8]); // Strip all trailing whitespace.
-			$matches[8] = preg_replace('/\s{2,}+/', ' ', $matches[8]); // Consolidate multiple whitespace.
-			$matches[8] = preg_replace('/\s++([+>{};,)])/S', '$1', $matches[8]); // Clean pre-punctuation.
-			$matches[8] = preg_replace('/([+>{}:;,(])\s++/S', '$1', $matches[8]); // Clean post-punctuation.
-			$matches[8] = preg_replace('/;?\}/S', "}\n", $matches[8]); // Add a touch of formatting.
+	static public function compressCssPregCallback($matches) {
+		if ($matches[1]) {
+			// Group 1: Double quoted string.
+			return $matches[1];
+		} elseif ($matches[2]) {
+			// Group 2: Single quoted string.
+			return $matches[2];
+		} elseif ($matches[3]) {
+			// Group 3: Regular non-MacIE5-hack comment.
+			return '
+';
+		} elseif ($matches[4]) {
+			// Group 4: MacIE5-hack-type-1 comment.
+			return '
+/*\\T1*/
+';
+		} elseif ($matches[5]) {
+			// Group 5,6,7: MacIE5-hack-type-2 comment
+			$matches[6] = preg_replace('/\\s++([+>{};,)])/S', '$1', $matches[6]);
+			// Clean pre-punctuation.
+			$matches[6] = preg_replace('/([+>{}:;,(])\\s++/S', '$1', $matches[6]);
+			// Clean post-punctuation.
+			$matches[6] = preg_replace('/;?\\}/S', '}
+', $matches[6]);
+			// Add a touch of formatting.
+			return ('
+/*T2\\*/' . $matches[6]) . '
+/*T2E*/
+';
+		} elseif (isset($matches[8])) {
+			// Group 8: Non-string, non-comment. Safe to clean whitespace here.
+			$matches[8] = preg_replace('/^\\s++/', '', $matches[8]);
+			// Strip all leading whitespace.
+			$matches[8] = preg_replace('/\\s++$/', '', $matches[8]);
+			// Strip all trailing whitespace.
+			$matches[8] = preg_replace('/\\s{2,}+/', ' ', $matches[8]);
+			// Consolidate multiple whitespace.
+			$matches[8] = preg_replace('/\\s++([+>{};,)])/S', '$1', $matches[8]);
+			// Clean pre-punctuation.
+			$matches[8] = preg_replace('/([+>{}:;,(])\\s++/S', '$1', $matches[8]);
+			// Clean post-punctuation.
+			$matches[8] = preg_replace('/;?\\}/S', '}
+', $matches[8]);
+			// Add a touch of formatting.
 			return $matches[8];
 		}
-		return $matches[0] . "\n/* ERROR! Unexpected _proccess_css_minify() parameter */\n"; // never get here
+		return $matches[0] . '
+/* ERROR! Unexpected _proccess_css_minify() parameter */
+';
 	}
 
 	/**
@@ -441,7 +459,7 @@ class t3lib_Compressor {
 	public function compressJsFiles(array $jsFiles) {
 		$filesAfterCompression = array();
 		foreach ($jsFiles as $key => $fileOptions) {
-				// if compression is enabled
+			// if compression is enabled
 			if ($fileOptions['compress']) {
 				$fileOptions['file'] = $this->compressJsFile($fileOptions['file']);
 			}
@@ -457,14 +475,13 @@ class t3lib_Compressor {
 	 * @return string Filename of the compressed file, relative to requested page
 	 */
 	public function compressJsFile($filename) {
-			// generate the unique name of the file
+		// generate the unique name of the file
 		$filenameAbsolute = t3lib_div::resolveBackPath($this->rootPath . $this->getFilenameFromMainDir($filename));
-		$unique = $filenameAbsolute . filemtime($filenameAbsolute) . filesize($filenameAbsolute);
-
+		$unique = ($filenameAbsolute . filemtime($filenameAbsolute)) . filesize($filenameAbsolute);
 		$pathinfo = pathinfo($filename);
-		$targetFile = $this->targetDirectory . $pathinfo['filename'] . '-' . md5($unique) . '.js';
-			// only create it, if it doesn't exist, yet
-		if (!file_exists(PATH_site . $targetFile) || ($this->createGzipped && !file_exists(PATH_site . $targetFile . '.gzip'))) {
+		$targetFile = ((($this->targetDirectory . $pathinfo['filename']) . '-') . md5($unique)) . '.js';
+		// only create it, if it doesn't exist, yet
+		if (!file_exists((PATH_site . $targetFile)) || $this->createGzipped && !file_exists(((PATH_site . $targetFile) . '.gzip'))) {
 			$contents = t3lib_div::getUrl($filenameAbsolute);
 			$this->writeFileAndCompressed($targetFile, $contents);
 		}
@@ -478,20 +495,18 @@ class t3lib_Compressor {
 	 * @return string the path to the file relative to the root path
 	 */
 	protected function getFilenameFromMainDir($filename) {
-			// if BACK_PATH is empty return $filename
+		// if BACK_PATH is empty return $filename
 		if (empty($this->backPath)) {
 			return $filename;
 		}
-
-			// if the file exists in the root path, just return the $filename
+		// if the file exists in the root path, just return the $filename
 		if (strpos($filename, $this->backPath) === 0) {
 			$file = str_replace($this->backPath, '', $filename);
 			if (is_file($this->rootPath . $file)) {
 				return $file;
 			}
 		}
-
-			// build the file path relatively to the PATH_site
+		// build the file path relatively to the PATH_site
 		$backPath = str_replace(TYPO3_mainDir, '', $this->backPath);
 		$file = str_replace($backPath, '', $filename);
 		if (substr($file, 0, 3) === '../') {
@@ -499,14 +514,12 @@ class t3lib_Compressor {
 		} else {
 			$file = PATH_site . $file;
 		}
-
-			// check if the file exists, and if so, return the path relative to TYPO3_mainDir
+		// check if the file exists, and if so, return the path relative to TYPO3_mainDir
 		if (is_file($file)) {
 			$mainDirDepth = substr_count(TYPO3_mainDir, '/');
 			return str_repeat('../', $mainDirDepth) . str_replace(PATH_site, '', $file);
 		}
-
-			// none of above conditions were met, fallback to default behaviour
+		// none of above conditions were met, fallback to default behaviour
 		return substr($filename, strlen($this->backPath));
 	}
 
@@ -519,7 +532,7 @@ class t3lib_Compressor {
 	 */
 	protected function checkBaseDirectory($filename, array $baseDirectories) {
 		foreach ($baseDirectories as $baseDirectory) {
-				// check, if $filename starts with base directory
+			// check, if $filename starts with base directory
 			if (t3lib_div::isFirstPartOfStr($filename, $baseDirectory)) {
 				return TRUE;
 			}
@@ -535,21 +548,18 @@ class t3lib_Compressor {
 	 * @return string Processed data
 	 */
 	protected function cssFixRelativeUrlPaths($contents, $oldDir) {
-		$mainDir = (TYPO3_MODE === 'BE' ? TYPO3_mainDir : '');
-		$newDir = '../../' . $mainDir . $oldDir;
-
-			// Replace "url()" paths
+		$mainDir = TYPO3_MODE === 'BE' ? TYPO3_mainDir : '';
+		$newDir = ('../../' . $mainDir) . $oldDir;
+		// Replace "url()" paths
 		if (stripos($contents, 'url') !== FALSE) {
-			$regex = '/url(\(\s*["\']?(?!\/)([^"\']+)["\']?\s*\))/iU';
+			$regex = '/url(\\(\\s*["\']?(?!\\/)([^"\']+)["\']?\\s*\\))/iU';
 			$contents = $this->findAndReplaceUrlPathsByRegex($contents, $regex, $newDir, '(\'|\')');
 		}
-
-			// Replace "@import" paths
+		// Replace "@import" paths
 		if (stripos($contents, '@import') !== FALSE) {
-			$regex = '/@import\s*(["\']?(?!\/)([^"\']+)["\']?)/i';
+			$regex = '/@import\\s*(["\']?(?!\\/)([^"\']+)["\']?)/i';
 			$contents = $this->findAndReplaceUrlPathsByRegex($contents, $regex, $newDir, '"|"');
 		}
-
 		return $contents;
 	}
 
@@ -566,24 +576,20 @@ class t3lib_Compressor {
 		$matches = array();
 		$replacements = array();
 		$wrap = explode('|', $wrap);
-
 		preg_match_all($regex, $contents, $matches);
 		foreach ($matches[2] as $matchCount => $match) {
-				// remove '," or white-spaces around
+			// remove '," or white-spaces around
 			$match = trim($match, '\'" ');
-
-				// we must not rewrite paths containing ":" or "url(", e.g. data URIs (see RFC 2397)
-			if (strpos($match, ':') === FALSE && !preg_match('/url\s*\(/i', $match)) {
+			// we must not rewrite paths containing ":" or "url(", e.g. data URIs (see RFC 2397)
+			if (strpos($match, ':') === FALSE && !preg_match('/url\\s*\\(/i', $match)) {
 				$newPath = t3lib_div::resolveBackPath($newDir . $match);
-				$replacements[$matches[1][$matchCount]] = $wrap[0] . $newPath . $wrap[1];
+				$replacements[$matches[1][$matchCount]] = ($wrap[0] . $newPath) . $wrap[1];
 			}
 		}
-
-			// replace URL paths in content
+		// replace URL paths in content
 		if (!empty($replacements)) {
 			$contents = str_replace(array_keys($replacements), array_values($replacements), $contents);
 		}
-
 		return $contents;
 	}
 
@@ -596,24 +602,19 @@ class t3lib_Compressor {
 	 */
 	protected function cssFixStatements($contents) {
 		$matches = array();
-		$comment = LF . '/* moved by compressor */' . LF;
-
-			// nothing to do, so just return contents
-		if (stripos($contents, '@charset') === FALSE && stripos($contents, '@import') === FALSE
-			&& stripos($contents, '@namespace') === FALSE) {
-
+		$comment = (LF . '/* moved by compressor */') . LF;
+		// nothing to do, so just return contents
+		if ((stripos($contents, '@charset') === FALSE && stripos($contents, '@import') === FALSE) && stripos($contents, '@namespace') === FALSE) {
 			return $contents;
 		}
-
-		$regex = '/@(charset|import|namespace)\s*(url)?\s*\(?\s*["\']?[^"\']+["\']?\s*\)?.*;/i';
+		$regex = '/@(charset|import|namespace)\\s*(url)?\\s*\\(?\\s*["\']?[^"\']+["\']?\\s*\\)?.*;/i';
 		preg_match_all($regex, $contents, $matches);
 		if (!empty($matches[0])) {
-				// remove existing statements
+			// remove existing statements
 			$contents = str_replace($matches[0], '', $contents);
-				// add statements to the top of contents in the order they occur in original file
-			$contents = $comment . implode($comment, $matches[0]) . LF . $contents;
+			// add statements to the top of contents in the order they occur in original file
+			$contents = (($comment . implode($comment, $matches[0])) . LF) . $contents;
 		}
-
 		return $contents;
 	}
 
@@ -625,12 +626,11 @@ class t3lib_Compressor {
 	 * @return void
 	 */
 	protected function writeFileAndCompressed($filename, $contents) {
-			// write uncompressed file
+		// write uncompressed file
 		t3lib_div::writeFile(PATH_site . $filename, $contents);
-
 		if ($this->createGzipped) {
-				// create compressed version
-			t3lib_div::writeFile(PATH_site . $filename . '.gzip', gzencode($contents, $this->gzipCompressionLevel));
+			// create compressed version
+			t3lib_div::writeFile((PATH_site . $filename) . '.gzip', gzencode($contents, $this->gzipCompressionLevel));
 		}
 	}
 
@@ -642,7 +642,7 @@ class t3lib_Compressor {
 	 * @return string $filename suffixed with '.gzip' or not - dependent on HTTP_ACCEPT_ENCODING
 	 */
 	protected function returnFileReference($filename) {
-			// if the client accepts gzip and we can create gzipped files, we give him compressed versions
+		// if the client accepts gzip and we can create gzipped files, we give him compressed versions
 		if ($this->createGzipped && strpos(t3lib_div::getIndpEnv('HTTP_ACCEPT_ENCODING'), 'gzip') !== FALSE) {
 			return $filename . '.gzip';
 		} else {
@@ -658,7 +658,7 @@ class t3lib_Compressor {
 	 */
 	protected function retrieveExternalFile($url) {
 		$externalContent = t3lib_div::getUrl($url);
-		$filename = $this->targetDirectory . 'external-' . md5($url);
+		$filename = ($this->targetDirectory . 'external-') . md5($url);
 		t3lib_div::writeFile(PATH_site . $filename, $externalContent);
 		return $filename;
 	}

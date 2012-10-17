@@ -21,8 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log writer that writes the log records into a database table.
  *
@@ -47,7 +45,6 @@ class t3lib_log_writer_Database extends t3lib_log_writer_Abstract {
 	 */
 	public function setLogTable($tableName) {
 		$this->logTable = $tableName;
-
 		return $this;
 	}
 
@@ -71,18 +68,17 @@ class t3lib_log_writer_Database extends t3lib_log_writer_Abstract {
 		$data = array(
 			'request_id' => $record['requestId'],
 			'time_micro' => $record['created'],
-			'component'  => $record['component'],
-			'level'      => $record['level'],
-			'message'    => $record['message'],
-			'data'       => (!empty($record['data'])) ? json_encode($record['data']) : '',
+			'component' => $record['component'],
+			'level' => $record['level'],
+			'message' => $record['message'],
+			'data' => !empty($record['data']) ? json_encode($record['data']) : ''
 		);
-
 		if (FALSE === $GLOBALS['TYPO3_DB']->exec_INSERTquery($this->logTable, $data)) {
 			throw new RuntimeException('Could not write log record to database', 1345036334);
 		}
-
 		return $this;
 	}
+
 }
 
 ?>

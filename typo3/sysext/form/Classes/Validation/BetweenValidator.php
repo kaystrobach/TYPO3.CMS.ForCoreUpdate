@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Between rule
  * Value must be between the min and max. inclusively optional
@@ -60,10 +59,7 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 	 * @return void
 	 */
 	public function __construct($arguments) {
-		$this->setMinimum($arguments['minimum'])
-			->setMaximum($arguments['maximum'])
-			->setInclusive($arguments['inclusive']);
-
+		$this->setMinimum($arguments['minimum'])->setMaximum($arguments['maximum'])->setInclusive($arguments['inclusive']);
 		parent::__construct($arguments);
 	}
 
@@ -97,7 +93,6 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 	 */
 	public function setMinimum($minimum) {
 		$this->minimum = $minimum;
-
 		return $this;
 	}
 
@@ -109,7 +104,6 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 	 */
 	public function setMaximum($maximum) {
 		$this->maximum = $maximum;
-
 		return $this;
 	}
 
@@ -123,9 +117,8 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 		if ($inclusive === NULL) {
 			$this->inclusive = FALSE;
 		} else {
-			$this->inclusive = (boolean) $inclusive;
+			$this->inclusive = (bool) $inclusive;
 		}
-
 		return $this;
 	}
 
@@ -138,13 +131,11 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 	 * @see tx_form_System_Validate_Abstract::_getLocalLanguageLabel()
 	 */
 	protected function getLocalLanguageLabel($type) {
-		$label = strtolower(get_class($this)) . '.' . $type;
+		$label = (strtolower(get_class($this)) . '.') . $type;
 		$messages[] = $this->localizationHandler->getLocalLanguageLabel($label);
-
 		if ($this->inclusive) {
 			$messages[] = $this->localizationHandler->getLocalLanguageLabel($label . '2');
 		}
-
 		$message = implode(', ', $messages);
 		return $message;
 	}
@@ -159,8 +150,9 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 	protected function substituteValues($message) {
 		$message = str_replace('%minimum', $this->minimum, $message);
 		$message = str_replace('%maximum', $this->maximum, $message);
-
 		return $message;
 	}
+
 }
+
 ?>

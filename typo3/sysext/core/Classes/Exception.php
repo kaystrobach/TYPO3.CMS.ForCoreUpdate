@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * An exception
  *
@@ -30,6 +28,7 @@
  * @subpackage t3lib_error
  */
 class t3lib_exception extends Exception {
+
 
 }
 

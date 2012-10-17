@@ -34,13 +34,11 @@
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-11-17
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
-	extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
+class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
 
 	/**
 	 * Keeps list of attached observers.
@@ -54,7 +52,6 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
 	 */
 	public function __construct() {
 		$this->requiredPhpExtensions = 'xml';
-
 		if ($this->isAvailable()) {
 			$this->objXml = xml_parser_create();
 			xml_set_object($this->objXml, $this);
@@ -69,31 +66,21 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager in case of XML parser errors
 	 */
 	public function parseXml($file) {
-
 		if (!is_resource($this->objXml)) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Unable to create XML parser.', 1342641009);
 		}
-			// keep original character case of XML document
+		// keep original character case of XML document
 		xml_parser_set_option($this->objXml, XML_OPTION_CASE_FOLDING, FALSE);
 		xml_parser_set_option($this->objXml, XML_OPTION_SKIP_WHITE, FALSE);
 		xml_parser_set_option($this->objXml, XML_OPTION_TARGET_ENCODING, 'utf-8');
 		xml_set_element_handler($this->objXml, 'startElement', 'endElement');
 		xml_set_character_data_handler($this->objXml, 'characterData');
-
 		if (!($fp = fopen($file, 'r'))) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				sprintf('Unable to open file resource %s.', htmlspecialchars($file)),
-				1342641010
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Unable to open file resource %s.', htmlspecialchars($file)), 1342641010);
 		}
 		while ($data = fread($fp, 4096)) {
 			if (!xml_parse($this->objXml, $data, feof($fp))) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('XML error %s in line %u of file resource %s.',
-					xml_error_string(xml_get_error_code($this->objXml)),
-					xml_get_current_line_number($this->objXml),
-					htmlspecialchars($file)),
-					1342641011
-				);
+				throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('XML error %s in line %u of file resource %s.', xml_error_string(xml_get_error_code($this->objXml)), xml_get_current_line_number($this->objXml), htmlspecialchars($file)), 1342641011);
 			}
 		}
 		xml_parser_free($this->objXml);
@@ -109,8 +96,8 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
 	 */
 	protected function startElement($parser, $elementName, $attrs) {
 		switch ($elementName) {
-			default:
-				$this->element = $elementName;
+		default:
+			$this->element = $elementName;
 		}
 	}
 
@@ -126,12 +113,12 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
 	 */
 	protected function endElement($parser, $elementName) {
 		switch ($elementName) {
-			case 'mirror':
-				$this->notify();
-				$this->resetProperties();
-				break;
-			default:
-				$this->element = NULL;
+		case 'mirror':
+			$this->notify();
+			$this->resetProperties();
+			break;
+		default:
+			$this->element = NULL;
 		}
 	}
 
@@ -148,28 +135,29 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
 	protected function characterData($parser, $data) {
 		if (isset($this->element)) {
 			switch ($this->element) {
-				case 'title':
-					$this->title = $data;
-					break;
-				case 'host':
-					$this->host = $data;
-					break;
-				case 'path':
-					$this->path = $data;
-					break;
-				case 'country':
-					$this->country = $data;
-					break;
-				case 'name':
-					$this->sponsorname = $data;
-					break;
-				case 'link':
-					$this->sponsorlink = $data;
-					break;
-				case 'logo':
-					$this->sponsorlogo = $data;
-					break;
-				default:
+			case 'title':
+				$this->title = $data;
+				break;
+			case 'host':
+				$this->host = $data;
+				break;
+			case 'path':
+				$this->path = $data;
+				break;
+			case 'country':
+				$this->country = $data;
+				break;
+			case 'name':
+				$this->sponsorname = $data;
+				break;
+			case 'link':
+				$this->sponsorlink = $data;
+				break;
+			case 'logo':
+				$this->sponsorlogo = $data;
+				break;
+			default:
+
 			}
 		}
 	}
@@ -211,5 +199,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser
 			$observer->update($this);
 		}
 	}
+
 }
+
 ?>

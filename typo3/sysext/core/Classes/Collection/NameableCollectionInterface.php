@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Marker interface for a collection class with title and description
  *
@@ -37,8 +36,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Nameable {
-
+interface t3lib_collection_Nameable
+{
 	/**
 	 * Setter for the title
 	 *
@@ -70,5 +69,4 @@ interface t3lib_collection_Nameable {
 	public function getDescription();
 
 }
-
 ?>

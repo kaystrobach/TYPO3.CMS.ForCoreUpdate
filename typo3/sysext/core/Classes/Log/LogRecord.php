@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log record
  *
@@ -110,13 +108,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 * @param array $data Additional data
 	 */
 	public function __construct($component = '', $level, $message, array $data = array()) {
-
-		$this->setRequestId(Typo3_Bootstrap::getInstance()->getRequestId())
-			->setCreated(microtime(TRUE))
-			->setComponent($component)
-			->setLevel($level)
-			->setMessage($message)
-			->setData($data);
+		$this->setRequestId(Typo3_Bootstrap::getInstance()->getRequestId())->setCreated(microtime(TRUE))->setComponent($component)->setLevel($level)->setMessage($message)->setData($data);
 	}
 
 	/**
@@ -264,18 +256,8 @@ class t3lib_log_Record implements ArrayAccess {
 	public function __toString() {
 		$timestamp = date('r', (int) $this->created);
 		$levelName = t3lib_log_Level::getName($this->level);
-		$data = (!empty($this->data)) ? '- ' . json_encode($this->data) : '';
-
-		$logRecordString = sprintf(
-			'%s [%s] request="%s" component="%s": %s %s',
-			$timestamp,
-			$levelName,
-			$this->requestId,
-			$this->component,
-			$this->message,
-			$data
-		);
-
+		$data = !empty($this->data) ? '- ' . json_encode($this->data) : '';
+		$logRecordString = sprintf('%s [%s] request="%s" component="%s": %s %s', $timestamp, $levelName, $this->requestId, $this->component, $this->message, $data);
 		return $logRecordString;
 	}
 
@@ -303,11 +285,9 @@ class t3lib_log_Record implements ArrayAccess {
 	 */
 	public function offsetExists($offset) {
 		$offsetExists = FALSE;
-
-		if (in_array($offset, $this->gettableProperties, TRUE) && isset($this->$offset)) {
+		if (in_array($offset, $this->gettableProperties, TRUE) && isset($this->{$offset})) {
 			$offsetExists = TRUE;
 		}
-
 		return $offsetExists;
 	}
 
@@ -321,8 +301,7 @@ class t3lib_log_Record implements ArrayAccess {
 		if (!in_array($offset, $this->gettableProperties, TRUE)) {
 			return NULL;
 		}
-
-		return $this->$offset;
+		return $this->{$offset};
 	}
 
 	/**
@@ -334,7 +313,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 */
 	public function offsetSet($offset, $value) {
 		if (in_array($offset, $this->settableProperties, TRUE)) {
-			$this->$offset = $offset;
+			$this->{$offset} = $offset;
 		}
 	}
 
@@ -346,9 +325,10 @@ class t3lib_log_Record implements ArrayAccess {
 	 */
 	public function offsetUnset($offset) {
 		if (in_array($offset, $this->settableProperties, TRUE)) {
-			unset($this->$offset);
+			unset($this->{$offset});
 		}
 	}
+
 }
 
 ?>

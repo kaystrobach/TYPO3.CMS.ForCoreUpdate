@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Logic for cHash calculation
  *
@@ -32,6 +31,7 @@
  * @coauthor Tolleiv Nietsch <typo3@tolleiv.de>
  */
 class t3lib_cacheHash implements t3lib_Singleton {
+
 	/**
 	 * @var array Parameters that are relevant for cacheHash calculation. Optional.
 	 */
@@ -77,7 +77,7 @@ class t3lib_cacheHash implements t3lib_Singleton {
 	/**
 	 * Returns the cHash based on provided query parameters and added values from internal call
 	 *
-	 * @param string $queryString Query-parameters: "&xxx=yyy&zzz=uuu"
+	 * @param string $queryString Query-parameters: "&xxx=yyy&zzz=uuu
 	 * @return string Hash of all the values
 	 * @see t3lib_div::cHashParams(), t3lib_div::calculateCHash()
 	 */
@@ -88,6 +88,7 @@ class t3lib_cacheHash implements t3lib_Singleton {
 
 	/**
 	 * Checks whether a parameter of the given $queryString requires cHash calculation
+	 *
 	 * @param string $queryString
 	 * @return boolean
 	 */
@@ -109,40 +110,30 @@ class t3lib_cacheHash implements t3lib_Singleton {
 	 * Splits the input query-parameters into an array with certain parameters filtered out.
 	 * Used to create the cHash value
 	 *
-	 * @param string $queryString Query-parameters: "&xxx=yyy&zzz=uuu"
+	 * @param string $queryString Query-parameters: "&xxx=yyy&zzz=uuu
 	 * @return array Array with key/value pairs of query-parameters WITHOUT a certain list of
-	 *		 variable names (like id, type, no_cache etc.) and WITH a variable, encryptionKey, specific
-	 *		 for this server/installation
 	 * @see tslib_fe::makeCacheHash(), tslib_cObj::typoLink(), t3lib_div::calculateCHash()
 	 */
 	public function getRelevantParameters($queryString) {
 		$parameters = $this->splitQueryStringToArray($queryString);
 		$relevantParameters = array();
 		foreach ($parameters as $parameterName => $parameterValue) {
-			if ($this->isAdminPanelParameter($parameterName)
-					|| $this->isExcludedParameter($parameterName)
-					|| $this->isCoreParameter($parameterName)
-			) {
+			if (($this->isAdminPanelParameter($parameterName) || $this->isExcludedParameter($parameterName)) || $this->isCoreParameter($parameterName)) {
 				continue;
 			}
-
 			if ($this->hasCachedParametersWhiteList() && !$this->isInCachedParametersWhiteList($parameterName)) {
 				continue;
 			}
-
 			if ((is_null($parameterValue) || $parameterValue === '') && !$this->isAllowedWithEmptyValue($parameterName)) {
 				continue;
 			}
-
 			$relevantParameters[$parameterName] = $parameterValue;
 		}
-
 		if (!empty($relevantParameters)) {
-				// Finish and sort parameters array by keys:
+			// Finish and sort parameters array by keys:
 			$relevantParameters['encryptionKey'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
 			ksort($relevantParameters);
 		}
-
 		return $relevantParameters;
 	}
 
@@ -162,7 +153,6 @@ class t3lib_cacheHash implements t3lib_Singleton {
 			list($parameterName, $parameterValue) = explode('=', $parameter);
 			$parameterArray[rawurldecode($parameterName)] = rawurldecode($parameterValue);
 		}
-
 		return $parameterArray;
 	}
 
@@ -174,11 +164,12 @@ class t3lib_cacheHash implements t3lib_Singleton {
 	 * @return boolean
 	 */
 	protected function isAdminPanelParameter($key) {
-		return stristr($key, 'TSFE_ADMIN_PANEL') !== FALSE && preg_match('/TSFE_ADMIN_PANEL\[.*?\]/', $key);
+		return stristr($key, 'TSFE_ADMIN_PANEL') !== FALSE && preg_match('/TSFE_ADMIN_PANEL\\[.*?\\]/', $key);
 	}
 
 	/**
 	 * Checks whether the given parameter is a core parameter
+	 *
 	 * @param string $key
 	 * @return boolean
 	 */
@@ -217,6 +208,7 @@ class t3lib_cacheHash implements t3lib_Singleton {
 
 	/**
 	 * Check whether the given parameter may be used even with an empty value
+	 *
 	 * @param $key
 	 */
 	protected function isAllowedWithEmptyValue($key) {
@@ -233,7 +225,7 @@ class t3lib_cacheHash implements t3lib_Singleton {
 		foreach ($configuration as $name => $value) {
 			$setterName = 'set' . ucfirst($name);
 			if (method_exists($this, $setterName)) {
-				$this->$setterName($value);
+				$this->{$setterName}($value);
 			}
 		}
 	}
@@ -272,5 +264,7 @@ class t3lib_cacheHash implements t3lib_Singleton {
 	protected function setRequireCacheHashPresenceParameters(array $requireCacheHashPresenceParameters) {
 		$this->requireCacheHashPresenceParameters = $requireCacheHashPresenceParameters;
 	}
+
 }
+
 ?>

@@ -1,29 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2005-2012 Stanislas Rolland <typo3(arobas)sjbr.ca>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2005-2012 Stanislas Rolland <typo3(arobas)sjbr.ca>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Render custom attribute data-htmlarea-clickenlarge
  *
@@ -31,32 +31,51 @@
  */
 class tx_rtehtmlarea_pi3 extends tslib_pibase {
 
-		// Default plugin variables:
-	var $prefixId = 'tx_rtehtmlarea_pi3';		// Same as class name
-	var $scriptRelPath = 'pi3/class.tx_rtehtmlarea_pi3.php';	// Path to this script relative to the extension dir.
-	var $extKey = 'rtehtmlarea';		// The extension key.
-	var $conf = array();
+	// Default plugin variables:
+	/**
+	 * @todo Define visibility
+	 */
+	public $prefixId = 'tx_rtehtmlarea_pi3';
+
+	// Same as class name
+	/**
+	 * @todo Define visibility
+	 */
+	public $scriptRelPath = 'pi3/class.tx_rtehtmlarea_pi3.php';
+
+	// Path to this script relative to the extension dir.
+	/**
+	 * @todo Define visibility
+	 */
+	public $extKey = 'rtehtmlarea';
+
+	// The extension key.
+	/**
+	 * @todo Define visibility
+	 */
+	public $conf = array();
 
 	/**
 	 * cObj object
 	 *
 	 * @var tslib_cObj
+	 * @todo Define visibility
 	 */
-	var $cObj;
+	public $cObj;
 
 	/**
 	 * Rendering the "data-htmlarea-clickenlarge" custom attribute, called from TypoScript
 	 *
-	 * @param	string		Content input. Not used, ignore.
-	 * @param	array		TypoScript configuration
-	 * @return	string		HTML output.
+	 * @param 	string		Content input. Not used, ignore.
+	 * @param 	array		TypoScript configuration
+	 * @return 	string		HTML output.
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function render_clickenlarge($content, $conf) {
-
+	public function render_clickenlarge($content, $conf) {
 		$clickenlarge = isset($this->cObj->parameters['data-htmlarea-clickenlarge']) ? $this->cObj->parameters['data-htmlarea-clickenlarge'] : 0;
 		if (!$clickenlarge) {
-				// Backward compatibility
+			// Backward compatibility
 			$clickenlarge = isset($this->cObj->parameters['clickenlarge']) ? $this->cObj->parameters['clickenlarge'] : 0;
 		}
 		$fileFactory = t3lib_file_Factory::getInstance();
@@ -67,32 +86,28 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 			$filePath = $fileObject->getForLocalProcessing(FALSE);
 			$file = substr($filePath, strlen(PATH_site));
 		} else {
-				// Pre-FAL backward compatibility
+			// Pre-FAL backward compatibility
 			$path = $this->cObj->parameters['src'];
-			$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier(
-				$GLOBALS['TYPO3_CONF_VARS']['BE']['RTE_imageStorageDir']
-			);
+			$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier($GLOBALS['TYPO3_CONF_VARS']['BE']['RTE_imageStorageDir']);
 			if ($magicFolder instanceof t3lib_file_Folder) {
 				$magicFolderPath = $magicFolder->getPublicUrl();
 				$pathPre = $magicFolderPath . 'RTEmagicC_';
 				if (t3lib_div::isFirstPartOfStr($path, $pathPre)) {
-						// Find original file:
+					// Find original file:
 					$pI = pathinfo(substr($path, strlen($pathPre)));
-					$filename = substr($pI['basename'], 0, -strlen('.' . $pI['extension']));
-					$file = $magicFolderPath . 'RTEmagicP_' . $filename;
+					$filename = substr($pI['basename'], 0, -strlen(('.' . $pI['extension'])));
+					$file = ($magicFolderPath . 'RTEmagicP_') . $filename;
 				} else {
 					$file = $this->cObj->parameters['src'];
 				}
 			}
 		}
-			// Unset clickenlarge custom attribute
+		// Unset clickenlarge custom attribute
 		unset($this->cObj->parameters['data-htmlarea-clickenlarge']);
-			// Backward compatibility
+		// Backward compatibility
 		unset($this->cObj->parameters['clickenlarge']);
 		unset($this->cObj->parameters['allParams']);
-
-		$content = '<img '. t3lib_div::implodeAttributes($this->cObj->parameters, TRUE, TRUE) . ' />';
-
+		$content = ('<img ' . t3lib_div::implodeAttributes($this->cObj->parameters, TRUE, TRUE)) . ' />';
 		if ($clickenlarge && is_array($conf['imageLinkWrap.'])) {
 			$theImage = $file ? $GLOBALS['TSFE']->tmpl->getFileName($file) : '';
 			if ($theImage) {
@@ -109,5 +124,7 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 		}
 		return $content;
 	}
+
 }
+
 ?>

@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Repository for Tx_Beuser_Domain_Model_BackendUser
  *
@@ -42,13 +41,7 @@ class Tx_Beuser_Domain_Repository_BackendUserSessionRepository extends Tx_Extbas
 	 */
 	public function findByBackendUser(Tx_Beuser_Domain_Model_BackendUser $backendUser) {
 		$sessions = array();
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'ses_id AS id, ses_iplock AS ip, ses_tstamp AS timestamp',
-			'be_sessions',
-			'ses_userid = "' . $backendUser->getUid() . '"',
-			'',
-			'ses_tstamp ASC'
-		);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('ses_id AS id, ses_iplock AS ip, ses_tstamp AS timestamp', 'be_sessions', ('ses_userid = "' . $backendUser->getUid()) . '"', '', 'ses_tstamp ASC');
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$sessions[] = array(
 				'id' => $row['id'],
@@ -56,9 +49,9 @@ class Tx_Beuser_Domain_Repository_BackendUserSessionRepository extends Tx_Extbas
 				'timestamp' => new DateTime('@' . $row['timestamp'])
 			);
 		}
-
 		return $sessions;
 	}
+
 }
 
 ?>

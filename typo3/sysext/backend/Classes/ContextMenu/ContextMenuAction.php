@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Context Menu Action
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_contextmenu_Action {
+
 	/**
 	 * Label
 	 *
@@ -227,7 +227,6 @@ class t3lib_contextmenu_Action {
 		if ($this->childActions !== NULL) {
 			return TRUE;
 		}
-
 		return FALSE;
 	}
 
@@ -265,14 +264,13 @@ class t3lib_contextmenu_Action {
 			'type' => $this->getType(),
 			'customAttributes' => $this->getCustomAttributes()
 		);
-
 		$arrayRepresentation['childActions'] = '';
 		if ($this->hasChildActions()) {
 			$arrayRepresentation['childActions'] = $this->childActions->toArray();
 		}
-
 		return $arrayRepresentation;
 	}
+
 }
 
 ?>

@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Christian Kuhn <lolli@schwarzbu.ch>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Christian Kuhn <lolli@schwarzbu.ch>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Additional BE fields for caching framework garbage collection task.
  * Creates a multi selectbox with all available cache backends to select from.
@@ -31,6 +30,7 @@
  * @subpackage scheduler
  */
 class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider implements tx_scheduler_AdditionalFieldProvider {
+
 	/**
 	 * Add a multi select box with all available cache backends.
 	 *
@@ -40,35 +40,29 @@ class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider imp
 	 * @return array Array containing all the information pertaining to the additional fields
 	 */
 	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
-			// Initialize selected fields
+		// Initialize selected fields
 		if (empty($taskInfo['scheduler_cachingFrameworkGarbageCollection_selectedBackends'])) {
 			$taskInfo['scheduler_cachingFrameworkGarbageCollection_selectedBackends'] = array();
 			if ($parentObject->CMD == 'add') {
-					// In case of new task, set to dbBackend if it's available
+				// In case of new task, set to dbBackend if it's available
 				if (in_array('t3lib_cache_backend_DbBackend', $this->getRegisteredBackends())) {
 					$taskInfo['scheduler_cachingFrameworkGarbageCollection_selectedBackends'][] = 't3lib_cache_backend_DbBackend';
 				}
 			} elseif ($parentObject->CMD == 'edit') {
-					// In case of editing the task, set to currently selected value
+				// In case of editing the task, set to currently selected value
 				$taskInfo['scheduler_cachingFrameworkGarbageCollection_selectedBackends'] = $task->selectedBackends;
 			}
 		}
-
 		$fieldName = 'tx_scheduler[scheduler_cachingFrameworkGarbageCollection_selectedBackends][]';
 		$fieldId = 'task_cachingFrameworkGarbageCollection_selectedBackends';
 		$fieldOptions = $this->getCacheBackendOptions($taskInfo['scheduler_cachingFrameworkGarbageCollection_selectedBackends']);
-		$fieldHtml =
-			'<select name="' . $fieldName . '" id="' . $fieldId . '" class="wide" size="10" multiple="multiple">' .
-				$fieldOptions .
-			'</select>';
-
+		$fieldHtml = ((((('<select name="' . $fieldName) . '" id="') . $fieldId) . '" class="wide" size="10" multiple="multiple">') . $fieldOptions) . '</select>';
 		$additionalFields[$fieldId] = array(
 			'code' => $fieldHtml,
 			'label' => 'LLL:EXT:scheduler/mod1/locallang.xml:label.cachingFrameworkGarbageCollection.selectBackends',
 			'cshKey' => '_MOD_tools_txschedulerM1',
-			'cshLabel' => $fieldId,
+			'cshLabel' => $fieldId
 		);
-
 		return $additionalFields;
 	}
 
@@ -81,9 +75,8 @@ class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider imp
 	 */
 	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $parentObject) {
 		$validData = TRUE;
-
 		$availableBackends = $this->getRegisteredBackends();
-		if(is_array($submittedData['scheduler_cachingFrameworkGarbageCollection_selectedBackends'])) {
+		if (is_array($submittedData['scheduler_cachingFrameworkGarbageCollection_selectedBackends'])) {
 			$invalidBackends = array_diff($submittedData['scheduler_cachingFrameworkGarbageCollection_selectedBackends'], $availableBackends);
 			if (!empty($invalidBackends)) {
 				$parentObject->addMessage($GLOBALS['LANG']->sL('LLL:EXT:scheduler/mod1/locallang.xml:msg.selectionOfNonExistingCacheBackends'), t3lib_FlashMessage::ERROR);
@@ -93,7 +86,6 @@ class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider imp
 			$parentObject->addMessage($GLOBALS['LANG']->sL('LLL:EXT:scheduler/mod1/locallang.xml:msg.noCacheBackendSelected'), t3lib_FlashMessage::ERROR);
 			$validData = FALSE;
 		}
-
 		return $validData;
 	}
 
@@ -116,7 +108,6 @@ class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider imp
 	 */
 	protected function getCacheBackendOptions(array $selectedBackends) {
 		$options = array();
-
 		$availableBackends = $this->getRegisteredBackends();
 		foreach ($availableBackends as $backendName) {
 			if (in_array($backendName, $selectedBackends)) {
@@ -124,12 +115,8 @@ class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider imp
 			} else {
 				$selected = '';
 			}
-			$options[] =
-				'<option value="' . $backendName .  '"' . $selected . '>' .
-					$backendName .
-				'</option>';
+			$options[] = ((((('<option value="' . $backendName) . '"') . $selected) . '>') . $backendName) . '</option>';
 		}
-
 		return implode('', $options);
 	}
 
@@ -149,8 +136,9 @@ class tx_scheduler_CachingFrameworkGarbageCollection_AdditionalFieldProvider imp
 				}
 			}
 		}
-
 		return $backends;
 	}
-} // End of class
+
+}
+
 ?>

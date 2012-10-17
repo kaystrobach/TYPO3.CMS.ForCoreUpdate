@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute class for the form elements
  *
@@ -59,7 +58,7 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	 * @return void
 	 */
 	public function __construct($elementId) {
-		$this->elementId = (integer) $elementId;
+		$this->elementId = (int) $elementId;
 		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
 		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
 		$this->requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
@@ -75,9 +74,7 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	public function addAttribute($class, $value) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_Domain_Model_Attributes_' . ucfirst($class);
-
 		$this->attributes[$class] = t3lib_div::makeInstance($className, $value, $this->elementId);
-
 		return $this;
 	}
 
@@ -89,7 +86,6 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	 */
 	public function removeAttribute($class) {
 		unset($this->attributes[$class]);
-
 		return $this;
 	}
 
@@ -153,5 +149,7 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	public function getValue($key) {
 		return $this->getAttributeObjectByKey($key)->getValue();
 	}
+
 }
+
 ?>

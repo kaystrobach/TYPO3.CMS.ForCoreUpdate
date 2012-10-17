@@ -21,16 +21,14 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Validate and normalize a cron command.
  *
  * Special fields like three letter weekdays, ranges and steps are substituted
  * to a comma separated list of integers. Example:
- *	'2-4 10-40/10 * mar * fri'  will be nolmalized to '2,4 10,20,30,40 * * 3 1,2'
+ * '2-4 10-40/10 * mar * fri'  will be nolmalized to '2,4 10,20,30,40 * * 3 1,2'
  *
  * @author Christian Kuhn <lolli@schwarzbu.ch>
- *
  * @package TYPO3
  * @subpackage scheduler
  */
@@ -48,7 +46,7 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param string $cronCommand The cron command to normalize
 	 * @return string Normalized cron command
 	 */
-	public static function normalize($cronCommand) {
+	static public function normalize($cronCommand) {
 		$cronCommand = trim($cronCommand);
 		$cronCommand = self::convertKeywordsToCronCommand($cronCommand);
 		$cronCommand = self::normalizeFields($cronCommand);
@@ -62,27 +60,28 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param string $cronCommand Cron command
 	 * @return string Normalized cron command if keyword was found, else unchanged cron command
 	 */
-	protected static function convertKeywordsToCronCommand($cronCommand) {
+	static protected function convertKeywordsToCronCommand($cronCommand) {
 		switch ($cronCommand) {
-			case '@yearly':
-			case '@annually':
-				$cronCommand = '0 0 1 1 *';
+		case '@yearly':
+
+		case '@annually':
+			$cronCommand = '0 0 1 1 *';
 			break;
-			case '@monthly':
-				$cronCommand = '0 0 1 * *';
+		case '@monthly':
+			$cronCommand = '0 0 1 * *';
 			break;
-			case '@weekly':
-				$cronCommand = '0 0 * * 0';
+		case '@weekly':
+			$cronCommand = '0 0 * * 0';
 			break;
-			case '@daily':
-			case '@midnight':
-				$cronCommand = '0 0 * * *';
+		case '@daily':
+
+		case '@midnight':
+			$cronCommand = '0 0 * * *';
 			break;
-			case '@hourly':
-				$cronCommand = '0 * * * *';
+		case '@hourly':
+			$cronCommand = '0 * * * *';
 			break;
 		}
-
 		return $cronCommand;
 	}
 
@@ -92,15 +91,13 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param string $cronCommand cron command
 	 * @return string Normalized cron command
 	 */
-	protected static function normalizeFields($cronCommand) {
+	static protected function normalizeFields($cronCommand) {
 		$fieldArray = self::splitFields($cronCommand);
-
 		$fieldArray[0] = self::normalizeIntegerField($fieldArray[0], 0, 59);
 		$fieldArray[1] = self::normalizeIntegerField($fieldArray[1], 0, 23);
 		$fieldArray[2] = self::normalizeIntegerField($fieldArray[2], 1, 31);
 		$fieldArray[3] = self::normalizeMonthAndWeekdayField($fieldArray[3], TRUE);
 		$fieldArray[4] = self::normalizeMonthAndWeekdayField($fieldArray[4], FALSE);
-
 		$normalizedCronCommand = implode(' ', $fieldArray);
 		return $normalizedCronCommand;
 	}
@@ -111,22 +108,12 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @throws InvalidArgumentException If splitted array does not contain five entries
 	 * @param string $cronCommand cron command
 	 * @return array
-	 * 		0 => minute field
-	 * 		1 => hour field
-	 * 		2 => day of month field
-	 * 		3 => month field
-	 * 		4 => day of week field
 	 */
-	protected static function splitFields($cronCommand) {
+	static protected function splitFields($cronCommand) {
 		$fields = explode(' ', $cronCommand);
-
 		if (count($fields) !== 5) {
-			throw new InvalidArgumentException(
-				'Unable to split given cron command to five fields.',
-				1291227373
-			);
+			throw new InvalidArgumentException('Unable to split given cron command to five fields.', 1291227373);
 		}
-
 		return $fields;
 	}
 
@@ -137,11 +124,11 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param boolean $isMonthField TRUE if month field is handled, FALSE for weekday field
 	 * @return string Normalized expression
 	 */
-	protected static function normalizeMonthAndWeekdayField($expression, $isMonthField = TRUE) {
-		if ((string)$expression === '*') {
+	static protected function normalizeMonthAndWeekdayField($expression, $isMonthField = TRUE) {
+		if ((string) $expression === '*') {
 			$fieldValues = '*';
 		} else {
-				// Fragment espression by , / and - and substitute three letter code of month and weekday to numbers
+			// Fragment espression by , / and - and substitute three letter code of month and weekday to numbers
 			$listOfCommaValues = explode(',', $expression);
 			$fieldArray = array();
 			foreach ($listOfCommaValues as $listElement) {
@@ -151,25 +138,24 @@ class tx_scheduler_CronCmd_Normalize {
 						list($leftBound, $rightBound) = explode('-', $left);
 						$leftBound = self::normalizeMonthAndWeekday($leftBound, $isMonthField);
 						$rightBound = self::normalizeMonthAndWeekday($rightBound, $isMonthField);
-						$left = $leftBound . '-' . $rightBound;
+						$left = ($leftBound . '-') . $rightBound;
 					} else {
-						if ((string)$left !== '*') {
+						if ((string) $left !== '*') {
 							$left = self::normalizeMonthAndWeekday($left, $isMonthField);
 						}
 					}
-					$fieldArray[] = $left . '/' . $right;
+					$fieldArray[] = ($left . '/') . $right;
 				} elseif (strpos($listElement, '-') !== FALSE) {
 					list($left, $right) = explode('-', $listElement);
 					$left = self::normalizeMonthAndWeekday($left, $isMonthField);
 					$right = self::normalizeMonthAndWeekday($right, $isMonthField);
-					$fieldArray[] = $left . '-' . $right;
+					$fieldArray[] = ($left . '-') . $right;
 				} else {
 					$fieldArray[] = self::normalizeMonthAndWeekday($listElement, $isMonthField);
 				}
 			}
 			$fieldValues = implode(',', $fieldArray);
 		}
-
 		return $isMonthField ? self::normalizeIntegerField($fieldValues, 1, 12) : self::normalizeIntegerField($fieldValues, 1, 7);
 	}
 
@@ -182,8 +168,8 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param integer $upperBound Upper limit of result list
 	 * @return string Normalized expression
 	 */
-	protected static function normalizeIntegerField($expression, $lowerBound = 0, $upperBound = 59) {
-		if ((string)$expression === '*') {
+	static protected function normalizeIntegerField($expression, $lowerBound = 0, $upperBound = 59) {
+		if ((string) $expression === '*') {
 			$fieldValues = '*';
 		} else {
 			$listOfCommaValues = explode(',', $expression);
@@ -191,59 +177,39 @@ class tx_scheduler_CronCmd_Normalize {
 			foreach ($listOfCommaValues as $listElement) {
 				if (strpos($listElement, '/') !== FALSE) {
 					list($left, $right) = explode('/', $listElement);
-					if ((string)$left === '*') {
-						$leftList = self::convertRangeToListOfValues($lowerBound . '-' . $upperBound);
+					if ((string) $left === '*') {
+						$leftList = self::convertRangeToListOfValues(($lowerBound . '-') . $upperBound);
 					} else {
 						$leftList = self::convertRangeToListOfValues($left);
 					}
-					$fieldArray[] = self::reduceListOfValuesByStepValue($leftList . '/' . $right);
+					$fieldArray[] = self::reduceListOfValuesByStepValue(($leftList . '/') . $right);
 				} elseif (strpos($listElement, '-') !== FALSE) {
 					$fieldArray[] = self::convertRangeToListOfValues($listElement);
 				} elseif (strcmp(intval($listElement), $listElement) === 0) {
 					$fieldArray[] = $listElement;
 				} else {
-					throw new InvalidArgumentException(
-						'Unable to normalize integer field.',
-						1291429389
-					);
+					throw new InvalidArgumentException('Unable to normalize integer field.', 1291429389);
 				}
 			}
 			$fieldValues = implode(',', $fieldArray);
 		}
-
 		if (strlen($fieldValues) === 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert integer field to list of values: Result list empty.',
-				1291422012
-			);
+			throw new InvalidArgumentException('Unable to convert integer field to list of values: Result list empty.', 1291422012);
 		}
-
-		if ((string)$fieldValues !== '*') {
+		if ((string) $fieldValues !== '*') {
 			$fieldList = explode(',', $fieldValues);
-
 			sort($fieldList);
 			$fieldList = array_unique($fieldList);
-
 			if (current($fieldList) < $lowerBound) {
-				throw new InvalidArgumentException(
-					'Lowest element in list is smaller than allowed.',
-					1291470084
-				);
+				throw new InvalidArgumentException('Lowest element in list is smaller than allowed.', 1291470084);
 			}
-
 			if (end($fieldList) > $upperBound) {
-				throw new InvalidArgumentException(
-					'An element in the list is higher than allowed.',
-					1291470170
-				);
+				throw new InvalidArgumentException('An element in the list is higher than allowed.', 1291470170);
 			}
-
 			$fieldValues = implode(',', $fieldList);
 		}
-
-		return (string)$fieldValues;
+		return (string) $fieldValues;
 	}
-
 
 	/**
 	 * Convert a range of integers to a list: 4-6 results in a string '4,5,6'
@@ -252,139 +218,86 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param string $range Integer-integer
 	 * @return array
 	 */
-	protected static function convertRangeToListOfValues($range) {
+	static protected function convertRangeToListOfValues($range) {
 		if (strlen($range) === 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert range to list of values with empty string.',
-				1291234985
-			);
+			throw new InvalidArgumentException('Unable to convert range to list of values with empty string.', 1291234985);
 		}
-
 		$rangeArray = explode('-', $range);
-
-			// Sanitize fields and cast to integer
+		// Sanitize fields and cast to integer
 		foreach ($rangeArray as $fieldNumber => $fieldValue) {
 			if (strcmp(intval($fieldValue), $fieldValue) !== 0) {
-				throw new InvalidArgumentException(
-					'Unable to convert value to integer.',
-					1291237668
-				);
+				throw new InvalidArgumentException('Unable to convert value to integer.', 1291237668);
 			}
-			$rangeArray[$fieldNumber] = (int)$fieldValue;
+			$rangeArray[$fieldNumber] = (int) $fieldValue;
 		}
-
 		$resultList = '';
 		if (count($rangeArray) === 1) {
 			$resultList = $rangeArray[0];
 		} elseif (count($rangeArray) === 2) {
 			$left = $rangeArray[0];
 			$right = $rangeArray[1];
-
 			if ($left > $right) {
-				throw new InvalidArgumentException(
-					'Unable to convert range to list: Left integer must not be greather than right integer.',
-					1291237145
-				);
+				throw new InvalidArgumentException('Unable to convert range to list: Left integer must not be greather than right integer.', 1291237145);
 			}
-
 			$resultListArray = array();
 			for ($i = $left; $i <= $right; $i++) {
 				$resultListArray[] = $i;
 			}
-
 			$resultList = implode(',', $resultListArray);
 		} else {
-			throw new InvalidArgumentException(
-				'Unable to convert range to list of values.',
-				1291234985
-			);
+			throw new InvalidArgumentException('Unable to convert range to list of values.', 1291234985);
 		}
-
-		return (string)$resultList;
+		return (string) $resultList;
 	}
 
 	/**
 	 * Reduce a given list of values by step value.
 	 * Following a range with ``/<number>'' specifies skips of the number's value through the range.
-	 * 	1-5/2 -> 1,3,5
-	 * 	2-10/3 -> 2,5,8
+	 * 1-5/2 -> 1,3,5
+	 * 2-10/3 -> 2,5,8
 	 *
 	 * @throws InvalidArgumentException if step value is invalid or if resulting list is empty
 	 * @param string $stepExpression Step value expression
 	 * @return string Comma separated list of valid values
 	 */
-	protected static function reduceListOfValuesByStepValue($stepExpression) {
+	static protected function reduceListOfValuesByStepValue($stepExpression) {
 		if (strlen($stepExpression) === 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert step values.',
-				1291234985
-			);
+			throw new InvalidArgumentException('Unable to convert step values.', 1291234985);
 		}
-
 		$stepValuesAndStepArray = explode('/', $stepExpression);
-
 		if (count($stepValuesAndStepArray) < 1 || count($stepValuesAndStepArray) > 2) {
-			throw new InvalidArgumentException(
-				'Unable to convert step values: Multiple slashes found.',
-				1291242168
-			);
+			throw new InvalidArgumentException('Unable to convert step values: Multiple slashes found.', 1291242168);
 		}
-
 		$left = $stepValuesAndStepArray[0];
 		$right = $stepValuesAndStepArray[1];
-
 		if (strlen($stepValuesAndStepArray[0]) === 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert step values: Left part of / is empty.',
-				1291414955
-			);
+			throw new InvalidArgumentException('Unable to convert step values: Left part of / is empty.', 1291414955);
 		}
-
 		if (strlen($stepValuesAndStepArray[1]) === 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert step values: Right part of / is empty.',
-				1291414956
-			);
+			throw new InvalidArgumentException('Unable to convert step values: Right part of / is empty.', 1291414956);
 		}
-
 		if (strcmp(intval($right), $right) !== 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert step values: Right part must be a single integer.',
-				1291414957
-			);
+			throw new InvalidArgumentException('Unable to convert step values: Right part must be a single integer.', 1291414957);
 		}
-
-		$right = (int)$right;
+		$right = (int) $right;
 		$leftArray = explode(',', $left);
-
 		$validValues = array();
 		$currentStep = $right;
 		foreach ($leftArray as $leftValue) {
 			if (strcmp(intval($leftValue), $leftValue) !== 0) {
-				throw new InvalidArgumentException(
-					'Unable to convert step values: Left part must be a single integer or comma separated list of integers.',
-					1291414958
-				);
+				throw new InvalidArgumentException('Unable to convert step values: Left part must be a single integer or comma separated list of integers.', 1291414958);
 			}
-
 			if ($currentStep === 0) {
 				$currentStep = $right;
 			}
-
 			if ($currentStep === $right) {
-				$validValues[] = (int)$leftValue;
+				$validValues[] = (int) $leftValue;
 			}
-
-			$currentStep --;
+			$currentStep--;
 		}
-
 		if (count($validValues) === 0) {
-			throw new InvalidArgumentException(
-				'Unable to convert step values: Result value list is empty.',
-				1291414958
-			);
+			throw new InvalidArgumentException('Unable to convert step values: Result value list is empty.', 1291414958);
 		}
-
 		return implode(',', $validValues);
 	}
 
@@ -395,10 +308,9 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param boolean $isMonth TRUE if a month is handled, FALSE for weekday
 	 * @return string normalized month or weekday
 	 */
-	protected static function normalizeMonthAndWeekday($expression, $isMonth = TRUE) {
+	static protected function normalizeMonthAndWeekday($expression, $isMonth = TRUE) {
 		$expression = $isMonth ? self::normalizeMonth($expression) : self::normalizeWeekday($expression);
-
-		return (string)$expression;
+		return (string) $expression;
 	}
 
 	/**
@@ -409,18 +321,13 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param string $month Month representation
 	 * @return integer month integer representation between 1 and 12
 	 */
-	protected static function normalizeMonth($month) {
-		$timestamp = strtotime('2010-' . $month . '-01');
-
-			// timestamp must be >= 2010-01-01 and <= 2010-12-01
-		if (!$timestamp || $timestamp < strtotime('2010-01-01') || $timestamp > strtotime('2010-12-01')) {
-			throw new InvalidArgumentException(
-				'Unable to convert given month name.',
-				1291083486
-			);
+	static protected function normalizeMonth($month) {
+		$timestamp = strtotime(('2010-' . $month) . '-01');
+		// timestamp must be >= 2010-01-01 and <= 2010-12-01
+		if ((!$timestamp || $timestamp < strtotime('2010-01-01')) || $timestamp > strtotime('2010-12-01')) {
+			throw new InvalidArgumentException('Unable to convert given month name.', 1291083486);
 		}
-
-		return (int)date('n', $timestamp);
+		return (int) date('n', $timestamp);
 	}
 
 	/**
@@ -431,31 +338,26 @@ class tx_scheduler_CronCmd_Normalize {
 	 * @param string $weekday Weekday representation
 	 * @return integer weekday integer representation between 1 and 7
 	 */
-	protected static function normalizeWeekday($weekday) {
+	static protected function normalizeWeekday($weekday) {
 		$normalizedWeekday = FALSE;
-
-			// 0 (sunday) -> 7
-		if ((string)$weekday === '0') {
+		// 0 (sunday) -> 7
+		if ((string) $weekday === '0') {
 			$weekday = 7;
 		}
-
 		if ($weekday >= 1 && $weekday <= 7) {
-			$normalizedWeekday = (int)$weekday;
+			$normalizedWeekday = (int) $weekday;
 		}
-
 		if (!$normalizedWeekday) {
-				// Convert string representation like 'sun' to integer
+			// Convert string representation like 'sun' to integer
 			$timestamp = strtotime('next ' . $weekday, mktime(0, 0, 0, 1, 1, 2010));
-			if (!$timestamp || $timestamp < strtotime('2010-01-01') || $timestamp > strtotime('2010-01-08')) {
-				throw new InvalidArgumentException(
-					'Unable to convert given weekday name.',
-					1291163589
-				);
+			if ((!$timestamp || $timestamp < strtotime('2010-01-01')) || $timestamp > strtotime('2010-01-08')) {
+				throw new InvalidArgumentException('Unable to convert given weekday name.', 1291163589);
 			}
-			$normalizedWeekday = (int)date('N', $timestamp);
+			$normalizedWeekday = (int) date('N', $timestamp);
 		}
-
 		return $normalizedWeekday;
 	}
+
 }
+
 ?>

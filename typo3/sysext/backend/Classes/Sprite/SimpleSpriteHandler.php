@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A class with an concrete implementation of t3lib_spritemanager_SpriteIconGenerator.
  * It is the standard / fallback handler of the sprite manager.
@@ -40,6 +39,7 @@ class t3lib_spritemanager_SimpleHandler extends t3lib_spritemanager_AbstractHand
 
 	/**
 	 * css template for single Icons registered by extension authors
+	 *
 	 * @var string
 	 */
 	protected $styleSheetTemplateExtIcons = '
@@ -56,10 +56,8 @@ class t3lib_spritemanager_SimpleHandler extends t3lib_spritemanager_AbstractHand
 	 * @return void
 	 */
 	public function generate() {
-
-			// Generate IconData for single Icons registered
+		// Generate IconData for single Icons registered
 		$this->buildCssAndRegisterIcons();
-
 		parent::generate();
 	}
 
@@ -72,24 +70,18 @@ class t3lib_spritemanager_SimpleHandler extends t3lib_spritemanager_AbstractHand
 	 * @return void
 	 */
 	protected function buildCssAndRegisterIcons() {
-			// Backpath from the stylesheet file ($cssTcaFile) to PATH_site dir
-			// in order to set the background-image URL paths correct
+		// Backpath from the stylesheet file ($cssTcaFile) to PATH_site dir
+		// in order to set the background-image URL paths correct
 		$iconPath = '../../' . TYPO3_mainDir;
-
-		$iconsToProcess = array_merge(
-			(array) $GLOBALS['TBE_STYLES']['spritemanager']['singleIcons'],
-			$this->collectTcaSpriteIcons()
-		);
+		$iconsToProcess = array_merge((array) $GLOBALS['TBE_STYLES']['spritemanager']['singleIcons'], $this->collectTcaSpriteIcons());
 		foreach ($iconsToProcess as $iconName => $iconFile) {
-			$css = str_replace('###NAME###', str_replace(
-				array('extensions-', 'tcarecords-'), array('', ''), $iconName
-			), $this->styleSheetTemplateExtIcons);
+			$css = str_replace('###NAME###', str_replace(array('extensions-', 'tcarecords-'), array('', ''), $iconName), $this->styleSheetTemplateExtIcons);
 			$css = str_replace('###IMAGE###', t3lib_div::resolveBackPath($iconPath . $iconFile), $css);
-
 			$this->iconNames[] = $iconName;
 			$this->styleSheetData .= $css;
 		}
 	}
+
 }
 
 ?>

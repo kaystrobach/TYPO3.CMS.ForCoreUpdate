@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * A folder that groups files in a storage. This may be a folder on the local
  * disk, a bucket in Amazon S3 or a user or a tag in Flickr.
@@ -128,13 +126,12 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * @return string Combined storage and folder identifier, e.g. StorageUID:folder/path/
 	 */
 	public function getCombinedIdentifier() {
-			// @todo $this->properties is never defined nor used here
+		// @todo $this->properties is never defined nor used here
 		if (is_array($this->properties) && t3lib_utility_Math::canBeInterpretedAsInteger($this->properties['storage'])) {
-			$combinedIdentifier = $this->properties['storage'] . ':' . $this->getIdentifier();
+			$combinedIdentifier = ($this->properties['storage'] . ':') . $this->getIdentifier();
 		} else {
-			$combinedIdentifier = $this->getStorage()->getUid() . ':' . $this->getIdentifier();
+			$combinedIdentifier = ($this->getStorage()->getUid() . ':') . $this->getIdentifier();
 		}
-
 		return $combinedIdentifier;
 	}
 
@@ -161,12 +158,11 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * @return t3lib_file_File[]
 	 */
 	public function getFiles($start = 0, $numberOfItems = 0, $useFilters = TRUE) {
-			// TODO fetch
+		// TODO fetch
 		/** @var $factory t3lib_file_Factory */
 		$factory = t3lib_div::makeInstance('t3lib_file_Factory');
 		$fileArray = $this->storage->getFileList($this->identifier, $start, $numberOfItems, $useFilters);
 		$fileObjects = array();
-
 		foreach ($fileArray as $fileInfo) {
 			$fileObjects[] = $factory->createFileObject($fileInfo);
 		}
@@ -193,15 +189,13 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 */
 	public function getSubfolder($name) {
 		if (!$this->storage->hasFolderInFolder($name, $this)) {
-			throw new InvalidArgumentException('Folder "' . $name . '" does not exist in "'. $this->identifier . '"', 1329836110);
+			throw new InvalidArgumentException(((('Folder "' . $name) . '" does not exist in "') . $this->identifier) . '"', 1329836110);
 		}
-
-			// TODO this will not work with non-hierarchical storages -> the identifier for subfolders is not composed of
-			// the current item's identifier for these
+		// TODO this will not work with non-hierarchical storages -> the identifier for subfolders is not composed of
+		// the current item's identifier for these
 		/** @var $factory t3lib_file_Factory */
 		$factory = t3lib_file_Factory::getInstance();
-		$folderObject = $factory->createFolderObject($this->storage, $this->identifier . $name . '/', $name);
-
+		$folderObject = $factory->createFolderObject($this->storage, ($this->identifier . $name) . '/', $name);
 		return $folderObject;
 	}
 
@@ -212,21 +206,17 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 */
 	public function getSubfolders() {
 		$folderObjects = array();
-
 		$folderArray = $this->storage->getFolderList($this->identifier);
-
 		if (count($folderArray) > 0) {
 			/** @var $factory t3lib_file_Factory */
 			$factory = t3lib_div::makeInstance('t3lib_file_Factory');
-
-				// TODO this will not work with non-hierarchical storages
-				// -> the identifier for subfolders is not composed of the
-				// current item's identifier for these
+			// TODO this will not work with non-hierarchical storages
+			// -> the identifier for subfolders is not composed of the
+			// current item's identifier for these
 			foreach ($folderArray as $folder) {
-				$folderObjects[] = $factory->createFolderObject($this->storage, $this->identifier . $folder['name'] . '/', $folder['name']);
+				$folderObjects[] = $factory->createFolderObject($this->storage, ($this->identifier . $folder['name']) . '/', $folder['name']);
 			}
 		}
-
 		return $folderObjects;
 	}
 
@@ -270,14 +260,10 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 *
 	 * @param boolean $deleteRecursively
 	 * @return boolean TRUE if deletion succeeded
-	 *
-	 * TODO mark folder internally as deleted, throw exceptions on all method calls afterwards
-	 * TODO undelete mechanism? From Reycler Folder?
 	 */
 	public function delete($deleteRecursively = TRUE) {
 		return $this->storage->deleteFolder($this, $deleteRecursively);
 	}
-
 
 	/**
 	 * Creates a new blank file
@@ -304,7 +290,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 *
 	 * @param t3lib_file_Folder $targetFolder Target folder to copy to.
 	 * @param string $targetFolderName an optional destination fileName
-	 * @param string $conflictMode "overrideExistingFile", "renameNewFile" or "cancel"
+	 * @param string $conflictMode "overrideExistingFile", "renameNewFile" or "cancel
 	 * @return t3lib_file_Folder New (copied) folder object.
 	 */
 	public function copyTo(t3lib_file_Folder $targetFolder, $targetFolderName = NULL, $conflictMode = 'renameNewFile') {
@@ -316,7 +302,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 *
 	 * @param t3lib_file_Folder $targetFolder Target folder to move to.
 	 * @param string $targetFolderName an optional destination fileName
-	 * @param string $conflictMode "overrideExistingFile", "renameNewFile" or "cancel"
+	 * @param string $conflictMode "overrideExistingFile", "renameNewFile" or "cancel
 	 * @return t3lib_file_Folder New (copied) folder object.
 	 */
 	public function moveTo(t3lib_file_Folder $targetFolder, $targetFolderName = NULL, $conflictMode = 'renameNewFile') {
@@ -363,7 +349,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * @internal
 	 */
 	public function updateProperties(array $properties) {
-			// Setting identifier and name to update values
+		// Setting identifier and name to update values
 		if (isset($properties['identifier'])) {
 			$this->identifier = $properties['identifier'];
 		}
@@ -371,5 +357,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 			$this->name = $properties['name'];
 		}
 	}
+
 }
+
 ?>

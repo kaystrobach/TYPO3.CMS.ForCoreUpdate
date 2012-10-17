@@ -21,8 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log levels according to RFC 3164
  *
@@ -41,7 +39,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const EMERGENCY = 0;
-
 	/**
 	 * Alert: action must be taken immediately
 	 *
@@ -50,7 +47,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const ALERT = 1;
-
 	/**
 	 * Critical: critical conditions
 	 *
@@ -59,7 +55,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const CRITICAL = 2;
-
 	/**
 	 * Error: error conditions
 	 *
@@ -68,7 +63,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const ERROR = 3;
-
 	/**
 	 * Warning: warning conditions
 	 *
@@ -78,7 +72,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const WARNING = 4;
-
 	/**
 	 * Notice: normal but significant condition
 	 *
@@ -87,7 +80,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const NOTICE = 5;
-
 	/**
 	 * Informational: informational messages
 	 *
@@ -96,7 +88,6 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const INFO = 6;
-
 	/**
 	 * Debug: debug-level messages
 	 *
@@ -105,21 +96,20 @@ class t3lib_log_Level {
 	 * @var integer
 	 */
 	const DEBUG = 7;
-
 	/**
 	 * Reverse look up of log level to level name.
 	 *
 	 * @var array
 	 */
-	protected static $levels = array(
+	static protected $levels = array(
 		self::EMERGENCY => 'EMERGENCY',
-		self::ALERT     => 'ALERT',
-		self::CRITICAL  => 'CRITICAL',
-		self::ERROR     => 'ERROR',
-		self::WARNING   => 'WARNING',
-		self::NOTICE    => 'NOTICE',
-		self::INFO      => 'INFO',
-		self::DEBUG     => 'DEBUG'
+		self::ALERT => 'ALERT',
+		self::CRITICAL => 'CRITICAL',
+		self::ERROR => 'ERROR',
+		self::WARNING => 'WARNING',
+		self::NOTICE => 'NOTICE',
+		self::INFO => 'INFO',
+		self::DEBUG => 'DEBUG'
 	);
 
 	/**
@@ -128,9 +118,8 @@ class t3lib_log_Level {
 	 * @param integer $level Log level.
 	 * @return string Log level name.
 	 */
-	public static function getName($level) {
+	static public function getName($level) {
 		self::validateLevel($level);
-
 		return self::$levels[$level];
 	}
 
@@ -141,7 +130,7 @@ class t3lib_log_Level {
 	 * @param integer $level log level to validate
 	 * @return boolean TRUE if the given log level is valid, FALSE otherwise
 	 */
-	public static function isValidLevel($level) {
+	static public function isValidLevel($level) {
 		return t3lib_utility_Math::isIntegerInRange($level, self::EMERGENCY, self::DEBUG);
 	}
 
@@ -152,9 +141,9 @@ class t3lib_log_Level {
 	 * @return void
 	 * @throws RangeException if the given log level is invalid
 	 */
-	public static function validateLevel($level) {
+	static public function validateLevel($level) {
 		if (!self::isValidLevel($level)) {
-			throw new RangeException('Invalid Log Level "' . $level . '".', 1321637121);
+			throw new RangeException(('Invalid Log Level "' . $level) . '".', 1321637121);
 		}
 	}
 

@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Main view layer for Forms.
  *
@@ -67,9 +66,7 @@ class tx_form_View_Confirmation extends tx_form_View_Confirmation_Element_Contai
 	 */
 	public function __construct(tx_form_Domain_Model_Form $model, array $typoscript) {
 		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
-		$this->localizationHandler = t3lib_div::makeInstance(
-			'tx_form_System_Localization'
-		);
+		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
 		$this->typoscript = $typoscript;
 		parent::__construct($model);
 	}
@@ -93,20 +90,10 @@ class tx_form_View_Confirmation extends tx_form_View_Confirmation_Element_Contai
 	 */
 	public function get() {
 		$message = $this->getMessage();
-
 		$node = $this->render('element', FALSE);
-		$formInput = chr(10) .
-			html_entity_decode(
-				$node->saveXML($node->firstChild),
-				ENT_QUOTES,
-				'UTF-8'
-			) .
-			chr(10);
-
+		$formInput = (chr(10) . html_entity_decode($node->saveXML($node->firstChild), ENT_QUOTES, 'UTF-8')) . chr(10);
 		$confirmationButtons = $this->getConfirmationButtons();
-
-		$content = $message . chr(10) . $formInput . chr(10) . $confirmationButtons;
-
+		$content = ((($message . chr(10)) . $formInput) . chr(10)) . $confirmationButtons;
 		return $content;
 	}
 
@@ -134,7 +121,6 @@ class tx_form_View_Confirmation extends tx_form_View_Confirmation_Element_Contai
 			$value['value'] = $this->localizationHandler->getLocalLanguageLabel('tx_form_view_confirmation.message');
 			$type = 'TEXT';
 		}
-
 		return $this->localCobj->cObjGetSingle($type, $value);
 	}
 
@@ -142,27 +128,23 @@ class tx_form_View_Confirmation extends tx_form_View_Confirmation_Element_Contai
 		$requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
 		$prefix = $requestHandler->getPrefix();
 		$action = $this->localCobj->getTypoLink_URL($GLOBALS['TSFE']->id);
-
-		$confirmationButtons = '
-			<form class="csc-form-confirmation" method="post" action="' . $action . '">
+		$confirmationButtons = ((((((((('
+			<form class="csc-form-confirmation" method="post" action="' . $action) . '">
 				<fieldset>
 					<ol>
 						<li class="csc-form-confirmation-false">
-							<input type="submit" value="' .
-								$this->localizationHandler->getLocalLanguageLabel('tx_form_view_confirmation.donotconfirm') .
-								'" name="' . $prefix . '[confirmation-false]" />
+							<input type="submit" value="') . $this->localizationHandler->getLocalLanguageLabel('tx_form_view_confirmation.donotconfirm')) . '" name="') . $prefix) . '[confirmation-false]" />
 						</li>
 						<li class="csc-form-confirmation-true">
-							<input type="submit" value="' .
-								$this->localizationHandler->getLocalLanguageLabel('tx_form_view_confirmation.confirm') .
-								'" name="' . $prefix . '[confirmation-true]" />
+							<input type="submit" value="') . $this->localizationHandler->getLocalLanguageLabel('tx_form_view_confirmation.confirm')) . '" name="') . $prefix) . '[confirmation-true]" />
 						</li>
 					</ol>
 				</fieldset>
 			</form>
 		';
-
 		return $confirmationButtons;
 	}
+
 }
+
 ?>

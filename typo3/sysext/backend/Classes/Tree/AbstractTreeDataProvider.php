@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Tree Data Provider
  *
@@ -34,6 +33,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_tree_AbstractDataProvider {
+
 	/**
 	 * Root Node
 	 *
@@ -55,6 +55,7 @@ abstract class t3lib_tree_AbstractDataProvider {
 	 * @return t3lib_tree_NodeCollection
 	 */
 	abstract public function getNodes(t3lib_tree_Node $node);
+
 }
 
 ?>

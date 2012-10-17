@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'acceptcharset'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Acceptcharset extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'accept-charset'.
 	 * Used with the element 'form'
@@ -53,8 +53,9 @@ class tx_form_Domain_Model_Attributes_Acceptcharset extends tx_form_Domain_Model
 	 */
 	public function getValue() {
 		$attribute = (string) $this->value;
-
 		return $attribute;
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Hook subscriber for using Swift Mailer with the t3lib_utility_mail function
  *
@@ -34,16 +33,24 @@
  */
 class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 
-	/** @var $mailer t3lib_mail_Mailer */
+	/**
+	 * @var $mailer t3lib_mail_Mailer
+	 */
 	protected $mailer;
 
-	/** @var $message Swift_Message */
+	/**
+	 * @var $message Swift_Message
+	 */
 	protected $message;
 
-	/** @var $messageHeaders Swift_Mime_HeaderSet */
+	/**
+	 * @var $messageHeaders Swift_Mime_HeaderSet
+	 */
 	protected $messageHeaders;
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $boundary = '';
 
 	/**
@@ -52,9 +59,9 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 * @return void
 	 */
 	public function __construct() {
-			// create mailer object
+		// create mailer object
 		$this->mailer = t3lib_div::makeInstance('t3lib_mail_Mailer');
-			// create message object
+		// create message object
 		$this->message = Swift_Message::newInstance();
 	}
 
@@ -71,34 +78,32 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 * @return bool
 	 */
 	public function mail($to, $subject, $messageBody, $additionalHeaders = NULL, $additionalParameters = NULL, $fakeSending = FALSE) {
-
-			// report success for fake sending
+		// report success for fake sending
 		if ($fakeSending === TRUE) {
 			return TRUE;
 		}
 		$this->message->setSubject($subject);
-			// handle recipients
+		// handle recipients
 		$toAddresses = $this->parseAddresses($to);
 		$this->message->setTo($toAddresses);
-			// handle additional headers
+		// handle additional headers
 		$headers = t3lib_div::trimExplode(LF, $additionalHeaders, TRUE);
 		$this->messageHeaders = $this->message->getHeaders();
 		foreach ($headers as $header) {
 			list($headerName, $headerValue) = t3lib_div::trimExplode(':', $header, FALSE, 2);
 			$this->setHeader($headerName, $headerValue);
 		}
-			// handle additional parameters (force return path)
-		if (preg_match('/-f\s*(\S*?)/', $additionalParameters, $matches)) {
+		// handle additional parameters (force return path)
+		if (preg_match('/-f\\s*(\\S*?)/', $additionalParameters, $matches)) {
 			$this->message->setReturnPath($this->unescapeShellArguments($matches[1]));
 		}
-			// handle from:
+		// handle from:
 		$this->fixSender();
-			// handle message body
+		// handle message body
 		$this->setBody($messageBody);
-			// send mail
+		// send mail
 		$result = $this->mailer->send($this->message);
-
-			// report success/failure
+		// report success/failure
 		return (bool) $result;
 	}
 
@@ -110,14 +115,13 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 */
 	protected function unescapeShellArguments($escapedString) {
 		if (TYPO3_OS === 'WIN') {
-				// on Windows double quotes are used and % signs are replaced by spaces
+			// on Windows double quotes are used and % signs are replaced by spaces
 			if (preg_match('/^"([^"]*)"$/', trim($escapedString), $matches)) {
-				$result = str_replace('\"', '"', $matches[1]);
-					// % signs are replaced with spaces, so they can't be recovered
+				$result = str_replace('\\"', '"', $matches[1]);
 			}
 		} else {
-				// on Unix-like systems single quotes are escaped
-			if (preg_match('/^\'([^' . preg_quote('\'') . ']*)\'$/', trim($escapedString), $matches)) {
+			// on Unix-like systems single quotes are escaped
+			if (preg_match(('/^\'([^' . preg_quote('\'')) . ']*)\'$/', trim($escapedString), $matches)) {
 				$result = str_replace('\\\'', '\'', $matches[1]);
 			}
 		}
@@ -132,75 +136,74 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 * @return void
 	 */
 	protected function setHeader($headerName, $headerValue) {
-			// check for boundary in headers
+		// check for boundary in headers
 		if (preg_match('/^boundary="(.*)"$/', $headerName, $matches) > 0) {
 			$this->boundary = $matches[1];
 			return;
 		}
-			// process other, real headers
+		// process other, real headers
 		if ($this->messageHeaders->has($headerName)) {
 			$header = $this->messageHeaders->get($headerName);
 			$headerType = $header->getFieldType();
 			switch ($headerType) {
-				case Swift_Mime_Header::TYPE_TEXT:
-					$header->setValue($headerValue);
-					break;
-				case Swift_Mime_Header::TYPE_PARAMETERIZED:
-					$header->setValue(rtrim($headerValue, ';'));
-					break;
-				case Swift_Mime_Header::TYPE_MAILBOX:
-					$addressList = $this->parseAddresses($headerValue);
-					if (count($addressList) > 0) {
-						$header->setNameAddresses($addressList);
-					}
-					break;
-				case Swift_Mime_Header::TYPE_DATE:
-					$header->setTimeStamp(strtotime($headerValue));
-					break;
-				case Swift_Mime_Header::TYPE_ID:
-						// remove '<' and '>' from ID headers
-					$header->setId(trim($headerValue, '<>'));
-					break;
-				case Swift_Mime_Header::TYPE_PATH:
-					$header->setAddress($headerValue);
-					break;
+			case Swift_Mime_Header::TYPE_TEXT:
+				$header->setValue($headerValue);
+				break;
+			case Swift_Mime_Header::TYPE_PARAMETERIZED:
+				$header->setValue(rtrim($headerValue, ';'));
+				break;
+			case Swift_Mime_Header::TYPE_MAILBOX:
+				$addressList = $this->parseAddresses($headerValue);
+				if (count($addressList) > 0) {
+					$header->setNameAddresses($addressList);
+				}
+				break;
+			case Swift_Mime_Header::TYPE_DATE:
+				$header->setTimeStamp(strtotime($headerValue));
+				break;
+			case Swift_Mime_Header::TYPE_ID:
+				// remove '<' and '>' from ID headers
+				$header->setId(trim($headerValue, '<>'));
+				break;
+			case Swift_Mime_Header::TYPE_PATH:
+				$header->setAddress($headerValue);
+				break;
 			}
-				// change value
 		} else {
 			switch ($headerName) {
-					// mailbox headers
-				case 'From':
-				case 'To':
-				case 'Cc':
-				case 'Bcc':
-				case 'Reply-To':
-				case 'Sender':
-					$addressList = $this->parseAddresses($headerValue);
-					if (count($addressList) > 0) {
-						$this->messageHeaders->addMailboxHeader($headerName, $addressList);
-					}
-					break;
-					// date headers
-				case 'Date':
-					$this->messageHeaders->addDateHeader($headerName, strtotime($headerValue));
-					break;
-					// ID headers
-				case 'Message-ID':
-						// remove '<' and '>' from ID headers
-					$this->messageHeaders->addIdHeader($headerName, trim($headerValue, '<>'));
-					// path headers
-				case 'Return-Path':
-					$this->messageHeaders->addPathHeader($headerName, $headerValue);
-					break;
-					// parameterized headers
-				case 'Content-Type':
-				case 'Content-Disposition':
-					$this->messageHeaders->addParameterizedHeader($headerName, rtrim($headerValue, ';'));
-					break;
-					// text headers
-				default:
-					$this->messageHeaders->addTextheader($headerName, $headerValue);
-					break;
+			case 'From':
+
+			case 'To':
+
+			case 'Cc':
+
+			case 'Bcc':
+
+			case 'Reply-To':
+
+			case 'Sender':
+				$addressList = $this->parseAddresses($headerValue);
+				if (count($addressList) > 0) {
+					$this->messageHeaders->addMailboxHeader($headerName, $addressList);
+				}
+				break;
+			case 'Date':
+				$this->messageHeaders->addDateHeader($headerName, strtotime($headerValue));
+				break;
+			case 'Message-ID':
+				// remove '<' and '>' from ID headers
+				$this->messageHeaders->addIdHeader($headerName, trim($headerValue, '<>'));
+			case 'Return-Path':
+				$this->messageHeaders->addPathHeader($headerName, $headerValue);
+				break;
+			case 'Content-Type':
+
+			case 'Content-Disposition':
+				$this->messageHeaders->addParameterizedHeader($headerName, rtrim($headerValue, ';'));
+				break;
+			default:
+				$this->messageHeaders->addTextheader($headerName, $headerValue);
+				break;
 			}
 		}
 	}
@@ -214,24 +217,24 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 */
 	protected function setBody($body) {
 		if ($this->boundary) {
-				// handle multi-part
-			$bodyParts = preg_split('/--' . preg_quote($this->boundary) . '(--)?/m', $body, NULL, PREG_SPLIT_NO_EMPTY);
+			// handle multi-part
+			$bodyParts = preg_split(('/--' . preg_quote($this->boundary)) . '(--)?/m', $body, NULL, PREG_SPLIT_NO_EMPTY);
 			foreach ($bodyParts as $bodyPart) {
-					// skip empty parts
+				// skip empty parts
 				if (trim($bodyPart) == '') {
 					continue;
 				}
-					// keep leading white space when exploding the text
-			$lines = explode(LF, $bodyPart);
+				// keep leading white space when exploding the text
+				$lines = explode(LF, $bodyPart);
 				// set defaults for this part
 				$encoding = '';
 				$charset = 'utf-8';
 				$contentType = 'text/plain';
-					// skip intro messages
+				// skip intro messages
 				if (trim($lines[0]) == 'This is a multi-part message in MIME format.') {
 					continue;
 				}
-					// first line is empty leftover from splitting
+				// first line is empty leftover from splitting
 				array_shift($lines);
 				while (count($lines) > 0) {
 					$line = array_shift($lines);
@@ -243,21 +246,21 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 					} elseif (preg_match('/^content-transfer-encoding:(.*)$/i', $line, $matches)) {
 						$encoding = trim($matches[1]);
 					} elseif (strlen(trim($line)) == 0) {
-							// empty line before actual content of this part
+						// empty line before actual content of this part
 						break;
 					}
 				}
-					// use rest of part as body, but reverse encoding first
+				// use rest of part as body, but reverse encoding first
 				$bodyPart = $this->decode(implode(LF, $lines), $encoding);
 				$this->message->addPart($bodyPart, $contentType, $charset);
 			}
 		} else {
-				// Handle single body
-				// The headers have already been set, so use header information
+			// Handle single body
+			// The headers have already been set, so use header information
 			$contentType = $this->message->getContentType();
 			$charset = $this->message->getCharset();
 			$encoding = $this->message->getEncoder()->getName();
-				// reverse encoding and set body
+			// reverse encoding and set body
 			$rawBody = $this->decode($body, $encoding);
 			$this->message->setBody($rawBody, $contentType, $charset);
 		}
@@ -273,12 +276,12 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	protected function decode($text, $encoding) {
 		$result = $text;
 		switch ($encoding) {
-			case 'quoted-printable':
-				$result = quoted_printable_decode($text);
-				break;
-			case 'base64':
-				$result = base64_decode($text);
-				break;
+		case 'quoted-printable':
+			$result = quoted_printable_decode($text);
+			break;
+		case 'base64':
+			$result = base64_decode($text);
+			break;
 		}
 		return $result;
 	}
@@ -295,17 +298,17 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 * @return array Parsed list of addresses.
 	 */
 	protected function parseAddresses($rawAddresses = '') {
-			/** @var $addressParser t3lib_mail_Rfc822AddressesParser */
+		/** @var $addressParser t3lib_mail_Rfc822AddressesParser */
 		$addressParser = t3lib_div::makeInstance('t3lib_mail_Rfc822AddressesParser', $rawAddresses);
 		$addresses = $addressParser->parseAddressList();
 		$addressList = array();
 		foreach ($addresses as $address) {
 			if ($address->personal) {
-					// item with name found ( name <email@example.org> )
-				$addressList[$address->mailbox . '@' . $address->host] = $address->personal;
+				// item with name found ( name <email@example.org> )
+				$addressList[($address->mailbox . '@') . $address->host] = $address->personal;
 			} else {
-					// item without name found ( email@example.org )
-				$addressList[] = $address->mailbox . '@' . $address->host;
+				// item without name found ( email@example.org )
+				$addressList[] = ($address->mailbox . '@') . $address->host;
 			}
 		}
 		return $addressList;
@@ -334,5 +337,7 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 		}
 		$this->message->setFrom(array($fromAddress => $fromName));
 	}
+
 }
+
 ?>

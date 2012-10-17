@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains TEMPLATE class object.
  *
@@ -45,100 +44,67 @@ class tslib_content_Template extends tslib_content_Abstract {
 		$subparts = array();
 		$marks = array();
 		$wraps = array();
-
-		$markerWrap = isset($conf['markerWrap.'])
-			? $this->cObj->stdWrap($conf['markerWrap'], $conf['markerWrap.'])
-			: $conf['markerWrap'];
+		$markerWrap = isset($conf['markerWrap.']) ? $this->cObj->stdWrap($conf['markerWrap'], $conf['markerWrap.']) : $conf['markerWrap'];
 		if (!$markerWrap) {
 			$markerWrap = '### | ###';
 		}
-
-		list ($PRE, $POST) = explode('|', $markerWrap);
+		list($PRE, $POST) = explode('|', $markerWrap);
 		$POST = trim($POST);
 		$PRE = trim($PRE);
-
-			// Getting the content
+		// Getting the content
 		$content = $this->cObj->cObjGetSingle($conf['template'], $conf['template.'], 'template');
-		$workOnSubpart = isset($conf['workOnSubpart.'])
-			? $this->cObj->stdWrap($conf['workOnSubpart'], $conf['workOnSubpart.'])
-			: $conf['workOnSubpart'];
+		$workOnSubpart = isset($conf['workOnSubpart.']) ? $this->cObj->stdWrap($conf['workOnSubpart'], $conf['workOnSubpart.']) : $conf['workOnSubpart'];
 		if ($workOnSubpart) {
-			$content = $this->cObj->getSubpart($content, $PRE . $workOnSubpart . $POST);
+			$content = $this->cObj->getSubpart($content, ($PRE . $workOnSubpart) . $POST);
 		}
-
-			// Fixing all relative paths found:
+		// Fixing all relative paths found:
 		if ($conf['relPathPrefix']) {
 			$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
 			$content = $htmlParser->prefixResourcePath($conf['relPathPrefix'], $content, $conf['relPathPrefix.']);
 		}
-
 		if ($content) {
-			$nonCachedSubst = isset($conf['nonCachedSubst.'])
-				? $this->cObj->stdWrap($conf['nonCachedSubst'], $conf['nonCachedSubst.'])
-				: $conf['nonCachedSubst'];
-				// NON-CACHED:
+			$nonCachedSubst = isset($conf['nonCachedSubst.']) ? $this->cObj->stdWrap($conf['nonCachedSubst'], $conf['nonCachedSubst.']) : $conf['nonCachedSubst'];
+			// NON-CACHED:
 			if ($nonCachedSubst) {
-					// Getting marks
+				// Getting marks
 				if (is_array($conf['marks.'])) {
 					foreach ($conf['marks.'] as $theKey => $theValue) {
 						if (!strstr($theKey, '.')) {
-							$content = str_replace(
-								$PRE . $theKey . $POST,
-								$this->cObj->cObjGetSingle(
-									$theValue, $conf['marks.'][$theKey . '.'],
-									'marks.' . $theKey
-								),
-								$content);
+							$content = str_replace(($PRE . $theKey) . $POST, $this->cObj->cObjGetSingle($theValue, $conf['marks.'][$theKey . '.'], 'marks.' . $theKey), $content);
 						}
 					}
 				}
-
-					// Getting subparts.
+				// Getting subparts.
 				if (is_array($conf['subparts.'])) {
 					foreach ($conf['subparts.'] as $theKey => $theValue) {
 						if (!strstr($theKey, '.')) {
-							$subpart = $this->cObj->getSubpart($content, $PRE . $theKey . $POST);
+							$subpart = $this->cObj->getSubpart($content, ($PRE . $theKey) . $POST);
 							if ($subpart) {
 								$this->cObj->setCurrentVal($subpart);
-								$content = $this->cObj->substituteSubpart(
-									$content,
-									$PRE . $theKey . $POST,
-									$this->cObj->cObjGetSingle(
-										$theValue,
-										$conf['subparts.'][$theKey . '.'],
-										'subparts.' . $theKey),
-										TRUE
-									);
+								$content = $this->cObj->substituteSubpart($content, ($PRE . $theKey) . $POST, $this->cObj->cObjGetSingle($theValue, $conf['subparts.'][$theKey . '.'], 'subparts.' . $theKey), TRUE);
 							}
 						}
 					}
 				}
-					// Getting subpart wraps
+				// Getting subpart wraps
 				if (is_array($conf['wraps.'])) {
 					foreach ($conf['wraps.'] as $theKey => $theValue) {
 						if (!strstr($theKey, '.')) {
-							$subpart = $this->cObj->getSubpart($content, $PRE . $theKey . $POST);
+							$subpart = $this->cObj->getSubpart($content, ($PRE . $theKey) . $POST);
 							if ($subpart) {
 								$this->cObj->setCurrentVal($subpart);
-								$content = $this->cObj->substituteSubpart(
-									$content,
-									$PRE . $theKey . $POST,
-									explode('|', $this->cObj->cObjGetSingle(
-										$theValue, $conf['wraps.'][$theKey . '.'],
-										'wraps.' . $theKey)
-									),
-									TRUE
-								);
+								$content = $this->cObj->substituteSubpart($content, ($PRE . $theKey) . $POST, explode('|', $this->cObj->cObjGetSingle($theValue, $conf['wraps.'][$theKey . '.'], 'wraps.' . $theKey)), TRUE);
 							}
 						}
 					}
 				}
-			} else { // CACHED
-					// Getting subparts.
+			} else {
+				// CACHED
+				// Getting subparts.
 				if (is_array($conf['subparts.'])) {
 					foreach ($conf['subparts.'] as $theKey => $theValue) {
 						if (!strstr($theKey, '.')) {
-							$subpart = $this->cObj->getSubpart($content, $PRE . $theKey . $POST);
+							$subpart = $this->cObj->getSubpart($content, ($PRE . $theKey) . $POST);
 							if ($subpart) {
 								$GLOBALS['TSFE']->register['SUBPART_' . $theKey] = $subpart;
 								$subparts[$theKey]['name'] = $theValue;
@@ -147,7 +113,7 @@ class tslib_content_Template extends tslib_content_Abstract {
 						}
 					}
 				}
-					// Getting marks
+				// Getting marks
 				if (is_array($conf['marks.'])) {
 					foreach ($conf['marks.'] as $theKey => $theValue) {
 						if (!strstr($theKey, '.')) {
@@ -156,7 +122,7 @@ class tslib_content_Template extends tslib_content_Abstract {
 						}
 					}
 				}
-					// Getting subpart wraps
+				// Getting subpart wraps
 				if (is_array($conf['wraps.'])) {
 					foreach ($conf['wraps.'] as $theKey => $theValue) {
 						if (!strstr($theKey, '.')) {
@@ -165,47 +131,28 @@ class tslib_content_Template extends tslib_content_Abstract {
 						}
 					}
 				}
-					// Getting subparts
+				// Getting subparts
 				$subpartArray = array();
 				foreach ($subparts as $theKey => $theValue) {
-						// Set current with the content of the subpart...
+					// Set current with the content of the subpart...
 					$this->cObj->data[$this->cObj->currentValKey] = $GLOBALS['TSFE']->register['SUBPART_' . $theKey];
-						// Get subpart cObject and substitute it!
-					$subpartArray[$PRE . $theKey . $POST] = $this->cObj->cObjGetSingle(
-						$theValue['name'],
-						$theValue['conf'],
-						'subparts.' . $theKey
-					);
+					// Get subpart cObject and substitute it!
+					$subpartArray[($PRE . $theKey) . $POST] = $this->cObj->cObjGetSingle($theValue['name'], $theValue['conf'], 'subparts.' . $theKey);
 				}
-					// Reset current to empty
+				// Reset current to empty
 				$this->cObj->data[$this->cObj->currentValKey] = '';
-
-					// Getting marks
+				// Getting marks
 				$markerArray = array();
 				foreach ($marks as $theKey => $theValue) {
-					$markerArray[$PRE . $theKey . $POST] = $this->cObj->cObjGetSingle(
-						$theValue['name'],
-						$theValue['conf'],
-						'marks.' . $theKey
-					);
+					$markerArray[($PRE . $theKey) . $POST] = $this->cObj->cObjGetSingle($theValue['name'], $theValue['conf'], 'marks.' . $theKey);
 				}
-					// Getting wraps
+				// Getting wraps
 				$subpartWraps = array();
 				foreach ($wraps as $theKey => $theValue) {
-					$subpartWraps[$PRE . $theKey . $POST] = explode(
-						'|',
-						$this->cObj->cObjGetSingle(
-							$theValue['name'],
-							$theValue['conf'],
-							'wraps.' . $theKey
-						)
-					);
+					$subpartWraps[($PRE . $theKey) . $POST] = explode('|', $this->cObj->cObjGetSingle($theValue['name'], $theValue['conf'], 'wraps.' . $theKey));
 				}
-
-					// Substitution
-				$substMarksSeparately = isset($conf['substMarksSeparately.'])
-					? $this->cObj->stdWrap($conf['substMarksSeparately'], $conf['substMarksSeparately.'])
-					: $conf['substMarksSeparately'];
+				// Substitution
+				$substMarksSeparately = isset($conf['substMarksSeparately.']) ? $this->cObj->stdWrap($conf['substMarksSeparately'], $conf['substMarksSeparately.']) : $conf['substMarksSeparately'];
 				if ($substMarksSeparately) {
 					$content = $this->cObj->substituteMarkerArrayCached($content, array(), $subpartArray, $subpartWraps);
 					$content = $this->cObj->substituteMarkerArray($content, $markerArray);
@@ -214,12 +161,12 @@ class tslib_content_Template extends tslib_content_Abstract {
 				}
 			}
 		}
-
 		if (isset($conf['stdWrap.'])) {
 			$content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
 		}
-
 		return $content;
 	}
+
 }
+
 ?>

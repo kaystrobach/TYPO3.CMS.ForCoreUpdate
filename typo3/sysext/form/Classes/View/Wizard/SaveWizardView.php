@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010 Patrick Broens <patrick@patrickbroens.nl>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2010 Patrick Broens <patrick@patrickbroens.nl>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * The form wizard save view
  *
@@ -31,6 +30,7 @@
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
 class tx_form_View_Wizard_Save extends tx_form_View_Wizard_Abstract {
+
 	/**
 	 * The main render method
 	 *
@@ -40,12 +40,10 @@ class tx_form_View_Wizard_Save extends tx_form_View_Wizard_Abstract {
 	 */
 	public function render() {
 		$success = FALSE;
-
-			// Check if the referenced record is available
+		// Check if the referenced record is available
 		$this->recordIsAvailable = $this->repository->hasRecord();
-
 		if ($this->recordIsAvailable) {
-				// Save the data
+			// Save the data
 			$success = $this->repository->save();
 		}
 		$this->headerOutput($success);
@@ -64,20 +62,18 @@ class tx_form_View_Wizard_Save extends tx_form_View_Wizard_Abstract {
 		} else {
 			$jsonArray = array('message' => 'Changes saved successfully');
 		}
-
 		$json = json_encode($jsonArray);
-
 		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . 'GMT');
+		header(('Last-Modified: ' . gmdate('D, d M Y H:i:s')) . 'GMT');
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Pragma: no-cache');
-		header('Content-Length: '.strlen($json));
+		header('Content-Length: ' . strlen($json));
 		header('Content-Type: application/json; charset=utf-8');
 		header('Content-Transfer-Encoding: 8bit');
-
 		echo $json;
-
-		exit;
+		die;
 	}
+
 }
+
 ?>

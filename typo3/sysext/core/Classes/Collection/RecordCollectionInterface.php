@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Collection for handling records from a single database-table.
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_RecordCollection extends t3lib_collection_Collection, t3lib_collection_Nameable {
-
+interface t3lib_collection_RecordCollection extends t3lib_collection_Collection, t3lib_collection_Nameable
+{
 	/**
 	 * Setter for the name of the data-source table
 	 *
@@ -50,5 +49,4 @@ interface t3lib_collection_RecordCollection extends t3lib_collection_Collection,
 	public function getItemTableName();
 
 }
-
 ?>

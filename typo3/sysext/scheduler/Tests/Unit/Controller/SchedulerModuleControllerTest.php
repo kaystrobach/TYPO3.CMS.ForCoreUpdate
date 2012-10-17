@@ -1,33 +1,31 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Andy Grunwald <andreas.grunwald@wmdb.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Andy Grunwald <andreas.grunwald@wmdb.de>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Testcase for class "tx_scheduler_Module"
  *
  * @package TYPO3
  * @subpackage tx_scheduler
- *
  * @author Andy Grunwald <andreas.grunwald@wmdb.de>
  */
 class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
@@ -61,13 +59,7 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 	 * Provide dates in strtotime format
 	 *
 	 * @see checkDateWithStrtotimeValues
-	 * @return	array	Testdata for "checkDateWithStrtotimeValues".
-	 * 					Structure: array(
-	 * 						'Value description' => array(
-	 * 							'value to pass to $this->testObject->checkDate',
-	 * 							'expected results which will be compared'
-	 * 						)
-	 * 					)
+	 * @return 	array	Testdata for "checkDateWithStrtotimeValues".
 	 */
 	public function checkDateWithStrtotimeValuesDataProvider() {
 		return array(
@@ -98,7 +90,7 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 			'last Monday' => array(
 				'last Monday',
 				strtotime('last Monday')
-			),
+			)
 		);
 	}
 
@@ -111,34 +103,19 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 	 */
 	public function checkDateWithStrtotimeValues($strToTimeValue, $expectedTimestamp) {
 		$checkDateResult = $this->testObject->checkDate($strToTimeValue);
-
-			// We use assertLessThan here, because we test with relative values (eg. next Thursday, now, ..)
-			// If this tests runs over 1 seconds the test will fail if we use assertSame / assertEquals
-			// With assertLessThan the tests could run 0 till 3 seconds ($delta = 4)
+		// We use assertLessThan here, because we test with relative values (eg. next Thursday, now, ..)
+		// If this tests runs over 1 seconds the test will fail if we use assertSame / assertEquals
+		// With assertLessThan the tests could run 0 till 3 seconds ($delta = 4)
 		$delta = 4;
-		$this->assertLessThan(
-			$delta,
-			($checkDateResult - $expectedTimestamp),
-			'assertLessThan fails with value "' . $strToTimeValue . '"'
-		);
-		$this->assertInternalType(
-			PHPUnit_Framework_Constraint_IsType::TYPE_INT,
-			$checkDateResult,
-			'assertType fails with value "' . $strToTimeValue . '"'
-		);
+		$this->assertLessThan($delta, $checkDateResult - $expectedTimestamp, ('assertLessThan fails with value "' . $strToTimeValue) . '"');
+		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_INT, $checkDateResult, ('assertType fails with value "' . $strToTimeValue) . '"');
 	}
 
 	/**
 	 * Provides dates in TYPO3 date field formats (non-US), i.e. H:i Y-m-d
 	 *
 	 * @see checkDateWithTypo3DateSyntax
-	 * @return	array	Testdata for "checkDateWithTypo3DateSyntax".
-	 * 					Structure: array(
-	 * 						'Value description' => array(
-	 * 							'value to pass to $this->testObject->checkDate',
-	 * 							'expected results which will be compared'
-	 * 						)
-	 * 					)
+	 * @return 	array	Testdata for "checkDateWithTypo3DateSyntax".
 	 */
 	public function checkDateWithTypo3DateSyntaxDataProvider() {
 		return array(
@@ -176,8 +153,8 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 			),
 			'01:01 1968-01-01' => array(
 				'01:01 1968-01-01',
-				mktime(01, 01, 0, 1, 1, 1968)
-			),
+				mktime(1, 1, 0, 1, 1, 1968)
+			)
 		);
 	}
 
@@ -188,22 +165,14 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 	 * @param integer $expectedTimestamp Expected value to compare with result from operation
 	 */
 	public function checkDateWithTypo3DateSyntax($typo3DateValue, $expectedTimestamp) {
-		$this->assertSame(
-			$expectedTimestamp,
-			$this->testObject->checkDate($typo3DateValue),
-			'Fails with value "' . $typo3DateValue . '"'
-		);
+		$this->assertSame($expectedTimestamp, $this->testObject->checkDate($typo3DateValue), ('Fails with value "' . $typo3DateValue) . '"');
 	}
 
 	/**
 	 * Provides some invalid dates
+	 *
 	 * @see checkDateWithInvalidDateValues
-	 * @return	array	Test data for "checkDateWithInvalidDateValues".
-	 * 					Structure: array(
-	 * 						'Value description' => array(
-	 * 							'value to pass to $this->testObject->checkDate'
-	 * 						)
-	 * 					)
+	 * @return 	array	Test data for "checkDateWithInvalidDateValues".
 	 */
 	public function checkDateWithInvalidDateValuesDataProvider() {
 		return array(
@@ -212,7 +181,7 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 			),
 			'HH:ii yyyy-mm-dd' => array(
 				'HH:ii yyyy-mm-dd'
-			),
+			)
 		);
 	}
 
@@ -227,5 +196,7 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 	public function checkDateWithInvalidDateValues($dateValue) {
 		$this->testObject->checkDate($dateValue);
 	}
+
 }
+
 ?>

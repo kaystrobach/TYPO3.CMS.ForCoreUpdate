@@ -24,17 +24,16 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Locales.
  *
  * Defining backend system languages
  * When adding new keys, remember to:
- * 		- Add character encoding for lang. key in t3lib/class.t3lib_cs.php
- * 		 (default for new languages is "utf-8")
- * 		- Add mappings for language in t3lib/class.t3lib_cs.php (TYPO3/ISO,
- * 			language/script, script/charset)
- * 		- Update 'setup' extension labels (sysext/setup/mod/locallang.xlf)
+ * - Add character encoding for lang. key in t3lib/class.t3lib_cs.php
+ * (default for new languages is "utf-8")
+ * - Add mappings for language in t3lib/class.t3lib_cs.php (TYPO3/ISO,
+ * language/script, script/charset)
+ * - Update 'setup' extension labels (sysext/setup/mod/locallang.xlf)
  * That's it!
  *
  * @package TYPO3
@@ -45,6 +44,7 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 
 	/**
 	 * Supported TYPO3 languages with locales
+	 *
 	 * @var array
 	 */
 	protected $languages = array(
@@ -99,11 +99,12 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 		'tr' => 'Turkish',
 		'uk' => 'Ukrainian',
 		'vi' => 'Vietnamese',
-		'zh' => 'Chinese (Trad.)',
+		'zh' => 'Chinese (Trad.)'
 	);
 
 	/**
 	 * Supported TYPO3 locales
+	 *
 	 * @deprecated since TYPO3 4.6, will be removed in TYPO3 6.0
 	 * @var array
 	 */
@@ -111,28 +112,47 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 
 	/**
 	 * Mapping with codes used by TYPO3 4.5 and below
+	 *
 	 * @var array
 	 */
 	protected $isoReverseMapping = array(
-		'bs' => 'ba',		// Bosnian
-		'cs' => 'cz',		// Czech
-		'da' => 'dk',		// Danish
-		'el' => 'gr',		// Greek
-		'fr_CA' => 'qc',	// French (Canada)
-		'gl' => 'ga',		// Galician
-		'ja' => 'jp',		// Japanese
-		'ka' => 'ge',		// Georgian
-		'kl' => 'gl',		// Greenlandic
-		'ko' => 'kr',		// Korean
-		'ms' => 'my',		// Malay
-		'pt_BR' => 'br',	// Portuguese (Brazil)
-		'sl' => 'si',		// Slovenian
-		'sv' => 'se',		// Swedish
-		'uk' => 'ua',		// Ukrainian
-		'vi' => 'vn',		// Vietnamese
-		'zh' => 'hk',		// Chinese (China)
-		'zh_CN' => 'ch',	// Chinese (Simplified)
-		'zh_HK' => 'hk',	// Chinese (China)
+		'bs' => 'ba',
+		// Bosnian
+		'cs' => 'cz',
+		// Czech
+		'da' => 'dk',
+		// Danish
+		'el' => 'gr',
+		// Greek
+		'fr_CA' => 'qc',
+		// French (Canada)
+		'gl' => 'ga',
+		// Galician
+		'ja' => 'jp',
+		// Japanese
+		'ka' => 'ge',
+		// Georgian
+		'kl' => 'gl',
+		// Greenlandic
+		'ko' => 'kr',
+		// Korean
+		'ms' => 'my',
+		// Malay
+		'pt_BR' => 'br',
+		// Portuguese (Brazil)
+		'sl' => 'si',
+		// Slovenian
+		'sv' => 'se',
+		// Swedish
+		'uk' => 'ua',
+		// Ukrainian
+		'vi' => 'vn',
+		// Vietnamese
+		'zh' => 'hk',
+		// Chinese (China)
+		'zh_CN' => 'ch',
+		// Chinese (Simplified)
+		'zh_HK' => 'hk'
 	);
 
 	/**
@@ -142,6 +162,7 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 
 	/**
 	 * Dependencies for locales
+	 *
 	 * @var array
 	 */
 	protected $localeDependencies;
@@ -151,12 +172,11 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 	 *
 	 * @return void
 	 */
-	public static function initialize() {
+	static public function initialize() {
 		/** @var $instance t3lib_l10n_Locales */
 		$instance = t3lib_div::makeInstance('t3lib_l10n_Locales');
 		$instance->isoMapping = array_flip($instance->isoReverseMapping);
-
-			// Allow user-defined locales
+		// Allow user-defined locales
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user']) && is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user'] as $locale => $name) {
 				if (!isset($instance->languages[$locale])) {
@@ -164,27 +184,20 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 				}
 			}
 		}
-
-			// Initializes the locale dependencies with TYPO3 supported locales
+		// Initializes the locale dependencies with TYPO3 supported locales
 		$instance->localeDependencies = array();
 		foreach ($instance->languages as $locale => $name) {
 			if (strlen($locale) == 5) {
 				$instance->localeDependencies[$locale] = array(substr($locale, 0, 2));
 			}
 		}
-			// Merge user-provided locale dependencies
+		// Merge user-provided locale dependencies
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies']) && is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies'])) {
 			$instance->localeDependencies = t3lib_div::array_merge_recursive_overrule($instance->localeDependencies, $GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies']);
 		}
-
-		/**
-		 * @deprecated since TYPO3 4.6, will be removed in TYPO3 6.0
-		 */
+		/** @deprecated since TYPO3 4.6, will be removed in TYPO3 6.0 */
 		$instance->locales = array_keys($instance->languages);
-
-		/**
-		 * @deprecated since TYPO3 4.6, will be removed in TYPO3 6.0
-		 */
+		/** @deprecated since TYPO3 4.6, will be removed in TYPO3 6.0 */
 		define('TYPO3_languages', implode('|', $instance->getLocales()));
 	}
 
@@ -235,8 +248,7 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 		$dependencies = array();
 		if (isset($this->localeDependencies[$locale])) {
 			$dependencies = $this->localeDependencies[$locale];
-
-				// Search for dependencies recursively
+			// Search for dependencies recursively
 			$localeDependencies = $dependencies;
 			foreach ($localeDependencies as $dependency) {
 				if (isset($this->localeDependencies[$dependency])) {
@@ -255,9 +267,7 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 	 * @deprecated since TYPO3 4.6
 	 */
 	public function getTerLocaleDependencies($locale) {
-		$terLocale = isset($this->isoMapping[$locale])
-				? $this->isoMapping[$locale]
-				: $locale;
+		$terLocale = isset($this->isoMapping[$locale]) ? $this->isoMapping[$locale] : $locale;
 		return $this->convertToTerLocales($this->getLocaleDependencies($terLocale));
 	}
 
@@ -275,6 +285,7 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 		}
 		return $terLocales;
 	}
+
 }
 
 ?>

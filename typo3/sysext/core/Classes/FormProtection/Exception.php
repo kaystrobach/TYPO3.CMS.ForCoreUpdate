@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Invalid token exception
  *
@@ -30,6 +29,7 @@
  * @api
  */
 class t3lib_formprotection_InvalidTokenException extends UnexpectedValueException {
+
 
 }
 

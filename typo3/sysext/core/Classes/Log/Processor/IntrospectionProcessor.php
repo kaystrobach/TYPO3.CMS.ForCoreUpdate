@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Introspection processor to automatically add where the log record came from.
  *
@@ -43,27 +41,22 @@ class t3lib_log_processor_Introspection extends t3lib_log_processor_Abstract {
 	 */
 	public function processLogRecord(t3lib_log_Record $logRecord) {
 		$trace = debug_backtrace();
-
-			// skip first since it's always the current method
+		// skip first since it's always the current method
 		array_shift($trace);
-
-			// the call_user_func call is also skipped
+		// the call_user_func call is also skipped
 		array_shift($trace);
-
-			// skip t3lib_log classes
+		// skip t3lib_log classes
 		$i = 0;
 		while (isset($trace[$i]['class']) && FALSE !== strpos($trace[$i]['class'], 't3lib_log_')) {
 			$i++;
 		}
-
-			// we should have the call source now
+		// we should have the call source now
 		$logRecord->addData(array(
-			'file'     => isset($trace[$i]['file'])     ? $trace[$i]['file']     : NULL,
-			'line'     => isset($trace[$i]['line'])     ? $trace[$i]['line']     : NULL,
-			'class'    => isset($trace[$i]['class'])    ? $trace[$i]['class']    : NULL,
-			'function' => isset($trace[$i]['function']) ? $trace[$i]['function'] : NULL,
+			'file' => isset($trace[$i]['file']) ? $trace[$i]['file'] : NULL,
+			'line' => isset($trace[$i]['line']) ? $trace[$i]['line'] : NULL,
+			'class' => isset($trace[$i]['class']) ? $trace[$i]['class'] : NULL,
+			'function' => isset($trace[$i]['function']) ? $trace[$i]['function'] : NULL
 		));
-
 		return $logRecord;
 	}
 

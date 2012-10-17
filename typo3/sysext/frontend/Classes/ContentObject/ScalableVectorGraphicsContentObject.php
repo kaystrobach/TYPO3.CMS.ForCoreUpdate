@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains RESTORE_REGISTER class object.
  *
@@ -41,68 +40,55 @@ class tslib_content_ScalableVectorGraphics extends tslib_content_Abstract {
 	 * @return string Empty string (the cObject only sets internal data!)
 	 */
 	public function render($conf = array()) {
-		$width = isset($conf['width.'])
-			? $this->cObj->stdWrap($conf['width'], $conf['width.'])
-			: $conf['width'];
+		$width = isset($conf['width.']) ? $this->cObj->stdWrap($conf['width'], $conf['width.']) : $conf['width'];
 		if (!$width) {
 			$width = 600;
 		}
-		$height = isset($conf['height.'])
-			? $this->cObj->stdWrap($conf['height'], $conf['height.'])
-			: $conf['height'];
+		$height = isset($conf['height.']) ? $this->cObj->stdWrap($conf['height'], $conf['height.']) : $conf['height'];
 		if (!$height) {
 			$height = 400;
 		}
-
-		$src = isset($conf['src.'])
-			? $this->cObj->stdWrap($conf['src'], $conf['src.'])
-			: $conf['src'];
+		$src = isset($conf['src.']) ? $this->cObj->stdWrap($conf['src'], $conf['src.']) : $conf['src'];
 		if (!$src) {
 			$src = NULL;
 		}
-		$value = isset($conf['value.'])
-			? $this->cObj->stdWrap($conf['value'], $conf['value.'])
-			: $conf['value'];
-
-		$noscript = isset($conf['noscript.'])
-			? $this->cObj->stdWrap($conf['noscript'], $conf['noscript.'])
-			: $conf['noscript'];
-
+		$value = isset($conf['value.']) ? $this->cObj->stdWrap($conf['value'], $conf['value.']) : $conf['value'];
+		$noscript = isset($conf['noscript.']) ? $this->cObj->stdWrap($conf['noscript'], $conf['noscript.']) : $conf['noscript'];
 		if ($src) {
-			$content = '
+			$content = ((((((((((((('
 
 					<!--[if IE]>
-					<object src="' . $src . '" classid="image/svg+xml" width="' . $width . '" height="' . $height . '">
+					<object src="' . $src) . '" classid="image/svg+xml" width="') . $width) . '" height="') . $height) . '">
 					<![endif]-->
 					<!--[if !IE]>-->
-					<object data="' . $src . '" type="image/svg+xml" width="' . $width . '" height="' . $height . '">
+					<object data="') . $src) . '" type="image/svg+xml" width="') . $width) . '" height="') . $height) . '">
 					<!--<![endif]-->
-					' . $noscript . '
+					') . $noscript) . '
 					</object>
 
 			';
 		} else {
-			$content = '
+			$content = ((((((('
 				<script type="image/svg+xml">
 					<svg xmlns="http://www.w3.org/2000/svg"
 					xmlns:xlink="http://www.w3.org/1999/xlink"
-					width="' . $width . '"
-					height="' . $height . '">
-			' . $value . '
+					width="' . $width) . '"
+					height="') . $height) . '">
+			') . $value) . '
 				</svg>
 				</script>
 				<noscript>
-			' . $noscript . '
+			') . $noscript) . '
 				</noscript>
 			';
 		}
 		$GLOBALS['TSFE']->getPageRenderer()->loadSvg();
-
 		if (isset($conf['stdWrap.'])) {
 			$content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
 		}
-
 		return $content;
 	}
+
 }
+
 ?>

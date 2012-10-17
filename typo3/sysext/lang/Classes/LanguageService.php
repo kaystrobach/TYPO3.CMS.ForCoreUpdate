@@ -1,35 +1,34 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains the TYPO3 Backend Language class
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * Contains the TYPO3 Backend Language class
  *
@@ -73,10 +72,11 @@ class language {
 	 *
 	 * @var string
 	 */
-	public $typo3_help_url= 'http://typo3.org/documentation/document-library/';
+	public $typo3_help_url = 'http://typo3.org/documentation/document-library/';
 
 	/**
 	 * If TRUE, will show the key/location of labels in the backend.
+	 *
 	 * @var boolean
 	 */
 	public $debugKey = FALSE;
@@ -112,6 +112,7 @@ class language {
 
 	/**
 	 * instance of the parser factory
+	 *
 	 * @var t3lib_l10n_Factory
 	 */
 	public $parserFactory;
@@ -137,30 +138,24 @@ class language {
 	 * @return void
 	 */
 	public function init($lang) {
-
-			// Initialize the conversion object:
+		// Initialize the conversion object:
 		$this->csConvObj = t3lib_div::makeInstance('t3lib_cs');
 		$this->charSetArray = $this->csConvObj->charSetArray;
-
-			// Initialize the parser factory object
+		// Initialize the parser factory object
 		$this->parserFactory = t3lib_div::makeInstance('t3lib_l10n_Factory');
-
-			// Finding the requested language in this list based
-			// on the $lang key being inputted to this function.
+		// Finding the requested language in this list based
+		// on the $lang key being inputted to this function.
 		/** @var $locales t3lib_l10n_Locales */
 		$locales = t3lib_div::makeInstance('t3lib_l10n_Locales');
-
-			// Language is found. Configure it:
+		// Language is found. Configure it:
 		if (in_array($lang, $locales->getLocales())) {
-				// The current language key
+			// The current language key
 			$this->lang = $lang;
-
 			$this->languageDependencies[] = $this->lang;
 			foreach ($locales->getLocaleDependencies($this->lang) as $language) {
 				$this->languageDependencies[] = $language;
 			}
 		}
-
 		if ($GLOBALS['TYPO3_CONF_VARS']['BE']['lang']['debug']) {
 			$this->debugKey = TRUE;
 		}
@@ -179,7 +174,6 @@ class language {
 	 * Adds labels and image references from the backend modules to the internal moduleLabels array
 	 *
 	 * @param array $arr Array with references to module labels, keys: ['labels']['tablabel'],
-	 * 							['labels']['tabdescr'], ['tabs']['tab']
 	 * @param string $prefix Module name prefix
 	 * @return void
 	 * @see t3lib_loadModules
@@ -213,7 +207,7 @@ class language {
 	 * @access public
 	 */
 	public function makeEntities($str) {
-			// Convert string back again, but using the full entity conversion:
+		// Convert string back again, but using the full entity conversion:
 		return $this->csConvObj->utf8_to_entities($str);
 	}
 
@@ -226,14 +220,13 @@ class language {
 	 * for iso-8859-1 charsets but now I have applied the same method here for all charsets.
 	 *
 	 * @param string $str Input string, encoded with UTF-8
-	 * @return string Output string, a JavaScript function: "String.fromCharCode(......)"
+	 * @return string Output string, a JavaScript function: "String.fromCharCode(......)
 	 * @access public
 	 */
 	public function JScharCode($str) {
-			// Convert the UTF-8 string into a array of char numbers:
+		// Convert the UTF-8 string into a array of char numbers:
 		$nArr = $this->csConvObj->utf8_to_numberarray($str);
-
-		return 'String.fromCharCode(' . implode(',', $nArr) . ')';
+		return ('String.fromCharCode(' . implode(',', $nArr)) . ')';
 	}
 
 	/**
@@ -243,7 +236,7 @@ class language {
 	 * @return string
 	 */
 	public function debugLL($value) {
-		return ($this->debugKey ? '[' . $value . ']' : '');
+		return $this->debugKey ? ('[' . $value) . ']' : '';
 	}
 
 	/**
@@ -256,7 +249,7 @@ class language {
 	 * @access public
 	 */
 	public function getLL($index, $hsc = FALSE) {
-			// Get Local Language
+		// Get Local Language
 		if (isset($GLOBALS['LOCAL_LANG'][$this->lang][$index][0]['target'])) {
 			$output = $GLOBALS['LOCAL_LANG'][$this->lang][$index][0]['target'];
 		} else {
@@ -279,15 +272,13 @@ class language {
 	 * @access public
 	 */
 	public function getLLL($index, $localLanguage, $hsc = FALSE) {
-			// Get Local Language. Special handling for all extensions that
-			// read PHP LL files and pass arrays here directly.
+		// Get Local Language. Special handling for all extensions that
+		// read PHP LL files and pass arrays here directly.
 		$value = is_string($localLanguage[$this->lang][$index]) ? $localLanguage[$this->lang][$index] : $localLanguage[$this->lang][$index][0]['target'];
-
-			// Fallback to default language
+		// Fallback to default language
 		if (trim($value) === '') {
 			$value = is_string($localLanguage['default'][$index]) ? $localLanguage['default'][$index] : $localLanguage['default'][$index][0]['target'];
 		}
-
 		if ($hsc) {
 			$value = htmlspecialchars($value);
 		}
@@ -310,42 +301,37 @@ class language {
 	 * @access public
 	 */
 	public function sL($input, $hsc = FALSE) {
-			// If cached label
+		// If cached label
 		if (!isset($this->LL_labels_cache[$this->lang][$input]) && substr($input, 0, 4) === 'LLL:') {
 			$restStr = trim(substr($input, 4));
 			$extPrfx = '';
-
-				// ll-file refered to is found in an extension.
+			// ll-file refered to is found in an extension.
 			if (!strcmp(substr($restStr, 0, 4), 'EXT:')) {
 				$restStr = trim(substr($restStr, 4));
 				$extPrfx = 'EXT:';
 			}
 			$parts = explode(':', $restStr);
 			$parts[0] = $extPrfx . $parts[0];
-
-				// Getting data if not cached
+			// Getting data if not cached
 			if (!isset($this->LL_files_cache[$parts[0]])) {
 				$this->LL_files_cache[$parts[0]] = $this->readLLfile($parts[0]);
-
-					// If the current language is found in another file, load that as well:
+				// If the current language is found in another file, load that as well:
 				$lFileRef = $this->localizedFileRef($parts[0]);
-				if ($lFileRef && is_string($this->LL_files_cache[$parts[0]][$this->lang])
-						&& $this->LL_files_cache[$parts[0]][$this->lang] == 'EXT') {
+				if (($lFileRef && is_string($this->LL_files_cache[$parts[0]][$this->lang])) && $this->LL_files_cache[$parts[0]][$this->lang] == 'EXT') {
 					$tempLL = $this->readLLfile($lFileRef);
 					$this->LL_files_cache[$parts[0]][$this->lang] = $tempLL[$this->lang];
 				}
 			}
 			$this->LL_labels_cache[$this->lang][$input] = $this->getLLL($parts[1], $this->LL_files_cache[$parts[0]]);
 		}
-			// For the cached output charset conversion has already happened!
-			// So perform HSC right here.
+		// For the cached output charset conversion has already happened!
+		// So perform HSC right here.
 		if (isset($this->LL_labels_cache[$this->lang][$input])) {
 			$output = $this->LL_labels_cache[$this->lang][$input];
 		} else {
-				// Use a constant non-localizable label
+			// Use a constant non-localizable label
 			$output = $input;
 		}
-
 		if ($hsc) {
 			$output = t3lib_div::deHSCentities(htmlspecialchars($output));
 		}
@@ -362,42 +348,34 @@ class language {
 	 * @access public
 	 */
 	public function loadSingleTableDescription($table) {
-
-			// First the 'table' cannot already be loaded in [columns]
-			// and secondly there must be a references to locallang files available in [refs]
-		if (is_array($GLOBALS['TCA_DESCR'][$table])
-				&& !isset($GLOBALS['TCA_DESCR'][$table]['columns'])
-				&& is_array($GLOBALS['TCA_DESCR'][$table]['refs'])) {
-
-				// Init $TCA_DESCR for $table-key
+		// First the 'table' cannot already be loaded in [columns]
+		// and secondly there must be a references to locallang files available in [refs]
+		if ((is_array($GLOBALS['TCA_DESCR'][$table]) && !isset($GLOBALS['TCA_DESCR'][$table]['columns'])) && is_array($GLOBALS['TCA_DESCR'][$table]['refs'])) {
+			// Init $TCA_DESCR for $table-key
 			$GLOBALS['TCA_DESCR'][$table]['columns'] = array();
-
-				// Get local-lang for each file in $TCA_DESCR[$table]['refs'] as they are ordered.
+			// Get local-lang for each file in $TCA_DESCR[$table]['refs'] as they are ordered.
 			foreach ($GLOBALS['TCA_DESCR'][$table]['refs'] as $llfile) {
 				$localLanguage = $this->includeLLFile($llfile, 0, 1);
-
-					// Traverse all keys
+				// Traverse all keys
 				if (is_array($localLanguage['default'])) {
 					foreach ($localLanguage['default'] as $lkey => $lVal) {
 						$type = '';
 						$fieldName = '';
-
-							// Exploding by '.':
-							// 0-n => fieldname,
-							// n+1 => type from (alttitle, description, details, syntax, image_descr,image,seeAlso),
-							// n+2 => special instruction, if any
+						// Exploding by '.':
+						// 0-n => fieldname,
+						// n+1 => type from (alttitle, description, details, syntax, image_descr,image,seeAlso),
+						// n+2 => special instruction, if any
 						$keyParts = explode('.', $lkey);
 						$keyPartsCount = count($keyParts);
-							// Check if last part is special instruction
-							// Only "+" is currently supported
-						$specialInstruction = ($keyParts[$keyPartsCount - 1] == '+') ? TRUE : FALSE;
+						// Check if last part is special instruction
+						// Only "+" is currently supported
+						$specialInstruction = $keyParts[$keyPartsCount - 1] == '+' ? TRUE : FALSE;
 						if ($specialInstruction) {
 							array_pop($keyParts);
 						}
-
-							// If there are more than 2 parts, get the type from the last part
-							// and merge back the other parts with a dot (.)
-							// Otherwise just get type and field name straightaway
+						// If there are more than 2 parts, get the type from the last part
+						// and merge back the other parts with a dot (.)
+						// Otherwise just get type and field name straightaway
 						if ($keyPartsCount > 2) {
 							$type = array_pop($keyParts);
 							$fieldName = implode('.', $keyParts);
@@ -405,21 +383,19 @@ class language {
 							$fieldName = $keyParts[0];
 							$type = $keyParts[1];
 						}
-
-							// Detecting 'hidden' labels, converting to normal fieldname
+						// Detecting 'hidden' labels, converting to normal fieldname
 						if ($fieldName == '_') {
 							$fieldName = '';
 						}
 						if (substr($fieldName, 0, 1) == '_') {
 							$fieldName = substr($fieldName, 1);
 						}
-
-							// Append label
+						// Append label
 						$label = $lVal[0]['target'] ?: $lVal[0]['source'];
 						if ($specialInstruction) {
 							$GLOBALS['TCA_DESCR'][$table]['columns'][$fieldName][$type] .= LF . $label;
 						} else {
-								// Substitute label
+							// Substitute label
 							$GLOBALS['TCA_DESCR'][$table]['columns'][$fieldName][$type] = $label;
 						}
 					}
@@ -439,39 +415,31 @@ class language {
 	 * @access public
 	 */
 	public function includeLLFile($fileRef, $setGlobal = TRUE, $mergeLocalOntoDefault = FALSE) {
-
 		$globalLanguage = array();
-
-			// Get default file
+		// Get default file
 		$localLanguage = $this->readLLfile($fileRef);
-
 		if (is_array($localLanguage) && count($localLanguage)) {
-
-				// it depends on, whether we should return the result or set it in the global $LOCAL_LANG array
+			// it depends on, whether we should return the result or set it in the global $LOCAL_LANG array
 			if ($setGlobal) {
-				$globalLanguage = t3lib_div::array_merge_recursive_overrule((array)$GLOBALS['LOCAL_LANG'], $localLanguage);
+				$globalLanguage = t3lib_div::array_merge_recursive_overrule((array) $GLOBALS['LOCAL_LANG'], $localLanguage);
 			} else {
 				$globalLanguage = $localLanguage;
 			}
-
-				// Localized addition?
+			// Localized addition?
 			$lFileRef = $this->localizedFileRef($fileRef);
-			if ($lFileRef && (string)$globalLanguage[$this->lang] == 'EXT') {
+			if ($lFileRef && (string) $globalLanguage[$this->lang] == 'EXT') {
 				$localLanguage = $this->readLLfile($lFileRef);
 				$globalLanguage = t3lib_div::array_merge_recursive_overrule($globalLanguage, $localLanguage);
 			}
-
-				// Merge local onto default
-			if ($mergeLocalOntoDefault && $this->lang !== 'default'
-				&& is_array($globalLanguage[$this->lang]) && is_array($globalLanguage['default'])) {
-					// array_merge can be used so far the keys are not
-					// numeric - which we assume they are not...
+			// Merge local onto default
+			if ((($mergeLocalOntoDefault && $this->lang !== 'default') && is_array($globalLanguage[$this->lang])) && is_array($globalLanguage['default'])) {
+				// array_merge can be used so far the keys are not
+				// numeric - which we assume they are not...
 				$globalLanguage['default'] = array_merge($globalLanguage['default'], $globalLanguage[$this->lang]);
 				unset($globalLanguage[$this->lang]);
 			}
 		}
-
-			// Return value if not global is set.
+		// Return value if not global is set.
 		if (!$setGlobal) {
 			return $globalLanguage;
 		} else {
@@ -492,7 +460,6 @@ class language {
 		} else {
 			$languages = array('default');
 		}
-
 		$localLanguage = array();
 		foreach ($languages as $language) {
 			$tempLL = t3lib_div::readLLfile($fileRef, $language, $this->charSet);
@@ -501,12 +468,11 @@ class language {
 				$localLanguage[$this->lang] = $localLanguage['default'];
 			}
 			if ($this->lang !== 'default' && isset($tempLL[$language])) {
-					// Merge current language labels onto labels from previous language
-					// This way we have a labels with fall back applied
+				// Merge current language labels onto labels from previous language
+				// This way we have a labels with fall back applied
 				$localLanguage[$this->lang] = t3lib_div::array_merge_recursive_overrule($localLanguage[$this->lang], $tempLL[$language], FALSE, FALSE);
 			}
 		}
-
 		return $localLanguage;
 	}
 
@@ -519,7 +485,7 @@ class language {
 	 */
 	protected function localizedFileRef($fileRef) {
 		if ($this->lang != 'default' && substr($fileRef, -4) == '.php') {
-			return substr($fileRef, 0, -4) . '.' . $this->lang . '.php';
+			return ((substr($fileRef, 0, -4) . '.') . $this->lang) . '.php';
 		}
 	}
 
@@ -535,12 +501,12 @@ class language {
 		if (isset($GLOBALS['LOCAL_LANG']) === FALSE) {
 			$GLOBALS['LOCAL_LANG'] = array();
 		}
-
 		$GLOBALS['LOCAL_LANG'][$this->lang][$index][0]['target'] = $value;
-
 		if ($overrideDefault) {
 			$GLOBALS['LOCAL_LANG']['default'][$index][0]['target'] = $value;
 		}
 	}
+
 }
+
 ?>

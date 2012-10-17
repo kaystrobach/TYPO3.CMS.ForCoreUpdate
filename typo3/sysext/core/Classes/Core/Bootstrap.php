@@ -1,32 +1,4 @@
 <?php
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2012 Christian Kuhn <lolli@schwarzbu.ch>
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *  A copy is found in the textfile GPL.txt and important notices to the license
- *  from the author is found in LICENSE.txt distributed with these scripts.
- *
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-
-require('Bootstrap' . DIRECTORY_SEPARATOR . 'BaseSetup.php');
-
 /**
  * This class encapsulates bootstrap related methods.
  * It is required directly as the very first thing in entry scripts and
@@ -43,10 +15,11 @@ require('Bootstrap' . DIRECTORY_SEPARATOR . 'BaseSetup.php');
  * @subpackage core
  */
 class Typo3_Bootstrap {
+
 	/**
 	 * @var Typo3_Bootstrap
 	 */
-	protected static $instance = NULL;
+	static protected $instance = NULL;
 
 	/**
 	 * Unique Request ID
@@ -66,6 +39,7 @@ class Typo3_Bootstrap {
 	 * Disable direct cloning of this object.
 	 */
 	protected function __clone() {
+
 	}
 
 	/**
@@ -73,7 +47,7 @@ class Typo3_Bootstrap {
 	 *
 	 * @return Typo3_Bootstrap
 	 */
-	public static function getInstance() {
+	static public function getInstance() {
 		if (is_null(self::$instance)) {
 			self::$instance = new Typo3_Bootstrap();
 		}
@@ -97,7 +71,6 @@ class Typo3_Bootstrap {
 	 */
 	public function startOutputBuffering() {
 		ob_start();
-
 		return $this;
 	}
 
@@ -112,7 +85,6 @@ class Typo3_Bootstrap {
 	 */
 	public function baseSetup($relativePathPart = '') {
 		Typo3_Bootstrap_BaseSetup::run($relativePathPart);
-
 		return $this;
 	}
 
@@ -123,11 +95,10 @@ class Typo3_Bootstrap {
 	 * @throws RuntimeException
 	 */
 	public function checkValidBrowserOrDie() {
-			// Checks for proper browser
+		// Checks for proper browser
 		if (empty($GLOBALS['CLIENT']['BROWSER'])) {
 			throw new RuntimeException('Browser Error: Your browser version looks incompatible with this TYPO3 version!', 1294587023);
 		}
-
 		return $this;
 	}
 
@@ -138,50 +109,14 @@ class Typo3_Bootstrap {
 	 */
 	public function registerExtDirectComponents() {
 		if (TYPO3_MODE === 'BE') {
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.Components.PageTree.DataProvider',
-				PATH_t3lib . 'tree/pagetree/extdirect/class.t3lib_tree_pagetree_extdirect_tree.php:t3lib_tree_pagetree_extdirect_Tree',
-				'web',
-				'user,group'
-			);
-
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.Components.PageTree.Commands',
-				PATH_t3lib . 'tree/pagetree/extdirect/class.t3lib_tree_pagetree_extdirect_tree.php:t3lib_tree_pagetree_extdirect_Commands',
-				'web',
-				'user,group'
-			);
-
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.Components.PageTree.ContextMenuDataProvider',
-				PATH_t3lib . 'contextmenu/pagetree/extdirect/class.t3lib_contextmenu_pagetree_extdirect_contextmenu.php:t3lib_contextmenu_pagetree_extdirect_ContextMenu',
-				'web',
-				'user,group'
-			);
-
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.LiveSearchActions.ExtDirect',
-				PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_backendlivesearch.php:extDirect_DataProvider_BackendLiveSearch',
-				'web_list',
-				'user,group'
-			);
-
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.BackendUserSettings.ExtDirect',
-				PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_beusersettings.php:extDirect_DataProvider_BackendUserSettings'
-			);
-
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.CSH.ExtDirect',
-				PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_contexthelp.php:extDirect_DataProvider_ContextHelp'
-			);
-
-			t3lib_extMgm::registerExtDirectComponent(
-				'TYPO3.ExtDirectStateProvider.ExtDirect',
-				PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_state.php:extDirect_DataProvider_State'
-			);
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.Components.PageTree.DataProvider', PATH_t3lib . 'tree/pagetree/extdirect/class.t3lib_tree_pagetree_extdirect_tree.php:t3lib_tree_pagetree_extdirect_Tree', 'web', 'user,group');
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.Components.PageTree.Commands', PATH_t3lib . 'tree/pagetree/extdirect/class.t3lib_tree_pagetree_extdirect_tree.php:t3lib_tree_pagetree_extdirect_Commands', 'web', 'user,group');
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.Components.PageTree.ContextMenuDataProvider', PATH_t3lib . 'contextmenu/pagetree/extdirect/class.t3lib_contextmenu_pagetree_extdirect_contextmenu.php:t3lib_contextmenu_pagetree_extdirect_ContextMenu', 'web', 'user,group');
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.LiveSearchActions.ExtDirect', PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_backendlivesearch.php:extDirect_DataProvider_BackendLiveSearch', 'web_list', 'user,group');
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.BackendUserSettings.ExtDirect', PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_beusersettings.php:extDirect_DataProvider_BackendUserSettings');
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.CSH.ExtDirect', PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_contexthelp.php:extDirect_DataProvider_ContextHelp');
+			t3lib_extMgm::registerExtDirectComponent('TYPO3.ExtDirectStateProvider.ExtDirect', PATH_t3lib . 'extjs/dataprovider/class.extdirect_dataprovider_state.php:extDirect_DataProvider_State');
 		}
-
 		return $this;
 	}
 
@@ -193,47 +128,37 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function populateLocalConfiguration() {
-		if (@is_file(PATH_site . t3lib_Configuration::LOCAL_CONFIGURATION_FILE)) {
+		if (@is_file((PATH_site . t3lib_Configuration::LOCAL_CONFIGURATION_FILE))) {
 			$localConfiguration = t3lib_Configuration::getLocalConfiguration();
 			if (is_array($localConfiguration)) {
-				$GLOBALS['TYPO3_CONF_VARS'] = t3lib_div::array_merge_recursive_overrule(
-					$GLOBALS['TYPO3_CONF_VARS'],
-					$localConfiguration
-				);
+				$GLOBALS['TYPO3_CONF_VARS'] = t3lib_div::array_merge_recursive_overrule($GLOBALS['TYPO3_CONF_VARS'], $localConfiguration);
 			} else {
 				die('LocalConfiguration invalid.');
 			}
-
-			if (@is_file(PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE)) {
-				require(PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE);
+			if (@is_file((PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE))) {
+				require PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE;
 			}
-
 			define('TYPO3_db', $GLOBALS['TYPO3_CONF_VARS']['DB']['database']);
 			define('TYPO3_db_username', $GLOBALS['TYPO3_CONF_VARS']['DB']['username']);
 			define('TYPO3_db_password', $GLOBALS['TYPO3_CONF_VARS']['DB']['password']);
 			define('TYPO3_db_host', $GLOBALS['TYPO3_CONF_VARS']['DB']['host']);
 			define('TYPO3_extTableDef_script', $GLOBALS['TYPO3_CONF_VARS']['DB']['extTablesDefinitionScript']);
-
 			unset($GLOBALS['TYPO3_CONF_VARS']['DB']);
-		} elseif (@is_file(PATH_site . t3lib_Configuration::LOCALCONF_FILE)) {
-				// Legacy localconf.php handling
-				// @deprecated: Can be removed if old localconf.php is not supported anymore
+		} elseif (@is_file((PATH_site . t3lib_Configuration::LOCALCONF_FILE))) {
+			// Legacy localconf.php handling
+			// @deprecated: Can be removed if old localconf.php is not supported anymore
 			global $TYPO3_CONF_VARS, $typo_db, $typo_db_username, $typo_db_password, $typo_db_host, $typo_db_extTableDef_script;
-
-			require(PATH_site . t3lib_Configuration::LOCALCONF_FILE);
-
-				// If the localconf.php was not upgraded to LocalConfiguration.php, the default extListArray
-				// from t3lib/stddb/DefaultConfiguration.php is still set. In this case we just unset
-				// this key here, so t3lib_extMgm::getLoadedExtensionListArray() falls back to use extList string
-				// @deprecated: This case can be removed later if localconf.php is not supported anymore
+			require PATH_site . t3lib_Configuration::LOCALCONF_FILE;
+			// If the localconf.php was not upgraded to LocalConfiguration.php, the default extListArray
+			// from t3lib/stddb/DefaultConfiguration.php is still set. In this case we just unset
+			// this key here, so t3lib_extMgm::getLoadedExtensionListArray() falls back to use extList string
+			// @deprecated: This case can be removed later if localconf.php is not supported anymore
 			unset($TYPO3_CONF_VARS['EXT']['extListArray']);
-
 			define('TYPO3_db', $typo_db);
 			define('TYPO3_db_username', $typo_db_username);
 			define('TYPO3_db_password', $typo_db_password);
 			define('TYPO3_db_host', $typo_db_host);
 			define('TYPO3_extTableDef_script', $typo_db_extTableDef_script);
-
 			unset($GLOBALS['typo_db']);
 			unset($GLOBALS['typo_db_username']);
 			unset($GLOBALS['typo_db_password']);
@@ -242,9 +167,7 @@ class Typo3_Bootstrap {
 		} else {
 			die(t3lib_Configuration::LOCALCONF_FILE . ' not found!');
 		}
-
-		define('TYPO3_user_agent', 'User-Agent: '. $GLOBALS['TYPO3_CONF_VARS']['HTTP']['userAgent']);
-
+		define('TYPO3_user_agent', 'User-Agent: ' . $GLOBALS['TYPO3_CONF_VARS']['HTTP']['userAgent']);
 		return $this;
 	}
 
@@ -257,7 +180,6 @@ class Typo3_Bootstrap {
 		if (!TYPO3_db_host && !TYPO3_db) {
 			t3lib_utility_Http::redirect('install/index.php?mode=123&step=1&password=joh316');
 		}
-
 		return $this;
 	}
 
@@ -268,7 +190,6 @@ class Typo3_Bootstrap {
 	 */
 	public function initializeCachingFramework() {
 		t3lib_cache::initializeCachingFramework();
-
 		return $this;
 	}
 
@@ -279,7 +200,6 @@ class Typo3_Bootstrap {
 	 */
 	public function registerAutoloader() {
 		t3lib_autoloader::registerAutoloader();
-
 		return $this;
 	}
 
@@ -288,52 +208,35 @@ class Typo3_Bootstrap {
 	 *
 	 * Since TYPO3 4.5, everything other than UTF-8 is deprecated.
 	 *
-	 *   [BE][forceCharset] is set to the charset that TYPO3 is using
-	 *   [SYS][setDBinit] is used to set the DB connection
+	 * [BE][forceCharset] is set to the charset that TYPO3 is using
+	 * [SYS][setDBinit] is used to set the DB connection
 	 * and both settings need to be adjusted for UTF-8 in order to work properly
 	 *
 	 * @return Typo3_Bootstrap
 	 */
 	public function checkUtf8DatabaseSettingsOrDie() {
-			// Check if [BE][forceCharset] has been set in localconf.php
+		// Check if [BE][forceCharset] has been set in localconf.php
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'])) {
-				// die() unless we're already on UTF-8
-			if ($GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'] != 'utf-8' &&
-				$GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'] &&
-				TYPO3_enterInstallScript !== '1'
-			) {
-				die('This installation was just upgraded to a new TYPO3 version. Since TYPO3 4.7, utf-8 is always enforced.<br />' .
-					'The configuration option $GLOBALS[\'TYPO3_CONF_VARS\'][BE][forceCharset] was marked as deprecated in TYPO3 4.5 and is now ignored.<br />' .
-					'You have configured the value to something different, which is not supported anymore.<br />' .
-					'Please proceed to the Update Wizard in the TYPO3 Install Tool to update your configuration.'
-				);
+			// die() unless we're already on UTF-8
+			if (($GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'] != 'utf-8' && $GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset']) && TYPO3_enterInstallScript !== '1') {
+				die((('This installation was just upgraded to a new TYPO3 version. Since TYPO3 4.7, utf-8 is always enforced.<br />' . 'The configuration option $GLOBALS[\'TYPO3_CONF_VARS\'][BE][forceCharset] was marked as deprecated in TYPO3 4.5 and is now ignored.<br />') . 'You have configured the value to something different, which is not supported anymore.<br />') . 'Please proceed to the Update Wizard in the TYPO3 Install Tool to update your configuration.');
 			} else {
 				unset($GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset']);
 			}
 		}
-
-		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']) &&
-			$GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit'] !== '-1' &&
-			preg_match('/SET NAMES utf8/', $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']) === FALSE &&
-			TYPO3_enterInstallScript !== '1'
-		) {
-				// Only accept "SET NAMES utf8" for this setting, otherwise die with a nice error
-			die('This TYPO3 installation is using the $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'setDBinit\'] property with the following value:' . chr(10) .
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit'] . chr(10) . chr(10) .
-				'It looks like UTF-8 is not used for this connection.' . chr(10) . chr(10) .
-				'Everything other than UTF-8 is unsupported since TYPO3 4.7.' . chr(10) .
-				'The DB, its connection and TYPO3 should be migrated to UTF-8 therefore. Please check your setup.');
+		if (((isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']) && $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit'] !== '-1') && preg_match('/SET NAMES utf8/', $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']) === FALSE) && TYPO3_enterInstallScript !== '1') {
+			// Only accept "SET NAMES utf8" for this setting, otherwise die with a nice error
+			die(((((((((('This TYPO3 installation is using the $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'setDBinit\'] property with the following value:' . chr(10)) . $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']) . chr(10)) . chr(10)) . 'It looks like UTF-8 is not used for this connection.') . chr(10)) . chr(10)) . 'Everything other than UTF-8 is unsupported since TYPO3 4.7.') . chr(10)) . 'The DB, its connection and TYPO3 should be migrated to UTF-8 therefore. Please check your setup.');
 		} else {
 			$GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit'] = 'SET NAMES utf8;';
 		}
-
 		return $this;
 	}
 
 	/**
 	 * Parse old curl options and set new http ones instead
 	 *
-	 * @TODO: This code segment must still be finished
+	 * @TODO : This code segment must still be finished
 	 * @return Typo3_Bootstrap
 	 */
 	public function transferDeprecatedCurlSettings() {
@@ -341,25 +244,12 @@ class Typo3_Bootstrap {
 			$proxyParts = explode(':', $GLOBALS['TYPO3_CONF_VARS']['SYS']['curlProxyServer'], 2);
 			$GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_host'] = $proxyParts[0];
 			$GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_port'] = $proxyParts[1];
-			/* TODO: uncomment after refactoring getUrl()
-			t3lib_div::deprecationLog(
-				'This TYPO3 installation is using the $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'curlProxyServer\'] property with the following value: ' .
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['curlProxyServer'] . LF . 'Please make sure to set $GLOBALS[\'TYPO3_CONF_VARS\'][\'HTTP\'][\'proxy_host\']' .
-				' and $GLOBALS['TYPO3_CONF_VARS'][\'HTTP\'][\'proxy_port\'] instead.' . LF . 'Remove this line from your localconf.php.'
-			);*/
 		}
 		if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['curlProxyUserPass'])) {
 			$userPassParts = explode(':', $GLOBALS['TYPO3_CONF_VARS']['SYS']['curlProxyUserPass'], 2);
 			$GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_user'] = $userPassParts[0];
 			$GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_password'] = $userPassParts[1];
-			/* TODO: uncomment after refactoring getUrl()
-			t3lib_div::deprecationLog(
-				'This TYPO3 installation is using the $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'curlProxyUserPass\'] property with the following value: ' .
-				$GLOBALS['TYPO3_CONF_VARS']['SYS']['curlProxyUserPass'] . LF . 'Please make sure to set $GLOBALS[\'TYPO3_CONF_VARS\'][\'HTTP\'][\'proxy_user\']' .
-				' and $GLOBALS['TYPO3_CONF_VARS'][\'HTTP\'][\'proxy_password\'] instead.' . LF . 'Remove this line from your localconf.php.'
-			);*/
 		}
-
 		return $this;
 	}
 
@@ -372,14 +262,13 @@ class Typo3_Bootstrap {
 		$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash'] = array(
 			'cachedParametersWhiteList' => t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['cHashOnlyForParameters'], TRUE),
 			'excludedParameters' => t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['cHashExcludedParameters'], TRUE),
-			'requireCacheHashPresenceParameters' => t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['cHashRequiredParameters'], TRUE),
+			'requireCacheHashPresenceParameters' => t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['cHashRequiredParameters'], TRUE)
 		);
 		if (trim($GLOBALS['TYPO3_CONF_VARS']['FE']['cHashExcludedParametersIfEmpty']) === '*') {
 			$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludeAllEmptyParameters'] = TRUE;
 		} else {
 			$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParametersIfEmpty'] = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['cHashExcludedParametersIfEmpty'], TRUE);
 		}
-
 		return $this;
 	}
 
@@ -390,9 +279,7 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function enforceCorrectProxyAuthScheme() {
-		$GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_auth_scheme'] === 'digest' ?
-			: $GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_auth_scheme'] = 'basic';
-
+		$GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_auth_scheme'] === 'digest' ?: ($GLOBALS['TYPO3_CONF_VARS']['HTTP']['proxy_auth_scheme'] = 'basic');
 		return $this;
 	}
 
@@ -404,7 +291,7 @@ class Typo3_Bootstrap {
 	public function setDefaultTimezone() {
 		$timeZone = $GLOBALS['TYPO3_CONF_VARS']['SYS']['phpTimeZone'];
 		if (empty($timeZone)) {
-				// Time zone from the server environment (TZ env or OS query)
+			// Time zone from the server environment (TZ env or OS query)
 			$defaultTimeZone = @date_default_timezone_get();
 			if ($defaultTimeZone !== '') {
 				$timeZone = $defaultTimeZone;
@@ -412,9 +299,8 @@ class Typo3_Bootstrap {
 				$timeZone = 'UTC';
 			}
 		}
-			// Set default to avoid E_WARNINGs with PHP > 5.3
+		// Set default to avoid E_WARNINGs with PHP > 5.3
 		date_default_timezone_set($timeZone);
-
 		return $this;
 	}
 
@@ -425,7 +311,6 @@ class Typo3_Bootstrap {
 	 */
 	public function initializeL10nLocales() {
 		t3lib_l10n_Locales::initialize();
-
 		return $this;
 	}
 
@@ -450,7 +335,7 @@ class Typo3_Bootstrap {
 			$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_negate_mask'] = 1;
 			$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_no_effects'] = 1;
 			$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_mask_temp_ext_gif'] = 1;
-			if ($GLOBALS['TYPO3_CONF_VARS']['GFX']['im_version_5']==='gm') {
+			if ($GLOBALS['TYPO3_CONF_VARS']['GFX']['im_version_5'] === 'gm') {
 				$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_negate_mask'] = 0;
 				$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_imvMaskState'] = 0;
 				$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_no_effects'] = 1;
@@ -460,7 +345,6 @@ class Typo3_Bootstrap {
 		if ($GLOBALS['TYPO3_CONF_VARS']['GFX']['im_imvMaskState']) {
 			$GLOBALS['TYPO3_CONF_VARS']['GFX']['im_negate_mask'] = $GLOBALS['TYPO3_CONF_VARS']['GFX']['im_negate_mask'] ? 0 : 1;
 		}
-
 		return $this;
 	}
 
@@ -468,14 +352,13 @@ class Typo3_Bootstrap {
 	 * Convert type of "pageNotFound_handling" setting in case it was written as a
 	 * string (e.g. if edited in Install Tool)
 	 *
-	 * @TODO: Remove, if the Install Tool handles such data types correctly
+	 * @TODO : Remove, if the Install Tool handles such data types correctly
 	 * @return Typo3_Bootstrap
 	 */
 	public function convertPageNotFoundHandlingToBoolean() {
 		if (!strcasecmp($GLOBALS['TYPO3_CONF_VARS']['FE']['pageNotFound_handling'], 'TRUE')) {
 			$GLOBALS['TYPO3_CONF_VARS']['FE']['pageNotFound_handling'] = TRUE;
 		}
-
 		return $this;
 	}
 
@@ -488,44 +371,44 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function registerGlobalDebugFunctions() {
-			// Simple debug function which prints output immediately
-		function xdebug($var = '', $debugTitle = 'xdebug') {
-				// If you wish to use the debug()-function, and it does not output something,
-				// please edit the IP mask in TYPO3_CONF_VARS
+		// Simple debug function which prints output immediately
+		function xdebug($var = '', $debugTitle = 'xdebug')
+		{
+			// If you wish to use the debug()-function, and it does not output something,
+			// please edit the IP mask in TYPO3_CONF_VARS
 			if (!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
 				return;
 			}
 			t3lib_utility_Debug::debug($var, $debugTitle);
 		}
-
-			// Debug function which calls $GLOBALS['error'] error handler if available
-		function debug($variable = '', $name = '*variable*', $line = '*line*', $file = '*file*', $recursiveDepth = 3, $debugLevel = E_DEBUG) {
-				// If you wish to use the debug()-function, and it does not output something,
-				// please edit the IP mask in TYPO3_CONF_VARS
+		// Debug function which calls $GLOBALS['error'] error handler if available
+		function debug($variable = '', $name = '*variable*', $line = '*line*', $file = '*file*', $recursiveDepth = 3, $debugLevel = E_DEBUG)
+		{
+			// If you wish to use the debug()-function, and it does not output something,
+			// please edit the IP mask in TYPO3_CONF_VARS
 			if (!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
 				return;
 			}
 			if (is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'], 'debug'))) {
 				$GLOBALS['error']->debug($variable, $name, $line, $file, $recursiveDepth, $debugLevel);
 			} else {
-				$title = ($name === '*variable*') ? '' : $name;
-				$group = ($line === '*line*') ? NULL : $line;
+				$title = $name === '*variable*' ? '' : $name;
+				$group = $line === '*line*' ? NULL : $line;
 				t3lib_utility_Debug::debug($variable, $title, $group);
 			}
 		}
-
-		function debugBegin() {
-			if (is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'],'debugBegin'))) {
+		function debugBegin()
+		{
+			if (is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'], 'debugBegin'))) {
 				$GLOBALS['error']->debugBegin();
 			}
 		}
-
-		function debugEnd() {
-			if (is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'],'debugEnd'))) {
+		function debugEnd()
+		{
+			if (is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'], 'debugEnd'))) {
 				$GLOBALS['error']->debugEnd();
 			}
 		}
-
 		return $this;
 	}
 
@@ -535,9 +418,7 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function registerSwiftMailer() {
-		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery'][]
-			= 't3lib_mail_SwiftMailerAdapter';
-
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery'][] = 't3lib_mail_SwiftMailerAdapter';
 		return $this;
 	}
 
@@ -549,10 +430,9 @@ class Typo3_Bootstrap {
 	public function configureExceptionHandling() {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['productionExceptionHandler'];
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionalErrors'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['exceptionalErrors'];
-
-			// Turn error logging on/off.
+		// Turn error logging on/off.
 		if (($displayErrors = intval($GLOBALS['TYPO3_CONF_VARS']['SYS']['displayErrors'])) != '-1') {
-				// Special value "2" enables this feature only if $GLOBALS['TYPO3_CONF_VARS'][SYS][devIPmask] matches
+			// Special value "2" enables this feature only if $GLOBALS['TYPO3_CONF_VARS'][SYS][devIPmask] matches
 			if ($displayErrors == 2) {
 				if (t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
 					$displayErrors = 1;
@@ -567,13 +447,11 @@ class Typo3_Bootstrap {
 				$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['debugExceptionHandler'];
 				define('TYPO3_ERRORHANDLER_MODE', 'debug');
 			}
-
 			@ini_set('display_errors', $displayErrors);
 		} elseif (t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
-				// With displayErrors = -1 (default), turn on debugging if devIPmask matches:
+			// With displayErrors = -1 (default), turn on debugging if devIPmask matches:
 			$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['debugExceptionHandler'];
 		}
-
 		return $this;
 	}
 
@@ -585,9 +463,8 @@ class Typo3_Bootstrap {
 	 */
 	public function setMemoryLimit() {
 		if (intval($GLOBALS['TYPO3_CONF_VARS']['SYS']['setMemoryLimit']) > 16) {
-			@ini_set('memory_limit', intval($GLOBALS['TYPO3_CONF_VARS']['SYS']['setMemoryLimit']) . 'm');
+			@ini_set('memory_limit', (intval($GLOBALS['TYPO3_CONF_VARS']['SYS']['setMemoryLimit']) . 'm'));
 		}
-
 		return $this;
 	}
 
@@ -603,14 +480,7 @@ class Typo3_Bootstrap {
 		define('TYPO3_REQUESTTYPE_CLI', 4);
 		define('TYPO3_REQUESTTYPE_AJAX', 8);
 		define('TYPO3_REQUESTTYPE_INSTALL', 16);
-		define('TYPO3_REQUESTTYPE',
-			(TYPO3_MODE == 'FE' ? TYPO3_REQUESTTYPE_FE : 0) |
-			(TYPO3_MODE == 'BE' ? TYPO3_REQUESTTYPE_BE : 0) |
-			((defined('TYPO3_cliMode') && TYPO3_cliMode) ? TYPO3_REQUESTTYPE_CLI : 0) |
-			((defined('TYPO3_enterInstallScript') && TYPO3_enterInstallScript) ? TYPO3_REQUESTTYPE_INSTALL : 0) |
-			($GLOBALS['TYPO3_AJAX'] ? TYPO3_REQUESTTYPE_AJAX : 0)
-		);
-
+		define('TYPO3_REQUESTTYPE', ((((TYPO3_MODE == 'FE' ? TYPO3_REQUESTTYPE_FE : 0) | (TYPO3_MODE == 'BE' ? TYPO3_REQUESTTYPE_BE : 0)) | (defined('TYPO3_cliMode') && TYPO3_cliMode ? TYPO3_REQUESTTYPE_CLI : 0)) | (defined('TYPO3_enterInstallScript') && TYPO3_enterInstallScript ? TYPO3_REQUESTTYPE_INSTALL : 0)) | ($GLOBALS['TYPO3_AJAX'] ? TYPO3_REQUESTTYPE_AJAX : 0));
 		return $this;
 	}
 
@@ -623,7 +493,6 @@ class Typo3_Bootstrap {
 	 */
 	public function populateTypo3LoadedExtGlobal($allowCaching = TRUE) {
 		$GLOBALS['TYPO3_LOADED_EXT'] = t3lib_extMgm::loadTypo3LoadedExtensionInformation($allowCaching);
-
 		return $this;
 	}
 
@@ -638,7 +507,6 @@ class Typo3_Bootstrap {
 	 */
 	public function loadAdditionalConfigurationFromExtensions($allowCaching = TRUE) {
 		t3lib_extMgm::loadExtLocalconf($allowCaching);
-
 		return $this;
 	}
 
@@ -649,15 +517,9 @@ class Typo3_Bootstrap {
 	 * @deprecated since 6.0, the check will be removed two version later.
 	 */
 	public function deprecationLogForOldExtCacheSetting() {
-		if (
-			isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['extCache'])
-			&& $GLOBALS['TYPO3_CONF_VARS']['SYS']['extCache'] !== -1
-		) {
-			t3lib_div::deprecationLog(
-				'Setting $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'extCache\'] is unused and can be removed from localconf.php'
-			);
+		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['extCache']) && $GLOBALS['TYPO3_CONF_VARS']['SYS']['extCache'] !== -1) {
+			t3lib_div::deprecationLog('Setting $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'extCache\'] is unused and can be removed from localconf.php');
 		}
-
 		return $this;
 	}
 
@@ -669,19 +531,15 @@ class Typo3_Bootstrap {
 	public function initializeExceptionHandling() {
 		if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler'] !== '') {
 			if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'] !== '') {
-					// Register an error handler for the given errorHandlerErrors
-				$errorHandler = t3lib_div::makeInstance(
-					$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'],
-					$GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandlerErrors']
-				);
-					// Set errors which will be converted in an exception
+				// Register an error handler for the given errorHandlerErrors
+				$errorHandler = t3lib_div::makeInstance($GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandler'], $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandlerErrors']);
+				// Set errors which will be converted in an exception
 				$errorHandler->setExceptionalErrors($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionalErrors']);
 			}
-				// Instantiate the exception handler once to make sure object is registered
-				// @TODO: Figure out if this is really needed
+			// Instantiate the exception handler once to make sure object is registered
+			// @TODO: Figure out if this is really needed
 			t3lib_div::makeInstance($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['errors']['exceptionHandler']);
 		}
-
 		return $this;
 	}
 
@@ -691,8 +549,7 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function requireAdditionalExtensionFiles() {
-		require_once(t3lib_extMgm::extPath('lang') . 'lang.php');
-
+		require_once t3lib_extMgm::extPath('lang') . 'lang.php';
 		return $this;
 	}
 
@@ -704,7 +561,6 @@ class Typo3_Bootstrap {
 	 */
 	public function setFinalCachingFrameworkCacheConfiguration() {
 		$GLOBALS['typo3CacheManager']->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
-
 		return $this;
 	}
 
@@ -717,7 +573,6 @@ class Typo3_Bootstrap {
 		define('TYPO3_DLOG', $GLOBALS['TYPO3_CONF_VARS']['SYS']['enable_DLOG']);
 		define('TYPO3_ERROR_DLOG', $GLOBALS['TYPO3_CONF_VARS']['SYS']['enable_errorDLOG']);
 		define('TYPO3_EXCEPTION_DLOG', $GLOBALS['TYPO3_CONF_VARS']['SYS']['enable_exceptionDLOG']);
-
 		return $this;
 	}
 
@@ -733,18 +588,15 @@ class Typo3_Bootstrap {
 		unset($GLOBALS['TBE_MODULES']);
 		unset($GLOBALS['TBE_STYLES']);
 		unset($GLOBALS['FILEICONS']);
-
-			// Those set in init.php:
+		// Those set in init.php:
 		unset($GLOBALS['WEBMOUNTS']);
 		unset($GLOBALS['FILEMOUNTS']);
 		unset($GLOBALS['BE_USER']);
-
-			// Those set otherwise:
+		// Those set otherwise:
 		unset($GLOBALS['TBE_MODULES_EXT']);
 		unset($GLOBALS['TCA_DESCR']);
 		unset($GLOBALS['LOCAL_LANG']);
 		unset($GLOBALS['TYPO3_AJAX']);
-
 		return $this;
 	}
 
@@ -755,13 +607,12 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function initializeTypo3DbGlobal($connect = TRUE) {
-			/** @var TYPO3_DB t3lib_db */
+		/** @var TYPO3_DB t3lib_db */
 		$GLOBALS['TYPO3_DB'] = t3lib_div::makeInstance('t3lib_DB');
 		$GLOBALS['TYPO3_DB']->debugOutput = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sqlDebug'];
 		if ($connect) {
 			$this->establishDatabaseConnection();
 		}
-
 		return $this;
 	}
 
@@ -774,28 +625,21 @@ class Typo3_Bootstrap {
 	 */
 	public function checkLockedBackendAndRedirectOrDie() {
 		if ($GLOBALS['TYPO3_CONF_VARS']['BE']['adminOnly'] < 0) {
-			throw new RuntimeException(
-				'TYPO3 Backend locked: Backend and Install Tool are locked for maintenance. [BE][adminOnly] is set to "' . intval($GLOBALS['TYPO3_CONF_VARS']['BE']['adminOnly']) . '".',
-				1294586847
-			);
+			throw new RuntimeException(('TYPO3 Backend locked: Backend and Install Tool are locked for maintenance. [BE][adminOnly] is set to "' . intval($GLOBALS['TYPO3_CONF_VARS']['BE']['adminOnly'])) . '".', 1294586847);
 		}
-		if (@is_file(PATH_typo3conf . 'LOCK_BACKEND')) {
+		if (@is_file((PATH_typo3conf . 'LOCK_BACKEND'))) {
 			if (TYPO3_PROCEED_IF_NO_USER === 2) {
-				// Ajax poll for login, let it pass
+
 			} else {
 				$fileContent = t3lib_div::getUrl(PATH_typo3conf . 'LOCK_BACKEND');
 				if ($fileContent) {
 					header('Location: ' . $fileContent);
 				} else {
-					throw new RuntimeException(
-						'TYPO3 Backend locked: Browser backend is locked for maintenance. Remove lock by removing the file "typo3conf/LOCK_BACKEND" or use CLI-scripts.',
-						1294586848
-					);
+					throw new RuntimeException('TYPO3 Backend locked: Browser backend is locked for maintenance. Remove lock by removing the file "typo3conf/LOCK_BACKEND" or use CLI-scripts.', 1294586848);
 				}
-				exit;
+				die;
 			}
 		}
-
 		return $this;
 	}
 
@@ -808,15 +652,14 @@ class Typo3_Bootstrap {
 	public function checkBackendIpOrDie() {
 		if (trim($GLOBALS['TYPO3_CONF_VARS']['BE']['IPmaskList'])) {
 			if (!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['BE']['IPmaskList'])) {
-					// Send Not Found header - if the webserver can make use of it
+				// Send Not Found header - if the webserver can make use of it
 				header('Status: 404 Not Found');
-					// Just point us away from here...
+				// Just point us away from here...
 				header('Location: http://');
-					// ... and exit good!
-				exit;
+				// ... and exit good!
+				die;
 			}
 		}
-
 		return $this;
 	}
 
@@ -828,7 +671,7 @@ class Typo3_Bootstrap {
 	 */
 	public function checkSslBackendAndRedirectIfNeeded() {
 		if (intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL'])) {
-			if(intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSLPort'])) {
+			if (intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSLPort'])) {
 				$sslPortSuffix = ':' . intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSLPort']);
 			} else {
 				$sslPortSuffix = '';
@@ -838,25 +681,24 @@ class Typo3_Bootstrap {
 				if ($requestStr === 'index.php' && !t3lib_div::getIndpEnv('TYPO3_SSL')) {
 					list(, $url) = explode('://', t3lib_div::getIndpEnv('TYPO3_REQUEST_URL'), 2);
 					list($server, $address) = explode('/', $url, 2);
-					header('Location: https://' . $server . $sslPortSuffix . '/' . $address);
-					exit;
+					header(((('Location: https://' . $server) . $sslPortSuffix) . '/') . $address);
+					die;
 				}
 			} elseif (!t3lib_div::getIndpEnv('TYPO3_SSL')) {
 				if (intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL']) === 2) {
 					list(, $url) = explode('://', t3lib_div::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir, 2);
 					list($server, $address) = explode('/', $url, 2);
-					header('Location: https://' . $server . $sslPortSuffix . '/' . $address);
+					header(((('Location: https://' . $server) . $sslPortSuffix) . '/') . $address);
 				} else {
-						// Send Not Found header - if the webserver can make use of it...
+					// Send Not Found header - if the webserver can make use of it...
 					header('Status: 404 Not Found');
-						// Just point us away from here...
+					// Just point us away from here...
 					header('Location: http://');
 				}
-					// ... and exit good!
-				exit;
+				// ... and exit good!
+				die;
 			}
 		}
-
 		return $this;
 	}
 
@@ -867,7 +709,6 @@ class Typo3_Bootstrap {
 	 */
 	public function establishDatabaseConnection() {
 		$GLOBALS['TYPO3_DB']->connectDB();
-
 		return $this;
 	}
 
@@ -884,38 +725,28 @@ class Typo3_Bootstrap {
 	 * ext_tables.php. It is discouraged to access variables like
 	 * $TBE_MODULES directly in ext_tables.php, but we can not prohibit
 	 * this without heavily breaking backwards compatibility.
-	 * @TODO: We could write a scheduler / reports module or an update checker
-	 * that hints extension authors about discouraged direct variable access.
 	 *
-	 * Note: include / require are used instead of include_once / require_once on
-	 * purpose here: in FE (tslib_fe), this method here can be loaded mulitple times
-	 *
-	 * @TODO: It should be defined, which global arrays are ok to be manipulated
-	 *
+	 * @TODO : We could write a scheduler / reports module or an update checker
+	 * @TODO : It should be defined, which global arrays are ok to be manipulated
 	 * @param boolean $allowCaching True, if reading compiled ext_tables file from cache is allowed
 	 * @return Typo3_Bootstrap
 	 */
 	public function loadExtensionTables($allowCaching = TRUE) {
-			// It is discouraged to use those global variables directly, but we
-			// can not prohibit this without breaking backwards compatibility
+		// It is discouraged to use those global variables directly, but we
+		// can not prohibit this without breaking backwards compatibility
 		global $T3_SERVICES, $T3_VAR, $TYPO3_CONF_VARS;
 		global $TBE_MODULES, $TBE_MODULES_EXT, $TCA;
 		global $PAGES_TYPES, $TBE_STYLES, $FILEICONS;
 		global $_EXTKEY;
-
-			// Include standard tables.php file
-		require(PATH_t3lib . 'stddb/tables.php');
-
+		// Include standard tables.php file
+		require PATH_t3lib . 'stddb/tables.php';
 		t3lib_extMgm::loadExtTables($allowCaching);
-
-			// Load additional ext tables script if registered
+		// Load additional ext tables script if registered
 		if (TYPO3_extTableDef_script) {
-			include(PATH_typo3conf . TYPO3_extTableDef_script);
+			include PATH_typo3conf . TYPO3_extTableDef_script;
 		}
-
-			// Run post hook for additional manipulation
+		// Run post hook for additional manipulation
 		$this->runExtTablesPostProcessingHooks();
-
 		return $this;
 	}
 
@@ -928,7 +759,7 @@ class Typo3_Bootstrap {
 	protected function runExtTablesPostProcessingHooks() {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing'] as $classReference) {
-					/** @var $hookObject t3lib_extTables_PostProcessingHook */
+				/** @var $hookObject t3lib_extTables_PostProcessingHook */
 				$hookObject = t3lib_div::getUserObj($classReference);
 				if (!$hookObject instanceof t3lib_extTables_PostProcessingHook) {
 					throw new UnexpectedValueException('$hookObject must implement interface t3lib_extTables_PostProcessingHook', 1320585902);
@@ -936,7 +767,6 @@ class Typo3_Bootstrap {
 				$hookObject->processData();
 			}
 		}
-
 		return $this;
 	}
 
@@ -947,7 +777,6 @@ class Typo3_Bootstrap {
 	 */
 	public function initializeSpriteManager() {
 		t3lib_SpriteManager::initialize();
-
 		return $this;
 	}
 
@@ -957,7 +786,7 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function initializeBackendUser() {
-			/** @var $backendUser t3lib_beUserAuth */
+		/** @var $backendUser t3lib_beUserAuth */
 		$backendUser = t3lib_div::makeInstance('t3lib_beUserAuth');
 		$backendUser->warningEmail = $GLOBALS['TYPO3_CONF_VARS']['BE']['warning_email_addr'];
 		$backendUser->lockIP = $GLOBALS['TYPO3_CONF_VARS']['BE']['lockIP'];
@@ -970,7 +799,6 @@ class Typo3_Bootstrap {
 		$backendUser->checkCLIuser();
 		$backendUser->backendCheckLogin();
 		$GLOBALS['BE_USER'] = $backendUser;
-
 		return $this;
 	}
 
@@ -980,10 +808,9 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function initializeBackendUserMounts() {
-			// Includes deleted mount pages as well! @TODO: Figure out why ...
+		// Includes deleted mount pages as well! @TODO: Figure out why ...
 		$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
 		$GLOBALS['FILEMOUNTS'] = $GLOBALS['BE_USER']->returnFilemounts();
-
 		return $this;
 	}
 
@@ -993,10 +820,9 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function initializeLanguageObject() {
-			/** @var $GLOBALS['LANG'] language */
+		/** @var $GLOBALS['LANG'] language */
 		$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
 		$GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
-
 		return $this;
 	}
 
@@ -1007,7 +833,6 @@ class Typo3_Bootstrap {
 	 */
 	public function endOutputBufferingAndCleanPreviousOutput() {
 		ob_clean();
-
 		return $this;
 	}
 
@@ -1023,7 +848,6 @@ class Typo3_Bootstrap {
 			}
 			ob_start('ob_gzhandler');
 		}
-
 		return $this;
 	}
 
@@ -1033,10 +857,9 @@ class Typo3_Bootstrap {
 	 * @return Typo3_Bootstrap
 	 */
 	public function initializeModuleMenuObject() {
-			/** @var $moduleMenuUtility Typo3_BackendModule_Utility */
+		/** @var $moduleMenuUtility Typo3_BackendModule_Utility */
 		$moduleMenuUtility = t3lib_div::makeInstance('Typo3_Utility_BackendModuleUtility');
 		$moduleMenuUtility->createModuleMenu();
-
 		return $this;
 	}
 
@@ -1049,7 +872,6 @@ class Typo3_Bootstrap {
 	 */
 	public function shutdown() {
 		t3lib_autoloader::unregisterAutoloader();
-
 		return $this;
 	}
 
@@ -1061,9 +883,9 @@ class Typo3_Bootstrap {
 	 */
 	public function initializeBackendTemplate() {
 		$GLOBALS['TBE_TEMPLATE'] = t3lib_div::makeInstance('template');
-
 		return $this;
 	}
 
 }
+
 ?>

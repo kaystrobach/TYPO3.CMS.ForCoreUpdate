@@ -34,6 +34,7 @@
  * @subpackage t3lib
  */
 class t3lib_frontendedit {
+
 	/**
 	 * GET/POST parameters for the FE editing.
 	 * Accessed as $GLOBALS['BE_USER']->frontendEdit->TSFE_EDIT, thus public
@@ -56,8 +57,7 @@ class t3lib_frontendedit {
 	 */
 	public function initConfigOptions() {
 		$this->TSFE_EDIT = t3lib_div::_GP('TSFE_EDIT');
-
-			// Include classes for editing IF editing module in Admin Panel is open
+		// Include classes for editing IF editing module in Admin Panel is open
 		if ($GLOBALS['BE_USER']->isFrontendEditingActive()) {
 			$GLOBALS['TSFE']->includeTCA();
 			if ($this->isEditAction()) {
@@ -73,7 +73,7 @@ class t3lib_frontendedit {
 	 *
 	 * @param string $content A content string containing the content related to the edit panel. For cObject "EDITPANEL" this is empty but not so for the stdWrap property. The edit panel is appended to this string and returned.
 	 * @param array $conf TypoScript configuration properties for the editPanel
-	 * @param string $currentRecord The "table:uid" of the record being shown. If empty string then $this->currentRecord is used. For new records (set by $conf['newRecordFromTable']) it's auto-generated to "[tablename]:NEW"
+	 * @param string $currentRecord The "table:uid" of the record being shown. If empty string then $this->currentRecord is used. For new records (set by $conf['newRecordFromTable']) it's auto-generated to "[tablename]:NEW
 	 * @param array $dataArray Alternative data array to use. Default is $this->data
 	 * @return string The input content string with the editPanel appended. This function returns only an edit panel appended to the content string if a backend user is logged in (and has the correct permissions). Otherwise the content string is directly returned.
 	 */
@@ -85,10 +85,8 @@ class t3lib_frontendedit {
 		} else {
 			$checkEditAccessInternals = TRUE;
 		}
-
 		list($table, $uid) = explode(':', $currentRecord);
-
-			// Page ID for new records, 0 if not specified
+		// Page ID for new records, 0 if not specified
 		$newRecordPid = intval($conf['newRecordInPid']);
 		if (!$conf['onlyCurrentPid'] || $dataArray['pid'] == $GLOBALS['TSFE']->id) {
 			if ($table == 'pages') {
@@ -104,8 +102,7 @@ class t3lib_frontendedit {
 				}
 			}
 		}
-
-		if ($GLOBALS['TSFE']->displayEditIcons && $table && $this->allowedToEdit($table, $dataArray, $conf, $checkEditAccessInternals) && $this->allowedToEditLanguage($table, $dataArray)) {
+		if ((($GLOBALS['TSFE']->displayEditIcons && $table) && $this->allowedToEdit($table, $dataArray, $conf, $checkEditAccessInternals)) && $this->allowedToEditLanguage($table, $dataArray)) {
 			$editClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/classes/class.frontendedit.php']['edit'];
 			if ($editClass) {
 				$edit = t3lib_div::getUserObj($editClass, FALSE);
@@ -115,7 +112,6 @@ class t3lib_frontendedit {
 				}
 			}
 		}
-
 		return $content;
 	}
 
@@ -126,30 +122,28 @@ class t3lib_frontendedit {
 	 * @param string $content The content to which the edit icons should be appended
 	 * @param string $params The parameters defining which table and fields to edit. Syntax is [tablename]:[fieldname],[fieldname],[fieldname],... OR [fieldname],[fieldname],[fieldname],... (basically "[tablename]:" is optional, default table is the one of the "current record" used in the function). The fieldlist is sent as "&columnsOnly=" parameter to alt_doc.php
 	 * @param array $conf TypoScript properties for configuring the edit icons.
-	 * @param string $currentRecord The "table:uid" of the record being shown. If empty string then $this->currentRecord is used. For new records (set by $conf['newRecordFromTable']) it's auto-generated to "[tablename]:NEW"
+	 * @param string $currentRecord The "table:uid" of the record being shown. If empty string then $this->currentRecord is used. For new records (set by $conf['newRecordFromTable']) it's auto-generated to "[tablename]:NEW
 	 * @param array $dataArray Alternative data array to use. Default is $this->data
 	 * @param string $addUrlParamStr Additional URL parameters for the link pointing to alt_doc.php
 	 * @return string The input content string, possibly with edit icons added (not necessarily in the end but just after the last string of normal content.
 	 */
 	public function displayEditIcons($content, $params, array $conf = array(), $currentRecord = '', array $dataArray = array(), $addUrlParamStr = '') {
-			// Check incoming params:
+		// Check incoming params:
 		list($currentRecordTable, $currentRecordUID) = explode(':', $currentRecord);
-		list($fieldList, $table) = array_reverse(t3lib_div::trimExplode(':', $params, 1)); // Reverse the array because table is optional
+		list($fieldList, $table) = array_reverse(t3lib_div::trimExplode(':', $params, 1));
+		// Reverse the array because table is optional
 		if (!$table) {
 			$table = $currentRecordTable;
 		} elseif ($table != $currentRecordTable) {
-				// If the table is set as the first parameter, and does not match the table of the current record, then just return.
+			// If the table is set as the first parameter, and does not match the table of the current record, then just return.
 			return $content;
 		}
-
 		$editUid = $dataArray['_LOCALIZED_UID'] ? $dataArray['_LOCALIZED_UID'] : $currentRecordUID;
-
-			// Edit icons imply that the editing action is generally allowed, assuming page and content element permissions permit it.
+		// Edit icons imply that the editing action is generally allowed, assuming page and content element permissions permit it.
 		if (!array_key_exists('allow', $conf)) {
 			$conf['allow'] = 'edit';
 		}
-
-		if ($GLOBALS['TSFE']->displayFieldEditIcons && $table && $this->allowedToEdit($table, $dataArray, $conf) && $fieldList && $this->allowedToEditLanguage($table, $dataArray)) {
+		if (((($GLOBALS['TSFE']->displayFieldEditIcons && $table) && $this->allowedToEdit($table, $dataArray, $conf)) && $fieldList) && $this->allowedToEditLanguage($table, $dataArray)) {
 			$editClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/classes/class.frontendedit.php']['edit'];
 			if ($editClass) {
 				$edit = t3lib_div::getUserObj($editClass);
@@ -158,7 +152,6 @@ class t3lib_frontendedit {
 				}
 			}
 		}
-
 		return $content;
 	}
 
@@ -167,7 +160,6 @@ class t3lib_frontendedit {
 	 * Frontend Editing
 	 *
 	 ****************************************************/
-
 	/**
 	 * Returns TRUE if an edit-action is sent from the Admin Panel
 	 *
@@ -180,8 +172,8 @@ class t3lib_frontendedit {
 				unset($this->TSFE_EDIT['cmd']);
 			} else {
 				$cmd = (string) $this->TSFE_EDIT['cmd'];
-				if (($cmd != 'edit' || (is_array($this->TSFE_EDIT['data']) && ($this->TSFE_EDIT['doSave'] || $this->TSFE_EDIT['update'] || $this->TSFE_EDIT['update_close']))) && $cmd != 'new') {
-						// $cmd can be a command like "hide" or "move". If $cmd is "edit" or "new" it's an indication to show the formfields. But if data is sent with update-flag then $cmd = edit is accepted because edit may be sent because of .keepGoing flag.
+				if (($cmd != 'edit' || is_array($this->TSFE_EDIT['data']) && (($this->TSFE_EDIT['doSave'] || $this->TSFE_EDIT['update']) || $this->TSFE_EDIT['update_close'])) && $cmd != 'new') {
+					// $cmd can be a command like "hide" or "move". If $cmd is "edit" or "new" it's an indication to show the formfields. But if data is sent with update-flag then $cmd = edit is accepted because edit may be sent because of .keepGoing flag.
 					return TRUE;
 				}
 			}
@@ -214,34 +206,28 @@ class t3lib_frontendedit {
 	 * @see index_ts.php
 	 */
 	public function editAction() {
-			// Commands
+		// Commands
 		list($table, $uid) = explode(':', $this->TSFE_EDIT['record']);
 		$uid = intval($uid);
 		$cmd = $this->TSFE_EDIT['cmd'];
-
-			// Look for some TSFE_EDIT data that indicates we should save.
-		if (($this->TSFE_EDIT['doSave'] || $this->TSFE_EDIT['update'] || $this->TSFE_EDIT['update_close']) && is_array($this->TSFE_EDIT['data'])) {
+		// Look for some TSFE_EDIT data that indicates we should save.
+		if ((($this->TSFE_EDIT['doSave'] || $this->TSFE_EDIT['update']) || $this->TSFE_EDIT['update_close']) && is_array($this->TSFE_EDIT['data'])) {
 			$cmd = 'save';
 		}
-
-		if (($cmd == 'save') || ($cmd && $table && $uid && isset($GLOBALS['TCA'][$table]))) {
-				// Hook for defining custom editing actions. Naming is incorrect, but preserves compatibility.
+		if ($cmd == 'save' || (($cmd && $table) && $uid) && isset($GLOBALS['TCA'][$table])) {
+			// Hook for defining custom editing actions. Naming is incorrect, but preserves compatibility.
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tsfebeuserauth.php']['extEditAction'])) {
 				$_params = array();
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tsfebeuserauth.php']['extEditAction'] as $_funcRef) {
 					t3lib_div::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
-
-				// Perform the requested editing command.
+			// Perform the requested editing command.
 			$cmdAction = 'do' . ucwords($cmd);
 			if (is_callable(array($this, $cmdAction))) {
-				$this->$cmdAction($table, $uid);
+				$this->{$cmdAction}($table, $uid);
 			} else {
-				throw new UnexpectedValueException(
-					'The specified frontend edit command (' . $cmd . ') is not valid.',
-					1225818120
-				);
+				throw new UnexpectedValueException(('The specified frontend edit command (' . $cmd) . ') is not valid.', 1225818120);
 			}
 		}
 	}
@@ -258,7 +244,6 @@ class t3lib_frontendedit {
 		if ($hideField) {
 			$recData = array();
 			$recData[$table][$uid][$hideField] = 1;
-
 			$this->initializeTceMain();
 			$this->tce->start($recData, array());
 			$this->tce->process_datamap();
@@ -277,7 +262,6 @@ class t3lib_frontendedit {
 		if ($hideField) {
 			$recData = array();
 			$recData[$table][$uid][$hideField] = 0;
-
 			$this->initializeTceMain();
 			$this->tce->start($recData, array());
 			$this->tce->process_datamap();
@@ -331,19 +315,19 @@ class t3lib_frontendedit {
 		$cmdData = array();
 		$sortField = $GLOBALS['TCA'][$table]['ctrl']['sortby'];
 		if ($sortField) {
-				// Get self
-			$fields = array_unique(t3lib_div::trimExplode(',', $GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'] . ',uid,pid,' . $sortField, TRUE));
+			// Get self
+			$fields = array_unique(t3lib_div::trimExplode(',', ($GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'] . ',uid,pid,') . $sortField, TRUE));
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(implode(',', $fields), $table, 'uid=' . $uid);
 			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-					// Record before or after
-				if (($GLOBALS['BE_USER']->adminPanel instanceOf tslib_AdminPanel) && ($GLOBALS['BE_USER']->adminPanel->extGetFeAdminValue('preview'))) {
+				// Record before or after
+				if ($GLOBALS['BE_USER']->adminPanel instanceof tslib_AdminPanel && $GLOBALS['BE_USER']->adminPanel->extGetFeAdminValue('preview')) {
 					$ignore = array('starttime' => 1, 'endtime' => 1, 'disabled' => 1, 'fe_group' => 1);
 				}
 				$copyAfterFieldsQuery = '';
 				if ($GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields']) {
 					$cAFields = t3lib_div::trimExplode(',', $GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'], TRUE);
 					foreach ($cAFields as $fieldName) {
-						$copyAfterFieldsQuery .= ' AND ' . $fieldName . '="' . $row[$fieldName] . '"';
+						$copyAfterFieldsQuery .= (((' AND ' . $fieldName) . '="') . $row[$fieldName]) . '"';
 					}
 				}
 				if (!empty($direction)) {
@@ -354,37 +338,25 @@ class t3lib_frontendedit {
 						$operator = '>';
 						$order = 'ASC';
 					}
-					$sortCheck = ' AND ' . $sortField . $operator . intval($row[$sortField]);
+					$sortCheck = ((' AND ' . $sortField) . $operator) . intval($row[$sortField]);
 				}
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-					'uid,pid',
-					$table,
-						'pid=' . intval($row['pid']) .
-								$sortCheck .
-								$copyAfterFieldsQuery .
-								$GLOBALS['TSFE']->sys_page->enableFields($table, '', $ignore),
-					'',
-						$sortField . ' ' . $order,
-					'2'
-				);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,pid', $table, ((('pid=' . intval($row['pid'])) . $sortCheck) . $copyAfterFieldsQuery) . $GLOBALS['TSFE']->sys_page->enableFields($table, '', $ignore), '', ($sortField . ' ') . $order, '2');
 				if ($row2 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 					if ($afterUID) {
 						$cmdData[$table][$uid]['move'] = -$afterUID;
-					}
-					elseif ($direction == 'down') {
+					} elseif ($direction == 'down') {
 						$cmdData[$table][$uid]['move'] = -$row2['uid'];
-					}
-					elseif ($row3 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) { // Must take the second record above...
+					} elseif ($row3 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+						// Must take the second record above...
 						$cmdData[$table][$uid]['move'] = -$row3['uid'];
-					}
-					else { // ... and if that does not exist, use pid
+					} else {
+						// ... and if that does not exist, use pid
 						$cmdData[$table][$uid]['move'] = $row['pid'];
 					}
 				} elseif ($direction == 'up') {
 					$cmdData[$table][$uid]['move'] = $row['pid'];
 				}
-
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			}
 			if (!empty($cmdData)) {
@@ -420,14 +392,12 @@ class t3lib_frontendedit {
 	 */
 	public function doSave($table, $uid) {
 		$data = $this->TSFE_EDIT['data'];
-
 		if (!empty($data)) {
 			$this->initializeTceMain();
 			$this->tce->start($data, array());
 			$this->tce->process_uploads($_FILES);
 			$this->tce->process_datamap();
-
-				// Save the new UID back into TSFE_EDIT
+			// Save the new UID back into TSFE_EDIT
 			$newUID = $this->tce->substNEWwithIDs['NEW'];
 			if ($newUID) {
 				$GLOBALS['BE_USER']->frontendEdit->TSFE_EDIT['newUID'] = $newUID;
@@ -441,12 +411,7 @@ class t3lib_frontendedit {
 	 * @param string $table The table name for the record to save.
 	 * @param integer $uid The UID for the record to save.
 	 * @return void
-	 * @note	This method is only a wrapper for doSave() but is needed so
-	 *			that frontend editing views can handle "save" differently from
-	 *			"save and close".
-	 *			Example: When editing a page record, "save" reloads the same
-	 *			editing form.  "Save and close" reloads the entire page at
-	 *			the appropriate URL.
+	 * @note 	This method is only a wrapper for doSave() but is needed so
 	 */
 	public function doSaveAndClose($table, $uid) {
 		$this->doSave($table, $uid);
@@ -461,7 +426,7 @@ class t3lib_frontendedit {
 	 * @return void
 	 */
 	public function doClose($table, $uid) {
-		// Do nothing.
+
 	}
 
 	/**
@@ -473,7 +438,7 @@ class t3lib_frontendedit {
 	 * @return boolean
 	 */
 	protected function allowedToEditLanguage($table, array $currentRecord) {
-			// If no access right to record languages, return immediately
+		// If no access right to record languages, return immediately
 		if ($table === 'pages') {
 			$lang = $GLOBALS['TSFE']->sys_language_uid;
 		} elseif ($table === 'tt_content') {
@@ -483,13 +448,11 @@ class t3lib_frontendedit {
 		} else {
 			$lang = -1;
 		}
-
 		if ($GLOBALS['BE_USER']->checkLanguageAccess($lang)) {
 			$languageAccess = TRUE;
 		} else {
 			$languageAccess = FALSE;
 		}
-
 		return $languageAccess;
 	}
 
@@ -500,52 +463,44 @@ class t3lib_frontendedit {
 	 * @param array $dataArray The data array.
 	 * @param array $conf The configuration array for the edit panel.
 	 * @param boolean $checkEditAccessInternals Boolean indicating whether recordEditAccessInternals should not be checked. Defaults
-	 *					 to TRUE but doesn't makes sense when creating new records on a page.
 	 * @return boolean
 	 */
 	protected function allowedToEdit($table, array $dataArray, array $conf, $checkEditAccessInternals = TRUE) {
-
-			// Unless permissions specifically allow it, editing is not allowed.
+		// Unless permissions specifically allow it, editing is not allowed.
 		$mayEdit = FALSE;
-
 		if ($checkEditAccessInternals) {
 			$editAccessInternals = $GLOBALS['BE_USER']->recordEditAccessInternals($table, $dataArray, FALSE, FALSE);
 		} else {
 			$editAccessInternals = TRUE;
 		}
-
 		if ($editAccessInternals) {
 			if ($table == 'pages') {
-					// 2 = permission to edit the page
+				// 2 = permission to edit the page
 				if ($GLOBALS['BE_USER']->isAdmin() || $GLOBALS['BE_USER']->doesUserHaveAccess($dataArray, 2)) {
 					$mayEdit = TRUE;
 				}
 			} else {
-					// 16 = permission to edit content on the page
+				// 16 = permission to edit content on the page
 				if ($GLOBALS['BE_USER']->isAdmin() || $GLOBALS['BE_USER']->doesUserHaveAccess(t3lib_BEfunc::getRecord('pages', $dataArray['pid']), 16)) {
 					$mayEdit = TRUE;
 				}
 			}
-
-			if (!$conf['onlyCurrentPid'] || ($dataArray['pid'] == $GLOBALS['TSFE']->id)) {
-					// Permissions:
+			if (!$conf['onlyCurrentPid'] || $dataArray['pid'] == $GLOBALS['TSFE']->id) {
+				// Permissions:
 				$types = t3lib_div::trimExplode(',', t3lib_div::strtolower($conf['allow']), 1);
 				$allow = array_flip($types);
-
 				$perms = $GLOBALS['BE_USER']->calcPerms($GLOBALS['TSFE']->page);
 				if ($table == 'pages') {
 					$allow = $this->getAllowedEditActions($table, $conf, $dataArray['pid'], $allow);
-
-						// Can only display editbox if there are options in the menu
+					// Can only display editbox if there are options in the menu
 					if (count($allow)) {
 						$mayEdit = TRUE;
 					}
 				} else {
-					$mayEdit = count($allow) && ($perms & 16);
+					$mayEdit = count($allow) && $perms & 16;
 				}
 			}
 		}
-
 		return $mayEdit;
 	}
 
@@ -559,20 +514,17 @@ class t3lib_frontendedit {
 	 * @return array
 	 */
 	protected function getAllowedEditActions($table, array $conf, $pid, $allow = '') {
-
 		if (!$allow) {
 			$types = t3lib_div::trimExplode(',', t3lib_div::strtolower($conf['allow']), TRUE);
 			$allow = array_flip($types);
 		}
-
 		if (!$conf['onlyCurrentPid'] || $pid == $GLOBALS['TSFE']->id) {
-				// Permissions
+			// Permissions
 			$types = t3lib_div::trimExplode(',', t3lib_div::strtolower($conf['allow']), TRUE);
 			$allow = array_flip($types);
-
 			$perms = $GLOBALS['BE_USER']->calcPerms($GLOBALS['TSFE']->page);
 			if ($table == 'pages') {
-					// Rootpage
+				// Rootpage
 				if (count($GLOBALS['TSFE']->config['rootLine']) == 1) {
 					unset($allow['move']);
 					unset($allow['hide']);
@@ -591,7 +543,6 @@ class t3lib_frontendedit {
 				}
 			}
 		}
-
 		return $allow;
 	}
 
@@ -601,7 +552,7 @@ class t3lib_frontendedit {
 	 * @return string
 	 */
 	public function getJavascriptIncludes() {
-			// No extra JS includes needed
+		// No extra JS includes needed
 		return '';
 	}
 
@@ -613,7 +564,7 @@ class t3lib_frontendedit {
 	 * @return array
 	 */
 	public function getHiddenFields(array $dataArray) {
-			// No special hidden fields needed.
+		// No special hidden fields needed.
 		return array();
 	}
 
@@ -628,6 +579,7 @@ class t3lib_frontendedit {
 			$this->tce->stripslashes_values = 0;
 		}
 	}
+
 }
 
 ?>

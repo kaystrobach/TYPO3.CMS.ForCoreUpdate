@@ -24,21 +24,18 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * File Interface
  *
- * @author  Ingmar Schlecht <ingmar@typo3.org>
- * @package  TYPO3
- * @subpackage  t3lib
+ * @author Ingmar Schlecht <ingmar@typo3.org>
+ * @package TYPO3
+ * @subpackage t3lib
  */
-interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface {
-
+interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface
+{
 	/*******************************
 	 * VARIOUS FILE PROPERTY GETTERS
 	 *******************************/
-
 	/**
 	 * Returns true if the given key exists for this file.
 	 *
@@ -100,7 +97,6 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface {
 	/******************
 	 * CONTENTS RELATED
 	 ******************/
-
 	/**
 	 * Get the contents of this file
 	 *
@@ -110,23 +106,17 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface {
 
 	/**
 	 * Replace the current file contents with the given string.
-	 * @TODO: Consider to remove this function from the interface, as its
-	 * implementation in FileInUse could cause unforseen side-effects by setting
-	 * contents on the original file instead of just on the Usage of the file.
-	 * @TODO: At the same time, it could be considered whether to make the whole
-	 * interface a read-only FileInterface, so that all file management and
-	 * modification functions are removed...
 	 *
+	 * @TODO : Consider to remove this function from the interface, as its
+	 * @TODO : At the same time, it could be considered whether to make the whole
 	 * @param string $contents The contents to write to the file.
 	 * @return t3lib_file_File The file object (allows chaining).
 	 */
 	public function setContents($contents);
 
-
 	/****************************************
 	 * STORAGE AND MANAGEMENT RELATED METHDOS
 	 ****************************************/
-
 	/**
 	 * Deletes this file from its storage. This also means that this object becomes useless.
 	 *
@@ -142,11 +132,9 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface {
 	 */
 	public function rename($newName);
 
-
 	/*****************
 	 * SPECIAL METHODS
 	 *****************/
-
 	/**
 	 * Returns a publicly accessible URL for this file
 	 *
@@ -154,7 +142,6 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface {
 	 * some web-based authentication. You have to take care of this yourself.
 	 *
 	 * @param bool $relativeToCurrentScript Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
-	 *
 	 * @return string
 	 */
 	public function getPublicUrl($relativeToCurrentScript = FALSE);
@@ -183,6 +170,6 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface {
 	 * @return array Array of main data of the file. Don't rely on all data to be present here, it's just a selection of the most relevant information.
 	 */
 	public function toArray();
-}
 
+}
 ?>

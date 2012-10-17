@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Element counter for model
  *
@@ -46,8 +45,9 @@ class tx_form_System_Elementcounter implements t3lib_Singleton {
 	public function getElementId() {
 		$elementId = $this->elementCounter;
 		$this->elementCounter++;
-
 		return $elementId;
 	}
+
 }
+
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Move localconf.php to LocalConfiguration.php
  *
@@ -43,14 +42,11 @@ class tx_coreupdates_localConfiguration extends Tx_Install_Updates_Base {
 	 * @return boolean TRUE if update should be done
 	 */
 	public function checkForUpdate(&$description) {
-		$description = 'The localconfiguration file typo3conf/localconf.php is deprecated and ' .
-			' unused since TYPO3 6.0. This wizard migrates the content of the file to the new ' .
-			' format.';
+		$description = ('The localconfiguration file typo3conf/localconf.php is deprecated and ' . ' unused since TYPO3 6.0. This wizard migrates the content of the file to the new ') . ' format.';
 		$description .= '<br /><strong>It is strongly recommended to run this wizard now.</strong><br />';
-		$description .= 'The old localconf.php file is renamed to localconf.obsolete.php and can' .
-			' be manually removed if everything works.';
+		$description .= 'The old localconf.php file is renamed to localconf.obsolete.php and can' . ' be manually removed if everything works.';
 		$result = FALSE;
-		if (@is_file(PATH_typo3conf . 'localconf.php')) {
+		if (@is_file((PATH_typo3conf . 'localconf.php'))) {
 			$result = TRUE;
 		}
 		return $result;
@@ -70,29 +66,23 @@ class tx_coreupdates_localConfiguration extends Tx_Install_Updates_Base {
 	 */
 	public function performUpdate(array &$dbQueries, &$customMessages) {
 		$result = FALSE;
-
 		try {
 			$localConfigurationContent = file(PATH_typo3conf . 'localconf.php');
-
-				// Line array for the three categories: localConfiguration, db settings, additionalConfiguration
+			// Line array for the three categories: localConfiguration, db settings, additionalConfiguration
 			$typo3ConfigurationVariables = array();
 			$typo3DatabaseVariables = array();
 			$additionalConfiguration = array();
-
 			foreach ($localConfigurationContent as $line) {
 				$line = trim($line);
 				$matches = array();
-
-					// Convert extList to array
-				if (preg_match('/^\$TYPO3_CONF_VARS\[\'EXT\'\]\[\'extList\'\] *={1} *\'(.+)\';{1}/', $line, $matches) === 1) {
+				// Convert extList to array
+				if (preg_match('/^\\$TYPO3_CONF_VARS\\[\'EXT\'\\]\\[\'extList\'\\] *={1} *\'(.+)\';{1}/', $line, $matches) === 1) {
 					$extListAsArray = t3lib_div::trimExplode(',', $matches[1], TRUE);
-					$typo3ConfigurationVariables[] = '$TYPO3_CONF_VARS[\'EXT\'][\'extListArray\'] = ' . var_export($extListAsArray, TRUE) . ';';
-					$typo3ConfigurationVariables[] = '$TYPO3_CONF_VARS[\'EXT\'][\'extList\'] = \'' . $matches[1] . '\';';
-					// Match all other TYPO3_CONF_VARS
-				} elseif (preg_match('/^\$TYPO3_CONF_VARS.+;{1}/', $line, $matches) === 1) {
+					$typo3ConfigurationVariables[] = ('$TYPO3_CONF_VARS[\'EXT\'][\'extListArray\'] = ' . var_export($extListAsArray, TRUE)) . ';';
+					$typo3ConfigurationVariables[] = ('$TYPO3_CONF_VARS[\'EXT\'][\'extList\'] = \'' . $matches[1]) . '\';';
+				} elseif (preg_match('/^\\$TYPO3_CONF_VARS.+;{1}/', $line, $matches) === 1) {
 					$typo3ConfigurationVariables[] = $matches[0];
-					// Match variables beginning with '$typo_db'
-				} elseif (preg_match('/^\$typo_db.+;{1}/', $line, $matches) === 1) {
+				} elseif (preg_match('/^\\$typo_db.+;{1}/', $line, $matches) === 1) {
 					eval($matches[0]);
 					if (isset($typo_db_host)) {
 						$typo3DatabaseVariables['host'] = $typo_db_host;
@@ -105,44 +95,33 @@ class tx_coreupdates_localConfiguration extends Tx_Install_Updates_Base {
 					} elseif (isset($typo_db_extTableDef_script)) {
 						$typo3DatabaseVariables['extTablesDefinitionScript'] = $typo_db_extTableDef_script;
 					}
-					unset($typo_db_host,$typo_db,$typo_db_username,$typo_db_password,$typo_db_extTableDef_script);
-					// Else if the line is no comment or start / stop php tag -> add it to additional configuration
-				} elseif (strlen($line) > 0 && preg_match('/^\/\/.+|^#.+|^<\?php$|^<\?$|^\?>$/', $line, $matches) === 0) {
+					unset($typo_db_host, $typo_db, $typo_db_username, $typo_db_password, $typo_db_extTableDef_script);
+				} elseif (strlen($line) > 0 && preg_match('/^\\/\\/.+|^#.+|^<\\?php$|^<\\?$|^\\?>$/', $line, $matches) === 0) {
 					$additionalConfiguration[] = $line;
 				}
 			}
-
-				// Build new TYPO3_CONF_VARS array
+			// Build new TYPO3_CONF_VARS array
 			$TYPO3_CONF_VARS = NULL;
 			eval(implode(LF, $typo3ConfigurationVariables));
-
-				// Add db settings to array
+			// Add db settings to array
 			$TYPO3_CONF_VARS['DB'] = $typo3DatabaseVariables;
 			$TYPO3_CONF_VARS = t3lib_utility_Array::sortByKeyRecursive($TYPO3_CONF_VARS);
-
-				// Write out new LocalConfiguration file
-			t3lib_div::writeFile(
-				PATH_site . t3lib_Configuration::LOCAL_CONFIGURATION_FILE,
-				'<?php' . LF . 'return ' . t3lib_utility_Array::arrayExport($TYPO3_CONF_VARS) . ';' . LF . '?>'
-			);
-
-				// Write out new AdditionalConfiguration file
+			// Write out new LocalConfiguration file
+			t3lib_div::writeFile(PATH_site . t3lib_Configuration::LOCAL_CONFIGURATION_FILE, ((((('<?php' . LF) . 'return ') . t3lib_utility_Array::arrayExport($TYPO3_CONF_VARS)) . ';') . LF) . '?>');
+			// Write out new AdditionalConfiguration file
 			if (sizeof($additionalConfiguration) > 0) {
-				t3lib_div::writeFile(
-					PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE,
-					'<?php' . LF . implode(LF, $additionalConfiguration) . LF . '?>'
-				);
+				t3lib_div::writeFile(PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE, ((('<?php' . LF) . implode(LF, $additionalConfiguration)) . LF) . '?>');
 			} else {
-				@unlink(PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE);
+				@unlink((PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE));
 			}
-
 			rename(PATH_site . 'typo3conf/localconf.php', PATH_site . 'typo3conf/localconf.obsolete.php');
-
 			$result = TRUE;
 		} catch (Exception $e) {
-		}
 
+		}
 		return $result;
 	}
+
 }
+
 ?>

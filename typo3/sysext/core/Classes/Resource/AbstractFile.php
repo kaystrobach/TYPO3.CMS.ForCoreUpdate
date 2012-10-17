@@ -24,14 +24,12 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Abstract file representation in the file abstraction layer.
  *
  * @author Ingmar Schlecht <ingmar@typo3.org>
- * @package  TYPO3
- * @subpackage  t3lib
+ * @package TYPO3
+ * @subpackage t3lib
  */
 abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 
@@ -76,41 +74,34 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	protected $deleted = FALSE;
 
-
 	/**
 	 * any other file
 	 */
 	const FILETYPE_UNKNOWN = 0;
-
 	/**
 	 * Any kind of text
 	 */
 	const FILETYPE_TEXT = 1;
-
 	/**
 	 * Any kind of image
 	 */
 	const FILETYPE_IMAGE = 2;
-
 	/**
 	 * Any kind of audio file
 	 */
 	const FILETYPE_AUDIO = 3;
-
 	/**
 	 * Any kind of video
 	 */
 	const FILETYPE_VIDEO = 4;
-
 	/**
 	 * Any kind of software, often known as "application"
 	 */
 	const FILETYPE_SOFTWARE = 5;
-
-	/*******************************
+	
+	/******************
 	 * VARIOUS FILE PROPERTY GETTERS
-	 *******************************
-
+	 ******************/ 
 	/**
 	 * Returns true if the given property key exists for this file.
 	 *
@@ -149,18 +140,16 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		return $this->identifier;
 	}
 
-
 	/**
 	 * Returns the name of this file
 	 *
 	 * @return string
 	 */
 	public function getName() {
-			// Do not check if file has been deleted because we might need the
-			// name for undeleting it.
+		// Do not check if file has been deleted because we might need the
+		// name for undeleting it.
 		return $this->name;
 	}
-
 
 	/**
 	 * Returns the size of this file
@@ -171,7 +160,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821480);
 		}
-
 		return $this->properties['size'];
 	}
 
@@ -193,7 +181,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821481);
 		}
-
 		return $this->getStorage()->hashFile($this, 'sha1');
 	}
 
@@ -206,7 +193,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821487);
 		}
-
 		return $this->getProperty('creation_date');
 	}
 
@@ -219,7 +205,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821488);
 		}
-
 		return $this->getProperty('modification_date');
 	}
 
@@ -238,7 +223,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * @return array file information
 	 */
 	public function getMimeType() {
-			// TODO this will be slow - use the cached version if possible
+		// TODO this will be slow - use the cached version if possible
 		$stat = $this->getStorage()->getFileInfo($this);
 		return $stat['mimetype'];
 	}
@@ -257,43 +242,40 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * @return integer $fileType
 	 */
 	public function getType() {
-			// this basically extracts the mimetype and guess the filetype based
-			// on the first part of the mimetype works for 99% of all cases, and
-			// we don't need to make an SQL statement like EXT:media does currently
+		// this basically extracts the mimetype and guess the filetype based
+		// on the first part of the mimetype works for 99% of all cases, and
+		// we don't need to make an SQL statement like EXT:media does currently
 		if (!$this->properties['type']) {
 			$mimeType = $this->getMimeType();
 			list($fileType) = explode('/', $mimeType);
-
 			switch (strtolower($fileType)) {
-				case 'text':
-					$this->properties['type'] = self::FILETYPE_TEXT;
-					break;
-				case 'image':
-					$this->properties['type'] = self::FILETYPE_IMAGE;
-					break;
-				case 'audio':
-					$this->properties['type'] = self::FILETYPE_AUDIO;
-					break;
-				case 'video':
-					$this->properties['type'] = self::FILETYPE_VIDEO;
-					break;
-				case 'application':
-				case 'software':
-					$this->properties['type'] = self::FILETYPE_SOFTWARE;
-					break;
-				default:
-					$this->properties['type'] = self::FILETYPE_UNKNOWN;
+			case 'text':
+				$this->properties['type'] = self::FILETYPE_TEXT;
+				break;
+			case 'image':
+				$this->properties['type'] = self::FILETYPE_IMAGE;
+				break;
+			case 'audio':
+				$this->properties['type'] = self::FILETYPE_AUDIO;
+				break;
+			case 'video':
+				$this->properties['type'] = self::FILETYPE_VIDEO;
+				break;
+			case 'application':
+
+			case 'software':
+				$this->properties['type'] = self::FILETYPE_SOFTWARE;
+				break;
+			default:
+				$this->properties['type'] = self::FILETYPE_UNKNOWN;
 			}
 		}
-
 		return $this->properties['type'];
 	}
-
 
 	/******************
 	 * CONTENTS RELATED
 	 ******************/
-
 	/**
 	 * Get the contents of this file
 	 *
@@ -303,7 +285,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821479);
 		}
-
 		return $this->getStorage()->getFileContents($this);
 	}
 
@@ -317,7 +298,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821478);
 		}
-
 		$this->getStorage()->setFileContents($this, $contents);
 		return $this;
 	}
@@ -325,7 +305,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	/****************************************
 	 * STORAGE AND MANAGEMENT RELATED METHDOS
 	 ****************************************/
-
 	/**
 	 * Get the storage this file is located in
 	 *
@@ -335,7 +314,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->storage === NULL) {
 			$this->loadStorage();
 		}
-
 		return $this->storage;
 	}
 
@@ -347,7 +325,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	protected function loadStorage() {
 		$storageUid = $this->getProperty('storage');
 		if (t3lib_utility_Math::canBeInterpretedAsInteger($storageUid)) {
-
 			/** @var $fileFactory t3lib_file_Factory */
 			$fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
 			$this->storage = $fileFactory->getStorageObject($storageUid);
@@ -365,10 +342,8 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			return FALSE;
 		}
-
 		return $this->storage->hasFile($this->getIdentifier());
 	}
-
 
 	/**
 	 * Sets the storage this file is located in. This is only meant for
@@ -379,7 +354,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * @return t3lib_file_File
 	 */
 	public function setStorage($storage) {
-			// Do not check for deleted file here as we might need this method for the recycler later on
+		// Do not check for deleted file here as we might need this method for the recycler later on
 		if (is_object($storage) && $storage instanceof t3lib_file_Storage) {
 			$this->storage = $storage;
 			$this->properties['storage'] = $storage->getUid();
@@ -409,11 +384,10 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getCombinedIdentifier() {
 		if (is_array($this->properties) && t3lib_utility_Math::canBeInterpretedAsInteger($this->properties['storage'])) {
-			$combinedIdentifier = $this->properties['storage'] . ':' . $this->getIdentifier();
+			$combinedIdentifier = ($this->properties['storage'] . ':') . $this->getIdentifier();
 		} else {
-			$combinedIdentifier = $this->getStorage()->getUid() . ':' . $this->getIdentifier();
+			$combinedIdentifier = ($this->getStorage()->getUid() . ':') . $this->getIdentifier();
 		}
-
 		return $combinedIdentifier;
 	}
 
@@ -421,11 +395,9 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * Deletes this file from its storage. This also means that this object becomes useless.
 	 *
 	 * @return bool TRUE if deletion succeeded
-	 * TODO mark file internally as deleted, throw exceptions on all method calls afterwards
-	 * TODO undelete mechanism?
 	 */
 	public function delete() {
-			// The storage will mark this file as deleted
+		// The storage will mark this file as deleted
 		return $this->getStorage()->deleteFile($this);
 	}
 
@@ -458,7 +430,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821482);
 		}
-
 		return $this->getStorage()->renameFile($this, $newName);
 	}
 
@@ -467,15 +438,13 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 *
 	 * @param t3lib_file_Folder $targetFolder Folder to copy file into.
 	 * @param string $targetFileName an optional destination fileName
-	 * @param string $conflictMode overrideExistingFile", "renameNewFile", "cancel"
-	 *
+	 * @param string $conflictMode overrideExistingFile", "renameNewFile", "cancel
 	 * @return t3lib_file_File The new (copied) file.
 	 */
 	public function copyTo(t3lib_file_Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821483);
 		}
-
 		return $targetFolder->getStorage()->copyFile($this, $targetFolder, $targetFileName, $conflictMode);
 	}
 
@@ -484,23 +453,19 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 *
 	 * @param t3lib_file_Folder $targetFolder Folder to move file into.
 	 * @param string $targetFileName an optional destination fileName
-	 * @param string $conflictMode overrideExistingFile", "renameNewFile", "cancel"
-	 *
+	 * @param string $conflictMode overrideExistingFile", "renameNewFile", "cancel
 	 * @return t3lib_file_File This file object, with updated properties.
 	 */
 	public function moveTo(t3lib_file_Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821484);
 		}
-
 		return $targetFolder->getStorage()->moveFile($this, $targetFolder, $targetFileName, $conflictMode);
 	}
-
 
 	/*****************
 	 * SPECIAL METHODS
 	 *****************/
-
 	/**
 	 * Returns a publicly accessible URL for this file
 	 *
@@ -508,14 +473,12 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * web-based authentication. You have to take care of this yourself.
 	 *
 	 * @param bool  $relativeToCurrentScript   Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
-	 *
 	 * @return string
 	 */
 	public function getPublicUrl($relativeToCurrentScript = FALSE) {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821485);
 		}
-
 		return $this->getStorage()->getPublicUrl($this, $relativeToCurrentScript);
 	}
 
@@ -531,15 +494,12 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 		if ($this->deleted) {
 			throw new RuntimeException('File has been deleted.', 1329821486);
 		}
-
 		return $this->getStorage()->getFileForLocalProcessing($this, $writable);
 	}
-
 
 	/***********************
 	 * INDEX RELATED METHODS
 	 ***********************/
-
 	/**
 	 * Updates properties of this object.
 	 * This method is used to reconstitute settings from the
@@ -548,6 +508,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * @param array $properties
 	 */
 	abstract public function updateProperties(array $properties);
+
 }
 
 ?>

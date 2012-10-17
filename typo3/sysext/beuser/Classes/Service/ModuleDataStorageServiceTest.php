@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Test case for class Tx_Beuser_Service_ModuleDataStorageService
  *
@@ -51,13 +50,12 @@ class Tx_Beuser_Service_ModuleDataStorageServiceTest extends Tx_Extbase_Tests_Un
 	 * @test
 	 */
 	public function loadModuleDataReturnsModuleDataObjectForEmptyModuleData() {
-			// Simulate empty module data
-		unset ($GLOBALS['BE_USER']->uc['moduleData'][Tx_Beuser_Service_ModuleDataStorageService::KEY]);
-
+		// Simulate empty module data
+		unset($GLOBALS['BE_USER']->uc['moduleData'][Tx_Beuser_Service_ModuleDataStorageService::KEY]);
 		$result = $this->fixture->loadModuleData();
 		$this->assertInstanceOf('Tx_Beuser_Domain_Model_ModuleData', $result);
 	}
 
-
 }
+
 ?>

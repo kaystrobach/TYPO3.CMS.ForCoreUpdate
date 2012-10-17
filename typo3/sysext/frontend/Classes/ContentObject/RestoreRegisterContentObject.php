@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains RESTORE_REGISTER class object.
  *
@@ -45,5 +44,7 @@ class tslib_content_RestoreRegister extends tslib_content_Abstract {
 		$GLOBALS['TSFE']->register = array_pop($GLOBALS['TSFE']->registerStack);
 		return '';
 	}
+
 }
+
 ?>

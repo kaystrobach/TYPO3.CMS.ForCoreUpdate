@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * "empty" interface for singletons (marker interface pattern)
  *
@@ -33,8 +32,8 @@
  * @subpackage t3lib
  * @see t3lib_div::makeInstance()
  */
-interface t3lib_Singleton {
-	// Deliberately empty
-}
+interface t3lib_Singleton
+{
 
+}
 ?>

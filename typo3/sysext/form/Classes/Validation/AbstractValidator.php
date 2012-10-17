@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Abstract for validation
  *
@@ -110,7 +109,6 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 	 */
 	public function setFieldName($fieldName) {
 		$this->fieldName = (string) $fieldName;
-
 		return $this;
 	}
 
@@ -170,7 +168,6 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 		} else {
 			$value = $message;
 		}
-
 		$this->message['cObj'] = (string) $type;
 		$this->message['cObj.'] = $value;
 	}
@@ -203,7 +200,6 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 		} else {
 			$value = $error;
 		}
-
 		$this->error['cObj'] = (string) $type;
 		$this->error['cObj.'] = $value;
 	}
@@ -218,9 +214,8 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 		if ($show === NULL) {
 			$this->showMessage = TRUE;
 		} else {
-			$this->showMessage = (boolean) $show;
+			$this->showMessage = (bool) $show;
 		}
-
 		return $this;
 	}
 
@@ -252,9 +247,11 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 	 * @return string The local language message label
 	 */
 	protected function getLocalLanguageLabel($type) {
-		$label = strtolower(get_class($this)) . '.' . $type;
+		$label = (strtolower(get_class($this)) . '.') . $type;
 		$message = $this->localizationHandler->getLocalLanguageLabel($label);
 		return $message;
 	}
+
 }
+
 ?>

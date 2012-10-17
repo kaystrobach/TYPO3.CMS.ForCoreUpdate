@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the Tx_Extensionmanager_Utility_EmConf class in the TYPO3 Core.
  *
@@ -38,10 +37,9 @@ class Tx_Extensionmanager_Utility_EmConfTest extends Tx_Extbase_Tests_Unit_BaseT
 	public function constructEmConfDataProvider() {
 		return array(
 			array(
-				array (
+				array(
 					'extKey' => 'enetcache',
-					'EM_CONF' =>
-					array (
+					'EM_CONF' => array(
 						'title' => 'Plugin cache engine',
 						'description' => 'Provides an interface to cache plugin content elements based on 4.3 caching framework',
 						'category' => 'Frontend',
@@ -64,7 +62,7 @@ class Tx_Extensionmanager_Utility_EmConfTest extends Tx_Extbase_Tests_Unit_BaseT
 						'author_email' => 'test@example.com',
 						'author_company' => 'test',
 						'CGLcompliance' => NULL,
-						'CGLcompliance_note' => NULL,
+						'CGLcompliance_note' => NULL
 					)
 				)
 			)
@@ -86,4 +84,5 @@ class Tx_Extensionmanager_Utility_EmConfTest extends Tx_Extbase_Tests_Unit_BaseT
 	}
 
 }
+
 ?>

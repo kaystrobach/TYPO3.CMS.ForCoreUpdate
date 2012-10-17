@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Render images that can be registered in the TYPO3 backend skinning API
  * Extends the default image view helper from fluid
@@ -37,8 +36,8 @@ class Tx_About_ViewHelpers_SkinImageViewHelper extends Tx_Fluid_ViewHelpers_Imag
 
 	/**
 	 * Resizes a given image (if required) and renders the respective img tag
-	 * @see http://typo3.org/documentation/document-library/references/doc_core_tsref/4.2.0/view/1/5/#id4164427
 	 *
+	 * @see http://typo3.org/documentation/document-library/references/doc_core_tsref/4.2.0/view/1/5/#id4164427
 	 * @param string $src
 	 * @param string $width width of the image. This can be a numeric value representing the fixed width of the image in pixels. But you can also perform simple calculations by adding "m" or "c" to the value. See imgResource.width for possible options.
 	 * @param string $height height of the image. This can be a numeric value representing the fixed height of the image in pixels. But you can also perform simple calculations by adding "m" or "c" to the value. See imgResource.width for possible options.
@@ -46,12 +45,13 @@ class Tx_About_ViewHelpers_SkinImageViewHelper extends Tx_Fluid_ViewHelpers_Imag
 	 * @param integer $minHeight minimum height of the image
 	 * @param integer $maxWidth maximum width of the image
 	 * @param integer $maxHeight maximum height of the image
-	 *
 	 * @return string rendered tag.
 	 */
 	public function render($src, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL) {
 		$src = t3lib_iconWorks::skinImg('../typo3/', $src, '', 1);
-		return parent::render(''. $src, $width, $height. $minWidth, $minHeight, $maxWidth, $maxHeight);
+		return parent::render('' . $src, $width, $height . $minWidth, $minHeight, $maxWidth, $maxHeight);
 	}
+
 }
+
 ?>

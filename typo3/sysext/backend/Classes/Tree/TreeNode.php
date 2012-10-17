@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Tree Node
  *
@@ -34,6 +33,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
+
 	/**
 	 * Node Identifier
 	 *
@@ -110,7 +110,6 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 		if ($this->childNodes !== NULL) {
 			return TRUE;
 		}
-
 		return FALSE;
 	}
 
@@ -177,8 +176,7 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 		if ($this->equals($other)) {
 			return 0;
 		}
-
-		return ($this->id > $other->getId()) ? 1 : -1;
+		return $this->id > $other->getId() ? 1 : -1;
 	}
 
 	/**
@@ -192,19 +190,16 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 			'serializeClassName' => get_class($this),
 			'id' => $this->id
 		);
-
 		if ($this->parentNode !== NULL) {
 			$arrayRepresentation['parentNode'] = $this->parentNode->toArray(FALSE);
 		} else {
 			$arrayRepresentation['parentNode'] = '';
 		}
-
 		if ($this->hasChildNodes() && $addChildNodes) {
 			$arrayRepresentation['childNodes'] = $this->childNodes->toArray();
 		} else {
 			$arrayRepresentation['childNodes'] = '';
 		}
-
 		return $arrayRepresentation;
 	}
 
@@ -216,19 +211,11 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	 */
 	public function dataFromArray($data) {
 		$this->setId($data['id']);
-
 		if (isset($data['parentNode']) && $data['parentNode'] !== '') {
-			$this->setParentNode(t3lib_div::makeInstance(
-				$data['parentNode']['serializeClassName'],
-				$data['parentNode']
-			));
+			$this->setParentNode(t3lib_div::makeInstance($data['parentNode']['serializeClassName'], $data['parentNode']));
 		}
-
 		if (isset($data['childNodes']) && $data['childNodes'] !== '') {
-			$this->setChildNodes(t3lib_div::makeInstance(
-				$data['childNodes']['serializeClassName'],
-				$data['childNodes']
-			));
+			$this->setChildNodes(t3lib_div::makeInstance($data['childNodes']['serializeClassName'], $data['childNodes']));
 		}
 	}
 
@@ -255,6 +242,7 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 		}
 		$this->dataFromArray($arrayRepresentation);
 	}
+
 }
 
 ?>

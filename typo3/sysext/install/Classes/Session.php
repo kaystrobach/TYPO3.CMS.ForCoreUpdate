@@ -1,35 +1,33 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Ernesto Baschny <ernst@cron-it.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Ernesto Baschny <ernst@cron-it.de>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Secure session handling for the install tool.
  *
  * @author Ernesto Baschny <ernst@cron-it.de>
- *
  * @package TYPO3
  * @subpackage tx_install
  */
@@ -86,26 +84,17 @@ class tx_install_session {
 	 */
 	public function __construct() {
 		$this->typo3tempPath = PATH_site . 'typo3temp/';
-
-			// Start our PHP session early so that hasSession() works
+		// Start our PHP session early so that hasSession() works
 		$sessionSavePath = $this->getSessionSavePath();
-
-			// Register our "save" session handler
-		session_set_save_handler(
-			array($this, 'open'),
-			array($this, 'close'),
-			array($this, 'read'),
-			array($this, 'write'),
-			array($this, 'destroy'),
-			array($this, 'gc')
-		);
+		// Register our "save" session handler
+		session_set_save_handler(array($this, 'open'), array($this, 'close'), array($this, 'read'), array($this, 'write'), array($this, 'destroy'), array($this, 'gc'));
 		session_save_path($sessionSavePath);
 		session_name($this->cookieName);
 		ini_set('session.cookie_path', t3lib_div::getIndpEnv('TYPO3_SITE_PATH'));
-			// Always call the garbage collector to clean up stale session files
+		// Always call the garbage collector to clean up stale session files
 		ini_set('session.gc_probability', 100);
 		ini_set('session.gc_divisor', 100);
-		ini_set('session.gc_maxlifetime', $this->expireTimeInMinutes*2*60);
+		ini_set('session.gc_maxlifetime', ($this->expireTimeInMinutes * 2) * 60);
 		if (version_compare(phpversion(), '5.2', '<')) {
 			ini_set('session.cookie_httponly', TRUE);
 		}
@@ -126,15 +115,8 @@ class tx_install_session {
 	 * Returns the path where to store our session files
 	 */
 	private function getSessionSavePath() {
-		$sessionSavePath = sprintf(
-			$this->typo3tempPath . $this->sessionPath,
-			t3lib_div::hmac(
-				'session:' .
-					$GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword']
-			)
-		);
+		$sessionSavePath = sprintf($this->typo3tempPath . $this->sessionPath, t3lib_div::hmac('session:' . $GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword']));
 		$this->ensureSessionSavePathExists($sessionSavePath);
-
 		return $sessionSavePath;
 	}
 
@@ -149,11 +131,12 @@ class tx_install_session {
 		if (!is_dir($sessionSavePath)) {
 			try {
 				t3lib_div::mkdir_deep($sessionSavePath);
-			}
-			catch (RuntimeException $exception) {
+			} catch (RuntimeException $exception) {
 				throw new RuntimeException('Could not create session folder in typo3temp/. Make sure it is writeable!', 1294587484);
 			}
-			t3lib_div::writeFile($sessionSavePath . '/.htaccess', 'Order deny, allow' . "\n" . 'Deny from all' . "\n");
+			t3lib_div::writeFile($sessionSavePath . '/.htaccess', (('Order deny, allow' . '
+') . 'Deny from all') . '
+');
 			$indexContent = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">';
 			$indexContent .= '<HTML><HEAD<TITLE></TITLE><META http-equiv=Refresh Content="0; Url=../../">';
 			$indexContent .= '</HEAD></HTML>';
@@ -168,13 +151,12 @@ class tx_install_session {
 	 */
 	public function startSession() {
 		$_SESSION['created'] = time();
-			// Be sure to use our own session id, so create a new one
+		// Be sure to use our own session id, so create a new one
 		return $this->renewSession();
 	}
 
 	/**
 	 * Destroys a session
-	 *
 	 */
 	public function destroySession() {
 		session_destroy();
@@ -203,7 +185,7 @@ class tx_install_session {
 	 * @return boolean TRUE if there is an active session, FALSE otherwise
 	 */
 	public function hasSession() {
-		return (isset($_SESSION['created']));
+		return isset($_SESSION['created']);
 	}
 
 	/**
@@ -220,14 +202,13 @@ class tx_install_session {
 	 * Used to store our session files without exposing the session ID.
 	 *
 	 * @param string $sessionId An alternative session ID. Defaults to our current session ID
-	 *
 	 * @return string the session hash
 	 */
 	private function getSessionHash($sessionId = '') {
 		if (!$sessionId) {
 			$sessionId = $this->getSessionId();
 		}
-		return md5($GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword'].'|'.$sessionId);
+		return md5(($GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword'] . '|') . $sessionId);
 	}
 
 	/**
@@ -242,8 +223,8 @@ class tx_install_session {
 		$_SESSION['authorized'] = TRUE;
 		$_SESSION['lastSessionId'] = time();
 		$_SESSION['tstamp'] = time();
-		$_SESSION['expires'] = (time() + ($this->expireTimeInMinutes*60));
-			// Renew the session id to avoid session fixation
+		$_SESSION['expires'] = time() + $this->expireTimeInMinutes * 60;
+		// Renew the session id to avoid session fixation
 		$this->renewSession();
 	}
 
@@ -291,14 +272,13 @@ class tx_install_session {
 	 */
 	public function refreshSession() {
 		$_SESSION['tstamp'] = time();
-		$_SESSION['expires'] = time() + ($this->expireTimeInMinutes*60);
-		if (time() > $_SESSION['lastSessionId']+$this->regenerateSessionIdTime*60) {
+		$_SESSION['expires'] = time() + $this->expireTimeInMinutes * 60;
+		if (time() > $_SESSION['lastSessionId'] + $this->regenerateSessionIdTime * 60) {
 			// Renew our session ID
 			$_SESSION['lastSessionId'] = time();
 			$this->renewSession();
 		}
 	}
-
 
 	/*************************
 	 *
@@ -306,7 +286,6 @@ class tx_install_session {
 	 * see http://www.php.net/manual/en/function.session-set-save-handler.php
 	 *
 	 *************************/
-
 	/**
 	 * Returns the file where to store our session data
 	 *
@@ -315,7 +294,7 @@ class tx_install_session {
 	 */
 	private function getSessionFile($id) {
 		$sessionSavePath = $this->getSessionSavePath();
-		return $sessionSavePath . '/hash_' . $this->getSessionHash($id);
+		return ($sessionSavePath . '/hash_') . $this->getSessionHash($id);
 	}
 
 	/**
@@ -323,7 +302,6 @@ class tx_install_session {
 	 *
 	 * @param string $savePath
 	 * @param string $sessionName
-	 *
 	 * @return boolean
 	 */
 	public function open($savePath, $sessionName) {
@@ -343,12 +321,11 @@ class tx_install_session {
 	 * Read session data. See @session_set_save_handler
 	 *
 	 * @param string $id The session id
-	 *
 	 * @return string
 	 */
 	public function read($id) {
 		$sessionFile = $this->getSessionFile($id);
-		return (string) @file_get_contents($sessionFile);
+		return (string) (@file_get_contents($sessionFile));
 	}
 
 	/**
@@ -356,7 +333,6 @@ class tx_install_session {
 	 *
 	 * @param string $id The session id
 	 * @param string $sessionData The data to be stored
-	 *
 	 * @return boolean
 	 */
 	public function write($id, $sessionData) {
@@ -368,19 +344,17 @@ class tx_install_session {
 	 * Destroys one session. See @session_set_save_handler
 	 *
 	 * @param string $id The session id
-	 *
 	 * @return string
 	 */
 	public function destroy($id) {
 		$sessionFile = $this->getSessionFile($id);
-		return(@unlink($sessionFile));
+		return @unlink($sessionFile);
 	}
 
 	/**
 	 * Garbage collect session info. See @session_set_save_handler
 	 *
 	 * @param integer $maxLifeTime The setting of session.gc_maxlifetime
-	 *
 	 * @return boolean
 	 */
 	public function gc($maxLifeTime) {
@@ -390,7 +364,7 @@ class tx_install_session {
 			return TRUE;
 		}
 		foreach ($files as $filename) {
-			if (filemtime($filename) + ($this->expireTimeInMinutes*60) < time()) {
+			if (filemtime($filename) + $this->expireTimeInMinutes * 60 < time()) {
 				@unlink($filename);
 			}
 		}
@@ -413,5 +387,7 @@ class tx_install_session {
 	public function __destruct() {
 		session_write_close();
 	}
+
 }
+
 ?>

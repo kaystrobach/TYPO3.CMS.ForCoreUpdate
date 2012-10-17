@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This class encapsulates cli specific bootstrap methods.
  *
@@ -33,12 +32,13 @@
  * @subpackage core
  */
 class Typo3_Bootstrap_Cli {
+
 	/**
 	 * Check the script is called from a cli environment.
 	 *
 	 * @return void
 	 */
-	public static function checkEnvironmentOrDie() {
+	static public function checkEnvironmentOrDie() {
 		if (substr(php_sapi_name(), 0, 3) === 'cgi') {
 			self::initializeCgiCompatibilityLayerOrDie();
 		} elseif (php_sapi_name() !== 'cli') {
@@ -53,34 +53,28 @@ class Typo3_Bootstrap_Cli {
 	 *
 	 * @return void
 	 */
-	public static function initializeCliKeyOrDie() {
-		if (
-			!isset($_SERVER['argv'][1])
-			|| !is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][$_SERVER['argv'][1]])
-		) {
+	static public function initializeCliKeyOrDie() {
+		if (!isset($_SERVER['argv'][1]) || !is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][$_SERVER['argv'][1]])) {
 			if (!isset($_SERVER['argv'][1])) {
-				$message = "This script must have a 'cliKey' as first argument.";
+				$message = 'This script must have a \'cliKey\' as first argument.';
 			} else {
-				$message = "The supplied 'cliKey' is not valid.";
+				$message = 'The supplied \'cliKey\' is not valid.';
 			}
-			$message .= " Valid keys are:\n\n";
+			$message .= ' Valid keys are:
 
+';
 			$cliKeys = array_keys($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys']);
 			asort($cliKeys);
-
 			foreach ($cliKeys as $key => $value) {
-				$message .= '  ' . $value . LF;
+				$message .= ('  ' . $value) . LF;
 			}
-
 			fwrite(STDERR, $message . LF);
-			exit(1);
+			die(1);
 		}
-
 		define('TYPO3_cliKey', $_SERVER['argv'][1]);
 		define('TYPO3_cliInclude', t3lib_div::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][TYPO3_cliKey][0]));
 		$GLOBALS['MCONF']['name'] = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][TYPO3_cliKey][1];
-
-			// This is a compatibility layer: Some cli scripts rely on this, like ext:phpunit cli
+		// This is a compatibility layer: Some cli scripts rely on this, like ext:phpunit cli
 		$GLOBALS['temp_cliScriptPath'] = array_shift($_SERVER['argv']);
 		$GLOBALS['temp_cliKey'] = array_shift($_SERVER['argv']);
 		array_unshift($_SERVER['argv'], $GLOBALS['temp_cliScriptPath']);
@@ -92,20 +86,19 @@ class Typo3_Bootstrap_Cli {
 	 *
 	 * @return void
 	 */
-	protected static function initializeCgiCompatibilityLayerOrDie() {
-			// Sanity check: Ensure we're running in a shell or cronjob (and NOT via HTTP)
+	static protected function initializeCgiCompatibilityLayerOrDie() {
+		// Sanity check: Ensure we're running in a shell or cronjob (and NOT via HTTP)
 		$checkEnvVars = array('HTTP_USER_AGENT', 'HTTP_HOST', 'SERVER_NAME', 'REMOTE_ADDR', 'REMOTE_PORT', 'SERVER_PROTOCOL');
 		foreach ($checkEnvVars as $var) {
 			if (array_key_exists($var, $_SERVER)) {
 				echo 'SECURITY CHECK FAILED! This script cannot be used within your browser!' . chr(10);
 				echo 'If you are sure that we run in a shell or cronjob, please unset' . chr(10);
-				echo 'environment variable ' . $var . ' (usually using \'unset ' . $var . '\')' . chr(10);
+				echo (((('environment variable ' . $var) . ' (usually using \'unset ') . $var) . '\')') . chr(10);
 				echo 'before starting this script.' . chr(10);
-				exit;
+				die;
 			}
 		}
-
-			// Mimic CLI API in CGI API (you must use the -C/-no-chdir and the -q/--no-header switches!)
+		// Mimic CLI API in CGI API (you must use the -C/-no-chdir and the -q/--no-header switches!)
 		ini_set('html_errors', 0);
 		ini_set('implicit_flush', 1);
 		ini_set('max_execution_time', 0);
@@ -113,5 +106,7 @@ class Typo3_Bootstrap_Cli {
 		define(STDOUT, fopen('php://stdout', 'w'));
 		define(STDERR, fopen('php://stderr', 'w'));
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A class representing error messages shown on a page.
  * Classic Example: "No pages are found on rootlevel"
@@ -41,12 +40,12 @@ class t3lib_message_ErrorpageMessage extends t3lib_message_AbstractStandaloneMes
 	 * @param string $message The error message
 	 * @param string $title Title of the message, can be empty
 	 * @param integer $severity Optional severity, must be either of t3lib_message_AbstractMessage::INFO, t3lib_message_AbstractMessage::OK,
-	 *     t3lib_message_AbstractMessage::WARNING or t3lib_message_AbstractMessage::ERROR. Default is t3lib_message_AbstractMessage::ERROR.
 	 */
 	public function __construct($message = '', $title = '', $severity = t3lib_message_AbstractMessage::ERROR) {
 		$this->setHtmlTemplate(TYPO3_mainDir . 'sysext/t3skin/templates/errorpage-message.html');
 		parent::__construct($message, $title, $severity);
 	}
+
 }
 
 ?>

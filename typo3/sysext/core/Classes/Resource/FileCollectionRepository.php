@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Repository for accessing the collections stored in the database
  *
@@ -55,14 +53,9 @@ class t3lib_file_Repository_FileCollectionRepository extends t3lib_collection_Re
 	 */
 	public function findByUid($uid) {
 		$object = parent::findByUid($uid);
-
 		if ($object === NULL) {
-			throw new RuntimeException(
-				'Could not find row with uid "' . $uid . '" in table "' . $this->table . '"',
-				1314354065
-			);
+			throw new RuntimeException(((('Could not find row with uid "' . $uid) . '" in table "') . $this->table) . '"', 1314354065);
 		}
-
 		return $object;
 	}
 
@@ -84,6 +77,7 @@ class t3lib_file_Repository_FileCollectionRepository extends t3lib_collection_Re
 	protected function getFileFactory() {
 		return t3lib_div::makeInstance('t3lib_file_Factory');
 	}
+
 }
 
 ?>

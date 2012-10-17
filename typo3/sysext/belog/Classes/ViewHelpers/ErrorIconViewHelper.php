@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Display error icon from error integer value
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_ErrorIconViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
 	/**
 	 * Renders an error icon link as known from the TYPO3 backend.
 	 * Error codes 2 and three are mapped to "error", -1 and 1 are mapped to "warning".
@@ -42,5 +42,7 @@ class Tx_Belog_ViewHelpers_ErrorIconViewHelper extends Tx_Fluid_Core_ViewHelper_
 	public function render($errorNumber = 0) {
 		return $GLOBALS['SOBE']->doc->icons($errorNumber >= 2 ? template::STATUS_ICON_ERROR : template::STATUS_ICON_WARNING);
 	}
+
 }
+
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * HTTP Status Exception
  *
@@ -86,6 +85,7 @@ class t3lib_error_http_StatusException extends t3lib_error_Exception {
 	public function getStatusHeaders() {
 		return $this->statusHeaders;
 	}
+
 }
 
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Hook for the page module
  *
@@ -40,10 +39,10 @@ class Tx_SysNote_Hooks_Page {
 	 */
 	public function render(array $params = array(), SC_db_layout $parentObject) {
 		$sysNote = t3lib_div::makeInstance('Tx_SysNote_SysNote');
-
 		$content = $sysNote->renderByPid($parentObject->id);
 		return $content;
 	}
+
 }
 
 ?>

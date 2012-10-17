@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Model for the module storage
  *
@@ -74,6 +73,7 @@ class Typo3_ModuleStorage implements t3lib_Singleton {
 	public function attachEntry(Typo3_Domain_Model_BackendModule $entry) {
 		$this->entries->attach($entry);
 	}
+
 }
 
 ?>

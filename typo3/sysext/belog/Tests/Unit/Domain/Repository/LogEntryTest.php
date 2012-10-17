@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the Tx_Belog_Domain_Model_LogEntry class.
  *
@@ -30,6 +29,7 @@
  * @subpackage belog
  */
 class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+
 	/**
 	 * @var Tx_Belog_Domain_Model_LogEntry
 	 */
@@ -47,10 +47,7 @@ class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_Base
 	 * @test
 	 */
 	public function getLogDataInitiallyReturnsEmptyArray() {
-		$this->assertSame(
-			array(),
-			$this->fixture->getLogData()
-		);
+		$this->assertSame(array(), $this->fixture->getLogData());
 	}
 
 	/**
@@ -58,11 +55,7 @@ class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_Base
 	 */
 	public function getLogDataForEmptyStringLogDataReturnsEmptyArray() {
 		$this->fixture->setLogData('');
-
-		$this->assertSame(
-			array(),
-			$this->fixture->getLogData()
-		);
+		$this->assertSame(array(), $this->fixture->getLogData());
 	}
 
 	/**
@@ -70,11 +63,7 @@ class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_Base
 	 */
 	public function getLogDataForGarbageStringLogDataReturnsEmptyArray() {
 		$this->fixture->setLogData('foo bar');
-
-		$this->assertSame(
-			array(),
-			$this->fixture->getLogData()
-		);
+		$this->assertSame(array(), $this->fixture->getLogData());
 	}
 
 	/**
@@ -82,13 +71,8 @@ class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_Base
 	 */
 	public function getLogDataForSerializedArrayReturnsThatArray() {
 		$logData = array('foo', 'bar');
-
 		$this->fixture->setLogData(serialize($logData));
-
-		$this->assertSame(
-			$logData,
-			$this->fixture->getLogData()
-		);
+		$this->assertSame($logData, $this->fixture->getLogData());
 	}
 
 	/**
@@ -96,11 +80,9 @@ class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_Base
 	 */
 	public function getLogDataForSerializedObjectReturnsEmptyArray() {
 		$this->fixture->setLogData(new stdClass());
-
-		$this->assertSame(
-			array(),
-			$this->fixture->getLogData()
-		);
+		$this->assertSame(array(), $this->fixture->getLogData());
 	}
+
 }
+
 ?>

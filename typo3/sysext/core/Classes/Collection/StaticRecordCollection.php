@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Implementation of a RecordCollection for static TCA-Records
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractRecordCollection implements t3lib_collection_Editable {
+
 	/**
 	 * Creates a new collection objects and reconstitutes the
 	 * given database record to the new object.
@@ -41,19 +41,13 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
 	 * @return t3lib_collection_StaticRecordCollection
 	 */
-	public static function create(array $collectionRecord, $fillItems = FALSE) {
+	static public function create(array $collectionRecord, $fillItems = FALSE) {
 		/** @var $collection t3lib_collection_StaticRecordCollection */
-		$collection = t3lib_div::makeInstance(
-			't3lib_collection_StaticRecordCollection',
-			$collectionRecord['table_name']
-		);
-
+		$collection = t3lib_div::makeInstance('t3lib_collection_StaticRecordCollection', $collectionRecord['table_name']);
 		$collection->fromArray($collectionRecord);
-
 		if ($fillItems) {
 			$collection->loadContents();
 		}
-
 		return $collection;
 	}
 
@@ -64,14 +58,10 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	 */
 	public function __construct($tableName = NULL) {
 		parent::__construct();
-
 		if (!empty($tableName)) {
 			$this->setItemTableName($tableName);
 		} elseif (empty($this->itemTableName)) {
-			throw new RuntimeException(
-				't3lib_collection_StaticRecordCollection needs a valid itemTableName.',
-				1330293778
-			);
+			throw new RuntimeException('t3lib_collection_StaticRecordCollection needs a valid itemTableName.', 1330293778);
 		}
 	}
 
@@ -90,7 +80,6 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	public function loadContents() {
 		$entries = $this->getCollectedRecords();
 		$this->removeAll();
-
 		foreach ($entries as $entry) {
 			$this->add($entry);
 		}
@@ -110,7 +99,7 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 			'description' => $this->getDescription(),
 			'items' => $this->getItemUidList(TRUE),
 			'type' => 'static',
-			'table_name' => $this->getItemTableName(),
+			'table_name' => $this->getItemTableName()
 		);
 	}
 
@@ -175,23 +164,16 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	 */
 	protected function getCollectedRecords() {
 		$relatedRecords = array();
-
-		$resource = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-			$this->getItemTableName() . '.*',
-			self::$storageTableName,
-			'sys_collection_entries',
-			$this->getItemTableName(),
-			'AND ' . self::$storageTableName . '.uid=' . intval($this->getIdentifier())
-		);
-
+		$resource = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query($this->getItemTableName() . '.*', self::$storageTableName, 'sys_collection_entries', $this->getItemTableName(), (('AND ' . self::$storageTableName) . '.uid=') . intval($this->getIdentifier()));
 		if ($resource) {
 			while ($record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource)) {
 				$relatedRecords[] = $record;
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($resource);
 		}
-
 		return $relatedRecords;
 	}
+
 }
+
 ?>

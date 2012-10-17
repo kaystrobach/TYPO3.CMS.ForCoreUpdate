@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Model for extension configuration items
  *
@@ -214,5 +212,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationItem extends Tx_Extbase_Doma
 	public function getHighlight() {
 		return $this->highlight;
 	}
+
 }
+
 ?>

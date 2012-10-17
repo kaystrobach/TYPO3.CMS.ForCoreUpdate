@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Dmitry Dulepov <dmitry@typo3.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Dmitry Dulepov <dmitry@typo3.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * This class contains a PHP OpenSSL backend for the TYPO3 RSA authentication
  * service. See class tx_rsaauth_abstract_backend for the information on using
@@ -43,27 +42,23 @@ class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
 		$result = NULL;
 		$privateKey = @openssl_pkey_new();
 		if ($privateKey) {
-				// Create private key as string
+			// Create private key as string
 			$privateKeyStr = '';
 			openssl_pkey_export($privateKey, $privateKeyStr);
-
-				// Prepare public key information
+			// Prepare public key information
 			$exportedData = '';
 			$csr = openssl_csr_new(array(), $privateKey);
 			openssl_csr_export($csr, $exportedData, FALSE);
-
-				// Get public key (in fact modulus) and exponent
+			// Get public key (in fact modulus) and exponent
 			$publicKey = $this->extractPublicKeyModulus($exportedData);
 			$exponent = $this->extractExponent($exportedData);
-
-				// Create result object
+			// Create result object
 			$result = t3lib_div::makeInstance('tx_rsaauth_keypair');
 			/** @var $result tx_rsaauth_keypair */
 			$result->setExponent($exponent);
 			$result->setPrivateKey($privateKeyStr);
 			$result->setPublicKey($publicKey);
-
-				// Clean up all resources
+			// Clean up all resources
 			openssl_free_key($privateKey);
 		}
 		return $result;
@@ -96,9 +91,9 @@ class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
 	public function isAvailable() {
 		$result = FALSE;
 		if (is_callable('openssl_pkey_new')) {
-				// PHP extension has to be configured properly. It
-				// can be installed and available but will not work unless
-				// properly configured. So we check if it works.
+			// PHP extension has to be configured properly. It
+			// can be installed and available but will not work unless
+			// properly configured. So we check if it works.
 			$testKey = @openssl_pkey_new();
 			if (is_resource($testKey)) {
 				openssl_free_key($testKey);
@@ -116,8 +111,8 @@ class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
 	 */
 	protected function extractExponent($data) {
 		$index = strpos($data, 'Exponent: ');
-			// We do not check for '$index === FALSE' because the exponent is
-			// always there!
+		// We do not check for '$index === FALSE' because the exponent is
+		// always there!
 		return intval(substr($data, $index + 10));
 	}
 
@@ -128,11 +123,12 @@ class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
 	 * @return string Modulus as uppercase hex string
 	 */
 	protected function extractPublicKeyModulus($data) {
-		$fragment = preg_replace('/.*Modulus.*?\n(.*)Exponent:.*/ms', '\1', $data);
-		$fragment = preg_replace('/[\s\n\r:]/', '', $fragment);
+		$fragment = preg_replace('/.*Modulus.*?\\n(.*)Exponent:.*/ms', '\\1', $data);
+		$fragment = preg_replace('/[\\s\\n\\r:]/', '', $fragment);
 		$result = trim(strtoupper(substr($fragment, 2)));
-
 		return $result;
 	}
+
 }
+
 ?>

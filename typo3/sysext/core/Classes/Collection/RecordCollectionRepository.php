@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Implements the repository for record collections.
  *
@@ -33,8 +32,8 @@
  * @subpackage t3lib
  */
 class t3lib_collection_RecordCollectionRepository {
-	const TYPE_Static = 'static';
 
+	const TYPE_Static = 'static';
 	/**
 	 * Name of the table the collection records are stored to
 	 *
@@ -60,17 +59,10 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	public function findByUid($uid) {
 		$result = NULL;
-
-		$data = $this->getDatabase()->exec_SELECTgetSingleRow(
-			'*',
-			$this->table,
-			'uid=' . intval($uid) . t3lib_BEfunc::deleteClause($this->table)
-		);
-
+		$data = $this->getDatabase()->exec_SELECTgetSingleRow('*', $this->table, ('uid=' . intval($uid)) . t3lib_BEfunc::deleteClause($this->table));
 		if ($data !== NULL) {
 			$result = $this->createDomainObject($data);
 		}
-
 		return $result;
 	}
 
@@ -91,9 +83,8 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	public function findByTableName($tableName) {
 		$conditions = array(
-			$this->tableField . '=' . $this->getDatabase()->fullQuoteStr($tableName, $this->table),
+			($this->tableField . '=') . $this->getDatabase()->fullQuoteStr($tableName, $this->table)
 		);
-
 		return $this->queryMultipleRecords($conditions);
 	}
 
@@ -105,9 +96,8 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	public function findByType($type) {
 		$conditions = array(
-			$this->typeField . '=' . $this->getDatabase()->fullQuoteStr($type, $this->table),
+			($this->typeField . '=') . $this->getDatabase()->fullQuoteStr($type, $this->table)
 		);
-
 		return $this->queryMultipleRecords($conditions);
 	}
 
@@ -120,10 +110,9 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	public function findByTypeAndTableName($type, $tableName) {
 		$conditions = array(
-			$this->typeField . '=' . $this->getDatabase()->fullQuoteStr($type, $this->table),
-			$this->tableField . '=' . $this->getDatabase()->fullQuoteStr($tableName, $this->table),
+			($this->typeField . '=') . $this->getDatabase()->fullQuoteStr($type, $this->table),
+			($this->tableField . '=') . $this->getDatabase()->fullQuoteStr($tableName, $this->table)
 		);
-
 		return $this->queryMultipleRecords($conditions);
 	}
 
@@ -134,10 +123,7 @@ class t3lib_collection_RecordCollectionRepository {
 	 * @return void
 	 */
 	public function deleteByUid($uid) {
-		$this->getDatabase()->exec_UPDATEquery(
-			$this->table, 'uid=' . intval($uid),
-			array('deleted' => 1, 'tstamp' => $GLOBALS['EXEC_TIME'])
-		);
+		$this->getDatabase()->exec_UPDATEquery($this->table, 'uid=' . intval($uid), array('deleted' => 1, 'tstamp' => $GLOBALS['EXEC_TIME']));
 	}
 
 	/**
@@ -148,23 +134,15 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	protected function queryMultipleRecords(array $conditions = array()) {
 		$result = NULL;
-
 		if (count($conditions) > 0) {
 			$conditionsWhereClause = implode(' AND ', $conditions);
 		} else {
 			$conditionsWhereClause = '1=1';
 		}
-
-		$data = $this->getDatabase()->exec_SELECTgetRows(
-			'*',
-			$this->table,
-			$conditionsWhereClause . t3lib_BEfunc::deleteClause($this->table)
-		);
-
+		$data = $this->getDatabase()->exec_SELECTgetRows('*', $this->table, $conditionsWhereClause . t3lib_BEfunc::deleteClause($this->table));
 		if ($data !== NULL) {
 			$result = $this->createMultipleDomainObjects($data);
 		}
-
 		return $result;
 	}
 
@@ -176,13 +154,12 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	protected function createDomainObject(array $record) {
 		switch ($record['type']) {
-			case self::TYPE_Static:
-				$collection = t3lib_collection_StaticRecordCollection::create($record);
-				break;
-			default:
-				throw new RuntimeException('Unknown record collection type "' . $record['type'], 1328646798);
+		case self::TYPE_Static:
+			$collection = t3lib_collection_StaticRecordCollection::create($record);
+			break;
+		default:
+			throw new RuntimeException('Unknown record collection type "' . $record['type'], 1328646798);
 		}
-
 		return $collection;
 	}
 
@@ -194,11 +171,9 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	protected function createMultipleDomainObjects(array $data) {
 		$collections = array();
-
 		foreach ($data as $collection) {
 			$collections[] = $this->createDomainObject($collection);
 		}
-
 		return $collections;
 	}
 
@@ -210,5 +185,7 @@ class t3lib_collection_RecordCollectionRepository {
 	protected function getDatabase() {
 		return $GLOBALS['TYPO3_DB'];
 	}
+
 }
+
 ?>

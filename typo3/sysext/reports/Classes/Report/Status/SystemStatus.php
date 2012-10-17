@@ -1,28 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Ingo Renner <ingo@typo3.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
-
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Ingo Renner <ingo@typo3.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Performs several checks about the system's health
  *
@@ -38,7 +36,19 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 * @var array
 	 */
 	protected $requiredPhpModules = array(
-		'fileinfo', 'filter', 'gd', 'json', 'mysql', 'pcre', 'session', 'SPL', 'standard', 'openssl', 'xml', 'zlib', 'soap'
+		'fileinfo',
+		'filter',
+		'gd',
+		'json',
+		'mysql',
+		'pcre',
+		'session',
+		'SPL',
+		'standard',
+		'openssl',
+		'xml',
+		'zlib',
+		'soap'
 	);
 
 	/**
@@ -49,15 +59,13 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 */
 	public function getStatus() {
 		$this->executeAdminCommand();
-
 		$statuses = array(
-			'Php'                 => $this->getPhpStatus(),
-			'PhpMemoryLimit'      => $this->getPhpMemoryLimitStatus(),
-			'PhpPeakMemory'       => $this->getPhpPeakMemoryStatus(),
-			'Webserver'           => $this->getWebserverStatus(),
-			'PhpModules'          => $this->getMissingPhpModules(),
+			'Php' => $this->getPhpStatus(),
+			'PhpMemoryLimit' => $this->getPhpMemoryLimitStatus(),
+			'PhpPeakMemory' => $this->getPhpPeakMemoryStatus(),
+			'Webserver' => $this->getWebserverStatus(),
+			'PhpModules' => $this->getMissingPhpModules()
 		);
-
 		return $statuses;
 	}
 
@@ -67,20 +75,13 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 * @return tx_reports_reports_status_Status A status of whether a minimum PHP version requirement is met
 	 */
 	protected function getPhpStatus() {
-		$message  = '';
+		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
 		if (version_compare(phpversion(), TYPO3_REQUIREMENTS_MINIMUM_PHP) < 0) {
-			$message  = $GLOBALS['LANG']->getLL('status_phpTooOld');
+			$message = $GLOBALS['LANG']->getLL('status_phpTooOld');
 			$severity = tx_reports_reports_status_Status::ERROR;
 		}
-
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_phpVersion'),
-			phpversion(),
-			$message,
-			$severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpVersion'), phpversion(), $message, $severity);
 	}
 
 	/**
@@ -91,20 +92,17 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	protected function getPhpMemoryLimitStatus() {
 		$memoryLimit = ini_get('memory_limit');
 		$memoryLimitBytes = t3lib_div::getBytesFromSizeMeasurement($memoryLimit);
-		$message     = '';
-		$severity    = tx_reports_reports_status_Status::OK;
-
+		$message = '';
+		$severity = tx_reports_reports_status_Status::OK;
 		if ($memoryLimitBytes > 0) {
 			if ($memoryLimitBytes < t3lib_div::getBytesFromSizeMeasurement(TYPO3_REQUIREMENTS_RECOMMENDED_PHP_MEMORY_LIMIT)) {
 				$message = sprintf($GLOBALS['LANG']->getLL('status_phpMemoryRecommendation'), $memoryLimit, TYPO3_REQUIREMENTS_RECOMMENDED_PHP_MEMORY_LIMIT);
 				$severity = tx_reports_reports_status_Status::WARNING;
 			}
-
 			if ($memoryLimitBytes < t3lib_div::getBytesFromSizeMeasurement(TYPO3_REQUIREMENTS_MINIMUM_PHP_MEMORY_LIMIT)) {
 				$message = sprintf($GLOBALS['LANG']->getLL('status_phpMemoryRequirement'), $memoryLimit, TYPO3_REQUIREMENTS_MINIMUM_PHP_MEMORY_LIMIT);
 				$severity = tx_reports_reports_status_Status::ERROR;
 			}
-
 			if ($severity > tx_reports_reports_status_Status::OK) {
 				if ($php_ini_path = get_cfg_var('cfg_file_path')) {
 					$message .= ' ' . sprintf($GLOBALS['LANG']->getLL('status_phpMemoryEditLimit'), $php_ini_path);
@@ -113,14 +111,7 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 				}
 			}
 		}
-
-		return t3lib_div::makeInstance(
-			'tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_phpMemory'),
-			($memoryLimitBytes > 0 ? $memoryLimit : $GLOBALS['LANG']->getLL('status_phpMemoryUnlimited')),
-			$message,
-			$severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpMemory'), $memoryLimitBytes > 0 ? $memoryLimit : $GLOBALS['LANG']->getLL('status_phpMemoryUnlimited'), $message, $severity);
 	}
 
 	/**
@@ -130,13 +121,12 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 */
 	protected function executeAdminCommand() {
 		$command = t3lib_div::_GET('adminCmd');
-
 		switch ($command) {
-			case 'clear_peak_memory_usage_flag':
-				/** @var $registry t3lib_Registry */
-				$registry = t3lib_div::makeInstance('t3lib_Registry');
-				$registry->remove('core', 'reports-peakMemoryUsage');
-				break;
+		case 'clear_peak_memory_usage_flag':
+			/** @var $registry t3lib_Registry */
+			$registry = t3lib_div::makeInstance('t3lib_Registry');
+			$registry->remove('core', 'reports-peakMemoryUsage');
+			break;
 		}
 	}
 
@@ -151,32 +141,20 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 		$peakMemoryUsage = $registry->get('core', 'reports-peakMemoryUsage');
 		$memoryLimit = t3lib_div::getBytesFromSizeMeasurement(ini_get('memory_limit'));
 		$value = $GLOBALS['LANG']->getLL('status_ok');
-
 		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
 		$bytesUsed = $peakMemoryUsage['used'];
-		$percentageUsed = $memoryLimit ? number_format($bytesUsed / $memoryLimit * 100, 1) . '%' : '?';
+		$percentageUsed = $memoryLimit ? number_format(($bytesUsed / $memoryLimit) * 100, 1) . '%' : '?';
 		$dateOfPeak = date($GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'], $peakMemoryUsage['tstamp']);
-		$urlOfPeak = '<a href="' . htmlspecialchars($peakMemoryUsage['url']) . '">' . htmlspecialchars($peakMemoryUsage['url']) . '</a>';
+		$urlOfPeak = ((('<a href="' . htmlspecialchars($peakMemoryUsage['url'])) . '">') . htmlspecialchars($peakMemoryUsage['url'])) . '</a>';
 		$clearFlagUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL') . '&amp;adminCmd=clear_peak_memory_usage_flag';
-
 		if ($peakMemoryUsage['used']) {
-			$message = sprintf(
-				$GLOBALS['LANG']->getLL('status_phpPeakMemoryTooHigh'),
-				t3lib_div::formatSize($peakMemoryUsage['used']),
-				$percentageUsed,
-				t3lib_div::formatSize($memoryLimit),
-				$dateOfPeak,
-				$urlOfPeak
-			);
-			$message .= ' <a href="' . $clearFlagUrl . '">' . $GLOBALS['LANG']->getLL('status_phpPeakMemoryClearFlag') . '</a>.';
+			$message = sprintf($GLOBALS['LANG']->getLL('status_phpPeakMemoryTooHigh'), t3lib_div::formatSize($peakMemoryUsage['used']), $percentageUsed, t3lib_div::formatSize($memoryLimit), $dateOfPeak, $urlOfPeak);
+			$message .= (((' <a href="' . $clearFlagUrl) . '">') . $GLOBALS['LANG']->getLL('status_phpPeakMemoryClearFlag')) . '</a>.';
 			$severity = tx_reports_reports_status_Status::WARNING;
 			$value = $percentageUsed;
 		}
-
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_phpPeakMemory'), $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpPeakMemory'), $value, $message, $severity);
 	}
 
 	/**
@@ -185,10 +163,7 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 * @return tx_reports_reports_status_Status The server software as a status
 	 */
 	protected function getWebserverStatus() {
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_webServer'),
-			$_SERVER['SERVER_SOFTWARE']
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_webServer'), $_SERVER['SERVER_SOFTWARE']);
 	}
 
 	/**
@@ -197,7 +172,7 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 * @return tx_reports_reports_status_Status A status of missing PHP modules
 	 */
 	protected function getMissingPhpModules() {
-			// Hook to adjust the required PHP modules
+		// Hook to adjust the required PHP modules
 		$modules = $this->requiredPhpModules;
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install/mod/class.tx_install.php']['requiredPhpModules'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install/mod/class.tx_install.php']['requiredPhpModules'] as $classData) {
@@ -215,7 +190,7 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 					}
 				}
 				if ($detectedSubmodules === FALSE) {
-					$missingPhpModules[] = sprintf($GLOBALS['LANG']->getLL('status_phpModulesGroup'), '(' . implode(', ', $module) . ')');
+					$missingPhpModules[] = sprintf($GLOBALS['LANG']->getLL('status_phpModulesGroup'), ('(' . implode(', ', $module)) . ')');
 				}
 			} elseif (!extension_loaded($module)) {
 				$missingPhpModules[] = $module;
@@ -231,9 +206,9 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 			$message = '';
 			$severity = tx_reports_reports_status_Status::OK;
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_phpModules'), $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpModules'), $value, $message, $severity);
 	}
+
 }
+
 ?>

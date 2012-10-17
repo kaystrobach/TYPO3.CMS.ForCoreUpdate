@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains CLEARGIF class object.
  *
@@ -41,39 +40,29 @@ class tslib_content_ClearGif extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-
-		$width = isset($conf['width.'])
-				? $this->cObj->stdWrap($conf['width'], $conf['width.'])
-				: $conf['width'];
+		$width = isset($conf['width.']) ? $this->cObj->stdWrap($conf['width'], $conf['width.']) : $conf['width'];
 		if (!$width) {
 			$width = 1;
 		}
-		$height = isset($conf['height.'])
-				? $this->cObj->stdWrap($conf['height'], $conf['height.'])
-				: $conf['height'];
+		$height = isset($conf['height.']) ? $this->cObj->stdWrap($conf['height'], $conf['height.']) : $conf['height'];
 		if (!$height) {
 			$height = 1;
 		}
-		$wrap = isset($conf['wrap.'])
-				? $this->cObj->stdWrap($conf['wrap'], $conf['wrap.'])
-				: $conf['wrap'];
+		$wrap = isset($conf['wrap.']) ? $this->cObj->stdWrap($conf['wrap'], $conf['wrap.']) : $conf['wrap'];
 		if (!$wrap) {
 			$wrap = '|<br />';
 		}
-		$theValue = $this->cObj->wrap(
-			'<img
-			src="' . $GLOBALS['TSFE']->absRefPrefix . 'clear.gif"
-			width="' . $width . '"
-			height="' . $height . '"' .
-			$this->cObj->getBorderAttr(' border="0"') . '
-			alt="" />',
-			$wrap);
-
+		$theValue = $this->cObj->wrap(((((((('<img
+			src="' . $GLOBALS['TSFE']->absRefPrefix) . 'clear.gif"
+			width="') . $width) . '"
+			height="') . $height) . '"') . $this->cObj->getBorderAttr(' border="0"')) . '
+			alt="" />', $wrap);
 		if (isset($conf['stdWrap.'])) {
 			$theValue = $this->cObj->stdWrap($theValue, $conf['stdWrap.']);
 		}
-
 		return $theValue;
 	}
+
 }
+
 ?>

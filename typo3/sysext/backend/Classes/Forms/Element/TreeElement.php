@@ -32,6 +32,7 @@
  * @author Steffen Kamper <steffen@typo3.org>
  */
 class t3lib_TCEforms_Tree {
+
 	/**
 	 * Stores a reference to the original tceForms object
 	 *
@@ -43,7 +44,6 @@ class t3lib_TCEforms_Tree {
 	 * Constructor which sets the tceForms.
 	 *
 	 * @param t3lib_TCEforms $tceForms
-	 *
 	 */
 	public function __construct(t3lib_TCEforms &$tceForms) {
 		$this->tceForms = $tceForms;
@@ -62,14 +62,11 @@ class t3lib_TCEforms_Tree {
 	 * @return string The HTML code for the TCEform field
 	 */
 	public function renderField($table, $field, $row, &$PA, $config, $possibleSelectboxItems, $noMatchLabel) {
-
 		$valueArray = array();
 		$selectedNodes = array();
-
 		if (!empty($PA['itemFormElValue'])) {
 			$valueArray = explode(',', $PA['itemFormElValue']);
 		}
-
 		if (count($valueArray)) {
 			foreach ($valueArray as $selectedValue) {
 				$temp = explode('|', $selectedValue);
@@ -82,23 +79,15 @@ class t3lib_TCEforms_Tree {
 				$allowedUids[] = $item[1];
 			}
 		}
-		$treeDataProvider = t3lib_tree_Tca_DataProviderFactory::getDataProvider(
-			$config,
-			$table,
-			$field,
-			$row
-		);
+		$treeDataProvider = t3lib_tree_Tca_DataProviderFactory::getDataProvider($config, $table, $field, $row);
 		$treeDataProvider->setSelectedList(implode(',', $selectedNodes));
 		$treeDataProvider->setItemWhiteList($allowedUids);
 		$treeDataProvider->initializeTreeData();
-
 		$treeRenderer = t3lib_div::makeInstance('t3lib_tree_Tca_ExtJsArrayRenderer');
 		$tree = t3lib_div::makeInstance('t3lib_tree_Tca_TcaTree');
 		$tree->setDataProvider($treeDataProvider);
 		$tree->setNodeRenderer($treeRenderer);
-
 		$treeData = $tree->render();
-
 		$itemArray = array();
 		if (is_array($PA['fieldConf']['config']['items'])) {
 			foreach ($PA['fieldConf']['config']['items'] as $additionalItem) {
@@ -114,16 +103,13 @@ class t3lib_TCEforms_Tree {
 					} elseif (strlen(trim($additionalItem[3]))) {
 						$item->iconCls = t3lib_iconWorks::getSpriteIconClasses($additionalItem[3]);
 					}
-
 					$itemArray[] = $item;
 				}
 			}
 		}
 		$itemArray[] = $treeData;
 		$treeData = json_encode($itemArray);
-
 		$id = md5($PA['itemFormElName']);
-
 		if (isset($PA['fieldConf']['config']['size']) && intval($PA['fieldConf']['config']['size']) > 0) {
 			$height = intval($PA['fieldConf']['config']['size']) * 20;
 		} else {
@@ -132,51 +118,43 @@ class t3lib_TCEforms_Tree {
 		if (isset($PA['fieldConf']['config']['autoSizeMax']) && intval($PA['fieldConf']['config']['autoSizeMax']) > 0) {
 			$autoSizeMax = intval($PA['fieldConf']['config']['autoSizeMax']) * 20;
 		}
-
 		$header = FALSE;
 		$expanded = FALSE;
 		$width = 280;
 		$appearance = $PA['fieldConf']['config']['treeConfig']['appearance'];
 		if (is_array($appearance)) {
 			$header = $appearance['showHeader'] ? TRUE : FALSE;
-			$expanded = ($appearance['expandAll'] === TRUE);
+			$expanded = $appearance['expandAll'] === TRUE;
 			if (isset($appearance['width'])) {
 				$width = intval($appearance['width']);
 			}
 		}
-
 		$onChange = '';
 		if ($PA['fieldChangeFunc']['TBE_EDITOR_fieldChanged']) {
 			$onChange = $PA['fieldChangeFunc']['TBE_EDITOR_fieldChanged'];
 		}
-
-			// Create a JavaScript code line which will ask the user to save/update the form due to changing the element.
-			// This is used for eg. "type" fields and others configured with "requestUpdate"
-		if (($GLOBALS['TCA'][$table]['ctrl']['type']
-					&& !strcmp($field, $GLOBALS['TCA'][$table]['ctrl']['type']))
-				|| ($GLOBALS['TCA'][$table]['ctrl']['requestUpdate']
-					&& t3lib_div::inList($GLOBALS['TCA'][$table]['ctrl']['requestUpdate'], $field))) {
+		// Create a JavaScript code line which will ask the user to save/update the form due to changing the element.
+		// This is used for eg. "type" fields and others configured with "requestUpdate"
+		if ($GLOBALS['TCA'][$table]['ctrl']['type'] && !strcmp($field, $GLOBALS['TCA'][$table]['ctrl']['type']) || $GLOBALS['TCA'][$table]['ctrl']['requestUpdate'] && t3lib_div::inList($GLOBALS['TCA'][$table]['ctrl']['requestUpdate'], $field)) {
 			if ($GLOBALS['BE_USER']->jsConfirmation(1)) {
-				$onChange .= 'if (confirm(TBE_EDITOR.labels.onChangeAlert) && ' .
-					'TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };';
+				$onChange .= 'if (confirm(TBE_EDITOR.labels.onChangeAlert) && ' . 'TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };';
 			} else {
 				$onChange .= 'if (TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };';
 			}
 		}
-
 		/** @var $pageRenderer t3lib_PageRenderer */
 		$pageRenderer = $GLOBALS['SOBE']->doc->getPageRenderer();
 		$pageRenderer->loadExtJs();
 		$pageRenderer->addJsFile('../t3lib/js/extjs/tree/tree.js');
 		$pageRenderer->addInlineLanguageLabelFile(t3lib_extMgm::extPath('lang') . 'locallang_csh_corebe.xml', 'tcatree');
-		$pageRenderer->addExtOnReadyCode('
-			TYPO3.Components.Tree.StandardTreeItemData["' . $id . '"] = ' . $treeData . ';
-			var tree' . $id . ' = new TYPO3.Components.Tree.StandardTree({
-				id: "' . $id . '",
-				showHeader: ' . intval($header) . ',
-				onChange: "' . $onChange . '",
-				countSelectedNodes: ' . count ($selectedNodes) . ',
-				width: ' . $width . ',
+		$pageRenderer->addExtOnReadyCode(((((((((((((((((((((((((((((((((((('
+			TYPO3.Components.Tree.StandardTreeItemData["' . $id) . '"] = ') . $treeData) . ';
+			var tree') . $id) . ' = new TYPO3.Components.Tree.StandardTree({
+				id: "') . $id) . '",
+				showHeader: ') . intval($header)) . ',
+				onChange: "') . $onChange) . '",
+				countSelectedNodes: ') . count($selectedNodes)) . ',
+				width: ') . $width) . ',
 				listeners: {
 					click: function(node, event) {
 						if (typeof(node.attributes.checked) == "boolean") {
@@ -198,33 +176,25 @@ class t3lib_TCEforms_Tree {
 						top.TYPO3.BackendUserSettings.ExtDirect.addToList("tcaTrees." + this.ucId, node.attributes.uid);
 					}
 				},
-				tcaMaxItems: ' . ($PA['fieldConf']['config']['maxitems'] ? intval($PA['fieldConf']['config']['maxitems']) : 99999) . ',
-				tcaSelectRecursiveAllowed: ' . ($appearance['allowRecursiveMode'] ? 'true' : 'false')  . ',
+				tcaMaxItems: ') . ($PA['fieldConf']['config']['maxitems'] ? intval($PA['fieldConf']['config']['maxitems']) : 99999)) . ',
+				tcaSelectRecursiveAllowed: ') . ($appearance['allowRecursiveMode'] ? 'true' : 'false')) . ',
 				tcaSelectRecursive: false,
-				tcaExclusiveKeys: "' .
-				($PA['fieldConf']['config']['exclusiveKeys'] ? $PA['fieldConf']['config']['exclusiveKeys'] : '') . '",
-				ucId: "' . md5($table . '|' . $field) . '",
+				tcaExclusiveKeys: "') . ($PA['fieldConf']['config']['exclusiveKeys'] ? $PA['fieldConf']['config']['exclusiveKeys'] : '')) . '",
+				ucId: "') . md5((($table . '|') . $field))) . '",
 				selModel: TYPO3.Components.Tree.EmptySelectionModel,
-				disabled: ' . ($PA['fieldConf']['config']['readOnly'] ? 'true' : 'false') . '
-			});' . LF .
-			($autoSizeMax
-				? 'tree' . $id . '.bodyStyle = "max-height: ' . $autoSizeMax . 'px;min-height: ' . $height . 'px;";'
-				: 'tree' . $id . '.height = ' . $height . ';'
-			) . LF .
-			'tree' . $id . '.render("tree_' . $id . '");' .
-			($expanded ? 'tree' . $id . '.expandAll();' : '') . '
+				disabled: ') . ($PA['fieldConf']['config']['readOnly'] ? 'true' : 'false')) . '
+			});') . LF) . ($autoSizeMax ? ((((('tree' . $id) . '.bodyStyle = "max-height: ') . $autoSizeMax) . 'px;min-height: ') . $height) . 'px;";' : ((('tree' . $id) . '.height = ') . $height) . ';')) . LF) . 'tree') . $id) . '.render("tree_') . $id) . '");') . ($expanded ? ('tree' . $id) . '.expandAll();' : '')) . '
 		');
-
-		$formField = '
+		$formField = ((((((('
 			<div class="typo3-tceforms-tree">
-				<input class="treeRecord" type="hidden" name="' . htmlspecialchars($PA['itemFormElName']) . '" id="treeinput' . $id . '" value="' . htmlspecialchars($PA['itemFormElValue']) . '" />
+				<input class="treeRecord" type="hidden" name="' . htmlspecialchars($PA['itemFormElName'])) . '" id="treeinput') . $id) . '" value="') . htmlspecialchars($PA['itemFormElValue'])) . '" />
 			</div>
-			<div id="tree_' . $id . '">
+			<div id="tree_') . $id) . '">
 
 			</div>';
-
 		return $formField;
 	}
+
 }
 
 ?>

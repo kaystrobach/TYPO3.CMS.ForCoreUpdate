@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * HTTP Utility class
  *
@@ -32,10 +30,9 @@
  */
 class t3lib_utility_Http {
 
-		// HTTP Headers, see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for Details
+	// HTTP Headers, see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for Details
 	const HTTP_STATUS_100 = 'HTTP/1.1 100 Continue';
 	const HTTP_STATUS_101 = 'HTTP/1.1 101 Switching Protocols';
-
 	const HTTP_STATUS_200 = 'HTTP/1.1 200 OK';
 	const HTTP_STATUS_201 = 'HTTP/1.1 201 Created';
 	const HTTP_STATUS_202 = 'HTTP/1.1 202 Accepted';
@@ -43,7 +40,6 @@ class t3lib_utility_Http {
 	const HTTP_STATUS_204 = 'HTTP/1.1 204 No Content';
 	const HTTP_STATUS_205 = 'HTTP/1.1 205 Reset Content';
 	const HTTP_STATUS_206 = 'HTTP/1.1 206 Partial Content';
-
 	const HTTP_STATUS_300 = 'HTTP/1.1 300 Multiple Choices';
 	const HTTP_STATUS_301 = 'HTTP/1.1 301 Moved Permanently';
 	const HTTP_STATUS_302 = 'HTTP/1.1 302 Found';
@@ -51,7 +47,6 @@ class t3lib_utility_Http {
 	const HTTP_STATUS_304 = 'HTTP/1.1 304 Not Modified';
 	const HTTP_STATUS_305 = 'HTTP/1.1 305 Use Proxy';
 	const HTTP_STATUS_307 = 'HTTP/1.1 307 Temporary Redirect';
-
 	const HTTP_STATUS_400 = 'HTTP/1.1 400 Bad Request';
 	const HTTP_STATUS_401 = 'HTTP/1.1 401 Unauthorized';
 	const HTTP_STATUS_402 = 'HTTP/1.1 402 Payment Required';
@@ -70,18 +65,15 @@ class t3lib_utility_Http {
 	const HTTP_STATUS_415 = 'HTTP/1.1 415 Unsupported Media Type';
 	const HTTP_STATUS_416 = 'HTTP/1.1 416 Requested Range Not Satisfiable';
 	const HTTP_STATUS_417 = 'HTTP/1.1 417 Expectation Failed';
-
 	const HTTP_STATUS_500 = 'HTTP/1.1 500 Internal Server Error';
 	const HTTP_STATUS_501 = 'HTTP/1.1 501 Not Implemented';
 	const HTTP_STATUS_502 = 'HTTP/1.1 502 Bad Gateway';
 	const HTTP_STATUS_503 = 'HTTP/1.1 503 Service Unavailable';
 	const HTTP_STATUS_504 = 'HTTP/1.1 504 Gateway Timeout';
 	const HTTP_STATUS_505 = 'HTTP/1.1 505 Version Not Supported';
-
-		// URL Schemes
+	// URL Schemes
 	const SCHEME_HTTP = 1;
 	const SCHEME_HTTPS = 2;
-
 	/**
 	 * Sends a redirect header response and exits. Additionally the URL is
 	 * checked and if needed corrected to match the format required for a
@@ -91,10 +83,10 @@ class t3lib_utility_Http {
 	 * @param string $url The target URL to redirect to
 	 * @param string $httpStatus An optional HTTP status header. Default is 'HTTP/1.1 303 See Other'
 	 */
-	public static function redirect($url, $httpStatus = self::HTTP_STATUS_303) {
+	static public function redirect($url, $httpStatus = self::HTTP_STATUS_303) {
 		self::setResponseCode($httpStatus);
 		header('Location: ' . t3lib_div::locationHeaderUrl($url));
-		exit;
+		die;
 	}
 
 	/**
@@ -103,7 +95,7 @@ class t3lib_utility_Http {
 	 * @param string $httpStatus One of the HTTP_STATUS_* class class constants, default to self::HTTP_STATUS_303
 	 * @return void
 	 */
-	public static function setResponseCode($httpStatus = self::HTTP_STATUS_303) {
+	static public function setResponseCode($httpStatus = self::HTTP_STATUS_303) {
 		header($httpStatus);
 	}
 
@@ -113,9 +105,9 @@ class t3lib_utility_Http {
 	 * @param string $httpStatus One of the HTTP_STATUS_* class class constants, default to self::HTTP_STATUS_303
 	 * @return void
 	 */
-	public static function setResponseCodeAndExit($httpStatus = self::HTTP_STATUS_303) {
+	static public function setResponseCodeAndExit($httpStatus = self::HTTP_STATUS_303) {
 		self::setResponseCode($httpStatus);
-		exit;
+		die;
 	}
 
 	/**
@@ -125,12 +117,10 @@ class t3lib_utility_Http {
 	 * @return string
 	 * @see http://www.php.net/parse_url
 	 */
-	public static function buildUrl(array $urlParts) {
-		return (isset($urlParts['scheme']) ? $urlParts['scheme'] . '://' : '')
-			. (isset($urlParts['user']) ? $urlParts['user'] . (isset($urlParts['pass']) ? ':' . $urlParts['pass'] : '') . '@' : '')
-			. (isset($urlParts['host']) ? $urlParts['host'] : '') . (isset($urlParts['path']) ? $urlParts['path'] : '')
-			. (isset($urlParts['query']) ? '?' . $urlParts['query'] : '') . (isset($urlParts['fragment']) ? '#' . $urlParts['fragment'] : '');
+	static public function buildUrl(array $urlParts) {
+		return (((((isset($urlParts['scheme']) ? $urlParts['scheme'] . '://' : '') . (isset($urlParts['user']) ? ($urlParts['user'] . (isset($urlParts['pass']) ? ':' . $urlParts['pass'] : '')) . '@' : '')) . (isset($urlParts['host']) ? $urlParts['host'] : '')) . (isset($urlParts['path']) ? $urlParts['path'] : '')) . (isset($urlParts['query']) ? '?' . $urlParts['query'] : '')) . (isset($urlParts['fragment']) ? '#' . $urlParts['fragment'] : '');
 	}
+
 }
 
 ?>

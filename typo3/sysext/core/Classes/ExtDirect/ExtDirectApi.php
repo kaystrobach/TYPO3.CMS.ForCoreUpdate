@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Ext Direct API Generator
  *
@@ -34,6 +33,7 @@
  * @subpackage t3lib
  */
 class t3lib_extjs_ExtDirectApi {
+
 	/**
 	 * @var array
 	 */
@@ -75,24 +75,19 @@ class t3lib_extjs_ExtDirectApi {
 	 */
 	public function getApiPhp(array $filterNamespaces) {
 		$javascriptNamespaces = $this->getExtDirectApi($filterNamespaces);
-			// Return the generated javascript API configuration
+		// Return the generated javascript API configuration
 		if (count($javascriptNamespaces)) {
-			return '
+			return ('
 				if (!Ext.isObject(Ext.app.ExtDirectAPI)) {
 					Ext.app.ExtDirectAPI = {};
 				}
-				Ext.apply(Ext.app.ExtDirectAPI, ' .
-					json_encode($javascriptNamespaces) . ');
+				Ext.apply(Ext.app.ExtDirectAPI, ' . json_encode($javascriptNamespaces)) . ');
 			';
 		} else {
 			$errorMessage = $this->getNamespaceError($filterNamespaces);
-			throw new InvalidArgumentException(
-				$errorMessage,
-				1297645190
-			);
+			throw new InvalidArgumentException($errorMessage, 1297645190);
 		}
 	}
-
 
 	/**
 	 * Generates the API that is configured inside the ExtDirect configuration
@@ -108,12 +103,10 @@ class t3lib_extjs_ExtDirectApi {
 				$splittedJavascriptName = explode('.', $javascriptName);
 				$javascriptObjectName = array_pop($splittedJavascriptName);
 				$javascriptNamespace = implode('.', $splittedJavascriptName);
-
-					// Only items inside the wanted namespace
+				// Only items inside the wanted namespace
 				if (!$this->findNamespace($javascriptNamespace, $filterNamespaces)) {
 					continue;
 				}
-
 				if (!isset($javascriptNamespaces[$javascriptNamespace])) {
 					$javascriptNamespaces[$javascriptNamespace] = array(
 						'url' => $this->getRoutingUrl($javascriptNamespace),
@@ -122,19 +115,16 @@ class t3lib_extjs_ExtDirectApi {
 						'namespace' => $javascriptNamespace
 					);
 				}
-
 				if (is_array($configuration)) {
 					$className = $configuration['callbackClass'];
 				}
-
 				$serverObject = t3lib_div::getUserObj($className, FALSE);
 				$javascriptNamespaces[$javascriptNamespace]['actions'][$javascriptObjectName] = array();
 				foreach (get_class_methods($serverObject) as $methodName) {
 					$reflectionMethod = new ReflectionMethod($serverObject, $methodName);
 					$numberOfParameters = $reflectionMethod->getNumberOfParameters();
 					$docHeader = $reflectionMethod->getDocComment();
-					$formHandler = (strpos($docHeader, '@formHandler') !== FALSE);
-
+					$formHandler = strpos($docHeader, '@formHandler') !== FALSE;
 					$javascriptNamespaces[$javascriptNamespace]['actions'][$javascriptObjectName][] = array(
 						'name' => $methodName,
 						'len' => $numberOfParameters,
@@ -143,7 +133,6 @@ class t3lib_extjs_ExtDirectApi {
 				}
 			}
 		}
-
 		return $javascriptNamespaces;
 	}
 
@@ -158,13 +147,9 @@ class t3lib_extjs_ExtDirectApi {
 		if (TYPO3_MODE === 'FE') {
 			$url = t3lib_div::locationHeaderUrl('?eID=ExtDirect&action=route&namespace=');
 		} else {
-			$url = t3lib_div::locationHeaderUrl(
-				t3lib_div::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir .
-				'ajax.php?ajaxID=ExtDirect::route&namespace='
-			);
+			$url = t3lib_div::locationHeaderUrl((t3lib_div::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir) . 'ajax.php?ajaxID=ExtDirect::route&namespace=');
 		}
 		$url .= rawurlencode($namespace);
-
 		return $url;
 	}
 
@@ -177,29 +162,20 @@ class t3lib_extjs_ExtDirectApi {
 	 */
 	protected function getExtDirectApi(array $filterNamespaces) {
 		$noCache = t3lib_div::_GET('no_cache') ? TRUE : FALSE;
-
-			// Look up into the cache
+		// Look up into the cache
 		$cacheIdentifier = 'ExtDirectApi';
-		$cacheHash = md5($cacheIdentifier . implode(',', $filterNamespaces) . t3lib_div::getIndpEnv('TYPO3_SSL') .
-			serialize($this->settings) . TYPO3_MODE . t3lib_div::getIndpEnv('HTTP_HOST'));
-
-			// With no_cache always generate the javascript content
+		$cacheHash = md5((((($cacheIdentifier . implode(',', $filterNamespaces)) . t3lib_div::getIndpEnv('TYPO3_SSL')) . serialize($this->settings)) . TYPO3_MODE) . t3lib_div::getIndpEnv('HTTP_HOST'));
+		// With no_cache always generate the javascript content
 		$cacheContent = $noCache ? '' : t3lib_pageSelect::getHash($cacheHash);
-
-			// Generate the javascript content if it wasn't found inside the cache and cache it!
+		// Generate the javascript content if it wasn't found inside the cache and cache it!
 		if (!$cacheContent) {
 			$javascriptNamespaces = $this->generateAPI($filterNamespaces);
 			if (count($javascriptNamespaces)) {
-				t3lib_pageSelect::storeHash(
-					$cacheHash,
-					serialize($javascriptNamespaces),
-					$cacheIdentifier
-				);
+				t3lib_pageSelect::storeHash($cacheHash, serialize($javascriptNamespaces), $cacheIdentifier);
 			}
 		} else {
 			$javascriptNamespaces = unserialize($cacheContent);
 		}
-
 		return $javascriptNamespaces;
 	}
 
@@ -211,18 +187,12 @@ class t3lib_extjs_ExtDirectApi {
 	 */
 	protected function getNamespaceError(array $filterNamespaces) {
 		if (count($filterNamespaces)) {
-				// Namespace error
-			$errorMessage = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:ExtDirect.namespaceError'),
-									__CLASS__, implode(',', $filterNamespaces)
-			);
+			// Namespace error
+			$errorMessage = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:ExtDirect.namespaceError'), __CLASS__, implode(',', $filterNamespaces));
+		} else {
+			// No namespace given
+			$errorMessage = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:ExtDirect.noNamespace'), __CLASS__);
 		}
-		else {
-				// No namespace given
-			$errorMessage = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:ExtDirect.noNamespace'),
-									__CLASS__
-			);
-		}
-
 		return $errorMessage;
 	}
 
@@ -246,6 +216,7 @@ class t3lib_extjs_ExtDirectApi {
 		}
 		return $found;
 	}
+
 }
 
 ?>

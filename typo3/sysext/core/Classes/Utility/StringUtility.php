@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class with helper functions for string handling
  *
@@ -43,11 +42,12 @@ final class t3lib_utility_String {
 	 * @param string $needle Reference string which must be found as the "last part" of the full string
 	 * @return boolean TRUE if $needle was found to be equal to the last part of $str
 	 */
-	public static function isLastPartOfString($haystack, $needle) {
+	static public function isLastPartOfString($haystack, $needle) {
 		$stringLength = strlen($haystack);
 		$needleLength = strlen($needle);
-		return strrpos((string)$haystack, (string)$needle, 0) === ($stringLength - $needleLength);
+		return strrpos((string) $haystack, (string) $needle, 0) === $stringLength - $needleLength;
 	}
 
 }
+
 ?>

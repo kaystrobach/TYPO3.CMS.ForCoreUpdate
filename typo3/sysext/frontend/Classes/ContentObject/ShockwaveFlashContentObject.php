@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains SWFOBJECT class object.
  *
@@ -48,33 +47,17 @@ class tslib_content_ShockwaveFlashObject extends tslib_content_Abstract {
 		if ($GLOBALS['TSFE']->absRefPrefix) {
 			$prefix = $GLOBALS['TSFE']->absRefPrefix;
 		}
-
-		$type = isset($conf['type.'])
-			? $this->cObj->stdWrap($conf['type'], $conf['type.'])
-			: $conf['type'];
+		$type = isset($conf['type.']) ? $this->cObj->stdWrap($conf['type'], $conf['type.']) : $conf['type'];
 		$typeConf = $conf[$type . '.'];
-
-			// Add SWFobject js-file
+		// Add SWFobject js-file
 		$GLOBALS['TSFE']->getPageRenderer()->addJsFile(TYPO3_mainDir . 'contrib/flashmedia/swfobject/swfobject.js');
-
-		$player = isset($typeConf['player.'])
-			? $this->cObj->stdWrap($typeConf['player'], $typeConf['player.'])
-			: $typeConf['player'];
-
-		$installUrl = isset($conf['installUrl.'])
-			? $this->cObj->stdWrap($conf['installUrl'], $conf['installUrl.'])
-			: $conf['installUrl'];
+		$player = isset($typeConf['player.']) ? $this->cObj->stdWrap($typeConf['player'], $typeConf['player.']) : $typeConf['player'];
+		$installUrl = isset($conf['installUrl.']) ? $this->cObj->stdWrap($conf['installUrl'], $conf['installUrl.']) : $conf['installUrl'];
 		if (!$installUrl) {
-			$installUrl = $prefix . TYPO3_mainDir . 'contrib/flashmedia/swfobject/expressInstall.swf';
+			$installUrl = ($prefix . TYPO3_mainDir) . 'contrib/flashmedia/swfobject/expressInstall.swf';
 		}
-
-		$filename = isset($conf['file.'])
-			? $this->cObj->stdWrap($conf['file'], $conf['file.'])
-			: $conf['file'];
-		$forcePlayer = isset($conf['forcePlayer.'])
-			? $this->cObj->stdWrap($conf['forcePlayer'], $conf['forcePlayer.'])
-			: $conf['forcePlayer'];
-
+		$filename = isset($conf['file.']) ? $this->cObj->stdWrap($conf['file'], $conf['file.']) : $conf['file'];
+		$forcePlayer = isset($conf['forcePlayer.']) ? $this->cObj->stdWrap($conf['forcePlayer'], $conf['forcePlayer.']) : $conf['forcePlayer'];
 		if ($filename && $forcePlayer) {
 			if (strpos($filename, '://') !== FALSE) {
 				$conf['flashvars.']['file'] = $filename;
@@ -84,24 +67,21 @@ class tslib_content_ShockwaveFlashObject extends tslib_content_Abstract {
 				} else {
 					$conf['flashvars.']['file'] = str_repeat('../', substr_count($player, '/')) . $filename;
 				}
-
 			}
 		} else {
 			$player = $filename;
 		}
-			// Write calculated values in conf for the hook
+		// Write calculated values in conf for the hook
 		$conf['player'] = $player;
 		$conf['installUrl'] = $installUrl;
 		$conf['filename'] = $filename;
 		$conf['prefix'] = $prefix;
-
-			// Merge with default parameters
+		// Merge with default parameters
 		$conf['flashvars.'] = array_merge((array) $typeConf['default.']['flashvars.'], (array) $conf['flashvars.']);
 		$conf['params.'] = array_merge((array) $typeConf['default.']['params.'], (array) $conf['params.']);
 		$conf['attributes.'] = array_merge((array) $typeConf['default.']['attributes.'], (array) $conf['attributes.']);
 		$conf['embedParams'] = 'flashvars, params, attributes';
-
-			// Hook for manipulating the conf array, it's needed for some players like flowplayer
+		// Hook for manipulating the conf array, it's needed for some players like flowplayer
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['swfParamTransform'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['swfParamTransform'] as $classRef) {
 				t3lib_div::callUserFunction($classRef, $conf, $this);
@@ -110,64 +90,43 @@ class tslib_content_ShockwaveFlashObject extends tslib_content_Abstract {
 		if (is_array($conf['flashvars.'])) {
 			t3lib_div::remapArrayKeys($conf['flashvars.'], $typeConf['mapping.']['flashvars.']);
 		}
-		$flashvars = 'var flashvars = ' . (count($conf['flashvars.']) ? json_encode($conf['flashvars.']) : '{}') . ';';
-
+		$flashvars = ('var flashvars = ' . (count($conf['flashvars.']) ? json_encode($conf['flashvars.']) : '{}')) . ';';
 		if (is_array($conf['params.'])) {
 			t3lib_div::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
 		}
-		$params = 'var params = ' . (count($conf['params.']) ? json_encode($conf['params.']) : '{}') . ';';
-
+		$params = ('var params = ' . (count($conf['params.']) ? json_encode($conf['params.']) : '{}')) . ';';
 		if (is_array($conf['attributes.'])) {
 			t3lib_div::remapArrayKeys($conf['attributes.'], $typeConf['attributes.']['params.']);
 		}
-		$attributes = 'var attributes = ' . (count($conf['attributes.']) ? json_encode($conf['attributes.']) : '{}') . ';';
-
-		$flashVersion = isset($conf['flashVersion.'])
-			? $this->cObj->stdWrap($conf['flashVersion'], $conf['flashVersion.'])
-			:  $conf['flashVersion'];
-
+		$attributes = ('var attributes = ' . (count($conf['attributes.']) ? json_encode($conf['attributes.']) : '{}')) . ';';
+		$flashVersion = isset($conf['flashVersion.']) ? $this->cObj->stdWrap($conf['flashVersion'], $conf['flashVersion.']) : $conf['flashVersion'];
 		if (!$flashVersion) {
 			$flashVersion = '9';
 		}
-
 		$replaceElementIdString = uniqid('mmswf');
 		$GLOBALS['TSFE']->register['MMSWFID'] = $replaceElementIdString;
-
-		$alternativeContent = isset($conf['alternativeContent.'])
-			? $this->cObj->stdWrap($conf['alternativeContent'], $conf['alternativeContent.'])
-			:  $conf['alternativeContent'];
-
-		$layout = isset($conf['layout.'])
-			? $this->cObj->stdWrap($conf['layout'], $conf['layout.'])
-			: $conf['layout'];
+		$alternativeContent = isset($conf['alternativeContent.']) ? $this->cObj->stdWrap($conf['alternativeContent'], $conf['alternativeContent.']) : $conf['alternativeContent'];
+		$layout = isset($conf['layout.']) ? $this->cObj->stdWrap($conf['layout'], $conf['layout.']) : $conf['layout'];
 		$content = str_replace('###ID###', $replaceElementIdString, $layout);
-		$content = str_replace('###SWFOBJECT###', '<div id="' . $replaceElementIdString . '">' . $alternativeContent . '</div>', $content);
-
-		$width = isset($conf['width.'])
-			? $this->cObj->stdWrap($conf['width'], $conf['width.'])
-			: $conf['width'];
+		$content = str_replace('###SWFOBJECT###', ((('<div id="' . $replaceElementIdString) . '">') . $alternativeContent) . '</div>', $content);
+		$width = isset($conf['width.']) ? $this->cObj->stdWrap($conf['width'], $conf['width.']) : $conf['width'];
 		if (!$width) {
 			$width = $conf[$type . '.']['defaultWidth'];
 		}
-
-		$height = isset($conf['height.'])
-			? $this->cObj->stdWrap($conf['height'], $conf['height.'])
-			: $conf['height'];
+		$height = isset($conf['height.']) ? $this->cObj->stdWrap($conf['height'], $conf['height.']) : $conf['height'];
 		if (!$height) {
 			$height = $conf[$type . '.']['defaultHeight'];
 		}
-
-		$embed = 'swfobject.embedSWF("' . $conf['player'] . '", "' . $replaceElementIdString . '", "' . $width . '", "' . $height . '",
-		 		"' . $flashVersion . '", "' . $installUrl . '", ' . $conf['embedParams'] . ');';
-
-		$script = $flashvars . $params . $attributes . $embed;
+		$embed = ((((((((((((('swfobject.embedSWF("' . $conf['player']) . '", "') . $replaceElementIdString) . '", "') . $width) . '", "') . $height) . '",
+		 		"') . $flashVersion) . '", "') . $installUrl) . '", ') . $conf['embedParams']) . ');';
+		$script = (($flashvars . $params) . $attributes) . $embed;
 		$GLOBALS['TSFE']->getPageRenderer()->addJsInlineCode($replaceElementIdString, $script);
-
 		if (isset($conf['stdWrap.'])) {
 			$content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
 		}
-
 		return $content;
 	}
+
 }
+
 ?>

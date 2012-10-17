@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains CONTENT class object.
  *
@@ -42,63 +41,38 @@ class tslib_content_Content extends tslib_content_Abstract {
 	 */
 	public function render($conf = array()) {
 		$theValue = '';
-
 		$originalRec = $GLOBALS['TSFE']->currentRecord;
-			// If the currentRecord is set, we register, that this record has invoked this function.
-			// It's should not be allowed to do this again then!!
+		// If the currentRecord is set, we register, that this record has invoked this function.
+		// It's should not be allowed to do this again then!!
 		if ($originalRec) {
 			$GLOBALS['TSFE']->recordRegister[$originalRec]++;
 		}
-
-		$conf['table'] = isset($conf['table.'])
-			? trim($this->cObj->stdWrap($conf['table'], $conf['table.']))
-			: trim($conf['table']);
+		$conf['table'] = isset($conf['table.']) ? trim($this->cObj->stdWrap($conf['table'], $conf['table.'])) : trim($conf['table']);
 		$tablePrefix = t3lib_div::trimExplode('_', $conf['table'], TRUE);
 		if (t3lib_div::inList('pages,tt,fe,tx,ttx,user,static', $tablePrefix[0])) {
-
-			$renderObjName = $conf['renderObj']
-				? $conf['renderObj']
-				: '<' . $conf['table'];
-			$renderObjKey = $conf['renderObj']
-				? 'renderObj'
-				: '';
+			$renderObjName = $conf['renderObj'] ? $conf['renderObj'] : '<' . $conf['table'];
+			$renderObjKey = $conf['renderObj'] ? 'renderObj' : '';
 			$renderObjConf = $conf['renderObj.'];
-
-			$slide = isset($conf['slide.'])
-				? intval($this->cObj->stdWrap($conf['slide'], $conf['slide.']))
-				: intval($conf['slide']);
+			$slide = isset($conf['slide.']) ? intval($this->cObj->stdWrap($conf['slide'], $conf['slide.'])) : intval($conf['slide']);
 			if (!$slide) {
 				$slide = 0;
 			}
-
-			$slideCollect = isset($conf['slide.']['collect.'])
-				? intval($this->cObj->stdWrap($conf['slide.']['collect'], $conf['slide.']['collect.']))
-				: intval($conf['slide.']['collect']);
+			$slideCollect = isset($conf['slide.']['collect.']) ? intval($this->cObj->stdWrap($conf['slide.']['collect'], $conf['slide.']['collect.'])) : intval($conf['slide.']['collect']);
 			if (!$slideCollect) {
 				$slideCollect = 0;
 			}
-
-			$slideCollectReverse = isset($conf['slide.']['collectReverse.'])
-				? intval($this->cObj->stdWrap($conf['slide.']['collectReverse'], $conf['slide.']['collectReverse.']))
-				: intval($conf['slide.']['collectReverse']);
+			$slideCollectReverse = isset($conf['slide.']['collectReverse.']) ? intval($this->cObj->stdWrap($conf['slide.']['collectReverse'], $conf['slide.']['collectReverse.'])) : intval($conf['slide.']['collectReverse']);
 			$slideCollectReverse = $slideCollectReverse ? TRUE : FALSE;
-
-			$slideCollectFuzzy = isset($conf['slide.']['collectFuzzy.'])
-				? intval($this->cObj->stdWrap($conf['slide.']['collectFuzzy'], $conf['slide.']['collectFuzzy.']))
-				: intval($conf['slide.']['collectFuzzy']);
-
+			$slideCollectFuzzy = isset($conf['slide.']['collectFuzzy.']) ? intval($this->cObj->stdWrap($conf['slide.']['collectFuzzy'], $conf['slide.']['collectFuzzy.'])) : intval($conf['slide.']['collectFuzzy']);
 			if ($slideCollectFuzzy) {
 				$slideCollectFuzzy = TRUE;
 			} else {
 				$slideCollectFuzzy = FALSE;
 			}
-
 			if (!$slideCollect) {
 				$slideCollectFuzzy = TRUE;
-			};
-
+			}
 			$again = FALSE;
-
 			do {
 				$res = $this->cObj->exec_getQuery($conf['table'], $conf['select.']);
 				if ($error = $GLOBALS['TYPO3_DB']->sql_error()) {
@@ -112,11 +86,9 @@ class tslib_content_Content extends tslib_content_Abstract {
 					$this->cObj->currentRecordNumber = 0;
 					$cobjValue = '';
 					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-
-							// Versioning preview:
+						// Versioning preview:
 						$GLOBALS['TSFE']->sys_page->versionOL($conf['table'], $row, TRUE);
-
-							// Language overlay:
+						// Language overlay:
 						if (is_array($row) && $GLOBALS['TSFE']->sys_language_contentOL) {
 							if ($conf['table'] == 'pages') {
 								$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
@@ -124,23 +96,20 @@ class tslib_content_Content extends tslib_content_Abstract {
 								$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay($conf['table'], $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
 							}
 						}
-
-							// Might be unset in the sys_language_contentOL
+						// Might be unset in the sys_language_contentOL
 						if (is_array($row)) {
-								// Call hook for possible manipulation of database row for cObj->data
+							// Call hook for possible manipulation of database row for cObj->data
 							if (is_array($this->TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_content_content.php']['modifyDBRow'])) {
-								foreach($this->TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_content_content.php']['modifyDBRow'] as $_classRef) {
+								foreach ($this->TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_content_content.php']['modifyDBRow'] as $_classRef) {
 									$_procObj = t3lib_div::getUserObj($_classRef);
 									$_procObj->modifyDBRow($row, $conf['table']);
 								}
 							}
-
 							t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService::modifyDBRow($row, $conf['table']);
-
-							if (!$GLOBALS['TSFE']->recordRegister[$conf['table'] . ':' . $row['uid']]) {
+							if (!$GLOBALS['TSFE']->recordRegister[(($conf['table'] . ':') . $row['uid'])]) {
 								$this->cObj->currentRecordNumber++;
 								$cObj->parentRecordNumber = $this->cObj->currentRecordNumber;
-								$GLOBALS['TSFE']->currentRecord = $conf['table'] . ':' . $row['uid'];
+								$GLOBALS['TSFE']->currentRecord = ($conf['table'] . ':') . $row['uid'];
 								$this->cObj->lastChanged($row['tstamp']);
 								$cObj->start($row, $conf['table']);
 								$tmpValue = $cObj->cObjGetSingle($renderObjName, $renderObjConf, $renderObjKey);
@@ -150,7 +119,6 @@ class tslib_content_Content extends tslib_content_Abstract {
 					}
 					$GLOBALS['TYPO3_DB']->sql_free_result($res);
 				}
-
 				if ($slideCollectReverse) {
 					$theValue = $cobjValue . $theValue;
 				} else {
@@ -169,25 +137,20 @@ class tslib_content_Content extends tslib_content_Abstract {
 					}
 					$again = strlen($conf['select.']['pidInList']) ? TRUE : FALSE;
 				}
-			} while ($again && (($slide && !strlen($tmpValue) && $slideCollectFuzzy) || ($slide && $slideCollect)));
-
+			} while ($again && (($slide && !strlen($tmpValue)) && $slideCollectFuzzy || $slide && $slideCollect));
 		}
-
-		$wrap = isset($conf['wrap.'])
-			? $this->cObj->stdWrap($conf['wrap'], $conf['wrap.'])
-			: $conf['wrap'];
+		$wrap = isset($conf['wrap.']) ? $this->cObj->stdWrap($conf['wrap'], $conf['wrap.']) : $conf['wrap'];
 		if ($wrap) {
 			$theValue = $this->cObj->wrap($theValue, $wrap);
 		}
-
 		if (isset($conf['stdWrap.'])) {
 			$theValue = $this->cObj->stdWrap($theValue, $conf['stdWrap.']);
 		}
-
-			// Restore
+		// Restore
 		$GLOBALS['TSFE']->currentRecord = $originalRec;
-
 		return $theValue;
 	}
+
 }
+
 ?>

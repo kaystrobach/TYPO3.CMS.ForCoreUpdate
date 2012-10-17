@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract ExtJS tree based on ExtDirect
  *
@@ -64,6 +63,7 @@ abstract class t3lib_tree_ExtDirect_AbstractExtJsTree extends t3lib_tree_Abstrac
 	 * @return array
 	 */
 	abstract public function getNextTreeLevel($nodeId, $nodeData);
+
 }
 
 ?>

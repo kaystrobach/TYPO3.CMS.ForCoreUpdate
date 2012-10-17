@@ -27,9 +27,8 @@
 /**
  * RTE API parent class.
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author 	Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * RTE base class: Delivers browser-detection, TCEforms binding and transformation routines for the "rte" extension, registering it with the RTE API in TYPO3 3.6.0
  * See "rte" extension for usage.
@@ -40,13 +39,19 @@
  */
 class t3lib_rteapi {
 
-		// Internal, dynamic:
-		// Error messages regarding non-availability is collected here.
-	var $errorLog = array();
+	// Internal, dynamic:
+	// Error messages regarding non-availability is collected here.
+	/**
+	 * @todo Define visibility
+	 */
+	public $errorLog = array();
 
-		// Internal, static:
-		// Set this to the extension key of the RTE so it can identify itself.
-	var $ID = '';
+	// Internal, static:
+	// Set this to the extension key of the RTE so it can identify itself.
+	/**
+	 * @todo Define visibility
+	 */
+	public $ID = '';
 
 	/***********************************
 	 *
@@ -55,19 +60,18 @@ class t3lib_rteapi {
 	 * See the "rte" or "rtehtmlarea" extension as an example!
 	 *
 	 **********************************/
-
 	/**
 	 * Returns TRUE if the RTE is available. Here you check if the browser requirements are met.
 	 * If there are reasons why the RTE cannot be displayed you simply enter them as text in ->errorLog
 	 *
 	 * @return boolean TRUE if this RTE object offers an RTE in the current browser environment
+	 * @todo Define visibility
 	 */
-	function isAvailable() {
+	public function isAvailable() {
 		$this->errorLog = array();
 		if (!$GLOBALS['CLIENT']['FORMSTYLE']) {
 			$this->errorLog[] = 'RTE API: Browser didn\'t support styles';
 		}
-
 		if (!count($this->errorLog)) {
 			return TRUE;
 		}
@@ -88,21 +92,16 @@ class t3lib_rteapi {
 	 * @param string $RTErelPath Relative path for images/links in RTE; this is used when the RTE edits content from static files where the path of such media has to be transformed forth and back!
 	 * @param integer $thePidValue PID value of record (true parent page id)
 	 * @return string HTML code for RTE!
+	 * @todo Define visibility
 	 */
-	function drawRTE(&$pObj, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
-
-			// Transform value:
+	public function drawRTE(&$pObj, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
+		// Transform value:
 		$value = $this->transformContent('rte', $PA['itemFormElValue'], $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $thePidValue);
-
-			// Create item:
-		$item = '
-			' . $this->triggerField($PA['itemFormElName']) . '
-			<textarea name="' . htmlspecialchars($PA['itemFormElName']) . '"' .
-				$pObj->formWidthText('48', 'off') . ' rows="20" wrap="off" style="background-color: #99eebb;">' .
-				t3lib_div::formatForTextarea($value) .
-				'</textarea>';
-
-			// Return form item:
+		// Create item:
+		$item = ((((((('
+			' . $this->triggerField($PA['itemFormElName'])) . '
+			<textarea name="') . htmlspecialchars($PA['itemFormElName'])) . '"') . $pObj->formWidthText('48', 'off')) . ' rows="20" wrap="off" style="background-color: #99eebb;">') . t3lib_div::formatForTextarea($value)) . '</textarea>';
+		// Return form item:
 		return $item;
 	}
 
@@ -122,23 +121,21 @@ class t3lib_rteapi {
 	 * @param string $RTErelPath Relative path for images/links in RTE; this is used when the RTE edits content from static files where the path of such media has to be transformed forth and back!
 	 * @param integer $pid PID value of record (true parent page id)
 	 * @return string Transformed content
+	 * @todo Define visibility
 	 */
-	function transformContent($dirRTE, $value, $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $pid) {
+	public function transformContent($dirRTE, $value, $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $pid) {
 		if ($specConf['rte_transform']) {
 			$p = t3lib_BEfunc::getSpecConfParametersFromArray($specConf['rte_transform']['parameters']);
-				// There must be a mode set for transformation
+			// There must be a mode set for transformation
 			if ($p['mode']) {
-
-					// Initialize transformation:
+				// Initialize transformation:
 				$parseHTML = t3lib_div::makeInstance('t3lib_parsehtml_proc');
-				$parseHTML->init($table . ':' . $field, $pid);
+				$parseHTML->init(($table . ':') . $field, $pid);
 				$parseHTML->setRelPath($RTErelPath);
-
-					// Perform transformation:
+				// Perform transformation:
 				$value = $parseHTML->RTE_transform($value, $specConf, $dirRTE, $thisConfig);
 			}
 		}
-
 		return $value;
 	}
 
@@ -147,18 +144,18 @@ class t3lib_rteapi {
 	 * Helper functions
 	 *
 	 **********************************/
-
 	/**
 	 * Trigger field - this field tells the TCEmain that processing should be done on this value!
 	 *
 	 * @param string $fieldName Field name of the RTE field.
 	 * @return string <input> field of type "hidden" with a flag telling the TCEmain that this fields content should be traansformed back to database state.
+	 * @todo Define visibility
 	 */
-	function triggerField($fieldName) {
-
-		$triggerFieldName = preg_replace('/\[([^]]+)\]$/', '[_TRANSFORM_\1]', $fieldName);
-		return '<input type="hidden" name="' . htmlspecialchars($triggerFieldName) . '" value="RTE" />';
+	public function triggerField($fieldName) {
+		$triggerFieldName = preg_replace('/\\[([^]]+)\\]$/', '[_TRANSFORM_\\1]', $fieldName);
+		return ('<input type="hidden" name="' . htmlspecialchars($triggerFieldName)) . '" value="RTE" />';
 	}
+
 }
 
 ?>

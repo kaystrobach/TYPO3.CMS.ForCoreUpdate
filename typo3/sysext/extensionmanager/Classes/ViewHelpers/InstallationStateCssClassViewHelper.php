@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Returns a string meant to be used as css class stating whether an extension is
  * available or installed
@@ -35,7 +33,6 @@
  * @subpackage ViewHelpers
  */
 class Tx_Extensionmanager_ViewHelpers_InstallationStateCssClassViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
-
 
 	/**
 	 * Returns string meant to be used as css class
@@ -57,4 +54,7 @@ class Tx_Extensionmanager_ViewHelpers_InstallationStateCssClassViewHelper extend
 		}
 		return '';
 	}
+
 }
+
+?>

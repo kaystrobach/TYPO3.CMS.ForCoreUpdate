@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
  *
@@ -40,8 +39,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	 */
 	public function setUp() {
 		$className = $this->getConfigurationItemRepositoryMock();
-		$this->configurationItemRepository = new $className;
-
+		$this->configurationItemRepository = new $className();
 	}
 
 	/**
@@ -50,22 +48,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	public function getConfigurationItemRepositoryMock() {
 		$className = 'Tx_Extensionmanager_Repository_ConfigurationItemRepositoryMock';
 		if (!class_exists($className, FALSE)) {
-			eval(
-				'class ' . $className . ' extends Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {' .
-				'  public function addMetaInformation(&$configuration) {' .
-				'    return parent::addMetaInformation($configuration);' .
-				'  }' .
-				'  public function extractInformationForConfigFieldsOfTypeUser($configurationOption) {' .
-				'    return parent::extractInformationForConfigFieldsOfTypeUser($configurationOption);' .
-				'  }' .
-				'  public function extractInformationForConfigFieldsOfTypeOptions($configurationOption) {' .
-				'    return parent::extractInformationForConfigFieldsOfTypeOptions($configurationOption);' .
-				'  }' .
-				'  public function mergeWithExistingConfiguration(array $configuration, array $extension) {' .
-				'    return parent::mergeWithExistingConfiguration($configuration, $extension);' .
-				'  }' .
-				'}'
-			);
+			eval((((((((((((((('class ' . $className) . ' extends Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {') . '  public function addMetaInformation(&$configuration) {') . '    return parent::addMetaInformation($configuration);') . '  }') . '  public function extractInformationForConfigFieldsOfTypeUser($configurationOption) {') . '    return parent::extractInformationForConfigFieldsOfTypeUser($configurationOption);') . '  }') . '  public function extractInformationForConfigFieldsOfTypeOptions($configurationOption) {') . '    return parent::extractInformationForConfigFieldsOfTypeOptions($configurationOption);') . '  }') . '  public function mergeWithExistingConfiguration(array $configuration, array $extension) {') . '    return parent::mergeWithExistingConfiguration($configuration, $extension);') . '  }') . '}');
 		}
 		return $className;
 	}
@@ -112,7 +95,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 					'value' => 0,
 					'default_value' => 0,
 					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationFrontend'
-				),
+				)
 			),
 			array(
 				array(
@@ -125,7 +108,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 					'value' => 0,
 					'default_value' => 0,
 					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationBackend'
-				),
+				)
 			),
 			array(
 				array(
@@ -150,9 +133,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	 * @return void
 	 */
 	public function extractInformationForConfigFieldsOfTypeUserAddsGenericAndTypeInformation($configurationOption) {
-		$configurationOptionModified = $this->configurationItemRepository->extractInformationForConfigFieldsOfTypeUser(
-			$configurationOption
-		);
+		$configurationOptionModified = $this->configurationItemRepository->extractInformationForConfigFieldsOfTypeUser($configurationOption);
 		$this->assertEquals('user', $configurationOptionModified['type']);
 		$this->assertEquals($configurationOption['comparisonGeneric'], $configurationOptionModified['generic']);
 	}
@@ -162,7 +143,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	 * @return void
 	 */
 	public function extractInformationForConfigFieldsOfTypeOptionsAddsGenericTypeAndLabelInformation() {
-		$option = array (
+		$option = array(
 			'cat' => 'basic',
 			'subcat_name' => 'enable',
 			'subcat' => 'a/enable/100z',
@@ -171,15 +152,13 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 			'name' => 'defaultConfiguration',
 			'value' => 'Typical (Most commonly used features are enabled. Select this option if you are unsure which one to use.)',
 			'default_value' => 'Typical (Most commonly used features are enabled. Select this option if you are unsure which one to use.)',
-			'genericComparisonValue' =>
-				array (
-					'Minimal (Most features disabled. Administrator needs to enable them using TypoScript. For advanced administrators only.)' => 'Minimal (Most features disabled. Administrator needs to enable them using TypoScript. For advanced administrators only.)',
-					'Typical (Most commonly used features are enabled. Select this option if you are unsure which one to use.)' => 'Typical (Most commonly used features are enabled. Select this option if you are unsure which one to use.)',
-					'Demo (Show-off configuration. Includes pre-configured styles. Not for production environments.)' => 'Demo (Show-off configuration. Includes pre-configured styles. Not for production environments.)',
-				),
+			'genericComparisonValue' => array(
+				'Minimal (Most features disabled. Administrator needs to enable them using TypoScript. For advanced administrators only.)' => 'Minimal (Most features disabled. Administrator needs to enable them using TypoScript. For advanced administrators only.)',
+				'Typical (Most commonly used features are enabled. Select this option if you are unsure which one to use.)' => 'Typical (Most commonly used features are enabled. Select this option if you are unsure which one to use.)',
+				'Demo (Show-off configuration. Includes pre-configured styles. Not for production environments.)' => 'Demo (Show-off configuration. Includes pre-configured styles. Not for production environments.)'
+			),
 			'typeComparisonValue' => 'options'
 		);
-
 		$optionModified = $this->configurationItemRepository->extractInformationForConfigFieldsOfTypeOptions($option);
 		$this->assertArrayHasKey('generic', $optionModified);
 		$this->assertArrayHasKey('type', $optionModified);
@@ -197,47 +176,44 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['testextensionkey'] = serialize(array(
 			'FE.' => array(
 				'enabled' => '1',
-				'saltedPWHashingMethod' => 'tx_saltedpasswords_salts_sha1',
+				'saltedPWHashingMethod' => 'tx_saltedpasswords_salts_sha1'
 			),
 			'CLI.' => array(
-				'enabled' => '0',
+				'enabled' => '0'
 			)
 		));
 		$defaultConfiguration = array(
 			'FE.enabled' => array(
-				'value' => '0',
+				'value' => '0'
 			),
 			'FE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_md5',
+				'value' => 'tx_saltedpasswords_salts_md5'
 			),
 			'BE.enabled' => array(
-				'value' => '1',
+				'value' => '1'
 			),
 			'BE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_md5',
-			),
+				'value' => 'tx_saltedpasswords_salts_md5'
+			)
 		);
 		$expectedResult = array(
 			'FE.enabled' => array(
-				'value' => '1',
+				'value' => '1'
 			),
 			'FE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_sha1',
+				'value' => 'tx_saltedpasswords_salts_sha1'
 			),
 			'BE.enabled' => array(
-				'value' => '1',
+				'value' => '1'
 			),
 			'BE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_md5',
+				'value' => 'tx_saltedpasswords_salts_md5'
 			),
 			'CLI.enabled' => array(
-				'value' => '0',
+				'value' => '0'
 			)
 		);
-		$result = $this->configurationItemRepository->mergeWithExistingConfiguration(
-			$defaultConfiguration,
-			array('key' => 'testextensionkey')
-		);
+		$result = $this->configurationItemRepository->mergeWithExistingConfiguration($defaultConfiguration, array('key' => 'testextensionkey'));
 		$this->assertEquals($expectedResult, $result);
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'] = $backupExtConf;
 	}
@@ -258,11 +234,9 @@ BE.forceSalted = 0
 TSConstantEditor.advancedbackend {
   description = <span style="background:red; padding:1px 2px; color:#fff; font-weight:bold;">1</span> Install tool has hardcoded md5 hashing, enabling this setting will prevent use of a install-tool-created BE user.<br />Currently same is for changin password with user setup module unless you use pending patch!
 			1=BE.forceSalted
-}'
-				,
-				array (
-					'checkConfigurationFE' =>
-					array (
+}',
+				array(
+					'checkConfigurationFE' => array(
 						'cat' => 'basic',
 						'subcat_name' => 'enable',
 						'subcat' => 'a/enable/z',
@@ -270,29 +244,26 @@ TSConstantEditor.advancedbackend {
 						'label' => 'Frontend configuration check',
 						'name' => 'checkConfigurationFE',
 						'value' => '0',
-						'default_value' => '0',
+						'default_value' => '0'
 					),
-					'BE.forceSalted' =>
-					array (
+					'BE.forceSalted' => array(
 						'cat' => 'advancedbackend',
 						'subcat' => 'x/z',
 						'type' => 'boolean',
 						'label' => 'Force salted passwords: Enforce usage of SaltedPasswords. Old MD5 hashed passwords will stop working.',
 						'name' => 'BE.forceSalted',
 						'value' => '0',
-						'default_value' => '0',
-					),
+						'default_value' => '0'
+					)
 				),
-				array (
-					'advancedbackend.' =>
-					array (
+				array(
+					'advancedbackend.' => array(
 						'description' => '<span style="background:red; padding:1px 2px; color:#fff; font-weight:bold;">1</span> Install tool has hardcoded md5 hashing, enabling this setting will prevent use of a install-tool-created BE user.<br />Currently same is for changin password with user setup module unless you use pending patch!',
-						1 => 'BE.forceSalted',
-					),
+						1 => 'BE.forceSalted'
+					)
 				),
-				array (
-					'checkConfigurationFE' =>
-					array (
+				array(
+					'checkConfigurationFE' => array(
 						'cat' => 'basic',
 						'subcat_name' => 'enable',
 						'subcat' => 'a/enable/z',
@@ -300,10 +271,9 @@ TSConstantEditor.advancedbackend {
 						'label' => 'Frontend configuration check',
 						'name' => 'checkConfigurationFE',
 						'value' => '0',
-						'default_value' => '0',
+						'default_value' => '0'
 					),
-					'BE.forceSalted' =>
-					array (
+					'BE.forceSalted' => array(
 						'cat' => 'advancedbackend',
 						'subcat' => 'x/z',
 						'type' => 'boolean',
@@ -311,15 +281,13 @@ TSConstantEditor.advancedbackend {
 						'name' => 'BE.forceSalted',
 						'value' => '0',
 						'default_value' => '0',
-						'highlight' => 1,
+						'highlight' => 1
 					),
-					'__meta__' =>
-					array (
-						'advancedbackend' =>
-						array (
-							'highlightText' => '<span style="background:red; padding:1px 2px; color:#fff; font-weight:bold;">1</span> Install tool has hardcoded md5 hashing, enabling this setting will prevent use of a install-tool-created BE user.<br />Currently same is for changin password with user setup module unless you use pending patch!',
-						),
-					),
+					'__meta__' => array(
+						'advancedbackend' => array(
+							'highlightText' => '<span style="background:red; padding:1px 2px; color:#fff; font-weight:bold;">1</span> Install tool has hardcoded md5 hashing, enabling this setting will prevent use of a install-tool-created BE user.<br />Currently same is for changin password with user setup module unless you use pending patch!'
+						)
+					)
 				)
 			)
 		);
@@ -336,23 +304,14 @@ TSConstantEditor.advancedbackend {
 	 */
 	public function createArrayFromConstantsCreatesAnArrayWithMetaInformation($raw, $constants, $setupTsConstantEditor, $expected) {
 		$tsStyleConfig = $this->getMock('t3lib_tsStyleConfig');
-
-		$configurationItemRepositoryMock = $this->getMock(
-			'Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository',
-			array('getT3libTsStyleConfig')
-		);
-		$configurationItemRepositoryMock->expects($this->once())->method('getT3libTsStyleConfig')
-			->will($this->returnValue($tsStyleConfig));
-
-		$tsStyleConfig->expects($this->once())
-			->method('ext_initTSstyleConfig')
-			->with($raw, $this->anything(), $this->anything(), $this->anything())
-			->will($this->returnValue($constants));
-
+		$configurationItemRepositoryMock = $this->getMock('Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository', array('getT3libTsStyleConfig'));
+		$configurationItemRepositoryMock->expects($this->once())->method('getT3libTsStyleConfig')->will($this->returnValue($tsStyleConfig));
+		$tsStyleConfig->expects($this->once())->method('ext_initTSstyleConfig')->with($raw, $this->anything(), $this->anything(), $this->anything())->will($this->returnValue($constants));
 		$tsStyleConfig->setup['constants']['TSConstantEditor.'] = $setupTsConstantEditor;
 		$constantsResult = $configurationItemRepositoryMock->createArrayFromConstants($raw, array());
 		$this->assertEquals($expected, $constantsResult);
 	}
+
 }
 
 ?>

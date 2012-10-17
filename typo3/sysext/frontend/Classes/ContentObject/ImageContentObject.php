@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains IMAGE class object.
  *
@@ -49,5 +48,7 @@ class tslib_content_Image extends tslib_content_Abstract {
 			return $theValue;
 		}
 	}
+
 }
+
 ?>

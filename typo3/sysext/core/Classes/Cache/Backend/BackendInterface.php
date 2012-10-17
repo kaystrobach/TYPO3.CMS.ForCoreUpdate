@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A contract for a Cache Backend
  *
@@ -33,8 +32,8 @@
  * @subpackage t3lib
  * @api
  */
-interface t3lib_cache_backend_Backend {
-
+interface t3lib_cache_backend_Backend
+{
 	/**
 	 * Sets a reference to the cache frontend which uses this backend
 	 *
@@ -102,5 +101,6 @@ interface t3lib_cache_backend_Backend {
 	 * @api
 	 */
 	public function collectGarbage();
+
 }
 ?>

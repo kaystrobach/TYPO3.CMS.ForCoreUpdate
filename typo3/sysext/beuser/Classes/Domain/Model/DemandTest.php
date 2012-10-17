@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Test case for class Tx_Beuser_Domain_Model_Demand
  *
@@ -127,7 +126,6 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 		$this->assertSame($this->fixture->getLogins(), $login);
 	}
 
-
 	/**
 	 * @test
 	 */
@@ -141,11 +139,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	public function setUserNameReturnExpectedValueForString() {
 		$newUserName = 'User#ää*%^name';
 		$this->fixture->setUserName($newUserName);
-		$this->assertSame(
-			$this->fixture->getUserName(),
-			$newUserName,
-			'UserName is not as set before.'
-		);
+		$this->assertSame($this->fixture->getUserName(), $newUserName, 'UserName is not as set before.');
 	}
 
 }

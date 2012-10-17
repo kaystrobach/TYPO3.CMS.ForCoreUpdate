@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Renders a tca tree array for ExtJS
  *
@@ -43,18 +42,14 @@ class t3lib_tree_Tca_ExtJsArrayRenderer extends t3lib_tree_Renderer_ExtJsJson {
 	 */
 	protected function getNodeArray(t3lib_tree_Tca_DatabaseNode $node) {
 		$nodeArray = parent::getNodeArray($node);
-		$nodeArray = array_merge(
-			$nodeArray,
-			array(
-				'expanded' => $node->getExpanded(),
-				'expandable' => $node->hasChildNodes(),
-				'checked' => $node->getSelected(),
-			)
-		);
+		$nodeArray = array_merge($nodeArray, array(
+			'expanded' => $node->getExpanded(),
+			'expandable' => $node->hasChildNodes(),
+			'checked' => $node->getSelected()
+		));
 		if (!$node->getSelectable()) {
-			unset ($nodeArray['checked']);
+			unset($nodeArray['checked']);
 		}
-
 		return $nodeArray;
 	}
 
@@ -68,9 +63,9 @@ class t3lib_tree_Tca_ExtJsArrayRenderer extends t3lib_tree_Renderer_ExtJsJson {
 	public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE) {
 		$this->recursionLevel = 0;
 		$children = $this->renderNode($tree->getRoot(), $recursive);
-
 		return $children;
 	}
+
 }
 
 ?>

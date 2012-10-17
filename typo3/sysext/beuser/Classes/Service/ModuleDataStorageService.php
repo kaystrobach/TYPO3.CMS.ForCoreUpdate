@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Module data storage service.
  * Used to store and retrieve module state (eg. checkboxes, selections).
@@ -39,7 +38,6 @@ class Tx_Beuser_Service_ModuleDataStorageService implements t3lib_Singleton {
 	 * @var string
 	 */
 	const KEY = 'tx_beuser';
-
 	/**
 	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 * @inject
@@ -53,13 +51,11 @@ class Tx_Beuser_Service_ModuleDataStorageService implements t3lib_Singleton {
 	 */
 	public function loadModuleData() {
 		$moduleData = $GLOBALS['BE_USER']->getModuleData(self::KEY);
-
 		if (empty($moduleData) || !$moduleData) {
 			$moduleData = $this->objectManager->create('Tx_Beuser_Domain_Model_ModuleData');
 		} else {
 			$moduleData = @unserialize($moduleData);
 		}
-
 		return $moduleData;
 	}
 
@@ -72,5 +68,7 @@ class Tx_Beuser_Service_ModuleDataStorageService implements t3lib_Singleton {
 	public function persistModuleData(Tx_Beuser_Domain_Model_ModuleData $moduleData) {
 		$GLOBALS['BE_USER']->pushModuleData(self::KEY, serialize($moduleData));
 	}
+
 }
+
 ?>

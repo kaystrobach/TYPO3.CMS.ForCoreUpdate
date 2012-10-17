@@ -1,56 +1,4 @@
 <?php
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
- *  All rights reserved
- *
- *  This script is part of the Typo3 project. The Typo3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *  A copy is found in the textfile GPL.txt and important notices to the license
- *  from the author is found in LICENSE.txt distributed with these scripts.
- *
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-/**
- * Parent class for "Services" classes
- *
- * TODO: temp files are not removed
- *
- * @author René Fritz <r.fritz@colorcube.de>
- */
-
-	// General error - something went wrong
-define ('T3_ERR_SV_GENERAL', -1);
-	// During execution it showed that the service is not available and should be ignored. The service itself should call $this->setNonAvailable()
-define ('T3_ERR_SV_NOT_AVAIL', -2);
-	// Passed subtype is not possible with this service
-define ('T3_ERR_SV_WRONG_SUBTYPE', -3);
-	// Passed subtype is not possible with this service
-define ('T3_ERR_SV_NO_INPUT', -4);
-	// File not found which the service should process
-define ('T3_ERR_SV_FILE_NOT_FOUND', -20);
-	// File not readable
-define ('T3_ERR_SV_FILE_READ', -21);
-	// File not writable
-define ('T3_ERR_SV_FILE_WRITE', -22);
-	// Passed subtype is not possible with this service
-define ('T3_ERR_SV_PROG_NOT_FOUND', -40);
-	// Passed subtype is not possible with this service
-define ('T3_ERR_SV_PROG_FAILED', -41);
-
 /**
  * Parent class for "Services" classes
  *
@@ -62,52 +10,63 @@ abstract class t3lib_svbase {
 
 	/**
 	 * @var array service description array
+	 * @todo Define visibility
 	 */
-	var $info = array();
+	public $info = array();
 
 	/**
 	 * @var array error stack
+	 * @todo Define visibility
 	 */
-	var $error = array();
+	public $error = array();
 
 	/**
 	 * @var bool Defines if debug messages should be written with t3lib_div::devLog
+	 * @todo Define visibility
 	 */
-	var $writeDevLog = FALSE;
+	public $writeDevLog = FALSE;
 
 	/**
 	 * @var string The output content. That's what the services produced as result.
+	 * @todo Define visibility
 	 */
-	var $out = '';
+	public $out = '';
 
 	/**
 	 * @var string The file that should be processed.
+	 * @todo Define visibility
 	 */
-	var $inputFile = '';
+	public $inputFile = '';
 
 	/**
 	 * @var string The content that should be processed.
+	 * @todo Define visibility
 	 */
-	var $inputContent = '';
+	public $inputContent = '';
 
 	/**
 	 * @var string The type of the input content (or file). Might be the same as the service subtypes.
+	 * @todo Define visibility
 	 */
-	var $inputType = '';
+	public $inputType = '';
 
 	/**
 	 * @var string The file where the output should be written to.
+	 * @todo Define visibility
 	 */
-	var $outputFile = '';
+	public $outputFile = '';
 
 	/**
 	 * Temporary files which have to be deleted
 	 *
 	 * @private
+	 * @todo Define visibility
 	 */
-	var $tempFiles = array();
+	public $tempFiles = array();
 
-	/** @var string Prefix for temporary files */
+	/**
+	 * @var string Prefix for temporary files
+	 */
 	protected $prefixId = '';
 
 	/***************************************
@@ -115,13 +74,13 @@ abstract class t3lib_svbase {
 	 *	 Get service meta information
 	 *
 	 ***************************************/
-
 	/**
 	 * Returns internal information array for service
 	 *
 	 * @return array Service description array
+	 * @todo Define visibility
 	 */
-	function getServiceInfo() {
+	public function getServiceInfo() {
 		return $this->info;
 	}
 
@@ -129,8 +88,9 @@ abstract class t3lib_svbase {
 	 * Returns the service key of the service
 	 *
 	 * @return string Service key
+	 * @todo Define visibility
 	 */
-	function getServiceKey() {
+	public function getServiceKey() {
 		return $this->info['serviceKey'];
 	}
 
@@ -138,8 +98,9 @@ abstract class t3lib_svbase {
 	 * Returns the title of the service
 	 *
 	 * @return string Service title
+	 * @todo Define visibility
 	 */
-	function getServiceTitle() {
+	public function getServiceTitle() {
 		return $this->info['title'];
 	}
 
@@ -150,12 +111,11 @@ abstract class t3lib_svbase {
 	 * @param mixed $defaultValue Default configuration if no special config is available
 	 * @param boolean $includeDefaultConfig If set the 'default' config will be returned if no special config for this service is available (default: TRUE)
 	 * @return mixed Configuration value for the service
+	 * @todo Define visibility
 	 */
-	function getServiceOption($optionName, $defaultValue = '', $includeDefaultConfig = TRUE) {
+	public function getServiceOption($optionName, $defaultValue = '', $includeDefaultConfig = TRUE) {
 		$config = NULL;
-
 		$svOptions = $GLOBALS['TYPO3_CONF_VARS']['SVCONF'][$this->info['serviceType']];
-
 		if (isset($svOptions[$this->info['serviceKey']][$optionName])) {
 			$config = $svOptions[$this->info['serviceKey']][$optionName];
 		} elseif ($includeDefaultConfig && isset($svOptions['default'][$optionName])) {
@@ -172,7 +132,6 @@ abstract class t3lib_svbase {
 	 *	 Error handling
 	 *
 	 ***************************************/
-
 	/**
 	 * Logs debug messages to t3lib_div::devLog()
 	 *
@@ -180,8 +139,9 @@ abstract class t3lib_svbase {
 	 * @param integer $severity Severity: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
 	 * @param array|boolean $dataVar dditional data you want to pass to the logger.
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function devLog($msg, $severity = 0, $dataVar = FALSE) {
+	public function devLog($msg, $severity = 0, $dataVar = FALSE) {
 		if ($this->writeDevLog) {
 			t3lib_div::devLog($msg, $this->info['serviceKey'], $severity, $dataVar);
 		}
@@ -193,34 +153,33 @@ abstract class t3lib_svbase {
 	 * @param integer $errNum Error number (see T3_ERR_SV_* constants)
 	 * @param string $errMsg Error message
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function errorPush($errNum = T3_ERR_SV_GENERAL, $errMsg = 'Unspecified error occured') {
+	public function errorPush($errNum = T3_ERR_SV_GENERAL, $errMsg = 'Unspecified error occured') {
 		array_push($this->error, array('nr' => $errNum, 'msg' => $errMsg));
-
 		if (is_object($GLOBALS['TT'])) {
 			$GLOBALS['TT']->setTSlogMessage($errMsg, 2);
 		}
-
 	}
 
 	/**
 	 * Removes the last error from the error stack.
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function errorPull() {
+	public function errorPull() {
 		array_pop($this->error);
-
-		// pop for $GLOBALS['TT']->setTSlogMessage is not supported
 	}
 
 	/**
 	 * Returns the last error number from the error stack.
 	 *
 	 * @return integer|boolean Error number (or TRUE if no error)
+	 * @todo Define visibility
 	 */
-	function getLastError() {
-			// Means all is ok - no error
+	public function getLastError() {
+		// Means all is ok - no error
 		$lastError = TRUE;
 		if (count($this->error)) {
 			$error = end($this->error);
@@ -233,8 +192,9 @@ abstract class t3lib_svbase {
 	 * Returns the last message from the error stack.
 	 *
 	 * @return string Error message
+	 * @todo Define visibility
 	 */
-	function getLastErrorMsg() {
+	public function getLastErrorMsg() {
 		$lastErrorMessage = '';
 		if (count($this->error)) {
 			$error = end($this->error);
@@ -247,10 +207,10 @@ abstract class t3lib_svbase {
 	 * Returns all error messages as array.
 	 *
 	 * @return array Error messages
+	 * @todo Define visibility
 	 */
-	function getErrorMsgArray() {
+	public function getErrorMsgArray() {
 		$errArr = array();
-
 		if (count($this->error)) {
 			foreach ($this->error as $error) {
 				$errArr[] = $error['msg'];
@@ -259,13 +219,13 @@ abstract class t3lib_svbase {
 		return $errArr;
 	}
 
-
 	/**
 	 * Returns the last array from the error stack.
 	 *
 	 * @return array Error number and message
+	 * @todo Define visibility
 	 */
-	function getLastErrorArray() {
+	public function getLastErrorArray() {
 		return end($this->error);
 	}
 
@@ -273,8 +233,9 @@ abstract class t3lib_svbase {
 	 * Reset the error stack.
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function resetErrors() {
+	public function resetErrors() {
 		$this->error = array();
 	}
 
@@ -283,20 +244,19 @@ abstract class t3lib_svbase {
 	 *	 General service functions
 	 *
 	 ***************************************/
-
 	/**
 	 * check the availability of external programs
 	 *
 	 * @param string $progList Comma list of programs 'perl,python,pdftotext'
 	 * @return boolean Return FALSE if one program was not found
+	 * @todo Define visibility
 	 */
-	function checkExec($progList) {
+	public function checkExec($progList) {
 		$ret = TRUE;
-
 		$progList = t3lib_div::trimExplode(',', $progList, 1);
 		foreach ($progList as $prog) {
 			if (!t3lib_exec::checkCommand($prog)) {
-					// Program not found
+				// Program not found
 				$this->errorPush(T3_ERR_SV_PROG_NOT_FOUND, 'External program not found: ' . $prog);
 				$ret = FALSE;
 			}
@@ -304,13 +264,13 @@ abstract class t3lib_svbase {
 		return $ret;
 	}
 
-
 	/**
 	 * Deactivate the service. Use this if the service fails at runtime and will not be available.
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function deactivateService() {
+	public function deactivateService() {
 		t3lib_extMgm::deactivateService($this->info['serviceType'], $this->info['serviceKey']);
 	}
 
@@ -319,14 +279,14 @@ abstract class t3lib_svbase {
 	 *	 IO tools
 	 *
 	 ***************************************/
-
 	/**
 	 * Check if a file exists and is readable.
 	 *
 	 * @param string $absFile File name with absolute path.
 	 * @return string|boolean File name or FALSE.
+	 * @todo Define visibility
 	 */
-	function checkInputFile($absFile) {
+	public function checkInputFile($absFile) {
 		$checkResult = FALSE;
 		if (t3lib_div::isAllowedAbsPath($absFile) && @is_file($absFile)) {
 			if (@is_readable($absFile)) {
@@ -346,10 +306,10 @@ abstract class t3lib_svbase {
 	 * @param string $absFile File name to read from.
 	 * @param integer $length Maximum length to read. If empty the whole file will be read.
 	 * @return string|boolean $content or FALSE
+	 * @todo Define visibility
 	 */
-	function readFile($absFile, $length = 0) {
+	public function readFile($absFile, $length = 0) {
 		$out = FALSE;
-
 		if ($this->checkInputFile($absFile)) {
 			$out = file_get_contents($absFile);
 			if ($out === FALSE) {
@@ -365,12 +325,12 @@ abstract class t3lib_svbase {
 	 * @param string $content Content to write to the file
 	 * @param string $absFile File name to write into. If empty a temp file will be created.
 	 * @return string|boolean File name or FALSE
+	 * @todo Define visibility
 	 */
-	function writeFile($content, $absFile = '') {
+	public function writeFile($content, $absFile = '') {
 		if (!$absFile) {
 			$absFile = $this->tempFile($this->prefixId);
 		}
-
 		if ($absFile && t3lib_div::isAllowedAbsPath($absFile)) {
 			if ($fd = @fopen($absFile, 'wb')) {
 				@fwrite($fd, $content);
@@ -380,7 +340,6 @@ abstract class t3lib_svbase {
 				$absFile = FALSE;
 			}
 		}
-
 		return $absFile;
 	}
 
@@ -389,8 +348,9 @@ abstract class t3lib_svbase {
 	 *
 	 * @param string $filePrefix File prefix.
 	 * @return string|boolean File name or FALSE
+	 * @todo Define visibility
 	 */
-	function tempFile($filePrefix) {
+	public function tempFile($filePrefix) {
 		$absFile = t3lib_div::tempnam($filePrefix);
 		if ($absFile) {
 			$ret = $absFile;
@@ -407,16 +367,19 @@ abstract class t3lib_svbase {
 	 *
 	 * @param string File name with absolute path.
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function registerTempFile($absFile) {
+	public function registerTempFile($absFile) {
 		$this->tempFiles[] = $absFile;
 	}
 
 	/**
 	 * Delete registered temporary files.
-	 * @return	void
+	 *
+	 * @return 	void
+	 * @todo Define visibility
 	 */
-	function unlinkTempFiles() {
+	public function unlinkTempFiles() {
 		foreach ($this->tempFiles as $absFile) {
 			t3lib_div::unlink_tempfile($absFile);
 		}
@@ -428,15 +391,15 @@ abstract class t3lib_svbase {
 	 *	 IO input
 	 *
 	 ***************************************/
-
 	/**
 	 * Set the input content for service processing.
 	 *
 	 * @param mixed $content Input content (going into ->inputContent)
 	 * @param string $type The type of the input content (or file). Might be the same as the service subtypes.
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function setInput($content, $type = '') {
+	public function setInput($content, $type = '') {
 		$this->inputContent = $content;
 		$this->inputFile = '';
 		$this->inputType = $type;
@@ -448,8 +411,9 @@ abstract class t3lib_svbase {
 	 * @param string $absFile File name
 	 * @param string $type The type of the input content (or file). Might be the same as the service subtypes.
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function setInputFile($absFile, $type = '') {
+	public function setInputFile($absFile, $type = '') {
 		$this->inputContent = '';
 		$this->inputFile = $absFile;
 		$this->inputType = $type;
@@ -460,14 +424,14 @@ abstract class t3lib_svbase {
 	 * Will be read from input file if needed. (That is if ->inputContent is empty and ->inputFile is not)
 	 *
 	 * @return mixed
+	 * @todo Define visibility
 	 */
-	function getInput() {
+	public function getInput() {
 		if ($this->inputContent == '') {
 			$this->inputContent = $this->readFile($this->inputFile);
 		}
 		return $this->inputContent;
 	}
-
 
 	/**
 	 * Get the input file name.
@@ -475,8 +439,9 @@ abstract class t3lib_svbase {
 	 *
 	 * @param string $createFile File name. If empty a temp file will be created.
 	 * @return string File name or FALSE if no input or file error.
+	 * @todo Define visibility
 	 */
-	function getInputFile($createFile = '') {
+	public function getInputFile($createFile = '') {
 		if ($this->inputFile) {
 			$this->inputFile = $this->checkInputFile($this->inputFile);
 		} elseif ($this->inputContent) {
@@ -490,14 +455,14 @@ abstract class t3lib_svbase {
 	 *	 IO output
 	 *
 	 ***************************************/
-
 	/**
 	 * Set the output file name.
 	 *
 	 * @param string $absFile File name
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function setOutputFile($absFile) {
+	public function setOutputFile($absFile) {
 		$this->outputFile = $absFile;
 	}
 
@@ -505,8 +470,9 @@ abstract class t3lib_svbase {
 	 * Get the output content.
 	 *
 	 * @return mixed
+	 * @todo Define visibility
 	 */
-	function getOutput() {
+	public function getOutput() {
 		if ($this->outputFile) {
 			$this->out = $this->readFile($this->outputFile);
 		}
@@ -518,8 +484,9 @@ abstract class t3lib_svbase {
 	 *
 	 * @param string $absFile Absolute filename to write to
 	 * @return mixed
+	 * @todo Define visibility
 	 */
-	function getOutputFile($absFile = '') {
+	public function getOutputFile($absFile = '') {
 		if (!$this->outputFile) {
 			$this->outputFile = $this->writeFile($this->out, $absFile);
 		}
@@ -531,7 +498,6 @@ abstract class t3lib_svbase {
 	 *	 Service implementation
 	 *
 	 ***************************************/
-
 	/**
 	 * Initialization of the service.
 	 *
@@ -539,23 +505,21 @@ abstract class t3lib_svbase {
 	 * example: check if the perl interpreter is available which is needed to run an extern perl script.
 	 *
 	 * @return boolean TRUE if the service is available
+	 * @todo Define visibility
 	 */
-	function init() {
-			// Does not work :-(  but will not hurt
-			// use it as inspiration for a service based on this class
+	public function init() {
+		// Does not work :-(  but will not hurt
+		// use it as inspiration for a service based on this class
 		register_shutdown_function(array(&$this, '__destruct'));
-			// look in makeInstanceService()
-
+		// look in makeInstanceService()
 		$this->reset();
-
-			// Check for external programs which are defined by $info['exec']
+		// Check for external programs which are defined by $info['exec']
 		if (trim($this->info['exec'])) {
 			if (!$this->checkExec($this->info['exec'])) {
-				// Nothing todo here or?
+
 			}
 		}
-
-		return ($this->getLastError() === TRUE);
+		return $this->getLastError() === TRUE;
 	}
 
 	/**
@@ -563,8 +527,9 @@ abstract class t3lib_svbase {
 	 * Will be called by init(). Should be used before every use if a service instance is used multiple times.
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function reset() {
+	public function reset() {
 		$this->unlinkTempFiles();
 		$this->resetErrors();
 		$this->out = '';
@@ -579,10 +544,12 @@ abstract class t3lib_svbase {
 	 * Child classes should explicitly call parent::__destruct() in their destructors for this to work
 	 *
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function __destruct() {
+	public function __destruct() {
 		$this->unlinkTempFiles();
 	}
+
 }
 
 ?>

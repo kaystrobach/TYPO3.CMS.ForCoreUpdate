@@ -21,12 +21,10 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Test case for class "tx_scheduler_CronCmd_Normalize"
  *
  * @author Christian Kuhn <lolli@schwarzbu.ch>
- *
  * @package TYPO3
  * @subpackage tx_scheduler
  */
@@ -41,49 +39,15 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	protected function getAccessibleProxy() {
 		$className = 'tx_scheduler_CronCmd_NormalizeAccessibleProxy';
 		if (!class_exists($className, FALSE)) {
-			eval(
-				'class ' . $className . ' extends tx_scheduler_CronCmd_Normalize {' .
-				'  public static function convertKeywordsToCronCommand($cronCommand) {' .
-				'    return parent::convertKeywordsToCronCommand($cronCommand);' .
-				'  }' .
-				'  public static function normalizeFields($cronCommand) {' .
-				'    return parent::normalizeFields($cronCommand);' .
-				'  }' .
-				'  public static function normalizeMonthAndWeekdayField($expression, $isMonthField = TRUE) {' .
-				'    return parent::normalizeMonthAndWeekdayField($expression, $isMonthField);' .
-				'  }' .
-				'  public static function normalizeIntegerField($expression, $lowerBound = 0, $upperBound = 59) {' .
-				'    return parent::normalizeIntegerField($expression, $lowerBound, $upperBound);' .
-				'  }' .
-				'  public static function splitFields($cronCommand) {' .
-				'    return parent::splitFields($cronCommand);' .
-				'  }' .
-				'  public static function convertRangeToListOfValues($range) {' .
-				'    return parent::convertRangeToListOfValues($range);' .
-				'  }' .
-				'  public static function reduceListOfValuesByStepValue($stepExpression) {' .
-				'    return parent::reduceListOfValuesByStepValue($stepExpression);' .
-				'  }' .
-				'  public static function normalizeMonthAndWeekday($expression, $isMonth = TRUE) {' .
-				'    return parent::normalizeMonthAndWeekday($expression, $isMonth);' .
-				'  }' .
-				'  public static function normalizeMonth($month) {' .
-				'    return parent::normalizeMonth($month);' .
-				'  }' .
-				'  public static function normalizeWeekday($weekday) {' .
-				'    return parent::normalizeWeekday($weekday);' .
-				'  }' .
-				'}'
-			);
+			eval((((((((((((((((((((((((((((((((('class ' . $className) . ' extends tx_scheduler_CronCmd_Normalize {') . '  public static function convertKeywordsToCronCommand($cronCommand) {') . '    return parent::convertKeywordsToCronCommand($cronCommand);') . '  }') . '  public static function normalizeFields($cronCommand) {') . '    return parent::normalizeFields($cronCommand);') . '  }') . '  public static function normalizeMonthAndWeekdayField($expression, $isMonthField = TRUE) {') . '    return parent::normalizeMonthAndWeekdayField($expression, $isMonthField);') . '  }') . '  public static function normalizeIntegerField($expression, $lowerBound = 0, $upperBound = 59) {') . '    return parent::normalizeIntegerField($expression, $lowerBound, $upperBound);') . '  }') . '  public static function splitFields($cronCommand) {') . '    return parent::splitFields($cronCommand);') . '  }') . '  public static function convertRangeToListOfValues($range) {') . '    return parent::convertRangeToListOfValues($range);') . '  }') . '  public static function reduceListOfValuesByStepValue($stepExpression) {') . '    return parent::reduceListOfValuesByStepValue($stepExpression);') . '  }') . '  public static function normalizeMonthAndWeekday($expression, $isMonth = TRUE) {') . '    return parent::normalizeMonthAndWeekday($expression, $isMonth);') . '  }') . '  public static function normalizeMonth($month) {') . '    return parent::normalizeMonth($month);') . '  }') . '  public static function normalizeWeekday($weekday) {') . '    return parent::normalizeWeekday($weekday);') . '  }') . '}');
 		}
-
 		return $className;
 	}
 
 	/**
 	 * @return array
 	 */
-	public static function normalizeValidDataProvider() {
+	static public function normalizeValidDataProvider() {
 		return array(
 			'@weekly' => array('@weekly', '0 0 * * 7'),
 			' @weekly ' => array(' @weekly ', '0 0 * * 7'),
@@ -104,7 +68,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'* * * * 1' => array('* * * * 1', '* * * * 1'),
 			'0 0 * * 0' => array('0 0 * * 0', '0 0 * * 7'),
 			'0 0 * * 7' => array('0 0 * * 7', '0 0 * * 7'),
-			'* * 1,2 * 1' => array('* * 1,2 * 1', '* * 1,2 * 1'),
+			'* * 1,2 * 1' => array('* * 1,2 * 1', '* * 1,2 * 1')
 		);
 	}
 
@@ -122,7 +86,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function validSpecialKeywordsDataProvider() {
+	static public function validSpecialKeywordsDataProvider() {
 		return array(
 			'@yearly' => array('@yearly', '0 0 1 1 *'),
 			'@annually' => array('@annually', '0 0 1 1 *'),
@@ -130,7 +94,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'@weekly' => array('@weekly', '0 0 * * 0'),
 			'@daily' => array('@daily', '0 0 * * *'),
 			'@midnight' => array('@midnight', '0 0 * * *'),
-			'@hourly' => array('@hourly', '0 * * * *'),
+			'@hourly' => array('@hourly', '0 * * * *')
 		);
 	}
 
@@ -165,7 +129,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'* 1-2 * * *' => array('* 1-2 * * *', '* 1,2 * * *'),
 			'* * 1-2 * *' => array('* * 1-2 * *', '* * 1,2 * *'),
 			'* * * 1-2 *' => array('* * * 1-2 *', '* * * 1,2 *'),
-			'* * * * 1-2' => array('* * * * 1-2', '* * * * 1,2'),
+			'* * * * 1-2' => array('* * * * 1-2', '* * * * 1,2')
 		);
 	}
 
@@ -184,7 +148,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function normalizeMonthAndWeekdayFieldValidDataProvider() {
+	static public function normalizeMonthAndWeekdayFieldValidDataProvider() {
 		return array(
 			'*' => array('*', TRUE, '*'),
 			'string 1' => array('1', TRUE, '1'),
@@ -204,7 +168,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'tue/2' => array('tue/2', FALSE, '2'),
 			'1-2' => array('1-2', FALSE, '1,2'),
 			'tue-fri/2' => array('tue-fri/2', FALSE, '2,4'),
-			'1-3/2,tue,fri,6' => array('1-3/2,tue,fri,6', FALSE, '1,2,3,5,6'),
+			'1-3/2,tue,fri,6' => array('1-3/2,tue,fri,6', FALSE, '1,2,3,5,6')
 		);
 	}
 
@@ -224,14 +188,14 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function normalizeMonthAndWeekdayFieldInvalidDataProvider() {
+	static public function normalizeMonthAndWeekdayFieldInvalidDataProvider() {
 		return array(
 			'mon' => array('mon', TRUE),
 			'1-2/mon' => array('1-2/mon', TRUE),
 			'0,1' => array('0,1', TRUE),
 			'feb' => array('feb', FALSE),
 			'1-2/feb' => array('1-2/feb', FALSE),
-			'0-fri/2,7' => array('0-fri/2,7', FALSE, '2,4,7'),
+			'0-fri/2,7' => array('0-fri/2,7', FALSE, '2,4,7')
 		);
 	}
 
@@ -250,7 +214,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function normalizeIntegerFieldValidDataProvider() {
+	static public function normalizeIntegerFieldValidDataProvider() {
 		return array(
 			'*' => array('*', '*'),
 			'string 2' => array('2', '2'),
@@ -264,7 +228,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'step 2-7/5' => array('2-7/5', '2,7'),
 			'steps 4-12/4' => array('4-12/4', '4,8,12'),
 			'0-59/20' => array('0-59/20', '0,20,40'),
-			'*/20' => array('*/20', '0,20,40'),
+			'*/20' => array('*/20', '0,20,40')
 		);
 	}
 
@@ -283,7 +247,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function normalizeIntegerFieldInvalidDataProvider() {
+	static public function normalizeIntegerFieldInvalidDataProvider() {
 		return array(
 			'string foo' => array('foo', 0, 59),
 			'empty string' => array('', 0, 59),
@@ -295,7 +259,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'right bound too high' => array('2-4', 2, 3),
 			'left and right bound' => array('2-5', 2, 4),
 			'element in list is lower than allowed' => array('2,1,4', 2, 4),
-			'element in list is higher than allowed' => array('2,5,4', 1, 4),
+			'element in list is higher than allowed' => array('2,5,4', 1, 4)
 		);
 	}
 
@@ -306,7 +270,6 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	 * @param string $expression Cron command partial integer expression (invalid)
 	 * @param integer $lowerBound Lower limit
 	 * @param integer $upperBound Upper limit
-	 *
 	 */
 	public function normalizeIntegerFieldThrowsExceptionForInvalidExpressions($expression, $lowerBound, $upperBound) {
 		$accessibleProxyClassName = $this->getAccessibleProxy();
@@ -324,7 +287,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			1 => '*',
 			2 => '1-12/2,14',
 			3 => 'jan',
-			4 => 'fri',
+			4 => 'fri'
 		);
 		$this->assertSame($expectedResult, $result);
 	}
@@ -332,13 +295,13 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function invalidCronCommandFieldsDataProvider() {
+	static public function invalidCronCommandFieldsDataProvider() {
 		return array(
 			'empty string' => array(''),
 			'foo' => array('foo'),
 			'integer 4' => array(4),
 			'four fields' => array('* * * *'),
-			'six fields' => array('* * * * * *'),
+			'six fields' => array('* * * * * *')
 		);
 	}
 
@@ -356,14 +319,14 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function validRangeDataProvider() {
+	static public function validRangeDataProvider() {
 		return array(
 			'single value' => array('3', '3'),
 			'integer 3' => array(3, '3'),
 			'0-0' => array('0-0', '0'),
 			'4-4' => array('4-4', '4'),
 			'0-3' => array('0-3', '0,1,2,3'),
-			'4-5' => array('4-5', '4,5'),
+			'4-5' => array('4-5', '4,5')
 		);
 	}
 
@@ -382,7 +345,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function invalidRangeDataProvider() {
+	static public function invalidRangeDataProvider() {
 		return array(
 			'empty string' => array(''),
 			'string' => array('foo'),
@@ -393,7 +356,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'string five minus' => array('5-'),
 			'string minus five' => array('-5'),
 			'more than one dash' => array('2-3-4'),
-			'left part bigger than right part' => array('6-3'),
+			'left part bigger than right part' => array('6-3')
 		);
 	}
 
@@ -411,12 +374,12 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function validStepsDataProvider() {
+	static public function validStepsDataProvider() {
 		return array(
 			'2/2' => array('2/2', '2'),
 			'2,3,4/2' => array('2,3,4/2', '2,4'),
 			'1,2,3,4,5,6,7/3' => array('1,2,3,4,5,6,7/3', '1,4,7'),
-			'0,1,2,3,4,5,6/3' => array('0,1,2,3,4,5,6/3', '0,3,6'),
+			'0,1,2,3,4,5,6/3' => array('0,1,2,3,4,5,6/3', '0,3,6')
 		);
 	}
 
@@ -435,7 +398,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function invalidStepsDataProvider() {
+	static public function invalidStepsDataProvider() {
 		return array(
 			'empty string' => array(''),
 			'slash only' => array('/'),
@@ -445,7 +408,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'2-2' => array('2-2'),
 			'2.3/2' => array('2.3/2'),
 			'2,3,4/2.3' => array('2,3,4/2.3'),
-			'2,3,4/2,3' => array('2,3,4/2,3'),
+			'2,3,4/2,3' => array('2,3,4/2,3')
 		);
 	}
 
@@ -490,7 +453,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function validMonthNamesDataProvider() {
+	static public function validMonthNamesDataProvider() {
 		return array(
 			'jan' => array('jan', 1),
 			'feb' => array('feb', 2),
@@ -508,7 +471,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'string 7' => array('7', 7),
 			'integer 7' => array(7, 7),
 			'string 07' => array('07', 7),
-			'integer 07' => array(07, 7),
+			'integer 07' => array(7, 7)
 		);
 	}
 
@@ -539,7 +502,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function invalidMonthNamesDataProvider() {
+	static public function invalidMonthNamesDataProvider() {
 		return array(
 			'sep-' => array('sep-'),
 			'-September-' => array('-September-'),
@@ -559,7 +522,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'integer 100' => array(100),
 			'integer 2010' => array(2010),
 			'string minus 7' => array('-7'),
-			'negative integer 7' => array(-7),
+			'negative integer 7' => array(-7)
 		);
 	}
 
@@ -577,12 +540,12 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function validWeekdayDataProvider() {
+	static public function validWeekdayDataProvider() {
 		return array(
 			'string 1' => array('1', 1),
 			'string 2' => array('2', 2),
 			'string 02' => array('02', 2),
-			'integer 02' => array(02, 2),
+			'integer 02' => array(2, 2),
 			'string 3' => array('3', 3),
 			'string 4' => array('4', 4),
 			'string 5' => array('5', 5),
@@ -604,7 +567,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'sat' => array('sat', 6),
 			'saturday' => array('saturday', 6),
 			'sun' => array('sun', 7),
-			'sunday' => array('sunday', 7),
+			'sunday' => array('sunday', 7)
 		);
 	}
 
@@ -635,7 +598,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	/**
 	 * @return array
 	 */
-	public static function invalidWeekdayDataProvider() {
+	static public function invalidWeekdayDataProvider() {
 		return array(
 			'-fri' => array('-fri'),
 			'fri-' => array('fri-'),
@@ -654,7 +617,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 			'string 2010' => array('2010'),
 			'Jan' => array('Jan'),
 			'January' => array('January'),
-			'MARCH' => array('MARCH'),
+			'MARCH' => array('MARCH')
 		);
 	}
 
@@ -668,5 +631,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 		$accessibleProxyClassName = $this->getAccessibleProxy();
 		$accessibleProxyClassName::normalizeWeekday($weekday);
 	}
+
 }
+
 ?>

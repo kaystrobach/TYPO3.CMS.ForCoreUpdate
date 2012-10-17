@@ -24,16 +24,15 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Parser interface.
  *
- * @package	TYPO3
+ * @package 	TYPO3
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-interface t3lib_l10n_parser {
-
+interface t3lib_l10n_parser
+{
 	/**
 	 * Returns parsed representation of XML file.
 	 *
@@ -45,5 +44,4 @@ interface t3lib_l10n_parser {
 	public function getParsedData($sourcePath, $languageKey, $charset);
 
 }
-
 ?>

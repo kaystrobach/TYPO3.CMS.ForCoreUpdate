@@ -25,8 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Renderer for unordered lists
  *
@@ -36,6 +34,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
+
 	/**
 	 * recursion level
 	 *
@@ -52,14 +51,12 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	 */
 	public function renderNode(t3lib_tree_RepresentationNode $node, $recursive = TRUE) {
 		$nodeArray = $this->getNodeArray($node);
-
 		if ($recursive && $node->hasChildNodes()) {
 			$this->recursionLevel++;
 			$children = $this->renderNodeCollection($node->getChildNodes());
 			$nodeArray['children'] = $children;
 			$this->recursionLevel--;
 		}
-
 		return $nodeArray;
 	}
 
@@ -77,7 +74,6 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 			'id' => $node->getId(),
 			'uid' => $node->getId()
 		);
-
 		return $nodeArray;
 	}
 
@@ -91,7 +87,6 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE) {
 		$this->recursionLevel = 0;
 		$children = $this->renderNode($tree->getRoot(), $recursive);
-
 		return json_encode($children);
 	}
 
@@ -108,6 +103,7 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 		}
 		return $treeItems;
 	}
+
 }
 
 ?>

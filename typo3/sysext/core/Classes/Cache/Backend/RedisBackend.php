@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which stores cache entries by using Redis with phpredis
  * PHP module. Redis is a noSQL database with very good scaling characteristics
@@ -29,41 +28,6 @@
  *
  * @see http://code.google.com/p/redis/
  * @see http://github.com/owlient/phpredis
- *
- * Warning:
- * Redis and phpredis are young projects with very high development speed.
- * This implementation should be considered as experimental for now,
- * internals might break or change while the dependent projects mature.
- *
- * Successfully tested with:
- * - redis
- *   version 2.0.0-rc2, version 1.2.0 does not work
- *   git version 9fd01051bf8400babcca73a76a67dfc1847633ff from 2010-11-12
- * - phpredis
- *   git version 0abb9e5ec07b8a8c20b5 from 2010-07-18
- *   git version 12769b03c8ec17b25573e0453003712011bba241 from 2010-11-08
- *
- * Implementation based on ext:rediscache by Christopher Hlubek - networkteam GmbH
- *
- * This backend uses the following types of redis keys:
- * - identData:xxx, value type "string", volatile, expires after given lifetime
- *   xxx is the given identifier name, value is the cache data
- * - identTags:xxx, value type "set"
- *   xxx is the given identifier name, value is a set of associated tags.
- *   This is a "reverse" tag index. It provides quick access for all tags
- *   associated with this identifier and is used when removing the identifier.
- * - tagIdents:xxx, value type "set"
- *   xxx is a tag name, value is a set of associated identifiers.
- *   This is "forward" tag index. It is mainly used for flushing content by tag.
- * - temp:xxx, value type "set"
- *   xxx is a unique id, value is a set of identifiers. Used as temporary key
- *   used in flushByTag(), removed after usage again.
- *
- * Each cache using this backend should use an own redis database to
- * avoid namespace problems. By default redis has 16 databases which are
- * identified with numbers 0 .. 15. setDatabase() can be used to select one.
- * The unit tests use and flush database numbers 0 and 1, production use should start from 2.
- *
  * @package TYPO3
  * @subpackage t3lib_cache
  * @author Christopher Hlubek <hlubek@networkteam.com>
@@ -86,69 +50,76 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 * @var integer Faked unlimited lifetime
 	 */
 	const FAKED_UNLIMITED_LIFETIME = 31536000;
-
 	/**
 	 * Key prefix for identifier->data entries
+	 *
 	 * @var string
 	 */
 	const IDENTIFIER_DATA_PREFIX = 'identData:';
-
 	/**
 	 * Key prefix for identifier->tags sets
+	 *
 	 * @var string
 	 */
 	const IDENTIFIER_TAGS_PREFIX = 'identTags:';
-
 	/**
 	 * Key prefix for tag->identifiers sets
+	 *
 	 * @var string
 	 */
 	const TAG_IDENTIFIERS_PREFIX = 'tagIdents:';
-
 	/**
 	 * Instance of the PHP redis class
+	 *
 	 * @var \Redis
 	 */
 	protected $redis;
 
 	/**
 	 * Indicates whether the server is connected
+	 *
 	 * @var boolean
 	 */
 	protected $connected = FALSE;
 
 	/**
 	 * Hostname / IP of the Redis server, defaults to 127.0.0.1.
+	 *
 	 * @var string
 	 */
 	protected $hostname = '127.0.0.1';
 
 	/**
 	 * Port of the Redis server, defaults to 6379
+	 *
 	 * @var integer
 	 */
 	protected $port = 6379;
 
 	/**
 	 * Number of selected database, defaults to 0
+	 *
 	 * @var integer
 	 */
 	protected $database = 0;
 
 	/**
 	 * Password for redis authentication
+	 *
 	 * @var string
 	 */
 	protected $password = '';
 
 	/**
 	 * Indicates whether data is compressed or not (requires php zlib)
+	 *
 	 * @var boolean
 	 */
 	protected $compression = FALSE;
 
 	/**
 	 * -1 to 9, indicates zlib compression level: -1 = default level 6, 0 = no compression, 9 maximum compression
+	 *
 	 * @var integer
 	 */
 	protected $compressionLevel = -1;
@@ -162,12 +133,8 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function __construct($context, array $options = array()) {
 		if (!extension_loaded('redis')) {
-			throw new t3lib_cache_Exception(
-				'The PHP extension "redis" must be installed and loaded in order to use the redis backend.',
-				1279462933
-			);
+			throw new t3lib_cache_Exception('The PHP extension "redis" must be installed and loaded in order to use the redis backend.', 1279462933);
 		}
-
 		parent::__construct($context, $options);
 	}
 
@@ -179,35 +146,22 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function initializeObject() {
 		$this->redis = new \Redis();
-
 		try {
 			$this->connected = $this->redis->connect($this->hostname, $this->port);
 		} catch (\Exception $e) {
-			t3lib_div::sysLog(
-				'Could not connect to redis server.',
-				'core',
-				t3lib_div::SYSLOG_SEVERITY_ERROR
-			);
+			t3lib_div::sysLog('Could not connect to redis server.', 'core', t3lib_div::SYSLOG_SEVERITY_ERROR);
 		}
-
 		if ($this->connected) {
 			if (strlen($this->password)) {
 				$success = $this->redis->auth($this->password);
 				if (!$success) {
-					throw new \t3lib_cache_Exception(
-						'The given password was not accepted by the redis server.',
-						1279765134
-					);
+					throw new \t3lib_cache_Exception('The given password was not accepted by the redis server.', 1279765134);
 				}
 			}
-
 			if ($this->database > 0) {
 				$success = $this->redis->select($this->database);
 				if (!$success) {
-					throw new \t3lib_cache_Exception(
-						'The given database "' . $this->database . '" could not be selected.',
-						1279765144
-					);
+					throw new \t3lib_cache_Exception(('The given database "' . $this->database) . '" could not be selected.', 1279765144);
 				}
 			}
 		}
@@ -245,18 +199,11 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function setDatabase($database) {
 		if (!is_integer($database)) {
-			throw new \InvalidArgumentException(
-				'The specified database number is of type "' . gettype($database) . '" but an integer is expected.',
-				1279763057
-			);
+			throw new \InvalidArgumentException(('The specified database number is of type "' . gettype($database)) . '" but an integer is expected.', 1279763057);
 		}
 		if ($database < 0) {
-			throw new \InvalidArgumentException(
-				'The specified database "' . $database . '" must be greater or equal than zero.',
-				1279763534
-			);
+			throw new \InvalidArgumentException(('The specified database "' . $database) . '" must be greater or equal than zero.', 1279763534);
 		}
-
 		$this->database = $database;
 	}
 
@@ -281,12 +228,8 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function setCompression($compression) {
 		if (!is_bool($compression)) {
-			throw new \InvalidArgumentException(
-				'The specified compression of type "' . gettype($compression) . '" but a boolean is expected.',
-				1289679153
-			);
+			throw new \InvalidArgumentException(('The specified compression of type "' . gettype($compression)) . '" but a boolean is expected.', 1289679153);
 		}
-
 		$this->compression = $compression;
 	}
 
@@ -302,19 +245,12 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function setCompressionLevel($compressionLevel) {
 		if (!is_integer($compressionLevel)) {
-			throw new \InvalidArgumentException(
-				'The specified compression of type "' . gettype($compressionLevel) . '" but an integer is expected.',
-				1289679154
-			);
+			throw new \InvalidArgumentException(('The specified compression of type "' . gettype($compressionLevel)) . '" but an integer is expected.', 1289679154);
 		}
-
 		if ($compressionLevel >= -1 && $compressionLevel <= 9) {
 			$this->compressionLevel = $compressionLevel;
 		} else {
-			throw new \InvalidArgumentException(
-				'The specified compression level must be an integer between -1 and 9.',
-				1289679155
-			);
+			throw new \InvalidArgumentException('The specified compression level must be an integer between -1 and 9.', 1289679155);
 		}
 	}
 
@@ -335,42 +271,24 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (!is_string($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified identifier is of type "' . gettype($entryIdentifier) . '" but a string is expected.',
-				1279470252
-			);
+			throw new \InvalidArgumentException(('The specified identifier is of type "' . gettype($entryIdentifier)) . '" but a string is expected.', 1279470252);
 		}
 		if (!is_string($data)) {
-			throw new \t3lib_cache_Exception_InvalidData(
-				'The specified data is of type "' . gettype($data) . '" but a string is expected.',
-				1279469941
-			);
+			throw new \t3lib_cache_Exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1279469941);
 		}
-
 		$lifetime = $lifetime === NULL ? $this->defaultLifetime : $lifetime;
 		if (!is_integer($lifetime)) {
-			throw new \InvalidArgumentException(
-				'The specified lifetime is of type "' . gettype($lifetime) . '" but an integer or NULL is expected.',
-				1279488008
-			);
+			throw new \InvalidArgumentException(('The specified lifetime is of type "' . gettype($lifetime)) . '" but an integer or NULL is expected.', 1279488008);
 		}
-
 		if ($lifetime < 0) {
-			throw new \InvalidArgumentException(
-				'The specified lifetime "' . $lifetime . '" must be greater or equal than zero.',
-				1279487573
-			);
+			throw new \InvalidArgumentException(('The specified lifetime "' . $lifetime) . '" must be greater or equal than zero.', 1279487573);
 		}
-
 		if ($this->connected) {
 			$expiration = $lifetime === 0 ? self::FAKED_UNLIMITED_LIFETIME : $lifetime;
-
 			if ($this->compression) {
 				$data = gzcompress($data, $this->compressionLevel);
 			}
-
 			$this->redis->setex(self::IDENTIFIER_DATA_PREFIX . $entryIdentifier, $expiration, $data);
-
 			$addTags = $tags;
 			$removeTags = array();
 			$existingTags = $this->redis->sMembers(self::IDENTIFIER_TAGS_PREFIX . $entryIdentifier);
@@ -378,14 +296,12 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 				$addTags = array_diff($tags, $existingTags);
 				$removeTags = array_diff($existingTags, $tags);
 			}
-
 			if (count($removeTags) > 0 || count($addTags) > 0) {
 				$queue = $this->redis->multi(\Redis::PIPELINE);
 				foreach ($removeTags as $tag) {
 					$queue->sRemove(self::IDENTIFIER_TAGS_PREFIX . $entryIdentifier, $tag);
 					$queue->sRemove(self::TAG_IDENTIFIERS_PREFIX . $tag, $entryIdentifier);
 				}
-
 				foreach ($addTags as $tag) {
 					$queue->sAdd(self::IDENTIFIER_TAGS_PREFIX . $entryIdentifier, $tag);
 					$queue->sAdd(self::TAG_IDENTIFIERS_PREFIX . $tag, $entryIdentifier);
@@ -407,21 +323,15 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function get($entryIdentifier) {
 		if (!is_string($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified identifier is of type "' . gettype($entryIdentifier) . '" but a string is expected.',
-				1279470253
-			);
+			throw new \InvalidArgumentException(('The specified identifier is of type "' . gettype($entryIdentifier)) . '" but a string is expected.', 1279470253);
 		}
-
 		$storedEntry = FALSE;
 		if ($this->connected) {
 			$storedEntry = $this->redis->get(self::IDENTIFIER_DATA_PREFIX . $entryIdentifier);
 		}
-
 		if ($this->compression && strlen($storedEntry) > 0) {
 			$storedEntry = gzuncompress($storedEntry);
 		}
-
 		return $storedEntry;
 	}
 
@@ -437,10 +347,7 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function has($entryIdentifier) {
 		if (!is_string($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified identifier is of type "' . gettype($entryIdentifier) . '" but a string is expected.',
-				1279470254
-			);
+			throw new \InvalidArgumentException(('The specified identifier is of type "' . gettype($entryIdentifier)) . '" but a string is expected.', 1279470254);
 		}
 		return $this->connected && $this->redis->exists(self::IDENTIFIER_DATA_PREFIX . $entryIdentifier);
 	}
@@ -458,17 +365,12 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function remove($entryIdentifier) {
 		if (!is_string($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified identifier is of type "' . gettype($entryIdentifier) . '" but a string is expected.',
-				1279470255
-			);
+			throw new \InvalidArgumentException(('The specified identifier is of type "' . gettype($entryIdentifier)) . '" but a string is expected.', 1279470255);
 		}
-
 		$elementsDeleted = FALSE;
 		if ($this->connected) {
 			if ($this->redis->exists(self::IDENTIFIER_DATA_PREFIX . $entryIdentifier)) {
 				$assignedTags = $this->redis->sMembers(self::IDENTIFIER_TAGS_PREFIX . $entryIdentifier);
-
 				$queue = $this->redis->multi(\Redis::PIPELINE);
 				foreach ($assignedTags as $tag) {
 					$queue->sRemove(self::TAG_IDENTIFIERS_PREFIX . $tag, $entryIdentifier);
@@ -478,7 +380,6 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 				$elementsDeleted = TRUE;
 			}
 		}
-
 		return $elementsDeleted;
 	}
 
@@ -496,17 +397,12 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function findIdentifiersByTag($tag) {
 		if (!is_string($tag)) {
-			throw new \InvalidArgumentException(
-				'The specified tag is of type "' . gettype($tag) . '" but a string is expected.',
-				1279569759
-			);
+			throw new \InvalidArgumentException(('The specified tag is of type "' . gettype($tag)) . '" but a string is expected.', 1279569759);
 		}
-
 		$foundIdentifiers = array();
 		if ($this->connected) {
 			$foundIdentifiers = $this->redis->sMembers(self::TAG_IDENTIFIERS_PREFIX . $tag);
 		}
-
 		return $foundIdentifiers;
 	}
 
@@ -537,15 +433,10 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 */
 	public function flushByTag($tag) {
 		if (!is_string($tag)) {
-			throw new \InvalidArgumentException(
-				'The specified tag is of type "' . gettype($tag) . '" but a string is expected.',
-				1279578078
-			);
+			throw new \InvalidArgumentException(('The specified tag is of type "' . gettype($tag)) . '" but a string is expected.', 1279578078);
 		}
-
 		if ($this->connected) {
 			$identifiers = $this->redis->sMembers(self::TAG_IDENTIFIERS_PREFIX . $tag);
-
 			if (count($identifiers) > 0) {
 				$this->removeIdentifierEntriesAndRelations($identifiers, array($tag));
 			}
@@ -567,8 +458,8 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 		$identifierToTagsKeys = $this->redis->getKeys(self::IDENTIFIER_TAGS_PREFIX . '*');
 		foreach ($identifierToTagsKeys as $identifierToTagsKey) {
 			list(, $identifier) = explode(':', $identifierToTagsKey);
-				// Check if the data entry still exists
-			if (!$this->redis->exists(self::IDENTIFIER_DATA_PREFIX . $identifier)) {
+			// Check if the data entry still exists
+			if (!$this->redis->exists((self::IDENTIFIER_DATA_PREFIX . $identifier))) {
 				$tagsToRemoveIdentifierFrom = $this->redis->sMembers($identifierToTagsKey);
 				$queue = $this->redis->multi(\Redis::PIPELINE);
 				$queue->delete($identifierToTagsKey);
@@ -592,11 +483,10 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 * @return void
 	 */
 	protected function removeIdentifierEntriesAndRelations(array $identifiers, array $tags) {
-			// Set a temporary entry which holds all identifiers that need to be removed from
-			// the tag to identifiers sets
+		// Set a temporary entry which holds all identifiers that need to be removed from
+		// the tag to identifiers sets
 		$uniqueTempKey = 'temp:' . uniqId();
 		$prefixedKeysToDelete = array($uniqueTempKey);
-
 		$prefixedIdentifierToTagsKeysToDelete = array();
 		foreach ($identifiers as $identifier) {
 			$prefixedKeysToDelete[] = self::IDENTIFIER_DATA_PREFIX . $identifier;
@@ -605,28 +495,22 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 		foreach ($tags as $tag) {
 			$prefixedKeysToDelete[] = self::TAG_IDENTIFIERS_PREFIX . $tag;
 		}
-
 		$tagToIdentifiersSetsToRemoveIdentifiersFrom = $this->redis->sUnion($prefixedIdentifierToTagsKeysToDelete);
-
-			// Remove the tag to identifier set of the given tags, they will be removed anyway
+		// Remove the tag to identifier set of the given tags, they will be removed anyway
 		$tagToIdentifiersSetsToRemoveIdentifiersFrom = array_diff($tagToIdentifiersSetsToRemoveIdentifiersFrom, $tags);
-
-			// Diff all identifiers that must be removed from tag to identifiers sets off from a
-			// tag to identifiers set and store result in same tag to identifiers set again
+		// Diff all identifiers that must be removed from tag to identifiers sets off from a
+		// tag to identifiers set and store result in same tag to identifiers set again
 		$queue = $this->redis->multi(\Redis::PIPELINE);
 		foreach ($identifiers as $identifier) {
 			$queue->sAdd($uniqueTempKey, $identifier);
 		}
 		foreach ($tagToIdentifiersSetsToRemoveIdentifiersFrom as $tagToIdentifiersSet) {
-			$queue->sDiffStore(
-				self::TAG_IDENTIFIERS_PREFIX . $tagToIdentifiersSet,
-				self::TAG_IDENTIFIERS_PREFIX . $tagToIdentifiersSet,
-				$uniqueTempKey
-			);
+			$queue->sDiffStore(self::TAG_IDENTIFIERS_PREFIX . $tagToIdentifiersSet, self::TAG_IDENTIFIERS_PREFIX . $tagToIdentifiersSet, $uniqueTempKey);
 		}
-
 		$queue->delete(array_merge($prefixedKeysToDelete, $prefixedIdentifierToTagsKeysToDelete));
 		$queue->exec();
 	}
+
 }
+
 ?>

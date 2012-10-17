@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * ExtDirect DataProvider for State
  *
@@ -34,7 +33,9 @@
  */
 class extDirect_DataProvider_State {
 
-	/** @var extDirect_DataProvider_BackenduserSettings */
+	/**
+	 * @var extDirect_DataProvider_BackenduserSettings
+	 */
 	protected $userSettings;
 
 	/**
@@ -43,7 +44,7 @@ class extDirect_DataProvider_State {
 	 * @return void
 	 */
 	public function __construct() {
-			// All data is saved in BE_USER->uc
+		// All data is saved in BE_USER->uc
 		$this->userSettings = t3lib_div::makeInstance('extDirect_DataProvider_BackenduserSettings');
 	}
 
@@ -56,10 +57,9 @@ class extDirect_DataProvider_State {
 	public function getState($parameter) {
 		$key = $parameter->params->key;
 		$data = $this->userSettings->get($key);
-
 		return array(
 			'success' => TRUE,
-			'data' =>  $data
+			'data' => $data
 		);
 	}
 
@@ -72,13 +72,13 @@ class extDirect_DataProvider_State {
 	public function setState($parameter) {
 		$key = $parameter->params->key;
 		$data = json_decode($parameter->params->data);
-
-		$this->userSettings->set($key . '.' . $data[0]->name, $data[0]->value);
+		$this->userSettings->set(($key . '.') . $data[0]->name, $data[0]->value);
 		return array(
 			'success' => TRUE,
 			'params' => $parameter
 		);
 	}
+
 }
 
 ?>

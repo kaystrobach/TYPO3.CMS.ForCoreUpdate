@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to handle debug
  *
@@ -51,8 +50,6 @@ final class t3lib_utility_Debug {
 		</tr>
 	</table>
 	';
-
-
 	/**
 	 * Debug
 	 *
@@ -61,32 +58,28 @@ final class t3lib_utility_Debug {
 	 * @param string $group
 	 * @return void
 	 */
-	public static function debug($var = '', $header = '', $group = 'Debug') {
-			// buffer the output of debug if no buffering started before
+	static public function debug($var = '', $header = '', $group = 'Debug') {
+		// buffer the output of debug if no buffering started before
 		if (ob_get_level() == 0) {
 			ob_start();
 		}
-
 		$debug = self::convertVariableToString($var);
 		if ($header) {
 			$debug = sprintf(self::DEBUG_TABLE_TEMPLATE, htmlspecialchars((string) $header), $debug);
 		}
-
 		if (TYPO3_MODE === 'BE') {
 			$debugString = self::prepareVariableForJavascript($debug, is_object($var));
 			$group = htmlspecialchars($group);
-
 			if ($header !== '') {
 				$tabHeader = htmlspecialchars($header);
 			} else {
 				$tabHeader = 'Debug';
 			}
-
-			$script = '
+			$script = ((((('
 				(function debug() {
-					var debugMessage = "' . $debugString . '";
-					var header = "' . $tabHeader . '";
-					var group = "' . $group . '";
+					var debugMessage = "' . $debugString) . '";
+					var header = "') . $tabHeader) . '";
+					var group = "') . $group) . '";
 
 					if (typeof Ext !== "object" && (top && typeof top.Ext !== "object")) {
 						document.write(debugMessage);
@@ -127,21 +120,38 @@ final class t3lib_utility_Debug {
 	 * @param boolean $asObject
 	 * @return string
 	 */
-	public static function prepareVariableForJavascript($string, $asObject) {
+	static public function prepareVariableForJavascript($string, $asObject) {
 		if ($asObject) {
 			$string = str_replace(array(
-				'"', '/', '<', "\n", "\r"
+				'"',
+				'/',
+				'<',
+				'
+',
+				''
 			), array(
-				'\"', '\/', '\<', '<br />', ''
+				'\\"',
+				'\\/',
+				'\\<',
+				'<br />',
+				''
 			), $string);
 		} else {
 			$string = str_replace(array(
-				'"', '/', '<', "\n", "\r"
-				), array(
-				'\"', '\/', '\<', '', ''
+				'"',
+				'/',
+				'<',
+				'
+',
+				''
+			), array(
+				'\\"',
+				'\\/',
+				'\\<',
+				'',
+				''
 			), $string);
 		}
-
 		return $string;
 	}
 
@@ -151,7 +161,7 @@ final class t3lib_utility_Debug {
 	 * @param mixed $variable
 	 * @return string
 	 */
-	public static function convertVariableToString($variable) {
+	static public function convertVariableToString($variable) {
 		$string = '';
 		if (is_array($variable)) {
 			$string = self::viewArray($variable);
@@ -160,11 +170,10 @@ final class t3lib_utility_Debug {
 			$string .= print_r($variable, TRUE);
 			$string .= '</pre>|</strong>';
 		} elseif ((string) $variable !== '') {
-			$string = '<strong>|' . htmlspecialchars((string) $variable) . '|</strong>';
+			$string = ('<strong>|' . htmlspecialchars((string) $variable)) . '|</strong>';
 		} else {
 			$string = '<strong>| debug |</strong>';
 		}
-
 		return $string;
 	}
 
@@ -175,17 +184,13 @@ final class t3lib_utility_Debug {
 	 * @param string $header
 	 * @param string $group
 	 */
-	public static function debugInPopUpWindow($debugVariable, $header = 'Debug', $group = 'Debug') {
-		$debugString = self::prepareVariableForJavascript(
-			self::convertVariableToString($debugVariable),
-			is_object($debugVariable)
-		);
-
-		$script = '
+	static public function debugInPopUpWindow($debugVariable, $header = 'Debug', $group = 'Debug') {
+		$debugString = self::prepareVariableForJavascript(self::convertVariableToString($debugVariable), is_object($debugVariable));
+		$script = ((((('
 			(function debug() {
-				var debugMessage = "' . $debugString . '",
-					header = "' . htmlspecialchars($header) . '",
-					group = "' . htmlspecialchars($group) . '",
+				var debugMessage = "' . $debugString) . '",
+					header = "') . htmlspecialchars($header)) . '",
+					group = "') . htmlspecialchars($group)) . '",
 
 					browserWindow = function(debug, header, group) {
 						var newWindow = window.open("", "TYPO3DebugWindow_" + group,
@@ -197,7 +202,7 @@ final class t3lib_utility_Debug {
 						} else {
 							newWindow.document.writeln(
 								"<html><head><title>Debug: " + header + "(" + group + ")</title></head>"
-								+ "<body onload=\"self.focus()\">"
+								+ "<body onload=\\"self.focus()\\">"
 								+ debugMessage
 								+ "</body></html>"
 							);
@@ -225,21 +230,19 @@ final class t3lib_utility_Debug {
 	 *
 	 * @return string
 	 */
-	public static function debugTrail() {
+	static public function debugTrail() {
 		$trail = debug_backtrace();
 		$trail = array_reverse($trail);
 		array_pop($trail);
-
 		$path = array();
 		foreach ($trail as $dat) {
-			$pathFragment = $dat['class'] . $dat['type'] . $dat['function'];
-				// add the path of the included file
+			$pathFragment = ($dat['class'] . $dat['type']) . $dat['function'];
+			// add the path of the included file
 			if (in_array($dat['function'], array('require', 'include', 'require_once', 'include_once'))) {
-				$pathFragment .= '(' . substr($dat['args'][0], strlen(PATH_site)) . '),' . substr($dat['file'], strlen(PATH_site));
+				$pathFragment .= (('(' . substr($dat['args'][0], strlen(PATH_site))) . '),') . substr($dat['file'], strlen(PATH_site));
 			}
-			$path[] = $pathFragment . '#' . $dat['line'];
+			$path[] = ($pathFragment . '#') . $dat['line'];
 		}
-
 		return implode(' // ', $path);
 	}
 
@@ -251,42 +254,35 @@ final class t3lib_utility_Debug {
 	 * @param boolean $returnHTML If TRUE, will return content instead of echo'ing out.
 	 * @return void Outputs to browser.
 	 */
-	public static function debugRows($rows, $header = '', $returnHTML = FALSE) {
+	static public function debugRows($rows, $header = '', $returnHTML = FALSE) {
 		if (is_array($rows)) {
 			$firstEl = reset($rows);
 			if (is_array($firstEl)) {
 				$headerColumns = array_keys($firstEl);
 				$tRows = array();
-
-					// Header:
-				$tRows[] = '<tr><td colspan="' . count($headerColumns) .
-						'" style="background-color:#bbbbbb; font-family: verdana,arial; font-weight: bold; font-size: 10px;"><strong>' .
-						htmlspecialchars($header) . '</strong></td></tr>';
+				// Header:
+				$tRows[] = ((('<tr><td colspan="' . count($headerColumns)) . '" style="background-color:#bbbbbb; font-family: verdana,arial; font-weight: bold; font-size: 10px;"><strong>') . htmlspecialchars($header)) . '</strong></td></tr>';
 				$tCells = array();
 				foreach ($headerColumns as $key) {
-					$tCells[] = '
-							<td><font face="Verdana,Arial" size="1"><strong>' . htmlspecialchars($key) . '</strong></font></td>';
+					$tCells[] = ('
+							<td><font face="Verdana,Arial" size="1"><strong>' . htmlspecialchars($key)) . '</strong></font></td>';
 				}
-				$tRows[] = '
-						<tr>' . implode('', $tCells) . '
+				$tRows[] = ('
+						<tr>' . implode('', $tCells)) . '
 						</tr>';
-
-					// Rows:
+				// Rows:
 				foreach ($rows as $singleRow) {
 					$tCells = array();
 					foreach ($headerColumns as $key) {
-						$tCells[] = '
-							<td><font face="Verdana,Arial" size="1">' .
-									(is_array($singleRow[$key]) ? self::debugRows($singleRow[$key], '', TRUE) : htmlspecialchars($singleRow[$key])) .
-									'</font></td>';
+						$tCells[] = ('
+							<td><font face="Verdana,Arial" size="1">' . (is_array($singleRow[$key]) ? self::debugRows($singleRow[$key], '', TRUE) : htmlspecialchars($singleRow[$key]))) . '</font></td>';
 					}
-					$tRows[] = '
-						<tr>' . implode('', $tCells) . '
+					$tRows[] = ('
+						<tr>' . implode('', $tCells)) . '
 						</tr>';
 				}
-
-				$table = '
-					<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">' . implode('', $tRows) . '
+				$table = ('
+					<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">' . implode('', $tRows)) . '
 					</table>';
 				if ($returnHTML) {
 					return $table;
@@ -308,7 +304,7 @@ final class t3lib_utility_Debug {
 	 * @param integer $characters Number of characters to show
 	 * @return string The string with ASCII values in separated by a space char.
 	 */
-	public static function ordinalValue($string, $characters = 100) {
+	static public function ordinalValue($string, $characters = 100) {
 		if (strlen($string) < $characters) {
 			$characters = strlen($string);
 		}
@@ -326,7 +322,7 @@ final class t3lib_utility_Debug {
 	 * @param mixed $array_in Array to view
 	 * @return string HTML output
 	 */
-	public static function viewArray($array_in) {
+	static public function viewArray($array_in) {
 		if (is_array($array_in)) {
 			$result = '
 			<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">';
@@ -334,30 +330,26 @@ final class t3lib_utility_Debug {
 				$result .= '<tr><td><font face="Verdana,Arial" size="1"><strong>EMPTY!</strong></font></td></tr>';
 			} else {
 				foreach ($array_in as $key => $val) {
-					$result .= '<tr>
-						<td valign="top"><font face="Verdana,Arial" size="1">' . htmlspecialchars((string) $key) . '</font></td>
+					$result .= ('<tr>
+						<td valign="top"><font face="Verdana,Arial" size="1">' . htmlspecialchars((string) $key)) . '</font></td>
 						<td>';
 					if (is_array($val)) {
 						$result .= self::viewArray($val);
 					} elseif (is_object($val)) {
 						$string = '';
 						if (method_exists($val, '__toString')) {
-							$string .= get_class($val) . ': ' . (string) $val;
+							$string .= (get_class($val) . ': ') . (string) $val;
 						} else {
 							$string .= print_r($val, TRUE);
 						}
-						$result .= '<font face="Verdana,Arial" size="1" color="red">' .
-								nl2br(htmlspecialchars($string)) .
-								'<br /></font>';
+						$result .= ('<font face="Verdana,Arial" size="1" color="red">' . nl2br(htmlspecialchars($string))) . '<br /></font>';
 					} else {
 						if (gettype($val) == 'object') {
 							$string = 'Unknown object';
 						} else {
 							$string = (string) $val;
 						}
-						$result .= '<font face="Verdana,Arial" size="1" color="red">' .
-								nl2br(htmlspecialchars($string)) .
-								'<br /></font>';
+						$result .= ('<font face="Verdana,Arial" size="1" color="red">' . nl2br(htmlspecialchars($string))) . '<br /></font>';
 					}
 					$result .= '</td>
 					</tr>';
@@ -365,15 +357,13 @@ final class t3lib_utility_Debug {
 			}
 			$result .= '</table>';
 		} else {
-			$result = '<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">
+			$result = ('<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">
 				<tr>
-					<td><font face="Verdana,Arial" size="1" color="red">' .
-					nl2br(htmlspecialchars((string) $array_in)) .
-					'<br /></font></td>
+					<td><font face="Verdana,Arial" size="1" color="red">' . nl2br(htmlspecialchars((string) $array_in))) . '<br /></font></td>
 				</tr>
 			</table>';
 		}
-			// Output it as a string.
+		// Output it as a string.
 		return $result;
 	}
 
@@ -384,9 +374,10 @@ final class t3lib_utility_Debug {
 	 * @return void
 	 * @see viewArray()
 	 */
-	public static function printArray($array_in) {
+	static public function printArray($array_in) {
 		echo self::viewArray($array_in);
 	}
+
 }
 
 ?>

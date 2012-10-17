@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contract for a Cache (frontend)
  *
@@ -33,28 +32,24 @@
  * @subpackage t3lib_cache
  * @api
  */
-interface t3lib_cache_frontend_Frontend {
-
+interface t3lib_cache_frontend_Frontend
+{
 	/**
 	 * "Magic" tag for class-related entries
 	 */
 	const TAG_CLASS = '%CLASS%';
-
 	/**
 	 * "Magic" tag for package-related entries
 	 */
 	const TAG_PACKAGE = '%PACKAGE%';
-
 	/**
 	 * Pattern an entry identifer must match.
 	 */
-	const PATTERN_ENTRYIDENTIFIER = '/^[a-zA-Z0-9_%\-&]{1,250}$/';
-
+	const PATTERN_ENTRYIDENTIFIER = '/^[a-zA-Z0-9_%\\-&]{1,250}$/';
 	/**
 	 * Pattern a tag must match.
 	 */
-	const PATTERN_TAG = '/^[a-zA-Z0-9_%\-&]{1,250}$/';
-
+	const PATTERN_TAG = '/^[a-zA-Z0-9_%\\-&]{1,250}$/';
 	/**
 	 * Returns this cache's identifier
 	 *
@@ -158,5 +153,6 @@ interface t3lib_cache_frontend_Frontend {
 	 * @api
 	 */
 	public function isValidTag($tag);
+
 }
 ?>

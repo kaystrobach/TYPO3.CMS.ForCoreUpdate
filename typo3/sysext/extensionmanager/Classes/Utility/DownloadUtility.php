@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility for dealing with ext_emconf
  *
@@ -86,13 +85,8 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	 */
 	public function download(Tx_Extensionmanager_Domain_Model_Extension $extension) {
 		$mirrorUrl = $this->repositoryHelper->getMirrors()->getMirrorUrl();
-		$fetchedExtension = $this->terUtility->fetchExtension(
-			$extension->getExtensionKey(),
-			$extension->getVersion(),
-			$extension->getMd5hash(),
-			$mirrorUrl
-		);
-		if (isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey']) && is_string($fetchedExtension['extKey'])) {
+		$fetchedExtension = $this->terUtility->fetchExtension($extension->getExtensionKey(), $extension->getVersion(), $extension->getMd5hash(), $mirrorUrl);
+		if ((isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey'])) && is_string($fetchedExtension['extKey'])) {
 			$this->fileHandlingUtility->unpackExtensionFromExtensionDataArray($fetchedExtension, $extension, $this->getDownloadPath());
 		}
 	}
@@ -106,10 +100,7 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	 */
 	public function setDownloadPath($downloadPath) {
 		if (!in_array($downloadPath, Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallTypes())) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				htmlspecialchars($downloadPath) . ' not in allowed download paths',
-				1344766387
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(htmlspecialchars($downloadPath) . ' not in allowed download paths', 1344766387);
 		}
 		$this->downloadPath = $downloadPath;
 	}
@@ -122,7 +113,6 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	public function getDownloadPath() {
 		return $this->downloadPath;
 	}
-
 
 }
 

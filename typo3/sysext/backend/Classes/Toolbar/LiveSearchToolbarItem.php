@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Adds backend live search to the toolbar
  *
@@ -39,7 +38,7 @@ class LiveSearch implements backend_toolbarItem {
 	/**
 	 * Reference back to the backend object
 	 *
-	 * @var	TYPO3backend
+	 * @var 	TYPO3backend
 	 */
 	protected $backendReference;
 
@@ -59,17 +58,14 @@ class LiveSearch implements backend_toolbarItem {
 	 */
 	public function checkAccess() {
 		$access = FALSE;
-
-			// Loads the backend modules available for the logged in user.
+		// Loads the backend modules available for the logged in user.
 		$loadModules = t3lib_div::makeInstance('t3lib_loadModules');
 		$loadModules->observeWorkspaces = TRUE;
 		$loadModules->load($GLOBALS['TBE_MODULES']);
-
-			// Live search is heavily dependent on the list module and only available when that module is.
+		// Live search is heavily dependent on the list module and only available when that module is.
 		if (is_array($loadModules->modules['web']['sub']['list'])) {
 			$access = TRUE;
 		}
-
 		return $access;
 	}
 
@@ -80,8 +76,8 @@ class LiveSearch implements backend_toolbarItem {
 	 */
 	public function render() {
 		$this->addJavascriptToBackend();
-		return '<div class="live-search-wrapper">
-					<span title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:search') .'" class="t3-icon t3-icon-apps t3-icon-apps-toolbar t3-icon-toolbar-menu-search">&nbsp;</span>
+		return ('<div class="live-search-wrapper">
+					<span title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:search')) . '" class="t3-icon t3-icon-apps t3-icon-apps-toolbar t3-icon-toolbar-menu-search">&nbsp;</span>
 					<input id="live-search-box" />
 				</div>';
 	}
@@ -93,7 +89,6 @@ class LiveSearch implements backend_toolbarItem {
 	 */
 	protected function addJavascriptToBackend() {
 		$pageRenderer = $GLOBALS['TBE_TEMPLATE']->getPageRenderer();
-
 		$this->backendReference->addJavascriptFile('js/livesearch.js');
 	}
 
@@ -107,4 +102,5 @@ class LiveSearch implements backend_toolbarItem {
 	}
 
 }
+
 ?>

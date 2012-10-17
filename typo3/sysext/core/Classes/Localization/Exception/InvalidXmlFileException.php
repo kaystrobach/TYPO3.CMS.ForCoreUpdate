@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Invalid XML file exception
  *
@@ -33,6 +32,7 @@
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
 class t3lib_l10n_exception_InvalidXmlFile extends RuntimeException {
+
 
 }
 

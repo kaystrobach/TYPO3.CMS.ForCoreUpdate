@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Show log entries from table sys_log
  *
@@ -32,5 +31,8 @@
  * @subpackage belog
  */
 class Tx_Belog_Controller_ToolsController extends Tx_Belog_Controller_AbstractController {
+
+
 }
+
 ?>

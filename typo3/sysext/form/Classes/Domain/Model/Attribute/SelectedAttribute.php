@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'selected'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Selected extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'selected'
 	 * Used with the element 'option'
@@ -38,14 +38,12 @@ class tx_form_Domain_Model_Attributes_Selected extends tx_form_Domain_Model_Attr
 	 * @return string Attribute value
 	 */
 	public function getValue() {
-		if ((integer) $this->value === 1
-			|| (boolean) $this->value === TRUE
-			|| strtolower((string) $this->value) === 'selected')
-		{
+		if (((int) $this->value === 1 || (bool) $this->value === TRUE) || strtolower((string) $this->value) === 'selected') {
 			$attribute = 'selected';
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract implementation of a RecordCollection
  *
@@ -42,19 +41,20 @@
  * @subpackage t3lib
  */
 abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collection_RecordCollection, t3lib_collection_Persistable, t3lib_collection_Sortable {
-	/**
-	 * The table name collections are stored to
-	 *
-	 * @var string
-	 */
-	protected static $storageTableName = 'sys_collection';
 
 	/**
 	 * The table name collections are stored to
 	 *
 	 * @var string
 	 */
-	protected static $storageItemsField = 'items';
+	static protected $storageTableName = 'sys_collection';
+
+	/**
+	 * The table name collections are stored to
+	 *
+	 * @var string
+	 */
+	static protected $storageItemsField = 'items';
 
 	/**
 	 * Uid of the storage
@@ -138,7 +138,6 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 *
 	 * @link http://php.net/manual/en/iterator.valid.php
 	 * @return boolean The return value will be casted to boolean and then evaluated.
-	 * Returns true on success or false on failure.
 	 */
 	public function valid() {
 		return $this->storage->valid();
@@ -164,7 +163,7 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 */
 	public function serialize() {
 		$data = array(
-			'uid' => $this->getIdentifier(),
+			'uid' => $this->getIdentifier()
 		);
 		return serialize($data);
 	}
@@ -188,7 +187,6 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 *
 	 * @link http://php.net/manual/en/countable.count.php
 	 * @return integer The custom count as an integer.
-	 * The return value is cast to an integer.
 	 */
 	public function count() {
 		return $this->storage->count();
@@ -320,15 +318,9 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
 	 * @return t3lib_collection_Collection
 	 */
-	public static function load($id, $fillItems = FALSE) {
+	static public function load($id, $fillItems = FALSE) {
 		t3lib_div::loadTCA(static::$storageTableName);
-
-		$collectionRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-			'*',
-			static::$storageTableName,
-			'uid=' . intval($id) . t3lib_BEfunc::deleteClause(static::$storageTableName)
-		);
-
+		$collectionRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', static::$storageTableName, ('uid=' . intval($id)) . t3lib_BEfunc::deleteClause(static::$storageTableName));
 		return self::create($collectionRecord, $fillItems);
 	}
 
@@ -340,14 +332,12 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
 	 * @return t3lib_collection_Collection
 	 */
-	public static function create(array $collectionRecord, $fillItems = FALSE) {
+	static public function create(array $collectionRecord, $fillItems = FALSE) {
 		$collection = new static();
 		$collection->fromArray($collectionRecord);
-
 		if ($fillItems) {
 			$collection->loadContents();
 		}
-
 		return $collection;
 	}
 
@@ -363,11 +353,10 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 				$uid => $this->getPersistableDataArray()
 			)
 		);
-			// New records always must have a pid
+		// New records always must have a pid
 		if ($this->getIdentifier() == 0) {
 			$data[trim(static::$storageTableName)][$uid]['pid'] = 0;
 		}
-
 		/** @var t3lib_TCEmain $tce */
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
@@ -433,5 +422,7 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 		$this->description = $array['description'];
 		$this->itemTableName = $array['table_name'];
 	}
+
 }
+
 ?>

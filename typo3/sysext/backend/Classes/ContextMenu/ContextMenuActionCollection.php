@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Context Menu Action Collection
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_contextmenu_ActionCollection extends ArrayObject {
+
 	/**
 	 * Returns the collection in an array representation for e.g. serialization
 	 *
@@ -45,9 +45,9 @@ class t3lib_contextmenu_ActionCollection extends ArrayObject {
 			$arrayRepresentation[] = $iterator->current()->toArray();
 			$iterator->next();
 		}
-
 		return $arrayRepresentation;
 	}
+
 }
 
 ?>

@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Get page path string from page id
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_Be_PagePathViewHelper extends Tx_Fluid_ViewHelpers_Be_AbstractBackendViewHelper {
+
 	/**
 	 * Resolve page id to page path string (with automatic cropping to maximum given length).
 	 *
@@ -42,5 +42,7 @@ class Tx_Belog_ViewHelpers_Be_PagePathViewHelper extends Tx_Fluid_ViewHelpers_Be
 	public function render($pid, $titleLimit = 20) {
 		return t3lib_BEfunc::getRecordPath($pid, '', $titleLimit);
 	}
+
 }
+
 ?>

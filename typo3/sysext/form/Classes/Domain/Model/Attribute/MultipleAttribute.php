@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'multiple'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Multiple extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'multiple'.
 	 * Used with element 'select'
@@ -41,14 +41,12 @@ class tx_form_Domain_Model_Attributes_Multiple extends tx_form_Domain_Model_Attr
 	 * @return string Attribute value
 	 */
 	public function getValue() {
-		if ((integer) $this->value === 1
-			|| (boolean) $this->value === TRUE
-			|| strtolower((string) $this->value) === 'multiple')
-		{
+		if (((int) $this->value === 1 || (bool) $this->value === TRUE) || strtolower((string) $this->value) === 'multiple') {
 			$attribute = 'multiple';
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

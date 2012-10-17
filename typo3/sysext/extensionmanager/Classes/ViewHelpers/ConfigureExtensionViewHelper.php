@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * View helper for configure extension link
  *
@@ -47,16 +46,14 @@ class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fl
 	 */
 	public function render($extension) {
 		$tag = '';
-		if ($extension['installed'] && file_exists(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt')) {
+		if ($extension['installed'] && file_exists((PATH_site . $extension['siteRelPath']) . '/ext_conf_template.txt')) {
 			$uriBuilder = $this->controllerContext->getUriBuilder();
 			$action = 'showConfigurationForm';
-			$uri = $uriBuilder
-				->reset()
-				->uriFor($action, array(
-					'extension' => array (
-						'key' => $extension['key']
-					)
-				), 'Configuration');
+			$uri = $uriBuilder->reset()->uriFor($action, array(
+				'extension' => array(
+					'key' => $extension['key']
+				)
+			), 'Configuration');
 			$this->tag->addAttribute('href', $uri);
 			$label = 'Configure';
 			$this->tag->setContent($label);
@@ -64,5 +61,7 @@ class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fl
 		}
 		return $tag;
 	}
+
 }
+
 ?>

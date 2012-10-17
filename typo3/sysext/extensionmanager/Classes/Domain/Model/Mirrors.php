@@ -27,7 +27,6 @@
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-11
  * @package Extension Manager
  * @subpackage Model
@@ -69,7 +68,7 @@ class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_A
 		if (is_null($mirrorId)) {
 			$this->isRandomSelection = TRUE;
 		} else {
-			if (is_int($mirrorId) && $mirrorId >= 1 && $mirrorId <= count($this->mirrors)) {
+			if ((is_int($mirrorId) && $mirrorId >= 1) && $mirrorId <= count($this->mirrors)) {
 				$this->currentMirror = $mirrorId - 1;
 			}
 		}
@@ -103,7 +102,6 @@ class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_A
 	public function getMirrorUrl() {
 		$mirror = $this->getMirror();
 		$mirrorUrl = $mirror['host'] . $mirror['path'];
-
 		return 'http://' . $mirrorUrl;
 	}
 
@@ -112,7 +110,7 @@ class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_A
 	 *
 	 * @access public
 	 * @return array multidimensional array with mirrors and their properties
-	 * @see	 $mirrors, setMirrors()
+	 * @see 	 $mirrors, setMirrors()
 	 */
 	public function getMirrors() {
 		return $this->mirrors;
@@ -130,6 +128,7 @@ class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_A
 			$this->mirrors = $mirrors;
 		}
 	}
+
 }
 
 ?>

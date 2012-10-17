@@ -22,7 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Adopted from OWASP Enterprise Security API (ESAPI) reference implementation for the JavaScript Codec.
  * Original Author: Mike Boberski
@@ -32,15 +31,14 @@
  *
  * @package TYPO3
  * @subpackage t3lib
- *
  * @author Mike Boberski <boberski_michael@bah.com>
- * @copyright 2009-2010 The OWASP Foundation
- * @link http://www.owasp.org/index.php/ESAPI
- *
  * @author Franz G. Jahn <franzjahn@cron-it.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
+ * @copyright 2009-2010 The OWASP Foundation
+ * @link http://www.owasp.org/index.php/ESAPI
  */
 class t3lib_codec_JavaScriptEncoder implements t3lib_Singleton {
+
 	/**
 	 * A map where the keys are ordinal values of non-alphanumeric single-byte
 	 * characters and the values are hexadecimal equivalents as strings.
@@ -54,7 +52,7 @@ class t3lib_codec_JavaScriptEncoder implements t3lib_Singleton {
 	 *
 	 * @var array
 	 */
-	protected $immuneCharacters = array(',', '.', '_' );
+	protected $immuneCharacters = array(',', '.', '_');
 
 	/**
 	 * TYPO3 charset encoding object
@@ -70,9 +68,8 @@ class t3lib_codec_JavaScriptEncoder implements t3lib_Singleton {
 	 */
 	public function __construct() {
 		$this->charsetConversion = t3lib_div::makeInstance('t3lib_cs');
-
 		for ($i = 0; $i < 256; $i++) {
-			if (($i >= ord('0') && $i <= ord('9')) || ($i >= ord('A') && $i <= ord('Z')) || ($i >= ord('a') && $i <= ord('z'))) {
+			if (($i >= ord('0') && $i <= ord('9') || $i >= ord('A') && $i <= ord('Z')) || $i >= ord('a') && $i <= ord('z')) {
 				$this->hexMatrix[$i] = NULL;
 			} else {
 				$this->hexMatrix[$i] = dechex($i);
@@ -93,7 +90,6 @@ class t3lib_codec_JavaScriptEncoder implements t3lib_Singleton {
 			$c = $this->charsetConversion->substr('utf-8', $input, $i, 1);
 			$encodedString .= $this->encodeCharacter($c);
 		}
-
 		return $encodedString;
 	}
 
@@ -111,24 +107,20 @@ class t3lib_codec_JavaScriptEncoder implements t3lib_Singleton {
 		if ($this->isImmuneCharacter($character)) {
 			return $character;
 		}
-
 		$ordinalValue = $this->charsetConversion->utf8CharToUnumber($character);
-
-			// Check for alphanumeric characters
+		// Check for alphanumeric characters
 		$hex = $this->getHexForNonAlphanumeric($ordinalValue);
 		if ($hex === NULL) {
 			return $character;
 		}
-
-			// Encode up to 256 with \\xHH
+		// Encode up to 256 with \\xHH
 		if ($ordinalValue < 256) {
 			$pad = substr('00', strlen($hex));
-			return '\\x' . $pad . strtoupper($hex);
+			return ('\\x' . $pad) . strtoupper($hex);
 		}
-
-			// Otherwise encode with \\uHHHH
+		// Otherwise encode with \\uHHHH
 		$pad = substr('0000', strlen($hex));
-		return '\\u' . $pad . strtoupper($hex);
+		return ('\\u' . $pad) . strtoupper($hex);
 	}
 
 	/**
@@ -157,5 +149,7 @@ class t3lib_codec_JavaScriptEncoder implements t3lib_Singleton {
 		}
 		return dechex($ordinalValue);
 	}
+
 }
+
 ?>

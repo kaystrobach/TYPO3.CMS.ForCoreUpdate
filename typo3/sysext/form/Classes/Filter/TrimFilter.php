@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Trim filter
  *
@@ -52,19 +51,19 @@ class tx_form_System_Filter_Trim implements tx_form_System_Filter_Interface {
 	 * beginning or the end of the input,
 	 * in addition to the default trim characters
 	 *
-	 * @param  string $characterList
+	 * @param string $characterList
 	 * @return tx_form_Filter_Trim
 	 */
 	public function setCharacterList($characterList) {
 		$this->characterList = $characterList;
-
 		return $this;
 	}
+
 	/**
 	 * Return filtered value
 	 * Strip characters from the beginning and the end
 	 *
-	 * @param  string $value
+	 * @param string $value
 	 * @return string
 	 */
 	public function filter($value) {
@@ -74,5 +73,7 @@ class tx_form_System_Filter_Trim implements tx_form_System_Filter_Interface {
 			return trim((string) $value, $this->characterList);
 		}
 	}
+
 }
+
 ?>

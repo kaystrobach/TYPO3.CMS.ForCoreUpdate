@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Page Tree and Context Menu Commands
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 final class t3lib_tree_pagetree_Commands {
+
 	/**
 	 * @var boolean|null
 	 */
@@ -64,7 +64,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param t3lib_tree_pagetree_Node $node
 	 * @return void
 	 */
-	public static function visiblyNode(t3lib_tree_pagetree_Node $node) {
+	static public function visiblyNode(t3lib_tree_pagetree_Node $node) {
 		$data['pages'][$node->getWorkspaceId()]['hidden'] = 0;
 		self::processTceCmdAndDataMap(array(), $data);
 	}
@@ -75,7 +75,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param t3lib_tree_pagetree_Node $node
 	 * @return void
 	 */
-	public static function disableNode(t3lib_tree_pagetree_Node $node) {
+	static public function disableNode(t3lib_tree_pagetree_Node $node) {
 		$data['pages'][$node->getWorkspaceId()]['hidden'] = 1;
 		self::processTceCmdAndDataMap(array(), $data);
 	}
@@ -86,7 +86,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param t3lib_tree_pagetree_Node $node
 	 * @return void
 	 */
-	public static function deleteNode(t3lib_tree_pagetree_Node $node) {
+	static public function deleteNode(t3lib_tree_pagetree_Node $node) {
 		$cmd['pages'][$node->getId()]['delete'] = 1;
 		self::processTceCmdAndDataMap($cmd);
 	}
@@ -98,10 +98,9 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $targetId
 	 * @return void
 	 */
-	public static function restoreNode(t3lib_tree_pagetree_Node $node, $targetId) {
+	static public function restoreNode(t3lib_tree_pagetree_Node $node, $targetId) {
 		$cmd['pages'][$node->getId()]['undelete'] = 1;
 		self::processTceCmdAndDataMap($cmd);
-
 		if ($node->getId() !== $targetId) {
 			self::moveNode($node, $targetId);
 		}
@@ -114,7 +113,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param string $updatedLabel
 	 * @return void
 	 */
-	public static function updateNodeLabel(t3lib_tree_pagetree_Node $node, $updatedLabel) {
+	static public function updateNodeLabel(t3lib_tree_pagetree_Node $node, $updatedLabel) {
 		$data['pages'][$node->getWorkspaceId()][$node->getTextSourceField()] = $updatedLabel;
 		self::processTceCmdAndDataMap(array(), $data);
 	}
@@ -128,10 +127,9 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $targetId
 	 * @return integer
 	 */
-	public static function copyNode(t3lib_tree_pagetree_Node $sourceNode, $targetId) {
+	static public function copyNode(t3lib_tree_pagetree_Node $sourceNode, $targetId) {
 		$cmd['pages'][$sourceNode->getId()]['copy'] = $targetId;
 		$returnValue = self::processTceCmdAndDataMap($cmd);
-
 		return $returnValue['pages'][$sourceNode->getId()];
 	}
 
@@ -144,7 +142,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $targetId
 	 * @return void
 	 */
-	public static function moveNode(t3lib_tree_pagetree_Node $sourceNode, $targetId) {
+	static public function moveNode(t3lib_tree_pagetree_Node $sourceNode, $targetId) {
 		$cmd['pages'][$sourceNode->getId()]['move'] = $targetId;
 		self::processTceCmdAndDataMap($cmd);
 	}
@@ -157,29 +155,24 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $pageType
 	 * @return integer
 	 */
-	public static function createNode(t3lib_tree_pagetree_Node $parentNode, $targetId, $pageType) {
+	static public function createNode(t3lib_tree_pagetree_Node $parentNode, $targetId, $pageType) {
 		$placeholder = 'NEW12345';
 		$pid = $parentNode->getWorkspaceId();
-
-			// Use page TsConfig as default page initialization
+		// Use page TsConfig as default page initialization
 		$pageTs = t3lib_BEfunc::getPagesTSconfig($pid);
 		if (array_key_exists('TCAdefaults.', $pageTs) && array_key_exists('pages.', $pageTs['TCAdefaults.'])) {
 			$data['pages'][$placeholder] = $pageTs['TCAdefaults.']['pages.'];
 		} else {
 			$data['pages'][$placeholder] = array();
 		}
-
 		$data['pages'][$placeholder]['pid'] = $pid;
 		$data['pages'][$placeholder]['doktype'] = $pageType;
 		$data['pages'][$placeholder]['title'] = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:tree.defaultPageTitle', TRUE);
-
 		$newPageId = self::processTceCmdAndDataMap(array(), $data);
 		$node = self::getNode($newPageId[$placeholder]);
-
 		if ($parentNode->getWorkspaceId() !== $targetId) {
 			self::moveNode($node, $targetId);
 		}
-
 		return $newPageId[$placeholder];
 	}
 
@@ -199,13 +192,12 @@ final class t3lib_tree_pagetree_Commands {
 	 * @return array
 	 * @throws RuntimeException if an error happened while the TCE processing
 	 */
-	protected static function processTceCmdAndDataMap(array $cmd, array $data = array()) {
+	static protected function processTceCmdAndDataMap(array $cmd, array $data = array()) {
 		/** @var $tce t3lib_TCEmain */
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 		$tce->start($data, $cmd);
 		$tce->copyTree = t3lib_utility_Math::forceIntegerInRange($GLOBALS['BE_USER']->uc['copyLevels'], 0, 100);
-
 		if (count($cmd)) {
 			$tce->process_cmdmap();
 			$returnValues = $tce->copyMappingArray_merged;
@@ -213,12 +205,10 @@ final class t3lib_tree_pagetree_Commands {
 			$tce->process_datamap();
 			$returnValues = $tce->substNEWwithIDs;
 		}
-
-			// check errors
+		// check errors
 		if (count($tce->errorLog)) {
 			throw new RuntimeException(implode(chr(10), $tce->errorLog), 1333754629);
 		}
-
 		return $returnValues;
 	}
 
@@ -229,7 +219,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param boolean $unsetMovePointers
 	 * @return t3lib_tree_pagetree_Node
 	 */
-	public static function getNode($nodeId, $unsetMovePointers = TRUE) {
+	static public function getNode($nodeId, $unsetMovePointers = TRUE) {
 		$record = self::getNodeRecord($nodeId, $unsetMovePointers);
 		return self::getNewNode($record);
 	}
@@ -240,33 +230,27 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $uid
 	 * @return string
 	 */
-	public static function getMountPointPath($uid = -1) {
+	static public function getMountPointPath($uid = -1) {
 		if ($uid === -1) {
 			$uid = intval($GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint']);
 		}
-
 		if ($uid <= 0) {
 			return '';
 		}
-
 		if (self::$useNavTitle === NULL) {
 			self::$useNavTitle = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showNavTitle');
 		}
 		$rootline = array_reverse(t3lib_BEfunc::BEgetRootLine($uid));
 		array_shift($rootline);
-
 		$path = array();
 		foreach ($rootline as $rootlineElement) {
 			$record = self::getNodeRecord($rootlineElement['uid']);
-
 			$text = $record['title'];
 			if (self::$useNavTitle && trim($record['nav_title']) !== '') {
 				$text = $record['nav_title'];
 			}
-
 			$path[] = $text;
 		}
-
 		return htmlspecialchars('/' . implode('/', $path));
 	}
 
@@ -277,7 +261,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param boolean $unsetMovePointers
 	 * @return array
 	 */
-	public static function getNodeRecord($nodeId, $unsetMovePointers = TRUE) {
+	static public function getNodeRecord($nodeId, $unsetMovePointers = TRUE) {
 		$record = t3lib_BEfunc::getRecordWSOL('pages', $nodeId, '*', '', TRUE, $unsetMovePointers);
 		return $record;
 	}
@@ -288,21 +272,9 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $uid
 	 * @return string
 	 */
-	public static function getDomainName($uid) {
-		$whereClause = $GLOBALS['TYPO3_DB']->quoteStr(
-			'pid=' . intval($uid) . t3lib_BEfunc::deleteClause('sys_domain') .
-				t3lib_BEfunc::BEenableFields('sys_domain'),
-			'sys_domain'
-		);
-
-		$domain = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-			'domainName',
-			'sys_domain',
-			$whereClause,
-			'',
-			'sorting'
-		);
-
+	static public function getDomainName($uid) {
+		$whereClause = $GLOBALS['TYPO3_DB']->quoteStr((('pid=' . intval($uid)) . t3lib_BEfunc::deleteClause('sys_domain')) . t3lib_BEfunc::BEenableFields('sys_domain'), 'sys_domain');
+		$domain = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('domainName', 'sys_domain', $whereClause, '', 'sorting');
 		return htmlspecialchars($domain['domainName']);
 	}
 
@@ -313,7 +285,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @param integer $mountPoint
 	 * @return t3lib_tree_pagetree_Node
 	 */
-	public static function getNewNode($record, $mountPoint = 0) {
+	static public function getNewNode($record, $mountPoint = 0) {
 		if (self::$titleLength === NULL) {
 			self::$useNavTitle = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showNavTitle');
 			self::$addIdAsPrefix = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showPageIdWithTitle');
@@ -321,55 +293,42 @@ final class t3lib_tree_pagetree_Commands {
 			self::$backgroundColors = $GLOBALS['BE_USER']->getTSConfigProp('options.pageTree.backgroundColor');
 			self::$titleLength = intval($GLOBALS['BE_USER']->uc['titleLen']);
 		}
-
 		/** @var $subNode t3lib_tree_pagetree_Node */
 		$subNode = t3lib_div::makeInstance('t3lib_tree_pagetree_Node');
 		$subNode->setRecord($record);
 		$subNode->setCls($record['_CSSCLASS']);
 		$subNode->setType('pages');
-
 		$subNode->setId($record['uid']);
 		$subNode->setMountPoint($mountPoint);
-		$subNode->setWorkspaceId(($record['_ORIG_uid'] ? $record['_ORIG_uid'] : $record['uid']));
+		$subNode->setWorkspaceId($record['_ORIG_uid'] ? $record['_ORIG_uid'] : $record['uid']);
 		$subNode->setBackgroundColor(self::$backgroundColors[$record['uid']]);
-
 		$field = 'title';
 		$text = $record['title'];
 		if (self::$useNavTitle && trim($record['nav_title']) !== '') {
 			$field = 'nav_title';
 			$text = $record['nav_title'];
 		}
-
 		if (trim($text) === '') {
-			$visibleText = '[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.no_title', TRUE) . ']';
+			$visibleText = ('[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.no_title', TRUE)) . ']';
 		} else {
 			$visibleText = $text;
 		}
 		$visibleText = t3lib_div::fixed_lgd_cs($visibleText, self::$titleLength);
-
 		$suffix = '';
 		if (self::$addDomainName) {
 			$domain = self::getDomainName($record['uid']);
-			$suffix = ($domain !== '' ? ' [' . $domain . ']' : '');
+			$suffix = $domain !== '' ? (' [' . $domain) . ']' : '';
 		}
-
-		$qtip = str_replace(' - ', '<br />', htmlspecialchars(
-			t3lib_BEfunc::titleAttribForPages($record, '', FALSE))
-		);
-
+		$qtip = str_replace(' - ', '<br />', htmlspecialchars(t3lib_BEfunc::titleAttribForPages($record, '', FALSE)));
 		$prefix = '';
 		$lockInfo = t3lib_BEfunc::isRecordLocked('pages', $record['uid']);
 		if (is_array($lockInfo)) {
 			$qtip .= '<br />' . htmlspecialchars($lockInfo['msg']);
-			$prefix .= t3lib_iconWorks::getSpriteIcon(
-				'status-warning-in-use',
-				array(
-					'class' => 'typo3-pagetree-status'
-				)
-			);
+			$prefix .= t3lib_iconWorks::getSpriteIcon('status-warning-in-use', array(
+				'class' => 'typo3-pagetree-status'
+			));
 		}
-
-			// Call stats information hook
+		// Call stats information hook
 		$stat = '';
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks'])) {
 			$_params = array('pages', $record['uid']);
@@ -377,35 +336,25 @@ final class t3lib_tree_pagetree_Commands {
 				$stat .= t3lib_div::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
-
-		$prefix .= htmlspecialchars(self::$addIdAsPrefix ? '[' . $record['uid'] . '] ' : '');
+		$prefix .= htmlspecialchars(self::$addIdAsPrefix ? ('[' . $record['uid']) . '] ' : '');
 		$subNode->setEditableText($text);
-		$subNode->setText(
-			htmlspecialchars($visibleText),
-			$field,
-			$prefix,
-			htmlspecialchars($suffix) . $stat
-		);
-
+		$subNode->setText(htmlspecialchars($visibleText), $field, $prefix, htmlspecialchars($suffix) . $stat);
 		$subNode->setQTip($qtip);
-
 		if ($record['uid'] !== 0) {
 			$spriteIconCode = t3lib_iconWorks::getSpriteIconForRecord('pages', $record);
 		} else {
 			$spriteIconCode = t3lib_iconWorks::getSpriteIcon('apps-pagetree-root');
 		}
 		$subNode->setSpriteIconCode($spriteIconCode);
-
 		if (!$subNode->canCreateNewPages() || intval($record['t3ver_state']) === 2) {
 			$subNode->setIsDropTarget(FALSE);
 		}
-
-		if (!$subNode->canBeEdited() || !$subNode->canBeRemoved() || intval($record['t3ver_state']) === 2) {
+		if ((!$subNode->canBeEdited() || !$subNode->canBeRemoved()) || intval($record['t3ver_state']) === 2) {
 			$subNode->setDraggable(FALSE);
 		}
-
 		return $subNode;
 	}
+
 }
 
 ?>

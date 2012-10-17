@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A class used for any kind of messages.
  *
@@ -36,12 +35,11 @@
  */
 abstract class t3lib_message_AbstractMessage {
 
-	const NOTICE  = -2;
-	const INFO    = -1;
-	const OK      = 0;
+	const NOTICE = -2;
+	const INFO = -1;
+	const OK = 0;
 	const WARNING = 1;
-	const ERROR   = 2;
-
+	const ERROR = 2;
 	/**
 	 * The message's title
 	 *
@@ -105,8 +103,6 @@ abstract class t3lib_message_AbstractMessage {
 	 * Gets the message' severity.
 	 *
 	 * @return integer The message' severity, either of t3lib_message_AbstractMessage::INFO,
-	 *     t3lib_message_AbstractMessage::OK, t3lib_message_AbstractMessage::WARNING
-	 *     or t3lib_message_AbstractMessage::ERROR
 	 */
 	public function getSeverity() {
 		return $this->severity;
@@ -116,17 +112,10 @@ abstract class t3lib_message_AbstractMessage {
 	 * Sets the message' severity
 	 *
 	 * @param integer $severity The severity, must be either of t3lib_message_AbstractMessage::INFO,
-	 *     t3lib_message_AbstractMessage::OK, t3lib_message_AbstractMessage::WARNING
-	 *     or t3lib_message_AbstractMessage::ERROR. Default is t3lib_message_AbstractMessage::OK.
 	 * @return void
 	 */
 	public function setSeverity($severity = self::OK) {
-		$this->severity = t3lib_utility_Math::forceIntegerInRange(
-			$severity,
-			self::NOTICE, // minimum
-			self::ERROR, // maximum
-			self::OK // default if out of bounds
-		);
+		$this->severity = t3lib_utility_Math::forceIntegerInRange($severity, self::NOTICE, self::ERROR, self::OK);
 	}
 
 	/**
@@ -137,19 +126,18 @@ abstract class t3lib_message_AbstractMessage {
 	 */
 	public function __toString() {
 		$severities = array(
-			self::INFO    => 'INFO',
-			self::OK      => 'OK',
+			self::INFO => 'INFO',
+			self::OK => 'OK',
 			self::WARNING => 'WARNING',
-			self::ERROR   => 'ERROR',
+			self::ERROR => 'ERROR'
 		);
-
 		$title = '';
 		if (!empty($this->title)) {
 			$title = ' - ' . $this->title;
 		}
-
-		return $severities[$this->severity] . $title . ': ' . $this->message;
+		return (($severities[$this->severity] . $title) . ': ') . $this->message;
 	}
+
 }
 
 ?>

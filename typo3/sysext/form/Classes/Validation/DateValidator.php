@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Date rule
  *
@@ -46,7 +45,6 @@ class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
 	 */
 	public function __construct($arguments) {
 		$this->setFormat($arguments['format']);
-
 		parent::__construct($arguments);
 	}
 
@@ -59,13 +57,10 @@ class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
 	public function isValid() {
 		if ($this->requestHandler->has($this->fieldName)) {
 			$value = $this->requestHandler->getByMethod($this->fieldName);
-
 			$parsedDate = strptime($value, $this->format);
-
 			$parsedDateYear = $parsedDate['tm_year'] + 1900;
 			$parsedDateMonth = $parsedDate['tm_mon'] + 1;
 			$parsedDateDay = $parsedDate['tm_mday'];
-
 			return checkdate($parsedDateMonth, $parsedDateDay, $parsedDateYear);
 		}
 		return TRUE;
@@ -83,7 +78,6 @@ class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
 		} else {
 			$this->format = (string) $format;
 		}
-
 		return $this;
 	}
 
@@ -97,7 +91,6 @@ class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
 	protected function substituteValues($message) {
 		$humanReadableDateFormat = $this->humanReadableDateFormat($this->format);
 		$message = str_replace('%format', $humanReadableDateFormat, $message);
-
 		return $message;
 	}
 
@@ -125,11 +118,12 @@ class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
 			'%H' => $this->localizationHandler->getLocalLanguageLabel($label . 'H'),
 			'%I' => $this->localizationHandler->getLocalLanguageLabel($label . 'I'),
 			'%M' => $this->localizationHandler->getLocalLanguageLabel($label . 'M'),
-			'%S' => $this->localizationHandler->getLocalLanguageLabel($label . 'S'),
+			'%S' => $this->localizationHandler->getLocalLanguageLabel($label . 'S')
 		);
-
 		$humanReadableFormat = str_replace(array_keys($pairs), array_values($pairs), $format);
 		return $humanReadableFormat;
 	}
+
 }
+
 ?>

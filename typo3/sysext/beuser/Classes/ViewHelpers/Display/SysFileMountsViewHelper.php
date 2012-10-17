@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Converts comma separated list of sys_filemounts uids to html unordered list (<ul>) with speaking titles
  *
@@ -41,19 +40,12 @@ class Tx_Beuser_ViewHelpers_Display_SysFileMountsViewHelper extends Tx_Fluid_Cor
 		if (!$uids) {
 			return '';
 		}
-
 		$content = '';
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'uid, title',
-			'sys_filemounts',
-			'',
-			'title ASC'
-		);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, title', 'sys_filemounts', '', 'title ASC');
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$content .= '<li>' . $row['title'] . ' [' . $row['uid'] . ']</li>';
+			$content .= ((('<li>' . $row['title']) . ' [') . $row['uid']) . ']</li>';
 		}
-
-		return '<ul>' . $content . '</ul>';
+		return ('<ul>' . $content) . '</ul>';
 	}
 
 }

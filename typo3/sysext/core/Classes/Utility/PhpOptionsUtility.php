@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to handle php environment specific options / functions
  *
@@ -33,12 +32,13 @@
  * @subpackage t3lib
  */
 final class t3lib_utility_PhpOptions {
+
 	/**
 	 * Check if php safe_mode is enabled
 	 *
 	 * @return boolean TRUE if safe_mode is enabled, FALSE if disabled
 	 */
-	public static function isSafeModeEnabled() {
+	static public function isSafeModeEnabled() {
 		if (version_compare(phpversion(), '5.4', '<')) {
 			return self::getIniValueBoolean('safe_mode');
 		}
@@ -50,7 +50,7 @@ final class t3lib_utility_PhpOptions {
 	 *
 	 * @return boolean TRUE if magic_quotes_gpc is enabled, FALSE if disabled
 	 */
-	public static function isMagicQuotesGpcEnabled() {
+	static public function isMagicQuotesGpcEnabled() {
 		if (version_compare(phpversion(), '5.4', '<')) {
 			return self::getIniValueBoolean('magic_quotes_gpc');
 		}
@@ -62,7 +62,7 @@ final class t3lib_utility_PhpOptions {
 	 *
 	 * @return boolean TRUE if sql.safe_mode is enabled, FALSE if disabled
 	 */
-	public static function isSqlSafeModeEnabled() {
+	static public function isSqlSafeModeEnabled() {
 		return self::getIniValueBoolean('sql.safe_mode');
 	}
 
@@ -71,7 +71,7 @@ final class t3lib_utility_PhpOptions {
 	 *
 	 * @return boolean TRUE if session.auto_start is enabled, FALSE if disabled
 	 */
-	public static function isSessionAutoStartEnabled() {
+	static public function isSessionAutoStartEnabled() {
 		return self::getIniValueBoolean('session.auto_start');
 	}
 
@@ -81,9 +81,10 @@ final class t3lib_utility_PhpOptions {
 	 * @param string $configOption
 	 * @return boolean TRUE if the given option is enabled, FALSE if disabled
 	 */
-	public static function getIniValueBoolean($configOption) {
+	static public function getIniValueBoolean($configOption) {
 		return filter_var(ini_get($configOption), FILTER_VALIDATE_BOOLEAN, array(FILTER_REQUIRE_SCALAR, FILTER_NULL_ON_FAILURE));
 	}
+
 }
 
 ?>

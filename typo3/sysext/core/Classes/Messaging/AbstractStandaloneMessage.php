@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract class as base for standalone messages (error pages etc.)
  *
@@ -44,6 +43,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 
 	/**
 	 * Default markers
+	 *
 	 * @var array
 	 */
 	protected $defaultMarkers = array();
@@ -83,26 +83,25 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 
 	/**
 	 * Returns the default markers like title and message, which exist for every standalone message
+	 *
 	 * @return array
 	 */
 	protected function getDefaultMarkers() {
 		$classes = array(
-			self::NOTICE  => 'notice',
-			self::INFO    => 'information',
-			self::OK      => 'ok',
+			self::NOTICE => 'notice',
+			self::INFO => 'information',
+			self::OK => 'ok',
 			self::WARNING => 'warning',
-			self::ERROR   => 'error',
+			self::ERROR => 'error'
 		);
-
 		$defaultMarkers = array(
-			'###CSS_CLASS###'     => $classes[$this->severity],
-			'###TITLE###'         => $this->title,
-			'###MESSAGE###'       => $this->message,
-			'###BASEURL###'       => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
+			'###CSS_CLASS###' => $classes[$this->severity],
+			'###TITLE###' => $this->title,
+			'###MESSAGE###' => $this->message,
+			'###BASEURL###' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
 			'###TYPO3_mainDir###' => TYPO3_mainDir,
-			'###TYPO3_copyright_year###' => TYPO3_copyright_year,
+			'###TYPO3_copyright_year###' => TYPO3_copyright_year
 		);
-
 		return $defaultMarkers;
 	}
 
@@ -113,10 +112,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	 */
 	public function getHtmlTemplate() {
 		if (!$this->htmlTemplate) {
-			throw new RuntimeException(
-				'No HTML template file has been defined, yet',
-				1314390127
-			);
+			throw new RuntimeException('No HTML template file has been defined, yet', 1314390127);
 		}
 		return $this->htmlTemplate;
 	}
@@ -129,12 +125,8 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	 */
 	public function setHtmlTemplate($htmlTemplate) {
 		$this->htmlTemplate = PATH_site . $htmlTemplate;
-
 		if (!file_exists($this->htmlTemplate)) {
-			throw new RuntimeException(
-				'Template file "' . $this->htmlTemplate .'" not found',
-				1312830504
-			);
+			throw new RuntimeException(('Template file "' . $this->htmlTemplate) . '" not found', 1312830504);
 		}
 	}
 
@@ -145,7 +137,6 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	 */
 	public function render() {
 		$markers = array_merge($this->getDefaultMarkers(), $this->markers);
-
 		$content = t3lib_div::getUrl($this->htmlTemplate);
 		$content = t3lib_parseHtml::substituteMarkerArray($content, $markers, '', FALSE, TRUE);
 		return $content;
@@ -160,6 +151,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 		$content = $this->render();
 		echo $content;
 	}
+
 }
 
 ?>

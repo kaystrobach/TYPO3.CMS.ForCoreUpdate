@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Renderer for unordered lists
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
+
 	/**
 	 * recursion level
 	 *
@@ -48,15 +48,13 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	 * @return string
 	 */
 	public function renderNode(t3lib_tree_RepresentationNode $node, $recursive = TRUE) {
-		$code = '<li><span class="' . $node->getIcon() . '">&nbsp;</span>' . $node->getLabel();
+		$code = (('<li><span class="' . $node->getIcon()) . '">&nbsp;</span>') . $node->getLabel();
 		if ($recursive && $node->getChildNodes() !== NULL) {
 			$this->recursionLevel++;
 			$code .= $this->renderNodeCollection($node->getChildNodes());
 			$this->recursionLevel--;
-
 		}
 		$code .= '</li>';
-
 		return $code;
 	}
 
@@ -69,10 +67,9 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	 */
 	public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE) {
 		$this->recursionLevel = 0;
-		$code = '<ul class="level' . $this->recursionLevel . '" style="margin-left:10px">';
+		$code = ('<ul class="level' . $this->recursionLevel) . '" style="margin-left:10px">';
 		$code .= $this->renderNode($tree->getRoot(), $recursive);
 		$code .= '</ul>';
-
 		return $code;
 	}
 
@@ -84,14 +81,14 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	 * @return string
 	 */
 	public function renderNodeCollection(t3lib_tree_NodeCollection $collection, $recursive = TRUE) {
-		$code = '<ul class="level' . $this->recursionLevel . '" style="margin-left:10px">';
+		$code = ('<ul class="level' . $this->recursionLevel) . '" style="margin-left:10px">';
 		foreach ($collection as $node) {
 			$code .= $this->renderNode($node, $recursive);
 		}
 		$code .= '</ul>';
-
 		return $code;
 	}
+
 }
 
 ?>

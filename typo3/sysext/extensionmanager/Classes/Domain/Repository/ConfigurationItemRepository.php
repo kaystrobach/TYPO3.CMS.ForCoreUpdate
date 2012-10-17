@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A repository for extension configuration items
  *
@@ -53,7 +52,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	 * @return null|SplObjectStorage
 	 */
 	public function findByExtension(array $extension) {
-		$configRaw = t3lib_div::getUrl(PATH_site . $extension['siteRelPath'] . '/ext_conf_template.txt');
+		$configRaw = t3lib_div::getUrl((PATH_site . $extension['siteRelPath']) . '/ext_conf_template.txt');
 		$configurationObjectStorage = NULL;
 		if ($configRaw) {
 			$configurationObjectStorage = $this->convertRawConfigurationToObject($configRaw, $extension);
@@ -73,19 +72,10 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		$metaInformation = $this->addMetaInformation($defaultConfiguration);
 		$configuration = $this->mergeWithExistingConfiguration($defaultConfiguration, $extension);
 		$hierarchicConfiguration = array();
-
 		foreach ($configuration as $configurationOption) {
-			$hierarchicConfiguration = t3lib_div::array_merge_recursive_overrule(
-				$this->buildConfigurationArray($configurationOption, $extension),
-				$hierarchicConfiguration
-			);
+			$hierarchicConfiguration = t3lib_div::array_merge_recursive_overrule($this->buildConfigurationArray($configurationOption, $extension), $hierarchicConfiguration);
 		}
-		$configurationObjectStorage = $this->convertHierarchicArrayToObject(
-			t3lib_div::array_merge_recursive_overrule(
-				$hierarchicConfiguration,
-				$metaInformation
-			)
-		);
+		$configurationObjectStorage = $this->convertHierarchicArrayToObject(t3lib_div::array_merge_recursive_overrule($hierarchicConfiguration, $metaInformation));
 		return $configurationObjectStorage;
 	}
 
@@ -106,12 +96,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		if (Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key'])) {
 			$configurationOption['label'] = Tx_Extbase_Utility_Localization::translate($configurationOption['label'], $extension['key']);
 		}
-		$configurationOption['labels'] = t3lib_div::trimExplode(
-			':',
-			$configurationOption['label'],
-			FALSE,
-			2
-		);
+		$configurationOption['labels'] = t3lib_div::trimExplode(':', $configurationOption['label'], FALSE, 2);
 		$configurationOption['subcat_name'] = $configurationOption['subcat_name'] ? $configurationOption['subcat_name'] : '__default';
 		$hierarchicConfiguration[$configurationOption['cat']][$configurationOption['subcat_name']][$configurationOption['name']] = $configurationOption;
 		return $hierarchicConfiguration;
@@ -125,8 +110,8 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	 * @return array
 	 */
 	protected function extractInformationForConfigFieldsOfTypeOptions(array $configurationOption) {
-		preg_match('/options\[(.*)\]/is', $configurationOption['type'], $typeMatches);
-		preg_match('/options\[(.*)\]/is', $configurationOption['label'], $labelMatches);
+		preg_match('/options\\[(.*)\\]/is', $configurationOption['type'], $typeMatches);
+		preg_match('/options\\[(.*)\\]/is', $configurationOption['label'], $labelMatches);
 		$optionValues = explode(',', $typeMatches[1]);
 		$optionLabels = explode(',', $labelMatches[1]);
 		$configurationOption['generic'] = $labelMatches ? array_combine($optionLabels, $optionValues) : array_combine($optionValues, $optionValues);
@@ -143,7 +128,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	 * @return array
 	 */
 	protected function extractInformationForConfigFieldsOfTypeUser(array $configurationOption) {
-		preg_match('/user\[(.*)\]/is', $configurationOption['type'], $matches);
+		preg_match('/user\\[(.*)\\]/is', $configurationOption['type'], $matches);
 		$configurationOption['generic'] = $matches[1];
 		$configurationOption['type'] = 'user';
 		return $configurationOption;
@@ -173,12 +158,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 	public function createArrayFromConstants($configRaw, array $extension) {
 		$tsStyleConfig = $this->getT3libTsStyleConfig();
 		$tsStyleConfig->doNotSortCategoriesBeforeMakingForm = TRUE;
-		$theConstants = $tsStyleConfig->ext_initTSstyleConfig(
-			$configRaw,
-			$extension['siteRelPath'],
-			PATH_site . $extension['siteRelPath'],
-			$GLOBALS['BACK_PATH']
-		);
+		$theConstants = $tsStyleConfig->ext_initTSstyleConfig($configRaw, $extension['siteRelPath'], PATH_site . $extension['siteRelPath'], $GLOBALS['BACK_PATH']);
 		if (isset($tsStyleConfig->setup['constants']['TSConstantEditor.'])) {
 			foreach ($tsStyleConfig->setup['constants']['TSConstantEditor.'] as $category => $highlights) {
 				$theConstants['__meta__'][rtrim($category, '.')]['highlightText'] = $highlights['description'];
@@ -213,15 +193,12 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		$currentExtensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extension['key']]);
 		$flatExtensionConfig = t3lib_utility_Array::flatten($currentExtensionConfig);
 		$valuedCurrentExtensionConfig = array();
-
 		foreach ($flatExtensionConfig as $key => $value) {
 			$valuedCurrentExtensionConfig[$key]['value'] = $value;
 		}
-
 		if (is_array($currentExtensionConfig)) {
-			$configuration =  t3lib_div::array_merge_recursive_overrule($configuration, $valuedCurrentExtensionConfig);
+			$configuration = t3lib_div::array_merge_recursive_overrule($configuration, $valuedCurrentExtensionConfig);
 		}
-
 		return $configuration;
 	}
 
@@ -284,5 +261,7 @@ class Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {
 		}
 		return $configurationObjectStorage;
 	}
+
 }
+
 ?>

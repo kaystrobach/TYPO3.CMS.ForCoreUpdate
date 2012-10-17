@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract collection.
  *
@@ -32,15 +31,14 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collection_AbstractRecordCollection  {
+abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collection_AbstractRecordCollection {
 
 	/**
 	 * The table name collections are stored to
 	 *
 	 * @var string
 	 */
-	protected static $storageTableName = 'sys_file_collection';
-
+	static protected $storageTableName = 'sys_file_collection';
 
 	/**
 	 * The type of file collection
@@ -48,8 +46,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 *
 	 * @var string
 	 */
-	protected static $type;
-
+	static protected $type;
 
 	/**
 	 * The name of the field items are handled with
@@ -57,8 +54,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 *
 	 * @var string
 	 */
-	protected static $itemsCriteriaField;
-
+	static protected $itemsCriteriaField;
 
 	/**
 	 * Field contents of $itemsCriteriaField. Defines which the items or search criteria for the items
@@ -112,12 +108,10 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	protected function getItemUidList($includeTableName = FALSE) {
 		$list = array();
-
 		/** @var $entry t3lib_file_File */
 		foreach ($this->storage as $entry) {
-			$list[] = $this->getItemTableName() . '_' . $entry->getUid();
+			$list[] = ($this->getItemTableName() . '_') . $entry->getUid();
 		}
-
 		return implode(',', $list);
 	}
 
@@ -144,12 +138,10 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	public function toArray() {
 		$itemArray = array();
-
 		/** @var $item t3lib_file_File */
 		foreach ($this->storage as $item) {
 			$itemArray[] = $item->toArray();
 		}
-
 		return array(
 			'uid' => $this->getIdentifier(),
 			'title' => $this->getTitle(),
@@ -165,12 +157,10 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	public function getItems() {
 		$itemArray = array();
-
 		/** @var $item t3lib_file_File */
 		foreach ($this->storage as $item) {
 			$itemArray[] = $item;
 		}
-
 		return $itemArray;
 	}
 
@@ -234,7 +224,6 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	public function remove(t3lib_file_File $file) {
 		$offset = 0;
-
 		/** @var $value t3lib_file_File */
 		foreach ($this->storage as $value) {
 			if ($value === $file) {
@@ -242,7 +231,6 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 			}
 			$offset++;
 		}
-
 		$this->storage->offsetUnset($offset);
 	}
 
@@ -252,6 +240,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	public function removeAll() {
 		$this->storage = new SplDoublyLinkedList();
 	}
+
 }
 
 ?>

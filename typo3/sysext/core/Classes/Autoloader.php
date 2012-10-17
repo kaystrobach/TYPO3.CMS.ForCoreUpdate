@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This class contains TYPO3 autoloader for classes.
  * It handles:
@@ -46,14 +45,14 @@ class t3lib_autoloader {
 	 *
 	 * @var array
 	 */
-	protected static $classNameToFileMapping = array();
+	static protected $classNameToFileMapping = array();
 
 	/**
 	 * Name of cache entry identifier in autoload cache
 	 *
 	 * @var string
 	 */
-	protected static $autoloadCacheIdentifier = NULL;
+	static protected $autoloadCacheIdentifier = NULL;
 
 	/**
 	 * Track if the cache file written to disk should be updated.
@@ -64,12 +63,13 @@ class t3lib_autoloader {
 	 *
 	 * @var bool True if mapping changed
 	 */
-	protected static $cacheUpdateRequired = FALSE;
+	static protected $cacheUpdateRequired = FALSE;
 
 	/**
 	 * The autoloader is static, thus we do not allow instances of this class.
 	 */
 	private function __construct() {
+
 	}
 
 	/**
@@ -77,7 +77,7 @@ class t3lib_autoloader {
 	 *
 	 * @return boolean TRUE in case of success
 	 */
-	public static function registerAutoloader() {
+	static public function registerAutoloader() {
 		self::loadCoreAndExtensionRegistry();
 		return spl_autoload_register('t3lib_autoloader::autoload', TRUE, TRUE);
 	}
@@ -90,13 +90,12 @@ class t3lib_autoloader {
 	 *
 	 * @return boolean TRUE in case of success
 	 */
-	public static function unregisterAutoloader() {
+	static public function unregisterAutoloader() {
 		if (self::$cacheUpdateRequired) {
 			self::updateRegistryCacheEntry(self::$classNameToFileMapping);
 			self::$cacheUpdateRequired = FALSE;
 		}
 		self::$classNameToFileMapping = array();
-
 		return spl_autoload_unregister('t3lib_autoloader::autoload');
 	}
 
@@ -109,21 +108,21 @@ class t3lib_autoloader {
 	 * @param string $className Class name
 	 * @return void
 	 */
-	public static function autoload($className) {
-			// Use core and extension registry
+	static public function autoload($className) {
+		// Use core and extension registry
 		$classPath = self::getClassPathByRegistryLookup($className);
-
 		if ($classPath) {
-				// Include the required file that holds the class
+			// Include the required file that holds the class
 			t3lib_div::requireFile($classPath);
 		} else {
 			try {
-					// Regular expression for a valid classname taken from
-					// http://www.php.net/manual/en/language.oop5.basic.php
-				if (preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $className)) {
+				// Regular expression for a valid classname taken from
+				// http://www.php.net/manual/en/language.oop5.basic.php
+				if (preg_match('/^[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*$/', $className)) {
 					spl_autoload($className);
 				}
 			} catch (LogicException $exception) {
+
 			}
 		}
 	}
@@ -134,29 +133,26 @@ class t3lib_autoloader {
 	 *
 	 * @return void
 	 */
-	protected static function loadCoreAndExtensionRegistry() {
+	static protected function loadCoreAndExtensionRegistry() {
 		/** @var $phpCodeCache t3lib_cache_frontend_PhpFrontend */
 		$phpCodeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
-
-			// Create autoload cache file if it does not exist yet
+		// Create autoload cache file if it does not exist yet
 		if ($phpCodeCache->has(self::getAutoloadCacheIdentifier())) {
 			$classRegistry = $phpCodeCache->requireOnce(self::getAutoloadCacheIdentifier());
 		} else {
 			self::$cacheUpdateRequired = TRUE;
 			$classRegistry = self::lowerCaseClassRegistry(self::createCoreAndExtensionRegistry());
 		}
-
-			// This can only happen if the autoloader was already registered
-			// in the same call once, the requireOnce of the cache file then
-			// does not give the cached array back. In this case we just read
-			// all cache entries manually again.
-			// This can happen in unit tests and if the cache backend was
-			// switched to NullBackend for example to simplify development
+		// This can only happen if the autoloader was already registered
+		// in the same call once, the requireOnce of the cache file then
+		// does not give the cached array back. In this case we just read
+		// all cache entries manually again.
+		// This can happen in unit tests and if the cache backend was
+		// switched to NullBackend for example to simplify development
 		if (!is_array($classRegistry)) {
 			self::$cacheUpdateRequired = TRUE;
 			$classRegistry = self::lowerCaseClassRegistry(self::createCoreAndExtensionRegistry());
 		}
-
 		self::$classNameToFileMapping = $classRegistry;
 	}
 
@@ -171,30 +167,21 @@ class t3lib_autoloader {
 	 * @return mixed If String: Full name of the file where $className is declared, NULL if no entry is found
 	 * @internal
 	 */
-	public static function getClassPathByRegistryLookup($className) {
+	static public function getClassPathByRegistryLookup($className) {
 		$classPath = NULL;
-
 		$classNameLower = t3lib_div::strtolower($className);
-
-			// Try to resolve extbase naming scheme if class is not already in cache file
+		// Try to resolve extbase naming scheme if class is not already in cache file
 		if (!array_key_exists($classNameLower, self::$classNameToFileMapping)) {
 			self::attemptToLoadRegistryWithNamingConventionForGivenClassName($className);
 		}
-
-			// Look up class name in cache file
+		// Look up class name in cache file
 		if (array_key_exists($classNameLower, self::$classNameToFileMapping)) {
 			$classPath = self::$classNameToFileMapping[$classNameLower];
 		}
-
-		if (
-			$classPath === NULL
-			&& substr($classNameLower, 0, 3) === 'ux_'
-			&& !array_key_exists($classNameLower, self::$classNameToFileMapping)
-		) {
+		if (($classPath === NULL && substr($classNameLower, 0, 3) === 'ux_') && !array_key_exists($classNameLower, self::$classNameToFileMapping)) {
 			self::$cacheUpdateRequired = TRUE;
 			self::$classNameToFileMapping[$classNameLower] = NULL;
 		}
-
 		return $classPath;
 	}
 
@@ -203,18 +190,18 @@ class t3lib_autoloader {
 	 *
 	 * @return array
 	 */
-	protected static function createCoreAndExtensionRegistry() {
-		$classRegistry = require(PATH_t3lib . 'core_autoload.php');
-			// At this point during bootstrap the local configuration is initialized,
-			// extMgm is ready to get the list of enabled extensions
+	static protected function createCoreAndExtensionRegistry() {
+		$classRegistry = require PATH_t3lib . 'core_autoload.php';
+		// At this point during bootstrap the local configuration is initialized,
+		// extMgm is ready to get the list of enabled extensions
 		foreach (t3lib_extMgm::getLoadedExtensionListArray() as $extensionKey) {
 			try {
 				$extensionAutoloadFile = t3lib_extMgm::extPath($extensionKey, 'ext_autoload.php');
 				if (@file_exists($extensionAutoloadFile)) {
-					$classRegistry = array_merge($classRegistry, require($extensionAutoloadFile));
+					$classRegistry = array_merge($classRegistry, require $extensionAutoloadFile);
 				}
 			} catch (BadFunctionCallException $e) {
-				// The extension is not available, therefore ignore it
+
 			}
 		}
 		return $classRegistry;
@@ -228,15 +215,13 @@ class t3lib_autoloader {
 	 * @param string $className Class name to find source file of
 	 * @return void
 	 */
-	protected static function attemptToLoadRegistryWithNamingConventionForGivenClassName($className) {
-
+	static protected function attemptToLoadRegistryWithNamingConventionForGivenClassName($className) {
 		$delimiter = '_';
 		$tempClassName = $className;
-
-			// To handle namespaced class names, get rid of the first backslash
-			// and replace the remaining ones with underscore. This will simulate
-			// a 'usual' "extbase" structure like 'Tx_ExtensionName_Foo_bar'
-		if(strpos($className, '\\') !== FALSE) {
+		// To handle namespaced class names, get rid of the first backslash
+		// and replace the remaining ones with underscore. This will simulate
+		// a 'usual' "extbase" structure like 'Tx_ExtensionName_Foo_bar'
+		if (strpos($className, '\\') !== FALSE) {
 			$tempClassName = ltrim($className, '\\');
 			$delimiter = '\\';
 		}
@@ -244,13 +229,12 @@ class t3lib_autoloader {
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($classNameParts[1]);
 		if ($extensionKey) {
 			try {
-					// This will throw a BadFunctionCallException if the extension is not loaded
+				// This will throw a BadFunctionCallException if the extension is not loaded
 				$extensionPath = t3lib_extMgm::extPath($extensionKey);
-				$classFilePathAndName = $extensionPath . 'Classes/' . strtr($classNameParts[2], $delimiter, '/') . '.php';
+				$classFilePathAndName = (($extensionPath . 'Classes/') . strtr($classNameParts[2], $delimiter, '/')) . '.php';
 				self::addClassToCache($classFilePathAndName, $className);
 			} catch (BadFunctionCallException $exception) {
-					// Catch the exception and do nothing to give
-					// other registered autoloaders a chance to find the file
+
 			}
 		}
 	}
@@ -263,7 +247,7 @@ class t3lib_autoloader {
 	 * @param string $className Class name
 	 * @return void
 	 */
-	protected static function addClassToCache($classFilePathAndName, $className) {
+	static protected function addClassToCache($classFilePathAndName, $className) {
 		if (file_exists($classFilePathAndName)) {
 			self::$cacheUpdateRequired = TRUE;
 			self::$classNameToFileMapping[t3lib_div::strtolower($className)] = $classFilePathAndName;
@@ -277,17 +261,14 @@ class t3lib_autoloader {
 	 * @param array $registry Current registry entries
 	 * @return void
 	 */
-	protected static function updateRegistryCacheEntry(array $registry) {
+	static protected function updateRegistryCacheEntry(array $registry) {
 		$cachedFileContent = 'return array(';
 		foreach ($registry as $className => $classLocation) {
-			$nullOrLocation = is_string($classLocation) ? '\'' . $classLocation . '\',' : 'NULL,';
-			$cachedFileContent .= LF . '\'' . $className . '\' => ' . $nullOrLocation;
+			$nullOrLocation = is_string($classLocation) ? ('\'' . $classLocation) . '\',' : 'NULL,';
+			$cachedFileContent .= (((LF . '\'') . $className) . '\' => ') . $nullOrLocation;
 		}
 		$cachedFileContent .= LF . ');';
-		$GLOBALS['typo3CacheManager']->getCache('cache_core')->set(
-			self::getAutoloadCacheIdentifier(),
-			$cachedFileContent
-		);
+		$GLOBALS['typo3CacheManager']->getCache('cache_core')->set(self::getAutoloadCacheIdentifier(), $cachedFileContent);
 	}
 
 	/**
@@ -301,9 +282,9 @@ class t3lib_autoloader {
 	 *
 	 * @return string identifier
 	 */
-	protected static function getAutoloadCacheIdentifier() {
+	static protected function getAutoloadCacheIdentifier() {
 		if (is_null(self::$autoloadCacheIdentifier)) {
-			self::$autoloadCacheIdentifier = 'autoload_' . sha1(TYPO3_version . PATH_site . 'autoload');
+			self::$autoloadCacheIdentifier = 'autoload_' . sha1(((TYPO3_version . PATH_site) . 'autoload'));
 		}
 		return self::$autoloadCacheIdentifier;
 	}
@@ -317,12 +298,14 @@ class t3lib_autoloader {
 	 * @param array $registry Given registry entries
 	 * @return array with lower cased keys
 	 */
-	protected static function lowerCaseClassRegistry($registry) {
+	static protected function lowerCaseClassRegistry($registry) {
 		$lowerCasedClassRegistry = array();
 		foreach ($registry as $className => $classFile) {
 			$lowerCasedClassRegistry[t3lib_div::strtolower($className)] = $classFile;
 		}
 		return $lowerCasedClassRegistry;
 	}
+
 }
+
 ?>

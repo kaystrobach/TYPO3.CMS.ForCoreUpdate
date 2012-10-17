@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains an implementation of the mediaWizardProvider supporting some
  * well known providers.
@@ -81,14 +80,13 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * Implementation of tslib_mediaWizardProvider
 	 *
 	 ***********************************************/
-
 	/**
 	 * @param string $url
 	 * @return boolean
 	 * @see tslib_mediaWizardProvider::canHandle
 	 */
 	public function canHandle($url) {
-		return ($this->getMethod($url) !== NULL);
+		return $this->getMethod($url) !== NULL;
 	}
 
 	/**
@@ -98,7 +96,7 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 */
 	public function rewriteUrl($url) {
 		$method = $this->getMethod($url);
-		return $this->$method($url);
+		return $this->{$method}($url);
 	}
 
 	/***********************************************
@@ -106,7 +104,6 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * Providers URL rewriting:
 	 *
 	 ***********************************************/
-
 	/**
 	 * Parse youtube url
 	 *
@@ -116,15 +113,14 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	protected function process_youtube($url) {
 		$videoId = '';
 		if (strpos($url, '/user/') !== FALSE) {
-				// it's a channel
+			// it's a channel
 			$parts = explode('/', $url);
 			$videoId = $parts[count($parts) - 1];
-		} elseif (preg_match('/(v=|v\/|.be\/)([^(\&|$)]*)/', $url, $matches)) {
+		} elseif (preg_match('/(v=|v\\/|.be\\/)([^(\\&|$)]*)/', $url, $matches)) {
 			$videoId = $matches[2];
 		}
-
 		if ($videoId) {
-			$url = 'http://www.youtube.com/v/' . $videoId . '?fs=1';
+			$url = ('http://www.youtube.com/v/' . $videoId) . '?fs=1';
 		}
 		return $url;
 	}
@@ -166,7 +162,7 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 		if (strpos($videoId, '-') !== FALSE) {
 			$videoId = substr($videoId, 0, strpos($videoId, '-'));
 		}
-		return 'http://de.sevenload.com/pl/' . $videoId . '/400x500/swf';
+		return ('http://de.sevenload.com/pl/' . $videoId) . '/400x500/swf';
 	}
 
 	/**
@@ -181,9 +177,9 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @return string processed url
 	 */
 	protected function process_vimeo($url) {
-		if (preg_match('/[\/#](\d+)$/', $url, $matches)) {
+		if (preg_match('/[\\/#](\\d+)$/', $url, $matches)) {
 			$videoId = $matches[1];
-			$url = 'http://vimeo.com/moogaloop.swf?clip_id=' . $videoId . '&server=vimeo.com&show_title=1&show_byline=1&show_portrait=0&fullscreen=1';
+			$url = ('http://vimeo.com/moogaloop.swf?clip_id=' . $videoId) . '&server=vimeo.com&show_title=1&show_byline=1&show_portrait=0&fullscreen=1';
 		}
 		return $url;
 	}
@@ -195,7 +191,7 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @return string processed url
 	 */
 	protected function process_clipfish($url) {
-		if (preg_match('/video([^(\&|$)]*)/', $url, $matches)) {
+		if (preg_match('/video([^(\\&|$)]*)/', $url, $matches)) {
 			$parts = explode('/', $matches[1]);
 			$videoId = $parts[1];
 			$url = 'http://www.clipfish.de/cfng/flash/clipfish_player_3.swf?as=0&r=1&noad=1&fs=1&vid=' . $videoId;
@@ -210,7 +206,7 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @return string processed url
 	 */
 	protected function process_google($url) {
-		if (preg_match('/docid=([^(\&|$)]*)/', $url, $matches)) {
+		if (preg_match('/docid=([^(\\&|$)]*)/', $url, $matches)) {
 			$videoId = $matches[1];
 			$url = 'http://video.google.com/googleplayer.swf?docid=' . $videoId;
 		}
@@ -223,12 +219,11 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @param string $url
 	 * @return string processed url
 	 */
-
 	protected function process_metacafe($url) {
-		if (preg_match('/watch([^(\&|$)]*)/', $url, $matches)) {
+		if (preg_match('/watch([^(\\&|$)]*)/', $url, $matches)) {
 			$parts = explode('/', $matches[1]);
 			$videoId = $parts[1];
-			$url = 'http://www.metacafe.com/fplayer/' . $videoId . '/.swf';
+			$url = ('http://www.metacafe.com/fplayer/' . $videoId) . '/.swf';
 		}
 		return $url;
 	}
@@ -239,13 +234,11 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @param string $url
 	 * @return string processed url
 	 */
-
 	protected function process_myvideo($url) {
-		preg_match('/watch([^(\&|$)]*)/', $url, $matches);
+		preg_match('/watch([^(\\&|$)]*)/', $url, $matches);
 		$parts = explode('/', $matches[1]);
 		$videoId = $parts[1];
-
-		return 'http://www.myvideo.de/movie/' . $videoId . '/';
+		return ('http://www.myvideo.de/movie/' . $videoId) . '/';
 	}
 
 	/**
@@ -255,9 +248,8 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @return string processed url
 	 */
 	protected function process_liveleak($url) {
-		preg_match('/i=([^(\&|$)]*)/', $url, $matches);
+		preg_match('/i=([^(\\&|$)]*)/', $url, $matches);
 		$videoId = $matches[1];
-
 		return 'http://www.liveleak.com/e/' . $videoId;
 	}
 
@@ -268,11 +260,11 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	 * @return string processed url
 	 */
 	protected function process_veoh($url) {
-		preg_match('/watch\/([^(\&|$)]*)/', $url, $matches);
+		preg_match('/watch\\/([^(\\&|$)]*)/', $url, $matches);
 		$videoId = $matches[1];
-
 		return 'http://www.veoh.com/static/swf/webplayer/WebPlayer.swf?version=AFrontend.5.5.2.1001&permalinkId=' . $videoId;
 	}
 
 }
+
 ?>

@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Node designated for the page tree
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
+
 	/**
 	 * Cached access rights to save some performance
 	 *
@@ -139,7 +139,7 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	 * @return void
 	 */
 	public function setIsMountPoint($isMountPoint) {
-		$this->isMountPoint = ($isMountPoint == TRUE);
+		$this->isMountPoint = $isMountPoint == TRUE;
 	}
 
 	/**
@@ -177,10 +177,8 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	 */
 	protected function canCreate() {
 		if (!isset($this->cachedAccessRights['create'])) {
-			$this->cachedAccessRights['create'] =
-				$GLOBALS['BE_USER']->doesUserHaveAccess($this->record, 8);
+			$this->cachedAccessRights['create'] = $GLOBALS['BE_USER']->doesUserHaveAccess($this->record, 8);
 		}
-
 		return $this->cachedAccessRights['create'];
 	}
 
@@ -191,10 +189,8 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	 */
 	protected function canEdit() {
 		if (!isset($this->cachedAccessRights['edit'])) {
-			$this->cachedAccessRights['edit'] =
-				$GLOBALS['BE_USER']->doesUserHaveAccess($this->record, 2);
+			$this->cachedAccessRights['edit'] = $GLOBALS['BE_USER']->doesUserHaveAccess($this->record, 2);
 		}
-
 		return $this->cachedAccessRights['edit'];
 	}
 
@@ -205,14 +201,11 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	 */
 	protected function canRemove() {
 		if (!isset($this->cachedAccessRights['remove'])) {
-			$this->cachedAccessRights['remove'] =
-				$GLOBALS['BE_USER']->doesUserHaveAccess($this->record, 4);
-
+			$this->cachedAccessRights['remove'] = $GLOBALS['BE_USER']->doesUserHaveAccess($this->record, 4);
 			if (!$this->isLeafNode() && !$GLOBALS['BE_USER']->uc['recursiveDelete']) {
 				$this->cachedAccessRights['remove'] = FALSE;
 			}
 		}
-
 		return $this->cachedAccessRights['remove'];
 	}
 
@@ -331,7 +324,7 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	 * @return string
 	 */
 	public function calculateNodeId($prefix = 'p') {
-		return $prefix . dechex($this->getId()) . ($this->getMountPoint() ? '-' . dechex($this->getMountPoint()) : '');
+		return ($prefix . dechex($this->getId())) . ($this->getMountPoint() ? '-' . dechex($this->getMountPoint()) : '');
 	}
 
 	/**
@@ -342,20 +335,16 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	 */
 	public function toArray($addChildNodes = TRUE) {
 		$arrayRepresentation = parent::toArray();
-
 		$arrayRepresentation['id'] = $this->calculateNodeId();
 		$arrayRepresentation['realId'] = $this->getId();
 		$arrayRepresentation['nodeData']['id'] = $this->getId();
-
 		$arrayRepresentation['readableRootline'] = $this->getReadableRootline();
 		$arrayRepresentation['nodeData']['readableRootline'] = $this->getReadableRootline();
-
 		$arrayRepresentation['nodeData']['mountPoint'] = $this->getMountPoint();
 		$arrayRepresentation['nodeData']['workspaceId'] = $this->getWorkspaceId();
 		$arrayRepresentation['nodeData']['isMountPoint'] = $this->isMountPoint();
 		$arrayRepresentation['nodeData']['backgroundColor'] = htmlspecialchars($this->getBackgroundColor());
 		$arrayRepresentation['nodeData']['serializeClassName'] = get_class($this);
-
 		return $arrayRepresentation;
 	}
 
@@ -373,6 +362,7 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 		$this->setIsMountPoint($data['isMountPoint']);
 		$this->setBackgroundColor($data['backgroundColor']);
 	}
+
 }
 
 ?>

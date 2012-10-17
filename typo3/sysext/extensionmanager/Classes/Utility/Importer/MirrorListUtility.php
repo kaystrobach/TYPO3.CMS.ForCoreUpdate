@@ -25,17 +25,14 @@
 /**
  * Module: Extension manager - Mirror list importer
  *
- * @author  Marcus Krause <marcus#exp2010@t3sec.info>
- * @author  Steffen Kamper <info@sk-typo3.de>
+ * @author Marcus Krause <marcus#exp2010@t3sec.info>
+ * @author Steffen Kamper <info@sk-typo3.de>
  */
-
-
 /**
  * Importer object for mirror list.
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-10
  * @package Extension Manager
  * @subpackage Utility/Importer
@@ -45,14 +42,14 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	/**
 	 * Keeps instance of a XML parser.
 	 *
-	 * @var  Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
+	 * @var Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
 	 */
 	protected $parser;
 
 	/**
 	 * Keeps mirrors' details.
 	 *
-	 * @var  array
+	 * @var array
 	 */
 	protected $arrTmpMirrors = array();
 
@@ -64,13 +61,12 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 * @throws tx_em_XmlException
 	 */
 	public function __construct() {
-			// TODO catch parser exception
+		// TODO catch parser exception
 		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('mirror');
 		if (is_object($this->parser)) {
 			$this->parser->attach($this);
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(get_class($this) . ': No XML parser available.',
-			1342640390);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(get_class($this) . ': No XML parser available.', 1342640390);
 		}
 	}
 
@@ -83,7 +79,6 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 */
 	public function getMirrors($localMirrorListFile) {
 		$zlibStream = 'compress.zlib://';
-
 		$this->parser->parseXml($zlibStream . $localMirrorListFile);
 		/** @var $objRepositoryMirrors Tx_Extensionmanager_Domain_Model_Mirrors */
 		$objRepositoryMirrors = t3lib_div::makeInstance('Tx_Extensionmanager_Domain_Model_Mirrors');
@@ -99,11 +94,12 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 * @return void
 	 */
 	public function update(SplSubject $subject) {
-			// TODO mirrorxml_abstract_parser
+		// TODO mirrorxml_abstract_parser
 		if (is_subclass_of($subject, 'Tx_Extensionmanager_Utility_Parser_XmlAbstractParser')) {
 			$this->arrTmpMirrors[] = $subject->getAll();
 		}
 	}
+
 }
 
 ?>

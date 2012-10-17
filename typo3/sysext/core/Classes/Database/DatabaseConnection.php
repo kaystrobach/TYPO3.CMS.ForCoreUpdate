@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains the class "t3lib_db" containing functions for building SQL queries
  * and mysql wrappers, thus providing a foundational API to all database
@@ -56,21 +55,42 @@
  */
 class t3lib_DB {
 
-		// Set "TRUE" or "1" if you want database errors outputted. Set to "2" if you also want successful database actions outputted.
-	var $debugOutput = FALSE;
-		// Internally: Set to last built query (not necessarily executed...)
-	var $debug_lastBuiltQuery = '';
-		// Set "TRUE" if you want the last built query to be stored in $debug_lastBuiltQuery independent of $this->debugOutput
-	var $store_lastBuiltQuery = FALSE;
-		// Set this to 1 to get queries explained (devIPmask must match). Set the value to 2 to the same but disregarding the devIPmask.
-		// There is an alternative option to enable explain output in the admin panel under "TypoScript", which will produce much nicer output, but only works in FE.
-	var $explainOutput = 0;
+	// Set "TRUE" or "1" if you want database errors outputted. Set to "2" if you also want successful database actions outputted.
+	/**
+	 * @todo Define visibility
+	 */
+	public $debugOutput = FALSE;
 
-		// Default link identifier:
-	var $link = FALSE;
+	// Internally: Set to last built query (not necessarily executed...)
+	/**
+	 * @todo Define visibility
+	 */
+	public $debug_lastBuiltQuery = '';
 
-		// Default character set, applies unless character set or collation are explicitly set
-	var $default_charset = 'utf8';
+	// Set "TRUE" if you want the last built query to be stored in $debug_lastBuiltQuery independent of $this->debugOutput
+	/**
+	 * @todo Define visibility
+	 */
+	public $store_lastBuiltQuery = FALSE;
+
+	// Set this to 1 to get queries explained (devIPmask must match). Set the value to 2 to the same but disregarding the devIPmask.
+	// There is an alternative option to enable explain output in the admin panel under "TypoScript", which will produce much nicer output, but only works in FE.
+	/**
+	 * @todo Define visibility
+	 */
+	public $explainOutput = 0;
+
+	// Default link identifier:
+	/**
+	 * @todo Define visibility
+	 */
+	public $link = FALSE;
+
+	// Default character set, applies unless character set or collation are explicitly set
+	/**
+	 * @todo Define visibility
+	 */
+	public $default_charset = 'utf8';
 
 	/**
 	 * @var t3lib_DB_preProcessQueryHook[]
@@ -94,7 +114,6 @@ class t3lib_DB {
 	 * Also, having the table name together with the actual query execution allows us to direct the request to other databases.
 	 *
 	 **************************************/
-
 	/**
 	 * Creates and executes an INSERT SQL-statement for $table from the array with field/value pairs $fields_values.
 	 * Using this function specifically allows us to handle BLOB and CLOB fields depending on DB
@@ -103,8 +122,9 @@ class t3lib_DB {
 	 * @param array $fields_values Field values as key=>value pairs. Values will be escaped internally. Typically you would fill an array like "$insertFields" with 'fieldname'=>'value' and pass it to this function as argument.
 	 * @param string/array $no_quote_fields See fullQuoteArray()
 	 * @return pointer MySQL result pointer / DBAL object
+	 * @todo Define visibility
 	 */
-	function exec_INSERTquery($table, $fields_values, $no_quote_fields = FALSE) {
+	public function exec_INSERTquery($table, $fields_values, $no_quote_fields = FALSE) {
 		$res = mysql_query($this->INSERTquery($table, $fields_values, $no_quote_fields), $this->link);
 		if ($this->debugOutput) {
 			$this->debug('exec_INSERTquery');
@@ -144,8 +164,9 @@ class t3lib_DB {
 	 * @param array $fields_values Field values as key=>value pairs. Values will be escaped internally. Typically you would fill an array like "$updateFields" with 'fieldname'=>'value' and pass it to this function as argument.
 	 * @param string/array $no_quote_fields See fullQuoteArray()
 	 * @return pointer MySQL result pointer / DBAL object
+	 * @todo Define visibility
 	 */
-	function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = FALSE) {
+	public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = FALSE) {
 		$res = mysql_query($this->UPDATEquery($table, $where, $fields_values, $no_quote_fields), $this->link);
 		if ($this->debugOutput) {
 			$this->debug('exec_UPDATEquery');
@@ -162,8 +183,9 @@ class t3lib_DB {
 	 * @param string $table Database tablename
 	 * @param string $where WHERE clause, eg. "uid=1". NOTICE: You must escape values in this argument with $this->fullQuoteStr() yourself!
 	 * @return pointer MySQL result pointer / DBAL object
+	 * @todo Define visibility
 	 */
-	function exec_DELETEquery($table, $where) {
+	public function exec_DELETEquery($table, $where) {
 		$res = mysql_query($this->DELETEquery($table, $where), $this->link);
 		if ($this->debugOutput) {
 			$this->debug('exec_DELETEquery');
@@ -185,18 +207,17 @@ class t3lib_DB {
 	 * @param string $orderBy Optional ORDER BY field(s), if none, supply blank string.
 	 * @param string $limit Optional LIMIT value ([begin,]max), if none, supply blank string.
 	 * @return pointer MySQL result pointer / DBAL object
+	 * @todo Define visibility
 	 */
-	function exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
+	public function exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
 		$query = $this->SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
 		$res = mysql_query($query, $this->link);
-
 		if ($this->debugOutput) {
 			$this->debug('exec_SELECTquery');
 		}
 		if ($this->explainOutput) {
 			$this->explain($query, $from_table, $this->sql_num_rows($res));
 		}
-
 		return $res;
 	}
 
@@ -216,31 +237,20 @@ class t3lib_DB {
 	 * @param string $limit Optional LIMIT value ([begin,]max), if none, supply blank string.
 	 * @return pointer MySQL result pointer / DBAL object
 	 * @see exec_SELECTquery()
+	 * @todo Define visibility
 	 */
-	function exec_SELECT_mm_query($select, $local_table, $mm_table, $foreign_table, $whereClause = '', $groupBy = '', $orderBy = '', $limit = '') {
+	public function exec_SELECT_mm_query($select, $local_table, $mm_table, $foreign_table, $whereClause = '', $groupBy = '', $orderBy = '', $limit = '') {
 		if ($foreign_table == $local_table) {
 			$foreign_table_as = $foreign_table . uniqid('_join');
 		}
-
-		$mmWhere = $local_table ? $local_table . '.uid=' . $mm_table . '.uid_local' : '';
-		$mmWhere .= ($local_table AND $foreign_table) ? ' AND ' : '';
-
+		$mmWhere = $local_table ? (($local_table . '.uid=') . $mm_table) . '.uid_local' : '';
+		$mmWhere .= ($local_table and $foreign_table) ? ' AND ' : '';
 		$tables = ($local_table ? $local_table . ',' : '') . $mm_table;
-
 		if ($foreign_table) {
-			$mmWhere .= ($foreign_table_as ? $foreign_table_as : $foreign_table) . '.uid=' . $mm_table . '.uid_foreign';
-			$tables .= ',' . $foreign_table . ($foreign_table_as ? ' AS ' . $foreign_table_as : '');
+			$mmWhere .= ((($foreign_table_as ? $foreign_table_as : $foreign_table) . '.uid=') . $mm_table) . '.uid_foreign';
+			$tables .= (',' . $foreign_table) . ($foreign_table_as ? ' AS ' . $foreign_table_as : '');
 		}
-
-		return $this->exec_SELECTquery(
-			$select,
-			$tables,
-				// whereClauseMightContainGroupOrderBy
-				$mmWhere . ' ' . $whereClause,
-			$groupBy,
-			$orderBy,
-			$limit
-		);
+		return $this->exec_SELECTquery($select, $tables, ($mmWhere . ' ') . $whereClause, $groupBy, $orderBy, $limit);
 	}
 
 	/**
@@ -249,16 +259,10 @@ class t3lib_DB {
 	 * @param array $queryParts Query parts array
 	 * @return pointer MySQL select result pointer / DBAL object
 	 * @see exec_SELECTquery()
+	 * @todo Define visibility
 	 */
-	function exec_SELECT_queryArray($queryParts) {
-		return $this->exec_SELECTquery(
-			$queryParts['SELECT'],
-			$queryParts['FROM'],
-			$queryParts['WHERE'],
-			$queryParts['GROUPBY'],
-			$queryParts['ORDERBY'],
-			$queryParts['LIMIT']
-		);
+	public function exec_SELECT_queryArray($queryParts) {
+		return $this->exec_SELECTquery($queryParts['SELECT'], $queryParts['FROM'], $queryParts['WHERE'], $queryParts['GROUPBY'], $queryParts['ORDERBY'], $queryParts['LIMIT']);
 	}
 
 	/**
@@ -272,13 +276,13 @@ class t3lib_DB {
 	 * @param string $limit See exec_SELECTquery()
 	 * @param string $uidIndexField If set, the result array will carry this field names value as index. Requires that field to be selected of course!
 	 * @return array|NULL Array of rows, or NULL in case of SQL error
+	 * @todo Define visibility
 	 */
-	function exec_SELECTgetRows($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '', $uidIndexField = '') {
+	public function exec_SELECTgetRows($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '', $uidIndexField = '') {
 		$res = $this->exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
 		if ($this->debugOutput) {
 			$this->debug('exec_SELECTquery');
 		}
-
 		if (!$this->sql_error()) {
 			$output = array();
 			if ($uidIndexField) {
@@ -287,6 +291,7 @@ class t3lib_DB {
 				}
 			} else {
 				while ($output[] = $this->sql_fetch_assoc($res)) {
+
 				}
 				array_pop($output);
 			}
@@ -294,7 +299,6 @@ class t3lib_DB {
 		} else {
 			$output = NULL;
 		}
-
 		return $output;
 	}
 
@@ -315,7 +319,6 @@ class t3lib_DB {
 		if ($this->debugOutput) {
 			$this->debug('exec_SELECTquery');
 		}
-
 		$output = NULL;
 		if ($res) {
 			if ($numIndex) {
@@ -338,7 +341,7 @@ class t3lib_DB {
 	 */
 	public function exec_SELECTcountRows($field, $table, $where = '') {
 		$count = FALSE;
-		$resultSet = $this->exec_SELECTquery('COUNT(' . $field . ')', $table, $where);
+		$resultSet = $this->exec_SELECTquery(('COUNT(' . $field) . ')', $table, $where);
 		if ($resultSet !== FALSE) {
 			list($count) = $this->sql_fetch_row($resultSet);
 			$count = intval($count);
@@ -369,7 +372,6 @@ class t3lib_DB {
 	 * Query building
 	 *
 	 **************************************/
-
 	/**
 	 * Creates an INSERT SQL-statement for $table from the array with field/value pairs $fields_values.
 	 *
@@ -377,25 +379,20 @@ class t3lib_DB {
 	 * @param array $fields_values See exec_INSERTquery()
 	 * @param string/array $no_quote_fields See fullQuoteArray()
 	 * @return string Full SQL query for INSERT (unless $fields_values does not contain any elements in which case it will be FALSE)
+	 * @todo Define visibility
 	 */
-	function INSERTquery($table, $fields_values, $no_quote_fields = FALSE) {
-
-			// Table and fieldnames should be "SQL-injection-safe" when supplied to this
-			// function (contrary to values in the arrays which may be insecure).
+	public function INSERTquery($table, $fields_values, $no_quote_fields = FALSE) {
+		// Table and fieldnames should be "SQL-injection-safe" when supplied to this
+		// function (contrary to values in the arrays which may be insecure).
 		if (is_array($fields_values) && count($fields_values)) {
 			foreach ($this->preProcessHookObjects as $hookObject) {
 				$hookObject->INSERTquery_preProcessAction($table, $fields_values, $no_quote_fields, $this);
 			}
-
-				// Quote and escape values
+			// Quote and escape values
 			$fields_values = $this->fullQuoteArray($fields_values, $table, $no_quote_fields);
-
-				// Build query
-			$query = 'INSERT INTO ' . $table .
-					' (' . implode(',', array_keys($fields_values)) . ') VALUES ' .
-					'(' . implode(',', $fields_values) . ')';
-
-				// Return query
+			// Build query
+			$query = (((((('INSERT INTO ' . $table) . ' (') . implode(',', array_keys($fields_values))) . ') VALUES ') . '(') . implode(',', $fields_values)) . ')';
+			// Return query
 			if ($this->debugOutput || $this->store_lastBuiltQuery) {
 				$this->debug_lastBuiltQuery = $query;
 			}
@@ -413,31 +410,25 @@ class t3lib_DB {
 	 * @return string Full SQL query for INSERT (unless $rows does not contain any elements in which case it will be FALSE)
 	 */
 	public function INSERTmultipleRows($table, array $fields, array $rows, $no_quote_fields = FALSE) {
-			// Table and fieldnames should be "SQL-injection-safe" when supplied to this
-			// function (contrary to values in the arrays which may be insecure).
+		// Table and fieldnames should be "SQL-injection-safe" when supplied to this
+		// function (contrary to values in the arrays which may be insecure).
 		if (count($rows)) {
 			foreach ($this->preProcessHookObjects as $hookObject) {
 				$hookObject->INSERTmultipleRows_preProcessAction($table, $fields, $rows, $no_quote_fields, $this);
 			}
-
-				// Build query
-			$query = 'INSERT INTO ' . $table .
-					' (' . implode(', ', $fields) . ') VALUES ';
-
+			// Build query
+			$query = ((('INSERT INTO ' . $table) . ' (') . implode(', ', $fields)) . ') VALUES ';
 			$rowSQL = array();
 			foreach ($rows as $row) {
-					// Quote and escape values
+				// Quote and escape values
 				$row = $this->fullQuoteArray($row, $table, $no_quote_fields);
-				$rowSQL[] = '(' . implode(', ', $row) . ')';
+				$rowSQL[] = ('(' . implode(', ', $row)) . ')';
 			}
-
 			$query .= implode(', ', $rowSQL);
-
-				// Return query
+			// Return query
 			if ($this->debugOutput || $this->store_lastBuiltQuery) {
 				$this->debug_lastBuiltQuery = $query;
 			}
-
 			return $query;
 		}
 	}
@@ -450,39 +441,31 @@ class t3lib_DB {
 	 * @param array $fields_values See exec_UPDATEquery()
 	 * @param array $no_quote_fields See fullQuoteArray()
 	 * @return string Full SQL query for UPDATE
+	 * @todo Define visibility
 	 */
-	function UPDATEquery($table, $where, $fields_values, $no_quote_fields = FALSE) {
-			// Table and fieldnames should be "SQL-injection-safe" when supplied to this
-			// function (contrary to values in the arrays which may be insecure).
+	public function UPDATEquery($table, $where, $fields_values, $no_quote_fields = FALSE) {
+		// Table and fieldnames should be "SQL-injection-safe" when supplied to this
+		// function (contrary to values in the arrays which may be insecure).
 		if (is_string($where)) {
 			foreach ($this->preProcessHookObjects as $hookObject) {
 				$hookObject->UPDATEquery_preProcessAction($table, $where, $fields_values, $no_quote_fields, $this);
 			}
-
 			$fields = array();
 			if (is_array($fields_values) && count($fields_values)) {
-
-					// Quote and escape values
+				// Quote and escape values
 				$nArr = $this->fullQuoteArray($fields_values, $table, $no_quote_fields);
-
 				foreach ($nArr as $k => $v) {
-					$fields[] = $k . '=' . $v;
+					$fields[] = ($k . '=') . $v;
 				}
 			}
-
-				// Build query
-			$query = 'UPDATE ' . $table . ' SET ' . implode(',', $fields) .
-					(strlen($where) > 0 ? ' WHERE ' . $where : '');
-
+			// Build query
+			$query = ((('UPDATE ' . $table) . ' SET ') . implode(',', $fields)) . (strlen($where) > 0 ? ' WHERE ' . $where : '');
 			if ($this->debugOutput || $this->store_lastBuiltQuery) {
 				$this->debug_lastBuiltQuery = $query;
 			}
 			return $query;
 		} else {
-			throw new InvalidArgumentException(
-				'TYPO3 Fatal Error: "Where" clause argument for UPDATE query was not a string in $this->UPDATEquery() !',
-				1270853880
-			);
+			throw new InvalidArgumentException('TYPO3 Fatal Error: "Where" clause argument for UPDATE query was not a string in $this->UPDATEquery() !', 1270853880);
 		}
 	}
 
@@ -492,26 +475,21 @@ class t3lib_DB {
 	 * @param string $table See exec_DELETEquery()
 	 * @param string $where See exec_DELETEquery()
 	 * @return string Full SQL query for DELETE
+	 * @todo Define visibility
 	 */
-	function DELETEquery($table, $where) {
+	public function DELETEquery($table, $where) {
 		if (is_string($where)) {
 			foreach ($this->preProcessHookObjects as $hookObject) {
 				$hookObject->DELETEquery_preProcessAction($table, $where, $this);
 			}
-
-				// Table and fieldnames should be "SQL-injection-safe" when supplied to this function
-			$query = 'DELETE FROM ' . $table .
-					(strlen($where) > 0 ? ' WHERE ' . $where : '');
-
+			// Table and fieldnames should be "SQL-injection-safe" when supplied to this function
+			$query = ('DELETE FROM ' . $table) . (strlen($where) > 0 ? ' WHERE ' . $where : '');
 			if ($this->debugOutput || $this->store_lastBuiltQuery) {
 				$this->debug_lastBuiltQuery = $query;
 			}
 			return $query;
 		} else {
-			throw new InvalidArgumentException(
-				'TYPO3 Fatal Error: "Where" clause argument for DELETE query was not a string in $this->DELETEquery() !',
-				1270853881
-			);
+			throw new InvalidArgumentException('TYPO3 Fatal Error: "Where" clause argument for DELETE query was not a string in $this->DELETEquery() !', 1270853881);
 		}
 	}
 
@@ -525,24 +503,19 @@ class t3lib_DB {
 	 * @param string $orderBy See exec_SELECTquery()
 	 * @param string $limit See exec_SELECTquery()
 	 * @return string Full SQL query for SELECT
+	 * @todo Define visibility
 	 */
-	function SELECTquery($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
-
-			// Table and fieldnames should be "SQL-injection-safe" when supplied to this function
-			// Build basic query
-		$query = 'SELECT ' . $select_fields . ' FROM ' . $from_table .
-				(strlen($where_clause) > 0 ? ' WHERE ' . $where_clause : '');
-
-			// Group by
-		$query .= (strlen($groupBy) > 0 ? ' GROUP BY ' . $groupBy : '');
-
-			// Order by
-		$query .= (strlen($orderBy) > 0 ? ' ORDER BY ' . $orderBy : '');
-
-			// Group by
-		$query .= (strlen($limit) > 0 ? ' LIMIT ' . $limit : '');
-
-			// Return query
+	public function SELECTquery($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
+		// Table and fieldnames should be "SQL-injection-safe" when supplied to this function
+		// Build basic query
+		$query = ((('SELECT ' . $select_fields) . ' FROM ') . $from_table) . (strlen($where_clause) > 0 ? ' WHERE ' . $where_clause : '');
+		// Group by
+		$query .= strlen($groupBy) > 0 ? ' GROUP BY ' . $groupBy : '';
+		// Order by
+		$query .= strlen($orderBy) > 0 ? ' ORDER BY ' . $orderBy : '';
+		// Group by
+		$query .= strlen($limit) > 0 ? ' LIMIT ' . $limit : '';
+		// Return query
 		if ($this->debugOutput || $this->store_lastBuiltQuery) {
 			$this->debug_lastBuiltQuery = $query;
 		}
@@ -559,16 +532,13 @@ class t3lib_DB {
 	 * @return string Full SQL query for SELECT
 	 */
 	public function SELECTsubquery($select_fields, $from_table, $where_clause) {
-			// Table and fieldnames should be "SQL-injection-safe" when supplied to this function
-			// Build basic query:
-		$query = 'SELECT ' . $select_fields . ' FROM ' . $from_table .
-				(strlen($where_clause) > 0 ? ' WHERE ' . $where_clause : '');
-
-			// Return query
+		// Table and fieldnames should be "SQL-injection-safe" when supplied to this function
+		// Build basic query:
+		$query = ((('SELECT ' . $select_fields) . ' FROM ') . $from_table) . (strlen($where_clause) > 0 ? ' WHERE ' . $where_clause : '');
+		// Return query
 		if ($this->debugOutput || $this->store_lastBuiltQuery) {
 			$this->debug_lastBuiltQuery = $query;
 		}
-
 		return $query;
 	}
 
@@ -582,16 +552,13 @@ class t3lib_DB {
 		foreach ($this->preProcessHookObjects as $hookObject) {
 			$hookObject->TRUNCATEquery_preProcessAction($table, $this);
 		}
-
-			// Table should be "SQL-injection-safe" when supplied to this function
-			// Build basic query:
+		// Table should be "SQL-injection-safe" when supplied to this function
+		// Build basic query:
 		$query = 'TRUNCATE TABLE ' . $table;
-
-			// Return query:
+		// Return query:
 		if ($this->debugOutput || $this->store_lastBuiltQuery) {
 			$this->debug_lastBuiltQuery = $query;
 		}
-
 		return $query;
 	}
 
@@ -615,7 +582,7 @@ class t3lib_DB {
 			throw new InvalidArgumentException('$value must not contain a comma (,) in $this->listQuery() !', 1294585862);
 		}
 		$pattern = $this->quoteStr($value, $table);
-		$where = 'FIND_IN_SET(\'' . $pattern . '\',' . $field . ')';
+		$where = ((('FIND_IN_SET(\'' . $pattern) . '\',') . $field) . ')';
 		return $where;
 	}
 
@@ -626,15 +593,15 @@ class t3lib_DB {
 	 * @param array $fields Array of fields
 	 * @param string $table Table in which we are searching (for DBAL detection of quoteStr() method)
 	 * @return string WHERE clause for search
+	 * @todo Define visibility
 	 */
-	function searchQuery($searchWords, $fields, $table) {
+	public function searchQuery($searchWords, $fields, $table) {
 		$queryParts = array();
-
 		foreach ($searchWords as $sw) {
-			$like = ' LIKE \'%' . $this->quoteStr($sw, $table) . '%\'';
-			$queryParts[] = $table . '.' . implode($like . ' OR ' . $table . '.', $fields) . $like;
+			$like = (' LIKE \'%' . $this->quoteStr($sw, $table)) . '%\'';
+			$queryParts[] = (($table . '.') . implode(((($like . ' OR ') . $table) . '.'), $fields)) . $like;
 		}
-		$query = '(' . implode(') AND (', $queryParts) . ')';
+		$query = ('(' . implode(') AND (', $queryParts)) . ')';
 		return $query;
 	}
 
@@ -643,7 +610,6 @@ class t3lib_DB {
 	 * Prepared Query Support
 	 *
 	 **************************************/
-
 	/**
 	 * Creates a SELECT prepared SQL statement.
 	 *
@@ -660,13 +626,11 @@ class t3lib_DB {
 		$query = $this->SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
 		/** @var $preparedStatement t3lib_db_PreparedStatement */
 		$preparedStatement = t3lib_div::makeInstance('t3lib_db_PreparedStatement', $query, $from_table, array());
-
-			// Bind values to parameters
+		// Bind values to parameters
 		foreach ($input_parameters as $key => $value) {
 			$preparedStatement->bindValue($key, $value, t3lib_db_PreparedStatement::PARAM_AUTOTYPE);
 		}
-
-			// Return prepared statement
+		// Return prepared statement
 		return $preparedStatement;
 	}
 
@@ -678,15 +642,7 @@ class t3lib_DB {
 	 * @return t3lib_db_PreparedStatement Prepared statement
 	 */
 	public function prepare_SELECTqueryArray(array $queryParts, array $input_parameters = array()) {
-		return $this->prepare_SELECTquery(
-			$queryParts['SELECT'],
-			$queryParts['FROM'],
-			$queryParts['WHERE'],
-			$queryParts['GROUPBY'],
-			$queryParts['ORDERBY'],
-			$queryParts['LIMIT'],
-			$input_parameters
-		);
+		return $this->prepare_SELECTquery($queryParts['SELECT'], $queryParts['FROM'], $queryParts['WHERE'], $queryParts['GROUPBY'], $queryParts['ORDERBY'], $queryParts['LIMIT'], $input_parameters);
 	}
 
 	/**
@@ -715,7 +671,6 @@ class t3lib_DB {
 	 * - stripping of excess ORDER BY/GROUP BY keywords
 	 *
 	 **************************************/
-
 	/**
 	 * Escaping and quoting values for SQL statements.
 	 *
@@ -723,9 +678,10 @@ class t3lib_DB {
 	 * @param string $table Table name for which to quote string. Just enter the table that the field-value is selected from (and any DBAL will look up which handler to use and then how to quote the string!).
 	 * @return string Output string; Wrapped in single quotes and quotes in the string (" / ') and \ will be backslashed (or otherwise based on DBAL handler)
 	 * @see quoteStr()
+	 * @todo Define visibility
 	 */
-	function fullQuoteStr($str, $table) {
-		return '\'' . mysql_real_escape_string($str, $this->link) . '\'';
+	public function fullQuoteStr($str, $table) {
+		return ('\'' . mysql_real_escape_string($str, $this->link)) . '\'';
 	}
 
 	/**
@@ -736,15 +692,14 @@ class t3lib_DB {
 	 * @param string/array $noQuote List/array of keys NOT to quote (eg. SQL functions) - ONLY for associative arrays
 	 * @return array The input array with the values quoted
 	 * @see cleanIntArray()
+	 * @todo Define visibility
 	 */
-	function fullQuoteArray($arr, $table, $noQuote = FALSE) {
+	public function fullQuoteArray($arr, $table, $noQuote = FALSE) {
 		if (is_string($noQuote)) {
 			$noQuote = explode(',', $noQuote);
-			// Sanity check
 		} elseif (!is_array($noQuote)) {
 			$noQuote = FALSE;
 		}
-
 		foreach ($arr as $k => $v) {
 			if ($noQuote === FALSE || !in_array($k, $noQuote)) {
 				$arr[$k] = $this->fullQuoteStr($v, $table);
@@ -762,8 +717,9 @@ class t3lib_DB {
 	 * @param string $table Table name for which to quote string. Just enter the table that the field-value is selected from (and any DBAL will look up which handler to use and then how to quote the string!).
 	 * @return string Output string; Quotes (" / ') and \ will be backslashed (or otherwise based on DBAL handler)
 	 * @see quoteStr()
+	 * @todo Define visibility
 	 */
-	function quoteStr($str, $table) {
+	public function quoteStr($str, $table) {
 		return mysql_real_escape_string($str, $this->link);
 	}
 
@@ -774,8 +730,9 @@ class t3lib_DB {
 	 * @param string $table Table name for which to escape string. Just enter the table that the field-value is selected from (and any DBAL will look up which handler to use and then how to quote the string!).
 	 * @return string Output string; % and _ will be escaped with \ (or otherwise based on DBAL handler)
 	 * @see quoteStr()
+	 * @todo Define visibility
 	 */
-	function escapeStrForLike($str, $table) {
+	public function escapeStrForLike($str, $table) {
 		return addcslashes($str, '_%');
 	}
 
@@ -786,8 +743,9 @@ class t3lib_DB {
 	 * @param array $arr Array with values
 	 * @return array The input array with all values passed through intval()
 	 * @see cleanIntList()
+	 * @todo Define visibility
 	 */
-	function cleanIntArray($arr) {
+	public function cleanIntArray($arr) {
 		foreach ($arr as $k => $v) {
 			$arr[$k] = intval($arr[$k]);
 		}
@@ -801,8 +759,9 @@ class t3lib_DB {
 	 * @param string $list List of comma-separated values which should be integers
 	 * @return string The input list but with every value passed through intval()
 	 * @see cleanIntArray()
+	 * @todo Define visibility
 	 */
-	function cleanIntList($list) {
+	public function cleanIntList($list) {
 		return implode(',', t3lib_div::intExplode(',', $list));
 	}
 
@@ -811,11 +770,12 @@ class t3lib_DB {
 	 * This function is used when you call the exec_SELECTquery() function and want to pass the ORDER BY parameter by can't guarantee that "ORDER BY" is not prefixed.
 	 * Generally; This function provides a work-around to the situation where you cannot pass only the fields by which to order the result.
 	 *
-	 * @param string $str eg. "ORDER BY title, uid"
-	 * @return string eg. "title, uid"
+	 * @param string $str eg. "ORDER BY title, uid
+	 * @return string eg. "title, uid
 	 * @see exec_SELECTquery(), stripGroupBy()
+	 * @todo Define visibility
 	 */
-	function stripOrderBy($str) {
+	public function stripOrderBy($str) {
 		return preg_replace('/^ORDER[[:space:]]+BY[[:space:]]+/i', '', trim($str));
 	}
 
@@ -824,11 +784,12 @@ class t3lib_DB {
 	 * This function is used when you call the SELECTquery() function and want to pass the GROUP BY parameter by can't guarantee that "GROUP BY" is not prefixed.
 	 * Generally; This function provides a work-around to the situation where you cannot pass only the fields by which to order the result.
 	 *
-	 * @param string $str eg. "GROUP BY title, uid"
-	 * @return string eg. "title, uid"
+	 * @param string $str eg. "GROUP BY title, uid
+	 * @return string eg. "title, uid
 	 * @see exec_SELECTquery(), stripOrderBy()
+	 * @todo Define visibility
 	 */
-	function stripGroupBy($str) {
+	public function stripGroupBy($str) {
 		return preg_replace('/^GROUP[[:space:]]+BY[[:space:]]+/i', '', trim($str));
 	}
 
@@ -838,43 +799,39 @@ class t3lib_DB {
 	 *
 	 * @param string $str Input string
 	 * @return array
+	 * @todo Define visibility
 	 */
-	function splitGroupOrderLimit($str) {
-			// Prepending a space to make sure "[[:space:]]+" will find a space there
-			// for the first element.
+	public function splitGroupOrderLimit($str) {
+		// Prepending a space to make sure "[[:space:]]+" will find a space there
+		// for the first element.
 		$str = ' ' . $str;
-			// Init output array:
+		// Init output array:
 		$wgolParts = array(
 			'WHERE' => '',
 			'GROUPBY' => '',
 			'ORDERBY' => '',
-			'LIMIT' => '',
+			'LIMIT' => ''
 		);
-
-			// Find LIMIT
+		// Find LIMIT
 		$reg = array();
 		if (preg_match('/^(.*)[[:space:]]+LIMIT[[:space:]]+([[:alnum:][:space:],._]+)$/i', $str, $reg)) {
 			$wgolParts['LIMIT'] = trim($reg[2]);
 			$str = $reg[1];
 		}
-
-			// Find ORDER BY
+		// Find ORDER BY
 		$reg = array();
 		if (preg_match('/^(.*)[[:space:]]+ORDER[[:space:]]+BY[[:space:]]+([[:alnum:][:space:],._]+)$/i', $str, $reg)) {
 			$wgolParts['ORDERBY'] = trim($reg[2]);
 			$str = $reg[1];
 		}
-
-			// Find GROUP BY
+		// Find GROUP BY
 		$reg = array();
 		if (preg_match('/^(.*)[[:space:]]+GROUP[[:space:]]+BY[[:space:]]+([[:alnum:][:space:],._]+)$/i', $str, $reg)) {
 			$wgolParts['GROUPBY'] = trim($reg[2]);
 			$str = $reg[1];
 		}
-
-			// Rest is assumed to be "WHERE" clause
+		// Rest is assumed to be "WHERE" clause
 		$wgolParts['WHERE'] = $str;
-
 		return $wgolParts;
 	}
 
@@ -888,12 +845,12 @@ class t3lib_DB {
 		return array(
 			'date' => array(
 				'empty' => '0000-00-00',
-				'format' => 'Y-m-d',
+				'format' => 'Y-m-d'
 			),
 			'datetime' => array(
 				'empty' => '0000-00-00 00:00:00',
-				'format' => 'Y-m-d H:i:s',
-			),
+				'format' => 'Y-m-d H:i:s'
+			)
 		);
 	}
 
@@ -903,17 +860,17 @@ class t3lib_DB {
 	 * (For use in your applications)
 	 *
 	 **************************************/
-
 	/**
 	 * Executes query
 	 * mysql_query() wrapper function
 	 * Beware: Use of this method should be avoided as it is experimentally supported by DBAL. You should consider
-	 *         using exec_SELECTquery() and similar methods instead.
+	 * using exec_SELECTquery() and similar methods instead.
 	 *
 	 * @param string $query Query to execute
 	 * @return pointer Result pointer / DBAL object
+	 * @todo Define visibility
 	 */
-	function sql_query($query) {
+	public function sql_query($query) {
 		$res = mysql_query($query, $this->link);
 		if ($this->debugOutput) {
 			$this->debug('sql_query', $query);
@@ -926,8 +883,9 @@ class t3lib_DB {
 	 * mysql_error() wrapper function
 	 *
 	 * @return string MySQL error string.
+	 * @todo Define visibility
 	 */
-	function sql_error() {
+	public function sql_error() {
 		return mysql_error($this->link);
 	}
 
@@ -936,8 +894,9 @@ class t3lib_DB {
 	 * mysql_errno() wrapper function
 	 *
 	 * @return integer MySQL error number.
+	 * @todo Define visibility
 	 */
-	function sql_errno() {
+	public function sql_errno() {
 		return mysql_errno($this->link);
 	}
 
@@ -947,8 +906,9 @@ class t3lib_DB {
 	 *
 	 * @param pointer $res MySQL result pointer (of SELECT query) / DBAL object
 	 * @return integer Number of resulting rows
+	 * @todo Define visibility
 	 */
-	function sql_num_rows($res) {
+	public function sql_num_rows($res) {
 		if ($this->debug_check_recordset($res)) {
 			return mysql_num_rows($res);
 		} else {
@@ -962,8 +922,9 @@ class t3lib_DB {
 	 *
 	 * @param pointer $res MySQL result pointer (of SELECT query) / DBAL object
 	 * @return array Associative array of result row.
+	 * @todo Define visibility
 	 */
-	function sql_fetch_assoc($res) {
+	public function sql_fetch_assoc($res) {
 		if ($this->debug_check_recordset($res)) {
 			return mysql_fetch_assoc($res);
 		} else {
@@ -978,8 +939,9 @@ class t3lib_DB {
 	 *
 	 * @param pointer $res MySQL result pointer (of SELECT query) / DBAL object
 	 * @return array Array with result rows.
+	 * @todo Define visibility
 	 */
-	function sql_fetch_row($res) {
+	public function sql_fetch_row($res) {
 		if ($this->debug_check_recordset($res)) {
 			return mysql_fetch_row($res);
 		} else {
@@ -993,8 +955,9 @@ class t3lib_DB {
 	 *
 	 * @param pointer $res MySQL result pointer to free / DBAL object
 	 * @return boolean Returns TRUE on success or FALSE on failure.
+	 * @todo Define visibility
 	 */
-	function sql_free_result($res) {
+	public function sql_free_result($res) {
 		if ($this->debug_check_recordset($res)) {
 			return mysql_free_result($res);
 		} else {
@@ -1007,8 +970,9 @@ class t3lib_DB {
 	 * mysql_insert_id() wrapper function
 	 *
 	 * @return integer The uid of the last inserted record.
+	 * @todo Define visibility
 	 */
-	function sql_insert_id() {
+	public function sql_insert_id() {
 		return mysql_insert_id($this->link);
 	}
 
@@ -1017,8 +981,9 @@ class t3lib_DB {
 	 * mysql_affected_rows() wrapper function
 	 *
 	 * @return integer Number of rows affected by last query
+	 * @todo Define visibility
 	 */
-	function sql_affected_rows() {
+	public function sql_affected_rows() {
 		return mysql_affected_rows($this->link);
 	}
 
@@ -1029,8 +994,9 @@ class t3lib_DB {
 	 * @param pointer $res MySQL result pointer (of SELECT query) / DBAL object
 	 * @param integer $seek Seek result number.
 	 * @return boolean Returns TRUE on success or FALSE on failure.
+	 * @todo Define visibility
 	 */
-	function sql_data_seek($res, $seek) {
+	public function sql_data_seek($res, $seek) {
 		if ($this->debug_check_recordset($res)) {
 			return mysql_data_seek($res, $seek);
 		} else {
@@ -1045,8 +1011,9 @@ class t3lib_DB {
 	 * @param pointer $res MySQL result pointer (of SELECT query) / DBAL object
 	 * @param integer $pointer Field index.
 	 * @return string Returns the name of the specified field index
+	 * @todo Define visibility
 	 */
-	function sql_field_type($res, $pointer) {
+	public function sql_field_type($res, $pointer) {
 		if ($this->debug_check_recordset($res)) {
 			return mysql_field_type($res, $pointer);
 		} else {
@@ -1062,63 +1029,51 @@ class t3lib_DB {
 	 * @param string $TYPO3_db_username Username to connect with.
 	 * @param string $TYPO3_db_password Password to connect with.
 	 * @return pointer Returns a positive MySQL persistent link identifier on success, or FALSE on error.
+	 * @todo Define visibility
 	 */
-	function sql_pconnect($TYPO3_db_host, $TYPO3_db_username, $TYPO3_db_password) {
-			// mysql_error() is tied to an established connection
-			// if the connection fails we need a different method to get the error message
+	public function sql_pconnect($TYPO3_db_host, $TYPO3_db_username, $TYPO3_db_password) {
+		// mysql_error() is tied to an established connection
+		// if the connection fails we need a different method to get the error message
 		@ini_set('track_errors', 1);
 		@ini_set('html_errors', 0);
-
-			// Check if MySQL extension is loaded
+		// Check if MySQL extension is loaded
 		if (!extension_loaded('mysql')) {
 			$message = 'Database Error: It seems that MySQL support for PHP is not installed!';
 			throw new RuntimeException($message, 1271492606);
 		}
-
-			// Check for client compression
-		$isLocalhost = ($TYPO3_db_host == 'localhost' || $TYPO3_db_host == '127.0.0.1');
+		// Check for client compression
+		$isLocalhost = $TYPO3_db_host == 'localhost' || $TYPO3_db_host == '127.0.0.1';
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['no_pconnect']) {
 			if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['dbClientCompress'] && !$isLocalhost) {
-					// We use PHP's default value for 4th parameter (new_link), which is FALSE.
-					// See PHP sources, for example: file php-5.2.5/ext/mysql/php_mysql.c,
-					// function php_mysql_do_connect(), near line 525
+				// We use PHP's default value for 4th parameter (new_link), which is FALSE.
+				// See PHP sources, for example: file php-5.2.5/ext/mysql/php_mysql.c,
+				// function php_mysql_do_connect(), near line 525
 				$this->link = @mysql_connect($TYPO3_db_host, $TYPO3_db_username, $TYPO3_db_password, FALSE, MYSQL_CLIENT_COMPRESS);
 			} else {
 				$this->link = @mysql_connect($TYPO3_db_host, $TYPO3_db_username, $TYPO3_db_password);
 			}
 		} else {
 			if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['dbClientCompress'] && !$isLocalhost) {
-					// See comment about 4th parameter in block above
+				// See comment about 4th parameter in block above
 				$this->link = @mysql_pconnect($TYPO3_db_host, $TYPO3_db_username, $TYPO3_db_password, MYSQL_CLIENT_COMPRESS);
 			} else {
 				$this->link = @mysql_pconnect($TYPO3_db_host, $TYPO3_db_username, $TYPO3_db_password);
 			}
 		}
-
 		$error_msg = $php_errormsg;
 		@ini_restore('track_errors');
 		@ini_restore('html_errors');
-
 		if (!$this->link) {
-			t3lib_div::sysLog('Could not connect to MySQL server ' . $TYPO3_db_host .
-					' with user ' . $TYPO3_db_username . ': ' . $error_msg,
-				'Core',
-				t3lib_div::SYSLOG_SEVERITY_FATAL
-			);
+			t3lib_div::sysLog((((('Could not connect to MySQL server ' . $TYPO3_db_host) . ' with user ') . $TYPO3_db_username) . ': ') . $error_msg, 'Core', t3lib_div::SYSLOG_SEVERITY_FATAL);
 		} else {
-			$setDBinit = t3lib_div::trimExplode(LF, str_replace("' . LF . '", LF, $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']), TRUE);
+			$setDBinit = t3lib_div::trimExplode(LF, str_replace('\' . LF . \'', LF, $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']), TRUE);
 			foreach ($setDBinit as $v) {
 				if (mysql_query($v, $this->link) === FALSE) {
-					t3lib_div::sysLog('Could not initialize DB connection with query "' . $v .
-							'": ' . mysql_error($this->link),
-						'Core',
-						t3lib_div::SYSLOG_SEVERITY_ERROR
-					);
+					t3lib_div::sysLog((('Could not initialize DB connection with query "' . $v) . '": ') . mysql_error($this->link), 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
 				}
 			}
 			$this->setSqlMode();
 		}
-
 		return $this->link;
 	}
 
@@ -1131,19 +1086,11 @@ class t3lib_DB {
 		$resource = $this->sql_query('SELECT @@SESSION.sql_mode;');
 		if (is_resource($resource)) {
 			$result = $this->sql_fetch_row($resource);
-			if (isset($result[0]) && $result[0] && strpos($result[0], 'NO_BACKSLASH_ESCAPES') !== FALSE) {
-				$modes = array_diff(
-					t3lib_div::trimExplode(',', $result[0]),
-					array('NO_BACKSLASH_ESCAPES')
-				);
-				$query = 'SET sql_mode=\'' . mysql_real_escape_string(implode(',', $modes)) . '\';';
+			if ((isset($result[0]) && $result[0]) && strpos($result[0], 'NO_BACKSLASH_ESCAPES') !== FALSE) {
+				$modes = array_diff(t3lib_div::trimExplode(',', $result[0]), array('NO_BACKSLASH_ESCAPES'));
+				$query = ('SET sql_mode=\'' . mysql_real_escape_string(implode(',', $modes))) . '\';';
 				$success = $this->sql_query($query);
-
-				t3lib_div::sysLog(
-					'NO_BACKSLASH_ESCAPES could not be removed from SQL mode: ' . $this->sql_error(),
-					'Core',
-					t3lib_div::SYSLOG_SEVERITY_ERROR
-				);
+				t3lib_div::sysLog('NO_BACKSLASH_ESCAPES could not be removed from SQL mode: ' . $this->sql_error(), 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
 			}
 		}
 	}
@@ -1154,15 +1101,12 @@ class t3lib_DB {
 	 *
 	 * @param string $TYPO3_db Database to connect to.
 	 * @return boolean Returns TRUE on success or FALSE on failure.
+	 * @todo Define visibility
 	 */
-	function sql_select_db($TYPO3_db) {
+	public function sql_select_db($TYPO3_db) {
 		$ret = @mysql_select_db($TYPO3_db, $this->link);
 		if (!$ret) {
-			t3lib_div::sysLog('Could not select MySQL database ' . $TYPO3_db . ': ' .
-					mysql_error(),
-				'Core',
-				t3lib_div::SYSLOG_SEVERITY_FATAL
-			);
+			t3lib_div::sysLog((('Could not select MySQL database ' . $TYPO3_db) . ': ') . mysql_error(), 'Core', t3lib_div::SYSLOG_SEVERITY_FATAL);
 		}
 		return $ret;
 	}
@@ -1173,7 +1117,6 @@ class t3lib_DB {
 	 * (For use in the Install Tool and Extension Manager)
 	 *
 	 **************************************/
-
 	/**
 	 * Listing databases from current MySQL connection. NOTICE: It WILL try to select those databases and thus break selection of current database.
 	 * This is only used as a service function in the (1-2-3 process) of the Install Tool.
@@ -1181,8 +1124,9 @@ class t3lib_DB {
 	 * Use in Install Tool only!
 	 *
 	 * @return array Each entry represents a database name
+	 * @todo Define visibility
 	 */
-	function admin_get_dbs() {
+	public function admin_get_dbs() {
 		$dbArr = array();
 		$db_list = mysql_list_dbs($this->link);
 		while ($row = mysql_fetch_object($db_list)) {
@@ -1199,19 +1143,17 @@ class t3lib_DB {
 	 * the _DEFAULT handler and then 2) add all tables *configured* to be managed by other handlers
 	 *
 	 * @return array Array with tablenames as key and arrays with status information as value
+	 * @todo Define visibility
 	 */
-	function admin_get_tables() {
+	public function admin_get_tables() {
 		$whichTables = array();
-
-		$tables_result = mysql_query('SHOW TABLE STATUS FROM `' . TYPO3_db . '`', $this->link);
+		$tables_result = mysql_query(('SHOW TABLE STATUS FROM `' . TYPO3_db) . '`', $this->link);
 		if (!mysql_error()) {
 			while ($theTable = mysql_fetch_assoc($tables_result)) {
 				$whichTables[$theTable['Name']] = $theTable;
 			}
-
 			$this->sql_free_result($tables_result);
 		}
-
 		return $whichTables;
 	}
 
@@ -1225,17 +1167,15 @@ class t3lib_DB {
 	 *
 	 * @param string $tableName Table name
 	 * @return array Field information in an associative array with fieldname => field row
+	 * @todo Define visibility
 	 */
-	function admin_get_fields($tableName) {
+	public function admin_get_fields($tableName) {
 		$output = array();
-
-		$columns_res = mysql_query('SHOW COLUMNS FROM `' . $tableName . '`', $this->link);
+		$columns_res = mysql_query(('SHOW COLUMNS FROM `' . $tableName) . '`', $this->link);
 		while ($fieldRow = mysql_fetch_assoc($columns_res)) {
 			$output[$fieldRow['Field']] = $fieldRow;
 		}
-
 		$this->sql_free_result($columns_res);
-
 		return $output;
 	}
 
@@ -1245,17 +1185,15 @@ class t3lib_DB {
 	 *
 	 * @param string $tableName Table name
 	 * @return array Key information in a numeric array
+	 * @todo Define visibility
 	 */
-	function admin_get_keys($tableName) {
+	public function admin_get_keys($tableName) {
 		$output = array();
-
-		$keyRes = mysql_query('SHOW KEYS FROM `' . $tableName . '`', $this->link);
+		$keyRes = mysql_query(('SHOW KEYS FROM `' . $tableName) . '`', $this->link);
 		while ($keyRow = mysql_fetch_assoc($keyRes)) {
 			$output[] = $keyRow;
 		}
-
 		$this->sql_free_result($keyRes);
-
 		return $output;
 	}
 
@@ -1270,19 +1208,17 @@ class t3lib_DB {
 	 * Use in Install Tool only!
 	 *
 	 * @return array Array with Charset as key and an array of "Charset", "Description", "Default collation", "Maxlen" as values
+	 * @todo Define visibility
 	 */
-	function admin_get_charsets() {
+	public function admin_get_charsets() {
 		$output = array();
-
 		$columns_res = mysql_query('SHOW CHARACTER SET', $this->link);
 		if ($columns_res) {
-			while (($row = mysql_fetch_assoc($columns_res))) {
+			while ($row = mysql_fetch_assoc($columns_res)) {
 				$output[$row['Charset']] = $row;
 			}
-
 			$this->sql_free_result($columns_res);
 		}
-
 		return $output;
 	}
 
@@ -1291,8 +1227,9 @@ class t3lib_DB {
 	 *
 	 * @param string $query Query to execute
 	 * @return pointer Result pointer
+	 * @todo Define visibility
 	 */
-	function admin_query($query) {
+	public function admin_query($query) {
 		$res = mysql_query($query, $this->link);
 		if ($this->debugOutput) {
 			$this->debug('admin_query', $query);
@@ -1305,7 +1242,6 @@ class t3lib_DB {
 	 * Connecting service
 	 *
 	 ******************************/
-
 	/**
 	 * Connects to database for TYPO3 sites:
 	 *
@@ -1313,39 +1249,28 @@ class t3lib_DB {
 	 * @param string $user
 	 * @param string $password
 	 * @param string $db
-	 * @return	void
+	 * @return 	void
+	 * @todo Define visibility
 	 */
-	function connectDB($host = TYPO3_db_host, $user = TYPO3_db_username, $password = TYPO3_db_password, $db = TYPO3_db) {
-			// If no db is given we throw immediately. This is a sign for a fresh (not configured)
-			// TYPO3 installation and is used in FE to redirect to 1-2-3 install tool
+	public function connectDB($host = TYPO3_db_host, $user = TYPO3_db_username, $password = TYPO3_db_password, $db = TYPO3_db) {
+		// If no db is given we throw immediately. This is a sign for a fresh (not configured)
+		// TYPO3 installation and is used in FE to redirect to 1-2-3 install tool
 		if (!$db) {
-			throw new RuntimeException(
-				'TYPO3 Fatal Error: No database selected!',
-				1270853882
-			);
+			throw new RuntimeException('TYPO3 Fatal Error: No database selected!', 1270853882);
 		}
-
 		if ($this->sql_pconnect($host, $user, $password)) {
 			if (!$this->sql_select_db($db)) {
-				throw new RuntimeException(
-					'TYPO3 Fatal Error: Cannot connect to the current database, "' . $db . '"!',
-					1270853883
-				);
+				throw new RuntimeException(('TYPO3 Fatal Error: Cannot connect to the current database, "' . $db) . '"!', 1270853883);
 			}
 		} else {
-			throw new RuntimeException(
-				'TYPO3 Fatal Error: The current username, password or host was not accepted when the connection to the database was attempted to be established!',
-				1270853884
-			);
+			throw new RuntimeException('TYPO3 Fatal Error: The current username, password or host was not accepted when the connection to the database was attempted to be established!', 1270853884);
 		}
-
-			// Prepare user defined objects (if any) for hooks which extend query methods
+		// Prepare user defined objects (if any) for hooks which extend query methods
 		$this->preProcessHookObjects = array();
 		$this->postProcessHookObjects = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'] as $classRef) {
 				$hookObject = t3lib_div::getUserObj($classRef);
-
 				if (!($hookObject instanceof t3lib_DB_preProcessQueryHook || $hookObject instanceof t3lib_DB_postProcessQueryHook)) {
 					throw new UnexpectedValueException('$hookObject must either implement interface t3lib_DB_preProcessQueryHook or interface t3lib_DB_postProcessQueryHook', 1299158548);
 				}
@@ -1373,28 +1298,23 @@ class t3lib_DB {
 	 * Debugging
 	 *
 	 ******************************/
-
 	/**
 	 * Debug function: Outputs error if any
 	 *
 	 * @param string $func Function calling debug()
 	 * @param string $query Last query if not last built query
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function debug($func, $query = '') {
-
+	public function debug($func, $query = '') {
 		$error = $this->sql_error();
-		if ($error || (int)$this->debugOutput === 2) {
-			debug(
-				array(
-					'caller' => 't3lib_DB::' . $func,
-					'ERROR' => $error,
-					'lastBuiltQuery' => ($query ? $query : $this->debug_lastBuiltQuery),
-					'debug_backtrace' => t3lib_utility_Debug::debugTrail(),
-				),
-				$func,
-					is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'], 'debug')) ? '' : 'DB Error'
-			);
+		if ($error || (int) $this->debugOutput === 2) {
+			debug(array(
+				'caller' => 't3lib_DB::' . $func,
+				'ERROR' => $error,
+				'lastBuiltQuery' => $query ? $query : $this->debug_lastBuiltQuery,
+				'debug_backtrace' => t3lib_utility_Debug::debugTrail()
+			), $func, is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'], 'debug')) ? '' : 'DB Error');
 		}
 	}
 
@@ -1403,42 +1323,35 @@ class t3lib_DB {
 	 *
 	 * @param resource|boolean $res record set
 	 * @return boolean TRUE if the  record set is valid, FALSE otherwise
+	 * @todo Define visibility
 	 */
-	function debug_check_recordset($res) {
+	public function debug_check_recordset($res) {
 		if (is_resource($res)) {
 			return TRUE;
 		}
-
 		$msg = 'Invalid database result resource detected';
 		$trace = debug_backtrace();
 		array_shift($trace);
 		$cnt = count($trace);
 		for ($i = 0; $i < $cnt; $i++) {
-				// Complete objects are too large for the log
+			// Complete objects are too large for the log
 			if (isset($trace['object'])) {
 				unset($trace['object']);
 			}
 		}
-		$msg .= ': function t3lib_DB->' . $trace[0]['function'] . ' called from file ' .
-				substr($trace[0]['file'], strlen(PATH_site) + 2) . ' in line ' .
-				$trace[0]['line'];
-		t3lib_div::sysLog(
-			$msg . '. Use a devLog extension to get more details.',
-			'Core/t3lib_db',
-			t3lib_div::SYSLOG_SEVERITY_ERROR
-		);
-			// Send to devLog if enabled
+		$msg .= ((((': function t3lib_DB->' . $trace[0]['function']) . ' called from file ') . substr($trace[0]['file'], (strlen(PATH_site) + 2))) . ' in line ') . $trace[0]['line'];
+		t3lib_div::sysLog($msg . '. Use a devLog extension to get more details.', 'Core/t3lib_db', t3lib_div::SYSLOG_SEVERITY_ERROR);
+		// Send to devLog if enabled
 		if (TYPO3_DLOG) {
 			$debugLogData = array(
 				'SQL Error' => $this->sql_error(),
-				'Backtrace' => $trace,
+				'Backtrace' => $trace
 			);
 			if ($this->debug_lastBuiltQuery) {
 				$debugLogData = array('SQL Query' => $this->debug_lastBuiltQuery) + $debugLogData;
 			}
 			t3lib_div::devLog($msg . '.', 'Core/t3lib_db', 3, $debugLogData);
 		}
-
 		return FALSE;
 	}
 
@@ -1455,22 +1368,17 @@ class t3lib_DB {
 	 * @return boolean TRUE if explain was run, FALSE otherwise
 	 */
 	protected function explain($query, $from_table, $row_count) {
-
-		if ((int) $this->explainOutput == 1 || ((int) $this->explainOutput == 2 &&
-				t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask']))
-		) {
-				// Raw HTML output
+		if ((int) $this->explainOutput == 1 || (int) $this->explainOutput == 2 && t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
+			// Raw HTML output
 			$explainMode = 1;
 		} elseif ((int) $this->explainOutput == 3 && is_object($GLOBALS['TT'])) {
-				// Embed the output into the TS admin panel
+			// Embed the output into the TS admin panel
 			$explainMode = 2;
 		} else {
 			return FALSE;
 		}
-
 		$error = $this->sql_error();
 		$trail = t3lib_utility_Debug::debugTrail();
-
 		$explain_tables = array();
 		$explain_output = array();
 		$res = $this->sql_query('EXPLAIN ' . $query, $this->link);
@@ -1481,15 +1389,13 @@ class t3lib_DB {
 			}
 			$this->sql_free_result($res);
 		}
-
 		$indices_output = array();
-			// Notice: Rows are skipped if there is only one result, or if no conditions are set
+		// Notice: Rows are skipped if there is only one result, or if no conditions are set
 		if ($explain_output[0]['rows'] > 1 || t3lib_div::inList('ALL', $explain_output[0]['type'])) {
-				// Only enable output if it's really useful
+			// Only enable output if it's really useful
 			$debug = TRUE;
-
 			foreach ($explain_tables as $table) {
-				$tableRes = $this->sql_query('SHOW TABLE STATUS LIKE \'' . $table . '\'');
+				$tableRes = $this->sql_query(('SHOW TABLE STATUS LIKE \'' . $table) . '\'');
 				$isTable = $this->sql_num_rows($tableRes);
 				if ($isTable) {
 					$res = $this->sql_query('SHOW INDEX FROM ' . $table, $this->link);
@@ -1505,14 +1411,12 @@ class t3lib_DB {
 		} else {
 			$debug = FALSE;
 		}
-
 		if ($debug) {
 			if ($explainMode) {
 				$data = array();
 				$data['query'] = $query;
 				$data['trail'] = $trail;
 				$data['row_count'] = $row_count;
-
 				if ($error) {
 					$data['error'] = $error;
 				}
@@ -1522,7 +1426,6 @@ class t3lib_DB {
 				if (count($indices_output)) {
 					$data['indices'] = $indices_output;
 				}
-
 				if ($explainMode == 1) {
 					t3lib_utility_Debug::debug($data, 'Tables: ' . $from_table, 'DB SQL EXPLAIN');
 				} elseif ($explainMode == 2) {
@@ -1531,9 +1434,9 @@ class t3lib_DB {
 			}
 			return TRUE;
 		}
-
 		return FALSE;
 	}
+
 }
 
 ?>

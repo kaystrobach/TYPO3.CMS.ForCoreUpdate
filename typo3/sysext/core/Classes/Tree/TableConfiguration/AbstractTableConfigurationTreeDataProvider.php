@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An abstract TCA tree data provider
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib_tree
  */
 abstract class t3lib_tree_Tca_AbstractTcaTreeDataProvider extends t3lib_tree_AbstractDataProvider {
+
 	/**
 	 * @var boolean
 	 */
@@ -88,12 +88,12 @@ abstract class t3lib_tree_Tca_AbstractTcaTreeDataProvider extends t3lib_tree_Abs
 
 	/**
 	 * Gets the id of the tree
+	 *
 	 * @return string
 	 */
 	public function getTreeId() {
 		return $this->treeId;
 	}
-
 
 	/**
 	 * Sets the expandAll
@@ -246,6 +246,7 @@ abstract class t3lib_tree_Tca_AbstractTcaTreeDataProvider extends t3lib_tree_Abs
 	public function getItemUnselectableList() {
 		return $this->itemUnselectableList;
 	}
+
 }
 
 ?>

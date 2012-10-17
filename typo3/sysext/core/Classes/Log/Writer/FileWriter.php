@@ -23,8 +23,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log writer that writes the log records into a file.
  *
@@ -41,7 +39,7 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	 *
 	 * @var string
 	 */
-	protected  $logFile = '';
+	protected $logFile = '';
 
 	/**
 	 * Default log file path
@@ -65,10 +63,8 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	 * @return t3lib_log_writer_File
 	 */
 	public function __construct(array $options = array()) {
-
-			// the parent constructor reads $options and sets them
+		// the parent constructor reads $options and sets them
 		parent::__construct($options);
-
 		if (empty($options['logFile'])) {
 			$this->setLogFile($this->defaultLogFile);
 		}
@@ -76,7 +72,6 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 
 	/**
 	 * Destructor, closes the log file handle
-	 *
 	 */
 	public function __destruct() {
 		$this->closeLogFile();
@@ -93,22 +88,16 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 		if (is_resource(self::$logFileHandle)) {
 			$this->closeLogFile();
 		}
-
-			// Skip handling if logFile is a stream resource
-			// This is used by unit tests with vfs:// directories
+		// Skip handling if logFile is a stream resource
+		// This is used by unit tests with vfs:// directories
 		if (FALSE === strpos($logFile, '://')) {
-			if (!t3lib_div::isAllowedAbsPath(PATH_site . $logFile)) {
-				throw new InvalidArgumentException(
-					'Log file path "' . $logFile . '" is not valid!',
-					1326411176
-				);
+			if (!t3lib_div::isAllowedAbsPath((PATH_site . $logFile))) {
+				throw new InvalidArgumentException(('Log file path "' . $logFile) . '" is not valid!', 1326411176);
 			}
 			$logFile = t3lib_div::getFileAbsFileName($logFile);
 		}
-
 		$this->logFile = $logFile;
 		$this->openLogFile();
-
 		return $this;
 	}
 
@@ -132,7 +121,6 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 		if (FALSE === fwrite(self::$logFileHandle, $record . LF)) {
 			throw new RuntimeException('Could not write log record to log file', 1345036335);
 		}
-
 		return $this;
 	}
 
@@ -144,11 +132,9 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	 */
 	protected function openLogFile() {
 		$this->createLogFile();
-
 		self::$logFileHandle = fopen($this->logFile, 'a');
-
 		if (!is_resource(self::$logFileHandle)) {
-			throw new RuntimeException('Could not open log file "' . $this->logFile . '"', 1321804422);
+			throw new RuntimeException(('Could not open log file "' . $this->logFile) . '"', 1321804422);
 		}
 	}
 
@@ -173,16 +159,13 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 		if (file_exists($this->logFile)) {
 			return;
 		}
-
 		$logFileDirectory = dirname($this->logFile);
 		if (!@is_dir($logFileDirectory)) {
 			t3lib_div::mkdir_deep($logFileDirectory);
-
-				// only create .htaccess, if we created the directory on our own
+			// only create .htaccess, if we created the directory on our own
 			$this->createHtaccessFile($logFileDirectory . '/.htaccess');
 		}
-
-			// create the log file
+		// create the log file
 		t3lib_div::writeFile($this->logFile, '');
 	}
 
@@ -193,7 +176,7 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	 * @return void
 	 */
 	protected function createHtaccessFile($htaccessFile) {
-			// write .htaccess file to protect the log file
+		// write .htaccess file to protect the log file
 		if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['generateApacheHtaccess']) && !file_exists($htaccessFile)) {
 			t3lib_div::writeFile($htaccessFile, 'Deny From All');
 		}

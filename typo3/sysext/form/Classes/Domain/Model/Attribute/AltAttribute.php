@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'alt'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Alt extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'alt'
 	 * Used with the element 'input'
@@ -43,8 +43,9 @@ class tx_form_Domain_Model_Attributes_Alt extends tx_form_Domain_Model_Attribute
 	 */
 	public function getValue() {
 		$attribute = (string) $this->value;
-
 		return $attribute;
 	}
+
 }
+
 ?>

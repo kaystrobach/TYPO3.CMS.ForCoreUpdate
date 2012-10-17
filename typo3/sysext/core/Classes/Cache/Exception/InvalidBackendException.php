@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An "Invalid Backend" exception
  *
@@ -32,5 +31,8 @@
  * @api
  */
 class t3lib_cache_exception_InvalidBackend extends t3lib_cache_Exception {
+
+
 }
+
 ?>

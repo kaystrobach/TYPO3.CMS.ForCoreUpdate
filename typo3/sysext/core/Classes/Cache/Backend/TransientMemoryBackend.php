@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which stores cache entries during one script run.
  *
@@ -61,7 +60,7 @@ class t3lib_cache_backend_TransientMemoryBackend extends t3lib_cache_backend_Abs
 			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1238244992);
 		}
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData('The specified data is of type "' . gettype($data) . '" but a string is expected.', 1238244993);
+			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1238244993);
 		}
 		$this->entries[$entryIdentifier] = $data;
 		foreach ($tags as $tag) {
@@ -77,7 +76,7 @@ class t3lib_cache_backend_TransientMemoryBackend extends t3lib_cache_backend_Abs
 	 * @api
 	 */
 	public function get($entryIdentifier) {
-		return (isset($this->entries[$entryIdentifier])) ? $this->entries[$entryIdentifier] : FALSE;
+		return isset($this->entries[$entryIdentifier]) ? $this->entries[$entryIdentifier] : FALSE;
 	}
 
 	/**
@@ -103,7 +102,7 @@ class t3lib_cache_backend_TransientMemoryBackend extends t3lib_cache_backend_Abs
 			unset($this->entries[$entryIdentifier]);
 			foreach (array_keys($this->tagsAndEntries) as $tag) {
 				if (isset($this->tagsAndEntries[$tag][$entryIdentifier])) {
-					unset ($this->tagsAndEntries[$tag][$entryIdentifier]);
+					unset($this->tagsAndEntries[$tag][$entryIdentifier]);
 				}
 			}
 			return TRUE;
@@ -160,6 +159,9 @@ class t3lib_cache_backend_TransientMemoryBackend extends t3lib_cache_backend_Abs
 	 * @api
 	 */
 	public function collectGarbage() {
+
 	}
+
 }
+
 ?>

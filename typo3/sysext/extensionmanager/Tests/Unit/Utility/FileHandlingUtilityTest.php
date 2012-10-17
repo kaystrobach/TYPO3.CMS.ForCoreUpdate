@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the Tx_Extensionmanager_Utility_List class in the TYPO3 Core.
  *
@@ -37,7 +36,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 */
 	public function tearDown() {
 		foreach ($this->fakedExtensions as $extension => $dummy) {
-			t3lib_div::rmdir(PATH_site . 'typo3conf/ext/' . $extension, TRUE);
+			t3lib_div::rmdir((PATH_site . 'typo3conf/ext/') . $extension, TRUE);
 		}
 	}
 
@@ -50,9 +49,8 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 */
 	protected function createFakeExtension($extkeyOnly = FALSE) {
 		$extKey = strtolower(uniqid('testing'));
-
-		$absExtPath = PATH_site . 'typo3conf/ext/' . $extKey . '/';
-		$relPath = 'typo3conf/ext/' . $extKey . '/';
+		$absExtPath = ((PATH_site . 'typo3conf/ext/') . $extKey) . '/';
+		$relPath = ('typo3conf/ext/' . $extKey) . '/';
 		$this->fakedExtensions[$extKey] = array(
 			'siteRelPath' => $relPath,
 			'siteAbsPath' => $absExtPath
@@ -70,11 +68,8 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 */
 	public function makeAndClearExtensionDirRemovesExtensionDirIfAlreadyExists() {
 		$extKey = $this->createFakeExtension();
-		$fileHandlerMock = $this->getAccessibleMock(
-			'Tx_Extensionmanager_Utility_FileHandling',
-			array('removeDirectory', 'addDirectory')
-		);
-		$fileHandlerMock->expects($this->once())->method('removeDirectory')->with(PATH_site . 'typo3conf/ext/' . $extKey . '/');
+		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('removeDirectory', 'addDirectory'));
+		$fileHandlerMock->expects($this->once())->method('removeDirectory')->with(((PATH_site . 'typo3conf/ext/') . $extKey) . '/');
 		$fileHandlerMock->_call('makeAndClearExtensionDir', $extKey);
 	}
 
@@ -84,11 +79,8 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 */
 	public function makeAndClearExtensionDirAddsDir() {
 		$extKey = $this->createFakeExtension();
-		$fileHandlerMock = $this->getAccessibleMock(
-			'Tx_Extensionmanager_Utility_FileHandling',
-			array('removeDirectory', 'addDirectory')
-		);
-		$fileHandlerMock->expects($this->once())->method('addDirectory')->with(PATH_site . 'typo3conf/ext/' . $extKey . '/');
+		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('removeDirectory', 'addDirectory'));
+		$fileHandlerMock->expects($this->once())->method('addDirectory')->with(((PATH_site . 'typo3conf/ext/') . $extKey) . '/');
 		$fileHandlerMock->_call('makeAndClearExtensionDir', $extKey);
 	}
 
@@ -98,10 +90,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 	 * @return void
 	 */
 	public function makeAndClearExtensionDirThrowsExceptionOnInvalidPath() {
-		$fileHandlerMock = $this->getAccessibleMock(
-			'Tx_Extensionmanager_Utility_FileHandling',
-			array('removeDirectory', 'addDirectory')
-		);
+		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('removeDirectory', 'addDirectory'));
 		$fileHandlerMock->_call('makeAndClearExtensionDir', 'testing123', 'fakepath');
 	}
 
@@ -159,15 +148,14 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 		$extensionData = array(
 			'extKey' => 'test'
 		);
-		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling',
-			array(
-				'makeAndClearExtensionDir',
-				'writeEmConfToFile',
-				'extractFilesArrayFromExtensionData',
-				'extractDirectoriesFromExtensionData',
-				'createDirectoriesForExtensionFiles',
-				'writeExtensionFiles'
-			));
+		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array(
+			'makeAndClearExtensionDir',
+			'writeEmConfToFile',
+			'extractFilesArrayFromExtensionData',
+			'extractDirectoriesFromExtensionData',
+			'createDirectoriesForExtensionFiles',
+			'writeExtensionFiles'
+		));
 		$fileHandlerMock->expects($this->once())->method('extractFilesArrayFromExtensionData')->will($this->returnValue(array()));
 		$fileHandlerMock->expects($this->once())->method('extractDirectoriesFromExtensionData')->will($this->returnValue(array()));
 		$fileHandlerMock->expects($this->once())->method('makeAndClearExtensionDir')->with($extensionData['extKey']);
@@ -213,7 +201,7 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 				'content' => 'FEEL FREE TO ADD SOME DOCUMENTATION HERE'
 			)
 		);
-		$rootPath = $extDirPath = $this->fakedExtensions[$this->createFakeExtension()]['siteAbsPath'];
+		$rootPath = ($extDirPath = $this->fakedExtensions[$this->createFakeExtension()]['siteAbsPath']);
 		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('makeAndClearExtensionDir'));
 		$fileHandlerMock->_call('writeExtensionFiles', $files, $rootPath);
 		$this->assertTrue(file_exists($rootPath . 'ChangeLog'));
@@ -276,15 +264,12 @@ class Tx_Extensionmanager_Utility_FileHandlingTest extends Tx_Extbase_Tests_Unit
 				'title' => 'Plugin cache engine',
 				'description' => 'Provides an interface to cache plugin content elements based on 4.3 caching framework',
 				'category' => 'Frontend',
-				'shy' => 0,
-			),
+				'shy' => 0
+			)
 		);
 		$rootPath = $this->fakedExtensions[$extKey]['siteAbsPath'];
 		$emConfUtilityMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_EmConf', array('constructEmConf'));
-		$emConfUtilityMock->expects($this->once())
-			->method('constructEmConf')
-			->with($extensionData)
-			->will($this->returnValue(var_export($extensionData['EM_CONF'], TRUE)));
+		$emConfUtilityMock->expects($this->once())->method('constructEmConf')->with($extensionData)->will($this->returnValue(var_export($extensionData['EM_CONF'], TRUE)));
 		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_FileHandling', array('makeAndClearExtensionDir'));
 		$fileHandlerMock->_set('emConfUtility', $emConfUtilityMock);
 		$fileHandlerMock->_call('writeEmConfToFile', $extensionData, $rootPath);

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An abstract cache
  *
@@ -37,6 +36,7 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 
 	/**
 	 * Identifies this cache
+	 *
 	 * @var string
 	 */
 	protected $identifier;
@@ -55,10 +55,7 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	 */
 	public function __construct($identifier, t3lib_cache_backend_Backend $backend) {
 		if (preg_match(self::PATTERN_ENTRYIDENTIFIER, $identifier) !== 1) {
-			throw new \InvalidArgumentException(
-				'"' . $identifier . '" is not a valid cache identifier.',
-				1203584729
-			);
+			throw new \InvalidArgumentException(('"' . $identifier) . '" is not a valid cache identifier.', 1203584729);
 		}
 		$this->identifier = $identifier;
 		$this->backend = $backend;
@@ -95,10 +92,7 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	 */
 	public function has($entryIdentifier) {
 		if (!$this->isValidEntryIdentifier($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'"' . $entryIdentifier . '" is not a valid cache entry identifier.',
-				1233058486
-			);
+			throw new \InvalidArgumentException(('"' . $entryIdentifier) . '" is not a valid cache entry identifier.', 1233058486);
 		}
 		return $this->backend->has($entryIdentifier);
 	}
@@ -113,10 +107,7 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	 */
 	public function remove($entryIdentifier) {
 		if (!$this->isValidEntryIdentifier($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'"' . $entryIdentifier . '" is not a valid cache entry identifier.',
-				1233058495
-			);
+			throw new \InvalidArgumentException(('"' . $entryIdentifier) . '" is not a valid cache entry identifier.', 1233058495);
 		}
 		return $this->backend->remove($entryIdentifier);
 	}
@@ -141,19 +132,14 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	 */
 	public function flushByTag($tag) {
 		if (!$this->isValidTag($tag)) {
-			throw new \InvalidArgumentException(
-				'"' . $tag . '" is not a valid tag for a cache entry.',
-				1233057359
-			);
+			throw new \InvalidArgumentException(('"' . $tag) . '" is not a valid tag for a cache entry.', 1233057359);
 		}
-
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php']['flushByTag'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php']['flushByTag'] as $_funcRef) {
 				$params = array('tag' => $tag);
 				t3lib_div::callUserFunction($_funcRef, $params, $this);
 			}
 		}
-
 		if ($this->backend instanceof t3lib_cache_backend_TaggableBackend) {
 			$this->backend->flushByTag($tag);
 		}
@@ -190,5 +176,7 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	public function isValidTag($tag) {
 		return preg_match(self::PATTERN_TAG, $tag) === 1;
 	}
+
 }
+
 ?>

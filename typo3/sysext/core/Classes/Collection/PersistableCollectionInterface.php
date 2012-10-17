@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for collection class being persistable
  *
@@ -37,8 +36,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Persistable {
-
+interface t3lib_collection_Persistable
+{
 	/**
 	 * Get the identifier of the collection
 	 *
@@ -69,7 +68,7 @@ interface t3lib_collection_Persistable {
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
 	 * @return t3lib_collection_Collection
 	 */
-	public static function load($id, $fillItems = FALSE);
+	static public function load($id, $fillItems = FALSE);
 
 	/**
 	 * Persists current collection state to underlying storage
@@ -91,6 +90,6 @@ interface t3lib_collection_Persistable {
 	 * @return void
 	 */
 	public function loadContents();
-}
 
+}
 ?>

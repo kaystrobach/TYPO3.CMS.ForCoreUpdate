@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Hook for the info module
  *
@@ -40,10 +39,10 @@ class Tx_SysNote_Hooks_InfoModule {
 	 */
 	public function render(array $params = array(), tx_cms_webinfo_page $parentObject) {
 		$sysNote = t3lib_div::makeInstance('Tx_SysNote_SysNote');
-
 		$content = $sysNote->renderByPid($parentObject->pObj->id);
 		return $content;
 	}
+
 }
 
 ?>

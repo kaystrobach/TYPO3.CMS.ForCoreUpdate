@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'checked'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Checked extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'checked'
 	 * Used with the element 'input' only if type attribute has the value
@@ -43,14 +43,12 @@ class tx_form_Domain_Model_Attributes_Checked extends tx_form_Domain_Model_Attri
 	 * @return string Attribute value
 	 */
 	public function getValue() {
-		if ((integer) $this->value === 1
-			|| (boolean) $this->value === TRUE
-			|| strtolower((string) $this->value === 'checked'))
-		{
+		if (((int) $this->value === 1 || (bool) $this->value === TRUE) || strtolower((string) $this->value === 'checked')) {
 			$attribute = 'checked';
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract for the form elements
  *
@@ -30,10 +29,10 @@
  * @subpackage form
  */
 abstract class tx_form_Domain_Model_Element_Abstract {
+
 	const ELEMENT_TYPE_FORM = 'FORM';
 	const ELEMENT_TYPE_PLAIN = 'PLAIN';
 	const ELEMENT_TYPE_CONTENT = 'CONTENT';
-
 	/**
 	 * Internal Id of the element
 	 *
@@ -203,7 +202,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 		if (is_string($name) === FALSE) {
 			$name = '';
 		}
-
 		if ($name !== '') {
 			$this->name = $name;
 		} else {
@@ -240,7 +238,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 		if (array_key_exists($attribute, $this->allowedAttributes)) {
 			$this->attributes->addAttribute($attribute, $value);
 		}
-
 		return $this;
 	}
 
@@ -268,7 +265,7 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * @return boolean TRUE if there is a list of allowed attributes
 	 */
 	public function hasAllowedAttributes() {
-		return (empty($this->allowedAttributes) === FALSE);
+		return empty($this->allowedAttributes) === FALSE;
 	}
 
 	/**
@@ -277,7 +274,7 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * @return boolean TRUE if there is a list of allowed additionals
 	 */
 	public function hasAllowedAdditionals() {
-		return (empty($this->allowedAdditional) === FALSE);
+		return empty($this->allowedAdditional) === FALSE;
 	}
 
 	/**
@@ -413,7 +410,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	public function setMessagesFromValidation() {
 		if ($this->validateClass->hasMessage($this->getName())) {
 			$messages = $this->validateClass->getMessagesByName($this->getName());
-
 			$this->setAdditional('mandatory', 'COA', $messages);
 		}
 	}
@@ -426,7 +422,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	public function setErrorsFromValidation() {
 		if ($this->validateClass->hasErrors($this->getName())) {
 			$errors = $this->validateClass->getErrorsByName($this->getName());
-
 			$this->setAdditional('error', 'COA', $errors);
 		}
 	}
@@ -440,7 +435,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 */
 	public function setAdditional($additional, $type, $value) {
 		$this->additional->addAdditional($additional, $type, $value);
-
 		return $this;
 	}
 
@@ -461,7 +455,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 */
 	protected function createAdditional() {
 		$className = 'tx_form_Domain_Model_Additional_Additional';
-
 		$this->additional = t3lib_div::makeInstance($className);
 	}
 
@@ -495,7 +488,6 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 */
 	public function makeFilter($class, $arguments = array()) {
 		$filter = $this->filter->makeFilter($class, $arguments);
-
 		return $filter;
 	}
 
@@ -519,5 +511,7 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	public function checkFilterAndSetIncomingDataFromRequest() {
 		return $this;
 	}
+
 }
+
 ?>

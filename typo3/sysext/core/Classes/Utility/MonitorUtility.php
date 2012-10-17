@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to handle monitoring actions.
  *
@@ -37,15 +36,14 @@ final class t3lib_utility_Monitor {
 	 *
 	 * @return void
 	 */
-	public static function peakMemoryUsage() {
+	static public function peakMemoryUsage() {
 		$peakUsage = memory_get_peak_usage(TRUE);
 		$memoryLimit = t3lib_div::getBytesFromSizeMeasurement(ini_get('memory_limit'));
-
 		if (is_double($memoryLimit) && $memoryLimit != 0) {
 			if ($peakUsage / $memoryLimit >= 0.9) {
 				/** @var $registry t3lib_Registry */
 				$registry = t3lib_div::makeInstance('t3lib_Registry');
-				$data = array (
+				$data = array(
 					'used' => $peakUsage,
 					'tstamp' => $GLOBALS['EXEC_TIME'],
 					'url' => t3lib_div::getIndpEnv('TYPO3_REQUEST_URL')
@@ -54,6 +52,7 @@ final class t3lib_utility_Monitor {
 			}
 		}
 	}
+
 }
 
 ?>

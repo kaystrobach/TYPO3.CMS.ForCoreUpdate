@@ -24,9 +24,8 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
- *  A class which collects and renders flash messages.
+ * A class which collects and renders flash messages.
  *
  * @author Rupert Germann <rupi@gmx.li>
  * @package TYPO3
@@ -40,6 +39,7 @@ class t3lib_FlashMessageQueue {
 	 * Static class, no instances allowed.
 	 */
 	protected function __construct() {
+
 	}
 
 	/**
@@ -49,7 +49,7 @@ class t3lib_FlashMessageQueue {
 	 * @param object $message Instance of t3lib_FlashMessage, representing a message
 	 * @return void
 	 */
-	public static function addMessage(t3lib_FlashMessage $message) {
+	static public function addMessage(t3lib_FlashMessage $message) {
 		if ($message->isSessionMessage()) {
 			$queuedFlashMessages = self::getFlashMessagesFromSession();
 			$queuedFlashMessages[] = $message;
@@ -64,11 +64,10 @@ class t3lib_FlashMessageQueue {
 	 *
 	 * @return array Array of t3lib_FlashMessage objects
 	 */
-	public static function getAllMessages() {
-			// Get messages from user session
+	static public function getAllMessages() {
+		// Get messages from user session
 		$queuedFlashMessagesFromSession = self::getFlashMessagesFromSession();
 		$queuedFlashMessages = array_merge($queuedFlashMessagesFromSession, self::$messages);
-
 		return $queuedFlashMessages;
 	}
 
@@ -79,14 +78,12 @@ class t3lib_FlashMessageQueue {
 	 *
 	 * @return array Array of t3lib_FlashMessage objects
 	 */
-	public static function getAllMessagesAndFlush() {
+	static public function getAllMessagesAndFlush() {
 		$queuedFlashMessages = self::getAllMessages();
-
-			// Reset messages in user session
+		// Reset messages in user session
 		self::removeAllFlashMessagesFromSession();
-			// Reset internal messages
+		// Reset internal messages
 		self::$messages = array();
-
 		return $queuedFlashMessages;
 	}
 
@@ -96,7 +93,7 @@ class t3lib_FlashMessageQueue {
 	 * @param array $flashMessages Array of t3lib_FlashMessage
 	 * @return void
 	 */
-	protected static function storeFlashMessagesInSession(array $flashMessages) {
+	static protected function storeFlashMessagesInSession(array $flashMessages) {
 		self::getUserByContext()->setAndSaveSessionData('core.template.flashMessages', $flashMessages);
 	}
 
@@ -105,7 +102,7 @@ class t3lib_FlashMessageQueue {
 	 *
 	 * @return void
 	 */
-	protected static function removeAllFlashMessagesFromSession() {
+	static protected function removeAllFlashMessagesFromSession() {
 		self::getUserByContext()->setAndSaveSessionData('core.template.flashMessages', NULL);
 	}
 
@@ -115,9 +112,8 @@ class t3lib_FlashMessageQueue {
 	 *
 	 * @return array An array of t3lib_FlashMessage flash messages.
 	 */
-	protected static function getFlashMessagesFromSession() {
+	static protected function getFlashMessagesFromSession() {
 		$flashMessages = self::getUserByContext()->getSessionData('core.template.flashMessages');
-
 		return is_array($flashMessages) ? $flashMessages : array();
 	}
 
@@ -126,7 +122,7 @@ class t3lib_FlashMessageQueue {
 	 *
 	 * @return object User object
 	 */
-	protected static function getUserByContext() {
+	static protected function getUserByContext() {
 		return TYPO3_MODE === 'BE' ? $GLOBALS['BE_USER'] : $GLOBALS['TSFE']->fe_user;
 	}
 
@@ -135,10 +131,9 @@ class t3lib_FlashMessageQueue {
 	 *
 	 * @return string All flash messages in the queue rendered as HTML.
 	 */
-	public static function renderFlashMessages() {
+	static public function renderFlashMessages() {
 		$content = '';
 		$flashMessages = self::getAllMessagesAndFlush();
-
 		if (count($flashMessages)) {
 			foreach ($flashMessages as $flashMessage) {
 				$content .= $flashMessage->render();
@@ -146,6 +141,7 @@ class t3lib_FlashMessageQueue {
 		}
 		return $content;
 	}
+
 }
 
 ?>

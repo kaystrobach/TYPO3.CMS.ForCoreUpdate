@@ -24,30 +24,31 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract State Provider
  *
  * @TODO This class is incomplete, because the methods still need
- * some variables or other state object
- *
  * @author Stefan Galinski <stefan.galinski@gmail.com>
  * @author Steffen Ritter <info@steffen-ritter.net>
  * @package TYPO3
  * @subpackage t3lib
  */
 abstract class t3lib_tree_AbstractStateProvider {
+
 	/**
 	 * Sets the current tree state
+	 *
 	 * @return void
 	 */
 	abstract public function setState();
 
 	/**
 	 * Returns the last tree state
+	 *
 	 * @return something
 	 */
 	abstract public function getState();
+
 }
 
 ?>

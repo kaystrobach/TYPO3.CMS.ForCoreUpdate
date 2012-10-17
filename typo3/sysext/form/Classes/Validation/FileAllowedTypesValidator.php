@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * File Allowed Types rule
  * The file type must fit one of the given mime types
@@ -47,7 +46,6 @@ class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_A
 	 */
 	public function __construct($arguments) {
 		$this->setAllowedTypes($arguments['types']);
-
 		parent::__construct($arguments);
 	}
 
@@ -61,7 +59,6 @@ class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_A
 		if ($this->requestHandler->has($this->fieldName)) {
 			$fileValue = $this->requestHandler->getByMethod($this->fieldName);
 			$value = strtolower($fileValue['type']);
-
 			if (!in_array($value, $this->allowedTypes)) {
 				return FALSE;
 			}
@@ -78,7 +75,6 @@ class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_A
 	public function setAllowedTypes($allowedTypes) {
 		$allowedTypes = strtolower($allowedTypes);
 		$this->allowedTypes = t3lib_div::trimExplode(', ', $allowedTypes);
-
 		return $this;
 	}
 
@@ -90,13 +86,10 @@ class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_A
 	 * @return string Message text with substituted markers
 	 */
 	protected function substituteValues($message) {
-		$message = str_replace(
-			'%allowedTypes',
-			implode(',', $this->allowedTypes),
-			$message
-		);
-
+		$message = str_replace('%allowedTypes', implode(',', $this->allowedTypes), $message);
 		return $message;
 	}
+
 }
+
 ?>

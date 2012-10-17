@@ -1,54 +1,50 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Susanne Moog <typo3@susanne-moog.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 1999-2011 Susanne Moog <typo3@susanne-moog.de>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains the update class for the split of css styled content templates. Used by the update wizard in the install tool.
  *
  * @author Susanne Moog <typo3@susanne-moog.de>
  */
 class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
+
 	protected $title = 'Split TypoScript Templates from CSS Styled Content';
 
 	/**
 	 * Function which checks if update is needed. Called in the beginning of an update process.
 	 *
-	 * @param	string		pointer to description for the update
-	 * @return	boolean		TRUE if update is needs to be performed, FALSE otherwise.
+	 * @param 	string		pointer to description for the update
+	 * @return 	boolean		TRUE if update is needs to be performed, FALSE otherwise.
+	 * @todo Define visibility
 	 */
-	function checkForUpdate(&$description) {
+	public function checkForUpdate(&$description) {
 		$templates = $this->getTemplatesWithCsc($dbQueries, $customMessages);
 		$templates = $this->findUpdateableTemplatesWithCsc($templates);
 		if (count($templates)) {
-			$description = '<p>Run this wizard if you use CSS styled content in your templates, as the inclusion of the static templates changed. </p>' .
-				'<p>You are currently using CSS styled content in <strong>' . count($templates) . '&nbsp;templates</strong>  (including deleted and hidden),' .
-				' so if you did not run this wizard before, <strong>do it now</strong>.</p>' .
-				'<p>The wizard will automatically choose the right template according to your compatibility version. So if you want to ' .
-				'change the rendering back to an older version, you will have to use the changeCompatibilityVersion wizard above ' .
-				'first, and then return back to this one.</p>';
+			$description = (((((('<p>Run this wizard if you use CSS styled content in your templates, as the inclusion of the static templates changed. </p>' . '<p>You are currently using CSS styled content in <strong>') . count($templates)) . '&nbsp;templates</strong>  (including deleted and hidden),') . ' so if you did not run this wizard before, <strong>do it now</strong>.</p>') . '<p>The wizard will automatically choose the right template according to your compatibility version. So if you want to ') . 'change the rendering back to an older version, you will have to use the changeCompatibilityVersion wizard above ') . 'first, and then return back to this one.</p>';
 			return TRUE;
 		}
 		return FALSE;
@@ -57,11 +53,12 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 	/**
 	 * Performs the update itself
 	 *
-	 * @param	array		pointer where to insert all DB queries made, so they can be shown to the user if wanted
-	 * @param	string		pointer to output custom messages
-	 * @return	boolean		TRUE if update succeeded, FALSE otherwise
+	 * @param 	array		pointer where to insert all DB queries made, so they can be shown to the user if wanted
+	 * @param 	string		pointer to output custom messages
+	 * @return 	boolean		TRUE if update succeeded, FALSE otherwise
+	 * @todo Define visibility
 	 */
-	function performUpdate(&$dbQueries, &$customMessages) {
+	public function performUpdate(&$dbQueries, &$customMessages) {
 		$templates = $this->getTemplatesWithCsc($dbQueries, $customMessages);
 		$templates = $this->findUpdateableTemplatesWithCsc($templates);
 		$this->updateCscTemplates($templates, $dbQueries, $customMessages);
@@ -75,22 +72,20 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 	/**
 	 * Gets the templates that include the static css styled content template
 	 *
-	 * @param	array		pointer where to insert all DB queries made, so they can be shown to the user if wanted
-	 * @param	string		pointer to output custom messages
-	 * @return	array		uid and inclusion string for the templates, that include csc
+	 * @param 	array		pointer where to insert all DB queries made, so they can be shown to the user if wanted
+	 * @param 	string		pointer to output custom messages
+	 * @return 	array		uid and inclusion string for the templates, that include csc
+	 * @todo Define visibility
 	 */
-	function getTemplatesWithCsc(&$dbQueries, &$customMessages) {
+	public function getTemplatesWithCsc(&$dbQueries, &$customMessages) {
 		$fields = 'uid, include_static_file';
 		$table = 'sys_template';
 		$where = 'include_static_file LIKE "%EXT:css_styled_content/static/%"';
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where);
-
 		$dbQueries[] = str_replace(chr(10), ' ', $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery);
-
 		if ($GLOBALS['TYPO3_DB']->sql_error()) {
 			$customMessages = 'SQL-ERROR: ' . htmlspecialchars($GLOBALS['TYPO3_DB']->sql_error());
 		}
-
 		$templates = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$templates[] = $row;
@@ -101,13 +96,13 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 	/**
 	 * Take a list of templates and filter them if they need an update or not
 	 *
-	 * @param	array		uid and inclusion string for the templates, that include csc
-	 * @return	array		uid and inclusion string for the templates, that include csc and need an update
+	 * @param 	array		uid and inclusion string for the templates, that include csc
+	 * @return 	array		uid and inclusion string for the templates, that include csc and need an update
+	 * @todo Define visibility
 	 */
-	function findUpdateableTemplatesWithCsc($allTemplates) {
+	public function findUpdateableTemplatesWithCsc($allTemplates) {
 		$compatVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger($GLOBALS['TYPO3_CONF_VARS']['SYS']['compat_version']);
 		$currentVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_branch);
-
 		$templatesCount = count($allTemplates);
 		$updateableTemplates = array();
 		for ($i = 0; $i < $templatesCount; $i++) {
@@ -163,29 +158,29 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 		return $updateableTemplates;
 	}
 
-
 	/**
 	 * updates the template records to include the new css styled content templates, according to the current compat version
 	 *
-	 * @param	array		template records to update, fetched by getTemplates() and filtered by
-	 * @param	array		pointer where to insert all DB queries made, so they can be shown to the user if wanted
-	 * @param	string		pointer to output custom messages
+	 * @param 	array		template records to update, fetched by getTemplates() and filtered by
+	 * @param 	array		pointer where to insert all DB queries made, so they can be shown to the user if wanted
+	 * @param 	string		pointer to output custom messages
+	 * @todo Define visibility
 	 */
-	function updateCscTemplates($templates, &$dbQueries, &$customMessages) {
+	public function updateCscTemplates($templates, &$dbQueries, &$customMessages) {
 		foreach ($templates as $template) {
 			$table = 'sys_template';
 			$where = 'uid =' . $template['uid'];
 			$field_values = array(
 				'include_static_file' => $template['include_static_file']
 			);
-
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $field_values);
 			$dbQueries[] = str_replace(chr(10), ' ', $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery);
-
 			if ($GLOBALS['TYPO3_DB']->sql_error()) {
 				$customMessages = 'SQL-ERROR: ' . htmlspecialchars($GLOBALS['TYPO3_DB']->sql_error());
 			}
 		}
 	}
+
 }
+
 ?>

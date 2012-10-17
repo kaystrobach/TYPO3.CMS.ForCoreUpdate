@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the Tx_Beuser_Domain_Repository_BackendUserRepository class.
  *
@@ -50,6 +49,7 @@ class Tx_Beuser_Domain_Repository_BackendUserRepositoryTest extends Tx_Extbase_T
 	 * @test
 	 */
 	public function classCanBeInstantiated() {
+
 	}
 
 }

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Represents a node in a TCA database setup
  *
@@ -132,7 +131,7 @@ class t3lib_tree_Tca_DatabaseNode extends t3lib_tree_RepresentationNode {
 	 * @return void
 	 */
 	public function setHasChildren($value) {
-		$this->hasChildren = (boolean) $value;
+		$this->hasChildren = (bool) $value;
 	}
 
 	/**
@@ -150,8 +149,7 @@ class t3lib_tree_Tca_DatabaseNode extends t3lib_tree_RepresentationNode {
 		if ($this->equals($other)) {
 			return 0;
 		}
-
-		return ($this->sortValue > $other->getSortValue()) ? 1 : -1;
+		return $this->sortValue > $other->getSortValue() ? 1 : -1;
 	}
 
 	/**
@@ -172,6 +170,7 @@ class t3lib_tree_Tca_DatabaseNode extends t3lib_tree_RepresentationNode {
 	public function setSortValue($sortValue) {
 		$this->sortValue = $sortValue;
 	}
+
 }
 
 ?>

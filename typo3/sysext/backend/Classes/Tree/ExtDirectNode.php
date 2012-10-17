@@ -1,30 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2010-2011 TYPO3 Tree Team <http://forge.typo3.org/projects/typo3v4-extjstrees>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Node for the usage with ExtDirect and ExtJS
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
+
 	/**
 	 * Node type
 	 *
@@ -199,7 +199,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setLeaf($isLeaf) {
-		$this->leaf = ($isLeaf == TRUE);
+		$this->leaf = $isLeaf == TRUE;
 	}
 
 	/**
@@ -218,7 +218,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setExpandable($expandable) {
-		$this->expandable = ($expandable == TRUE);
+		$this->expandable = $expandable == TRUE;
 	}
 
 	/**
@@ -237,7 +237,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setExpanded($expanded) {
-		$this->expanded = ($expanded == TRUE);
+		$this->expanded = $expanded == TRUE;
 	}
 
 	/**
@@ -249,7 +249,6 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 		if ($this->isLeafNode()) {
 			return TRUE;
 		}
-
 		return $this->expanded;
 	}
 
@@ -260,7 +259,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setDraggable($draggable) {
-		$this->draggable = ($draggable == TRUE);
+		$this->draggable = $draggable == TRUE;
 	}
 
 	/**
@@ -279,7 +278,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setIsDropTarget($isDropTarget) {
-		$this->isDropTarget = ($isDropTarget == TRUE);
+		$this->isDropTarget = $isDropTarget == TRUE;
 	}
 
 	/**
@@ -351,7 +350,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setInCopyMode($inCopyMode) {
-		$this->t3InCopyMode = ($inCopyMode == TRUE);
+		$this->t3InCopyMode = $inCopyMode == TRUE;
 	}
 
 	/**
@@ -370,7 +369,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setInCutMode($inCutMode) {
-		$this->t3InCutMode = ($inCutMode == TRUE);
+		$this->t3InCutMode = $inCutMode == TRUE;
 	}
 
 	/**
@@ -464,7 +463,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setLabelIsEditable($labelIsEditable) {
-		$this->labelIsEditable = ($labelIsEditable == TRUE);
+		$this->labelIsEditable = $labelIsEditable == TRUE;
 	}
 
 	/**
@@ -522,7 +521,6 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 */
 	public function setChildNodes(t3lib_tree_NodeCollection $childNodes) {
 		parent::setChildNodes($childNodes);
-
 		if ($childNodes->count()) {
 			$this->setLeaf(FALSE);
 		}
@@ -535,7 +533,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 * @return void
 	 */
 	public function setAllowChildren($allowChildren) {
-		$this->allowChildren = ($allowChildren == TRUE);
+		$this->allowChildren = $allowChildren == TRUE;
 	}
 
 	/**
@@ -559,7 +557,7 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 			'id' => $this->getId(),
 			'type' => $this->getType(),
 			'editableText' => $this->getEditableText(),
-			'text' => $this->getPrefix() . $this->getText() . $this->getSuffix(),
+			'text' => ($this->getPrefix() . $this->getText()) . $this->getSuffix(),
 			'cls' => $this->getCls(),
 			'prefix' => $this->getPrefix(),
 			'suffix' => $this->getSuffix(),
@@ -574,24 +572,20 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 			't3InCutMode' => $this->isInCutMode(),
 			't3ContextInfo' => $this->getContextInfo(),
 			'editable' => $this->isLabelEditable(),
-			'allowChildren' => $this->canHaveChildren(),
+			'allowChildren' => $this->canHaveChildren()
 		);
-
-			// only set the leaf attribute if the node has children's,
-			// otherwise you cannot add child's to real leaf nodes
+		// only set the leaf attribute if the node has children's,
+		// otherwise you cannot add child's to real leaf nodes
 		if (!$this->isLeafNode()) {
 			$arrayRepresentation['leaf'] = FALSE;
 		}
-
-			// Suhosin(?) or some other strange environment thingy prevents
-			// the direct copy of an array into an index of the same array
+		// Suhosin(?) or some other strange environment thingy prevents
+		// the direct copy of an array into an index of the same array
 		$copy = $arrayRepresentation;
 		$arrayRepresentation['nodeData'] = $copy;
-
 		if ($this->hasChildNodes()) {
 			$arrayRepresentation['children'] = $this->childNodes->toArray();
 		}
-
 		return $arrayRepresentation;
 	}
 
@@ -603,7 +597,6 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	 */
 	public function dataFromArray($data) {
 		parent::dataFromArray($data);
-
 		$this->setType($data['type']);
 		$this->setText($data['label'], $data['t3TextSourceField'], $data['prefix'], $data['suffix']);
 		$this->setEditableText($data['editableText']);
@@ -619,13 +612,13 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 		$this->setContextInfo($data['t3ContextInfo']);
 		$this->setLabelIsEditable($data['editable']);
 		$this->setAllowChildren($data['allowChildren']);
-
-			// only set the leaf attribute if it's applied
-			// otherwise you cannot insert nodes into this one
+		// only set the leaf attribute if it's applied
+		// otherwise you cannot insert nodes into this one
 		if (isset($data['leaf'])) {
 			$this->setLeaf(FALSE);
 		}
 	}
+
 }
 
 ?>

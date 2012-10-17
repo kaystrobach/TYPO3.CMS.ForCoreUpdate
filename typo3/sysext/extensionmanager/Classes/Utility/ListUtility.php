@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility for dealing with extension list related functions
  *
@@ -89,6 +88,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
+
 	/**
 	 * Returns the list of available (installed) extensions
 	 *
@@ -108,7 +108,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 								'siteRelPath' => str_replace(PATH_site, '', $path . $extKey),
 								'type' => $installationType,
 								'key' => $extKey,
-								'ext_icon' => t3lib_extMgm::getExtensionIcon( $path . $extKey . '/'),
+								'ext_icon' => t3lib_extMgm::getExtensionIcon(($path . $extKey) . '/')
 							);
 						}
 					}
@@ -146,15 +146,11 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 			$emconf = $this->emConfUtility->includeEmConf($properties);
 			if ($emconf) {
 				$extensions[$extensionKey] = array_merge($emconf, $properties);
-				$terObject = $this->extensionRepository->findOneByExtensionKeyAndVersion(
-					$extensionKey,
-					$extensions[$extensionKey]['version']
-				);
+				$terObject = $this->extensionRepository->findOneByExtensionKeyAndVersion($extensionKey, $extensions[$extensionKey]['version']);
 				if ($terObject instanceof Tx_Extensionmanager_Domain_Model_Extension) {
 					$extensions[$extensionKey]['terObject'] = $terObject;
 					$extensions[$extensionKey]['updateAvailable'] = $this->installUtility->isUpdateAvailable($terObject);
 				}
-
 			} else {
 				unset($extensions[$extensionKey]);
 			}
@@ -173,6 +169,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 		$availableAndInstalledExtensions = $this->getAvailableAndInstalledExtensions($availableExtensions);
 		return $this->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
 	}
+
 }
 
 ?>

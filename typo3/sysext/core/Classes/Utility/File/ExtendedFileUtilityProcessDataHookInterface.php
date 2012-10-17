@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into extFileFunctions and do additional processData processing.
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_extFileFunctions_processDataHook {
-
+interface t3lib_extFileFunctions_processDataHook
+{
 	/**
 	 * Post-process a file action.
 	 *
@@ -46,5 +45,4 @@ interface t3lib_extFileFunctions_processDataHook {
 	public function processData_postProcessAction($action, array $cmdArr, array $result, t3lib_extFileFunctions $parentObject);
 
 }
-
 ?>

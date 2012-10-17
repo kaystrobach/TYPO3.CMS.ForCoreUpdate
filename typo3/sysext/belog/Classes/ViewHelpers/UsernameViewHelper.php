@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Get username from backend user id
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_UsernameViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
 	/**
 	 * @var Tx_Extbase_Domain_Repository_BackendUserRepository
 	 * @inject
@@ -50,8 +50,9 @@ class Tx_Belog_ViewHelpers_UsernameViewHelper extends Tx_Fluid_Core_ViewHelper_A
 		if ($user === NULL) {
 			return '';
 		}
-
 		return $user->getUserName();
 	}
+
 }
+
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class for the form container elements
  *
@@ -57,5 +56,7 @@ class tx_form_Domain_Model_Element_Container extends tx_form_Domain_Model_Elemen
 	public function getElements() {
 		return $this->elements;
 	}
+
 }
+
 ?>

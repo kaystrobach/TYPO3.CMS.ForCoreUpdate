@@ -1,31 +1,5 @@
 <?php
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Dmitry Dulepov <dmitry@typo3.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
-require_once(t3lib_extMgm::extPath('sv') . 'class.tx_sv_auth.php');
-
-	// Include backends
-
+// Include backends
 /**
  * Service "RSA authentication" for the "rsaauth" extension. This service will
  * authenticate a user using hos password encoded with one time public key. It
@@ -37,7 +11,7 @@ require_once(t3lib_extMgm::extPath('sv') . 'class.tx_sv_auth.php');
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_sv1 extends tx_sv_auth  {
+class tx_rsaauth_sv1 extends tx_sv_auth {
 
 	/**
 	 * An RSA backend.
@@ -79,18 +53,15 @@ class tx_rsaauth_sv1 extends tx_sv_auth  {
 	 * @return boolean
 	 */
 	public function processLoginData(array &$loginData, $passwordTransmissionStrategy) {
-
 		$isProcessed = FALSE;
-
 		if ($passwordTransmissionStrategy === 'rsa') {
 			$storage = tx_rsaauth_storagefactory::getStorage();
 			/** @var $storage tx_rsaauth_abstract_storage */
-
-				// Decrypt the password
+			// Decrypt the password
 			$password = $loginData['uident'];
 			$key = $storage->get();
 			if ($key != NULL && substr($password, 0, 4) === 'rsa:') {
-					// Decode password and store it in loginData
+				// Decode password and store it in loginData
 				$decryptedPassword = $this->backend->decrypt($key, substr($password, 4));
 				if ($decryptedPassword != NULL) {
 					$loginData['uident_text'] = $decryptedPassword;
@@ -100,7 +71,7 @@ class tx_rsaauth_sv1 extends tx_sv_auth  {
 						t3lib_div::devLog('Process login data: Failed to RSA decrypt password', 'tx_rsaauth_sv1');
 					}
 				}
-					// Remove the key
+				// Remove the key
 				$storage->put(NULL);
 			} else {
 				if ($this->pObj->writeDevLog) {
@@ -108,7 +79,6 @@ class tx_rsaauth_sv1 extends tx_sv_auth  {
 				}
 			}
 		}
-
 		return $isProcessed;
 	}
 
@@ -120,14 +90,15 @@ class tx_rsaauth_sv1 extends tx_sv_auth  {
 	public function init() {
 		$available = parent::init();
 		if ($available) {
-				// Get the backend
+			// Get the backend
 			$this->backend = tx_rsaauth_backendfactory::getBackend();
 			if (is_null($this->backend)) {
 				$available = FALSE;
 			}
 		}
-
 		return $available;
 	}
+
 }
+
 ?>

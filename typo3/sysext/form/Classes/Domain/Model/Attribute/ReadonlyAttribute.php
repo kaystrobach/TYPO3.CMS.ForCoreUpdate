@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'readonly'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Readonly extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'readonly'.
 	 * Used with the elements input and textarea
@@ -50,14 +50,12 @@ class tx_form_Domain_Model_Attributes_Readonly extends tx_form_Domain_Model_Attr
 	 * @return string Attribute value
 	 */
 	public function getValue() {
-		if ((integer) $this->value === 1
-			|| (boolean) $this->value === TRUE
-			|| strtolower((string) $this->value) === 'readonly')
-		{
+		if (((int) $this->value === 1 || (bool) $this->value === TRUE) || strtolower((string) $this->value) === 'readonly') {
 			$attribute = 'readonly';
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains the update class to split existing image_link field by comma and
  * switch to newlines.
@@ -35,51 +34,36 @@ class tx_coreupdates_imagelink extends Tx_Install_Updates_Base {
 
 	protected $title = 'Update Existing image links';
 
-
 	/**
 	 * Checks if an update is needed
 	 *
-	 * @param	string		&$description: The description for the update
-	 * @return	boolean		TRUE if an update is needed, FALSE otherwise
+	 * @param 	string		&$description: The description for the update
+	 * @return 	boolean		TRUE if an update is needed, FALSE otherwise
 	 */
 	public function checkForUpdate(&$description) {
 		$description = 'Since TYPO3 4.5 links to images of "Image" and "Text with image" content elements are separated by newline and not by comma anymore. This update converts existing comma separated links to the new form.';
-
 		$result = FALSE;
 		if ($this->versionNumber >= 4005000) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'uid',
-				'tt_content',
-				'image_link<>\'\' AND image_link LIKE \'%,%\' AND image_link NOT LIKE \'%\\n%\'',
-				'',
-				'',
-				'1'
-			);
-			if($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', 'image_link<>\'\' AND image_link LIKE \'%,%\' AND image_link NOT LIKE \'%\\n%\'', '', '', '1');
+			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 				$result = TRUE;
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
-
 		return $result;
 	}
 
 	/**
 	 * Performs the database update.
 	 *
-	 * @param	array		&$dbQueries: queries done in this update
-	 * @param	mixed		&$customMessages: custom messages
-	 * @return	boolean		TRUE on success, FALSE on error
+	 * @param 	array		&$dbQueries: queries done in this update
+	 * @param 	mixed		&$customMessages: custom messages
+	 * @return 	boolean		TRUE on success, FALSE on error
 	 */
 	public function performUpdate(&$dbQueries, &$customMessages) {
 		$result = TRUE;
-		if($this->versionNumber >= 4005000) {
-			$affectedRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'uid, image_link',
-				'tt_content',
-				'image_link<>\'\' AND image_link LIKE \'%,%\' AND image_link NOT LIKE \'%\\n%\''
-			);
-
+		if ($this->versionNumber >= 4005000) {
+			$affectedRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid, image_link', 'tt_content', 'image_link<>\'\' AND image_link LIKE \'%,%\' AND image_link NOT LIKE \'%\\n%\'');
 			foreach ($affectedRows as $row) {
 				$newImageLink = t3lib_div::trimExplode(',', $row['image_link']);
 				$newImageLink = implode(LF, $newImageLink);
@@ -91,8 +75,9 @@ class tx_coreupdates_imagelink extends Tx_Install_Updates_Base {
 				}
 			}
 		}
-
 		return $result;
 	}
+
 }
+
 ?>

@@ -27,7 +27,6 @@
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-10
  * @package Extension Manager
  * @subpackage Utility/Parser
@@ -55,14 +54,13 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 	static protected $parsers = array(
 		'extension' => array(
 			'Tx_Extensionmanager_Utility_Parser_ExtensionXmlPullParser' => 'ExtensionXmlPullParser.php',
-			'Tx_Extensionmanager_Utility_Parser_ExtensionXmlPushParser' => 'ExtensionXmlPushParser.php',
+			'Tx_Extensionmanager_Utility_Parser_ExtensionXmlPushParser' => 'ExtensionXmlPushParser.php'
 		),
 		'mirror' => array(
 			'Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser' => 'MirrorXmlPullParser.php',
-			'Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser' => 'MirrorXmlPushParser.php',
-		),
+			'Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser' => 'MirrorXmlPushParser.php'
+		)
 	);
-
 
 	/**
 	 * Obtains a xml parser instance.
@@ -74,15 +72,15 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 	 * @param string $excludeClassNames (optional) comma-separated list of class names
 	 * @return Tx_Extensionmanager_ExtensionXmlAbstractParser an instance of an extension.xml parser
 	 */
-	public static function getParserInstance($parserType, $excludeClassNames = '') {
-		if (!isset(self::$instance[$parserType]) || !is_object(self::$instance[$parserType]) || !empty($excludeClassNames)) {
-				// reset instance
-			self::$instance[$parserType] = $objParser = NULL;
+	static public function getParserInstance($parserType, $excludeClassNames = '') {
+		if ((!isset(self::$instance[$parserType]) || !is_object(self::$instance[$parserType])) || !empty($excludeClassNames)) {
+			// reset instance
+			self::$instance[$parserType] = ($objParser = NULL);
 			foreach (self::$parsers[$parserType] as $className => $file) {
 				if (!t3lib_div::inList($excludeClassNames, $className)) {
 					$objParser = t3lib_div::makeInstance($className);
 					if ($objParser->isAvailable()) {
-						self::$instance[$parserType] = &$objParser;
+						self::$instance[$parserType] =& $objParser;
 						break;
 					}
 					$objParser = NULL;
@@ -91,5 +89,7 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 		}
 		return self::$instance[$parserType];
 	}
+
 }
+
 ?>

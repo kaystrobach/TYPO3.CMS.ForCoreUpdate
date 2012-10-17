@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log writer that writes the log records into PHP error log.
  *
@@ -43,23 +41,12 @@ class t3lib_log_writer_PhpErrorLog extends t3lib_log_writer_Abstract {
 	 */
 	public function writeLog(t3lib_log_Record $record) {
 		$levelName = t3lib_log_Level::getName($record->getLevel());
-
 		$data = $record->getData();
-		$data = (!empty($data)) ? '- ' . json_encode($data) : '';
-
-		$message = sprintf(
-			'TYPO3 [%s] request="%s" component="%s": %s %s',
-			$levelName,
-			$record->getRequestId(),
-			$record->getComponent(),
-			$record->getMessage(),
-			$data
-		);
-
+		$data = !empty($data) ? '- ' . json_encode($data) : '';
+		$message = sprintf('TYPO3 [%s] request="%s" component="%s": %s %s', $levelName, $record->getRequestId(), $record->getComponent(), $record->getMessage(), $data);
 		if (FALSE === error_log($message)) {
 			throw new RuntimeException('Could not write log record to PHP error log', 1345036336);
 		}
-
 		return $this;
 	}
 

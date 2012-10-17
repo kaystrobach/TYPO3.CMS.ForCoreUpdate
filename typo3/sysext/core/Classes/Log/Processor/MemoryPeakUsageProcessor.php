@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Memory peak usage processor methods.
  *
@@ -43,17 +41,14 @@ class t3lib_log_processor_MemoryPeakUsage extends t3lib_log_processor_AbstractMe
 	 */
 	public function processLogRecord(t3lib_log_Record $logRecord) {
 		$bytes = memory_get_peak_usage($this->getRealMemoryUsage());
-
 		if ($this->formatSize) {
 			$size = t3lib_div::formatSize($bytes);
 		} else {
 			$size = $bytes;
 		}
-
 		$logRecord->addData(array(
 			'memoryPeakUsage' => $size
 		));
-
 		return $logRecord;
 	}
 

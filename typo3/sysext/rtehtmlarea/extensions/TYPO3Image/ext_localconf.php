@@ -1,8 +1,7 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
+if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
-
 // Extending TypoScript from static template uid=43 to set up parsing of custom file abstraction attributes on img tag
 t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
 	#******************************************************
@@ -22,5 +21,4 @@ t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
 		}
 	}
 ', 43);
-
 ?>

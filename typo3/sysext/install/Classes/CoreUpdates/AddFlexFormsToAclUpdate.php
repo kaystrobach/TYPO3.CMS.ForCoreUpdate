@@ -24,14 +24,13 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Contains the update for group access lists, adds all excludeable FlexForm fields. Used by the update wizard in the install tool.
  *
  * @author Kai Vogel <kai.vogel(at)speedprogs.de>
  */
 class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
+
 	protected $title = 'Add Excludable FlexForm Fields to Group Access Lists';
 
 	/**
@@ -43,15 +42,13 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 	public function checkForUpdate(&$description) {
 		$description = '
 			<br />TYPO3 4.5 introduced the possibility to exclude FlexForm fields like normal fields in group access control lists (ACL).
-			All excludeable fields will be hidden for non-admins if you do not add them to the ACL of each user group manually or with 
+			All excludeable fields will be hidden for non-admins if you do not add them to the ACL of each user group manually or with
 			this update wizard.
 		';
-
-			// Check access lists
+		// Check access lists
 		if (!$this->getGroupAddFields()) {
 			return FALSE;
 		}
-
 		return TRUE;
 	}
 
@@ -66,7 +63,6 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 			<br />You are about to update group access control lists to include excludable FlexForm fields. Each backend group will be checked
 			and only those that already have entries in the access control lists will be updated.
 		';
-
 		return $description;
 	}
 
@@ -78,13 +74,12 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 	 * @return boolean Whether update was successful or not
 	 */
 	public function performUpdate(array &$dbQueries, &$customMessages) {
-			// Get additional FlexForm fields for group access lists
+		// Get additional FlexForm fields for group access lists
 		$addFields = $this->getGroupAddFields();
 		if (empty($addFields)) {
 			$customMessages = 'No missing FlexForm fields found!';
 			return FALSE;
 		}
-
 		return $this->updateGroupAccessLists($addFields, $dbQueries, $customMessages);
 	}
 
@@ -95,30 +90,27 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 	 */
 	protected function getGroupAddFields() {
 		$addFields = array();
-		$contentTable = (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable']) ? $GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'] : 'tt_content');
-
-			// Initialize TCA if not loaded yet
+		$contentTable = !empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable']) ? $GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'] : 'tt_content';
+		// Initialize TCA if not loaded yet
 		if (empty($GLOBALS['TCA'])) {
 			$this->pObj->includeTCA();
 		}
-
-			// Get all access lists from groups which are allowed to select or modify the content-table
+		// Get all access lists from groups which are allowed to select or modify the content-table
 		$search = $GLOBALS['TYPO3_DB']->escapeStrForLike($contentTable, 'be_groups');
-		$where  = 'deleted = 0 AND non_exclude_fields IS NOT NULL AND non_exclude_fields != ""';
-		$where .= ' AND (tables_select LIKE "%' . $search . '%" OR tables_modify LIKE "%' . $search . '%")';
+		$where = 'deleted = 0 AND non_exclude_fields IS NOT NULL AND non_exclude_fields != ""';
+		$where .= (((' AND (tables_select LIKE "%' . $search) . '%" OR tables_modify LIKE "%') . $search) . '%")';
 		$accessLists = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid, non_exclude_fields', 'be_groups', $where);
-		if(empty($accessLists)) {
+		if (empty($accessLists)) {
 			return array();
 		}
-
-			// Get all excludeable FlexForm fields from content-table
+		// Get all excludeable FlexForm fields from content-table
 		$flexExcludeFields = array();
 		$flexFormArray = t3lib_BEfunc::getRegisteredFlexForms($contentTable);
 		if (!empty($flexFormArray) && is_array($flexFormArray)) {
 			foreach ($flexFormArray as $tableField => $flexForms) {
-					// Get all sheets
+				// Get all sheets
 				foreach ($flexForms as $flexFormIdentifier => $flexFormConfig) {
-						// Get all excludeable fields in sheet
+					// Get all excludeable fields in sheet
 					foreach ($flexFormConfig['ds']['sheets'] as $sheetName => $sheet) {
 						if (empty($sheet['ROOT']['el']) || !is_array($sheet['ROOT']['el'])) {
 							continue;
@@ -127,7 +119,7 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 							if (empty($field['TCEforms']['exclude'])) {
 								continue;
 							}
-							$flexExcludeFields[] = $contentTable . ':' . $tableField . ';' . $flexFormIdentifier . ';' . $sheetName . ';' . $fieldName;
+							$flexExcludeFields[] = ((((((($contentTable . ':') . $tableField) . ';') . $flexFormIdentifier) . ';') . $sheetName) . ';') . $fieldName;
 						}
 					}
 				}
@@ -136,26 +128,24 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 		if (empty($flexExcludeFields)) {
 			return array();
 		}
-
-			// Get FlexForm fields from access lists
+		// Get FlexForm fields from access lists
 		foreach ($accessLists as $accessList) {
 			$nonExcludeFields = t3lib_div::trimExplode(',', $accessList['non_exclude_fields']);
 			if (empty($nonExcludeFields)) {
 				continue;
 			}
-				// Add FlexForm fields only if the field was not already selected by a user
+			// Add FlexForm fields only if the field was not already selected by a user
 			$nonExcludeFields = array_diff($flexExcludeFields, $nonExcludeFields);
 			if (!empty($nonExcludeFields) && $nonExcludeFields == $flexExcludeFields) {
 				$addFields[$accessList['uid']] = $nonExcludeFields;
 			}
 		}
-
 		return $addFields;
 	}
 
 	/**
 	 * Update Backend user groups, add FlexForm fields to access list
-	 * 
+	 *
 	 * @param array $addFields All missing FlexForm fields by groups
 	 * @param array &$dbQueries Queries done in this update
 	 * @param mixed &$customMessages Custom messages
@@ -163,34 +153,25 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 	 */
 	protected function updateGroupAccessLists(array $addFields, array &$dbQueries, &$customMessages) {
 		foreach ($addFields as $groupUID => $flexExcludeFields) {
-				// First get current fields
+			// First get current fields
 			$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('non_exclude_fields', 'be_groups', 'uid=' . (int) $groupUID);
 			if (!isset($result['non_exclude_fields'])) {
 				continue;
 			}
 			$nonExcludeFields = $result['non_exclude_fields'];
-
-				// Now add new ones
+			// Now add new ones
 			$flexExcludeFields = implode(',', $flexExcludeFields);
-			$nonExcludeFields  = trim($nonExcludeFields . ',' . $flexExcludeFields, ', ');
-
-				// Finally override with new fields
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				'be_groups',
-				'uid=' . (int) $groupUID,
-				array('non_exclude_fields' => $nonExcludeFields)
-			);
-
-				// Get last executed query
+			$nonExcludeFields = trim(($nonExcludeFields . ',') . $flexExcludeFields, ', ');
+			// Finally override with new fields
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('be_groups', 'uid=' . (int) $groupUID, array('non_exclude_fields' => $nonExcludeFields));
+			// Get last executed query
 			$dbQueries[] = str_replace(chr(10), ' ', $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery);
-
-				// Check for errors
+			// Check for errors
 			if ($GLOBALS['TYPO3_DB']->sql_error()) {
 				$customMessages = 'SQL-ERROR: ' . htmlspecialchars($GLOBALS['TYPO3_DB']->sql_error());
 				return FALSE;
 			}
 		}
-
 		return TRUE;
 	}
 

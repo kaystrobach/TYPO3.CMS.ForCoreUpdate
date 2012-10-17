@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Matching TypoScript conditions for frontend disposal.
  *
@@ -46,50 +45,48 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 	 */
 	protected function evaluateCondition($string) {
 		list($key, $value) = t3lib_div::trimExplode('=', $string, FALSE, 2);
-
 		$result = parent::evaluateConditionCommon($key, $value);
-
 		if (is_bool($result)) {
 			return $result;
 		} else {
 			switch ($key) {
-				case 'usergroup':
-					$groupList = $this->getGroupList();
-						// '0,-1' is the default usergroups when not logged in!
-					if ($groupList != '0,-1') {
-						$values = t3lib_div::trimExplode(',', $value, TRUE);
-						foreach ($values as $test) {
-							if ($test == '*' || t3lib_div::inList($groupList, $test)) {
+			case 'usergroup':
+				$groupList = $this->getGroupList();
+				// '0,-1' is the default usergroups when not logged in!
+				if ($groupList != '0,-1') {
+					$values = t3lib_div::trimExplode(',', $value, TRUE);
+					foreach ($values as $test) {
+						if ($test == '*' || t3lib_div::inList($groupList, $test)) {
+							return TRUE;
+						}
+					}
+				}
+				break;
+			case 'treeLevel':
+				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$treeLevel = count($this->rootline) - 1;
+				foreach ($values as $test) {
+					if ($test == $treeLevel) {
+						return TRUE;
+					}
+				}
+				break;
+			case 'PIDupinRootline':
+
+			case 'PIDinRootline':
+				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				if ($key == 'PIDinRootline' || !in_array($this->pageId, $values)) {
+					foreach ($values as $test) {
+						foreach ($this->rootline as $rl_dat) {
+							if ($rl_dat['uid'] == $test) {
 								return TRUE;
 							}
 						}
 					}
-				break;
-				case 'treeLevel':
-					$values = t3lib_div::trimExplode(',', $value, TRUE);
-					$treeLevel = count($this->rootline) - 1;
-					foreach ($values as $test) {
-						if ($test == $treeLevel) {
-							return TRUE;
-						}
-					}
-				break;
-				case 'PIDupinRootline':
-				case 'PIDinRootline':
-					$values = t3lib_div::trimExplode(',', $value, TRUE);
-					if (($key == 'PIDinRootline') || (!in_array($this->pageId, $values))) {
-						foreach ($values as $test) {
-							foreach ($this->rootline as $rl_dat) {
-								if ($rl_dat['uid'] == $test) {
-									return TRUE;
-								}
-							}
-						}
-					}
+				}
 				break;
 			}
 		}
-
 		return FALSE;
 	}
 
@@ -101,21 +98,18 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 	 */
 	protected function getVariable($var) {
 		$vars = explode(':', $var, 2);
-
 		$val = parent::getVariableCommon($vars);
-
 		if (is_null($val)) {
 			$splitAgain = explode('|', $vars[1], 2);
 			$k = trim($splitAgain[0]);
 			if ($k) {
 				switch ((string) trim($vars[0])) {
-					case 'TSFE':
-						$val = $this->getGlobal('TSFE|' . $vars[1]);
+				case 'TSFE':
+					$val = $this->getGlobal('TSFE|' . $vars[1]);
 					break;
 				}
 			}
 		}
-
 		return $val;
 	}
 
@@ -191,6 +185,7 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 			$GLOBALS['TT']->setTSlogMessage($message, 3);
 		}
 	}
+
 }
 
 ?>

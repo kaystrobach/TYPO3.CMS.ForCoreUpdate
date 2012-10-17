@@ -31,7 +31,6 @@
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  * @coauthor Jo Hasenau <info@cybercraft.de>
  */
-
 /**
  * Class for generating front end for building queries
  *
@@ -41,11 +40,15 @@
  * @subpackage t3lib
  */
 class t3lib_queryGenerator {
-	var $lang = array(
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $lang = array(
 		'OR' => 'or',
 		'AND' => 'and',
 		'comparison' => array(
-				// Type = text	offset = 0
+			// Type = text	offset = 0
 			'0_' => 'contains',
 			'1_' => 'does not contain',
 			'2_' => 'starts with',
@@ -54,7 +57,7 @@ class t3lib_queryGenerator {
 			'5_' => 'does not end with',
 			'6_' => 'equals',
 			'7_' => 'does not equal',
-				// Type = number , offset = 32
+			// Type = number , offset = 32
 			'32_' => 'equals',
 			'33_' => 'does not equal',
 			'34_' => 'is greater than',
@@ -67,7 +70,7 @@ class t3lib_queryGenerator {
 			'41_' => 'binary AND does not equal',
 			'42_' => 'binary OR equals',
 			'43_' => 'binary OR does not equal',
-				// Type = multiple, relation, files , offset = 64
+			// Type = multiple, relation, files , offset = 64
 			'64_' => 'equals',
 			'65_' => 'does not equal',
 			'66_' => 'contains',
@@ -78,7 +81,7 @@ class t3lib_queryGenerator {
 			'71_' => 'binary AND does not equal',
 			'72_' => 'binary OR equals',
 			'73_' => 'binary OR does not equal',
-				// Type = date,time  offset = 96
+			// Type = date,time  offset = 96
 			'96_' => 'equals',
 			'97_' => 'does not equal',
 			'98_' => 'is greater than',
@@ -89,10 +92,10 @@ class t3lib_queryGenerator {
 			'103_' => 'binary AND does not equal',
 			'104_' => 'binary OR equals',
 			'105_' => 'binary OR does not equal',
-				// Type = boolean,  offset = 128
+			// Type = boolean,  offset = 128
 			'128_' => 'is True',
 			'129_' => 'is False',
-				// Type = binary , offset = 160
+			// Type = binary , offset = 160
 			'160_' => 'equals',
 			'161_' => 'does not equal',
 			'162_' => 'contains',
@@ -100,19 +103,22 @@ class t3lib_queryGenerator {
 		)
 	);
 
-	var $compSQL = array(
-			// Type = text	offset = 0
-		'0' => "#FIELD# LIKE '%#VALUE#%'",
-		'1' => "#FIELD# NOT LIKE '%#VALUE#%'",
-		'2' => "#FIELD# LIKE '#VALUE#%'",
-		'3' => "#FIELD# NOT LIKE '#VALUE#%'",
-		'4' => "#FIELD# LIKE '%#VALUE#'",
-		'5' => "#FIELD# NOT LIKE '%#VALUE#'",
-		'6' => "#FIELD# = '#VALUE#'",
-		'7' => "#FIELD# != '#VALUE#'",
-			// Type = number, offset = 32
-		'32' => "#FIELD# = '#VALUE#'",
-		'33' => "#FIELD# != '#VALUE#'",
+	/**
+	 * @todo Define visibility
+	 */
+	public $compSQL = array(
+		// Type = text	offset = 0
+		'0' => '#FIELD# LIKE \'%#VALUE#%\'',
+		'1' => '#FIELD# NOT LIKE \'%#VALUE#%\'',
+		'2' => '#FIELD# LIKE \'#VALUE#%\'',
+		'3' => '#FIELD# NOT LIKE \'#VALUE#%\'',
+		'4' => '#FIELD# LIKE \'%#VALUE#\'',
+		'5' => '#FIELD# NOT LIKE \'%#VALUE#\'',
+		'6' => '#FIELD# = \'#VALUE#\'',
+		'7' => '#FIELD# != \'#VALUE#\'',
+		// Type = number, offset = 32
+		'32' => '#FIELD# = \'#VALUE#\'',
+		'33' => '#FIELD# != \'#VALUE#\'',
 		'34' => '#FIELD# > #VALUE#',
 		'35' => '#FIELD# < #VALUE#',
 		'36' => '#FIELD# >= #VALUE# AND #FIELD# <= #VALUE1#',
@@ -123,20 +129,20 @@ class t3lib_queryGenerator {
 		'41' => '(#FIELD# & #VALUE#)!=#VALUE#',
 		'42' => '(#FIELD# | #VALUE#)=#VALUE#',
 		'43' => '(#FIELD# | #VALUE#)!=#VALUE#',
-			// Type = multiple, relation, files , offset = 64
-		'64' => "#FIELD# = '#VALUE#'",
-		'65' => "#FIELD# != '#VALUE#'",
-		'66' => "#FIELD# LIKE '%#VALUE#%' AND #FIELD# LIKE '%#VALUE1#%'",
-		'67' => "(#FIELD# NOT LIKE '%#VALUE#%' OR #FIELD# NOT LIKE '%#VALUE1#%')",
+		// Type = multiple, relation, files , offset = 64
+		'64' => '#FIELD# = \'#VALUE#\'',
+		'65' => '#FIELD# != \'#VALUE#\'',
+		'66' => '#FIELD# LIKE \'%#VALUE#%\' AND #FIELD# LIKE \'%#VALUE1#%\'',
+		'67' => '(#FIELD# NOT LIKE \'%#VALUE#%\' OR #FIELD# NOT LIKE \'%#VALUE1#%\')',
 		'68' => '#FIELD# IN (#VALUE#)',
 		'69' => '#FIELD# NOT IN (#VALUE#)',
 		'70' => '(#FIELD# & #VALUE#)=#VALUE#',
 		'71' => '(#FIELD# & #VALUE#)!=#VALUE#',
 		'72' => '(#FIELD# | #VALUE#)=#VALUE#',
 		'73' => '(#FIELD# | #VALUE#)!=#VALUE#',
-			// Type = date, offset = 32
-		'96' => "#FIELD# = '#VALUE#'",
-		'97' => "#FIELD# != '#VALUE#'",
+		// Type = date, offset = 32
+		'96' => '#FIELD# = \'#VALUE#\'',
+		'97' => '#FIELD# != \'#VALUE#\'',
 		'98' => '#FIELD# > #VALUE#',
 		'99' => '#FIELD# < #VALUE#',
 		'100' => '#FIELD# >= #VALUE# AND #FIELD# <= #VALUE1#',
@@ -145,17 +151,20 @@ class t3lib_queryGenerator {
 		'103' => '(#FIELD# & #VALUE#)!=#VALUE#',
 		'104' => '(#FIELD# | #VALUE#)=#VALUE#',
 		'105' => '(#FIELD# | #VALUE#)!=#VALUE#',
-			// Type = boolean, offset = 128
-		'128' => "#FIELD# = '1'",
-		'129' => "#FIELD# != '1'",
-			// Type = binary = 160
-		'160' => "#FIELD# = '#VALUE#'",
-		'161' => "#FIELD# != '#VALUE#'",
+		// Type = boolean, offset = 128
+		'128' => '#FIELD# = \'1\'',
+		'129' => '#FIELD# != \'1\'',
+		// Type = binary = 160
+		'160' => '#FIELD# = \'#VALUE#\'',
+		'161' => '#FIELD# != \'#VALUE#\'',
 		'162' => '(#FIELD# & #VALUE#)=#VALUE#',
 		'163' => '(#FIELD# & #VALUE#)=0'
 	);
 
-	var $comp_offsets = array(
+	/**
+	 * @todo Define visibility
+	 */
+	public $comp_offsets = array(
 		'text' => 0,
 		'number' => 1,
 		'multiple' => 2,
@@ -166,30 +175,71 @@ class t3lib_queryGenerator {
 		'boolean' => 4,
 		'binary' => 5
 	);
-	var $noWrap = ' nowrap';
 
-		// Form data name prefix
-	var $name;
-		// Table for the query
-	var $table;
-		// Field list
-	var $fieldList;
-		// Array of the fields possible
-	var $fields = array();
-	var $extFieldLists = array();
-		// The query config
-	var $queryConfig = array();
-	var $enablePrefix = 0;
-	var $enableQueryParts = 0;
-	var $extJSCODE = '';
+	/**
+	 * @todo Define visibility
+	 */
+	public $noWrap = ' nowrap';
+
+	// Form data name prefix
+	/**
+	 * @todo Define visibility
+	 */
+	public $name;
+
+	// Table for the query
+	/**
+	 * @todo Define visibility
+	 */
+	public $table;
+
+	// Field list
+	/**
+	 * @todo Define visibility
+	 */
+	public $fieldList;
+
+	// Array of the fields possible
+	/**
+	 * @todo Define visibility
+	 */
+	public $fields = array();
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $extFieldLists = array();
+
+	// The query config
+	/**
+	 * @todo Define visibility
+	 */
+	public $queryConfig = array();
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $enablePrefix = 0;
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $enableQueryParts = 0;
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $extJSCODE = '';
 
 	protected $formName = '';
 
 	/**
 	 * Make a list of fields for current table
+	 *
 	 * @return string Separated list of fields
+	 * @todo Define visibility
 	 */
-	function makeFieldList() {
+	public function makeFieldList() {
 		$fieldListArr = array();
 		if (is_array($GLOBALS['TCA'][$this->table])) {
 			t3lib_div::loadTCA($this->table);
@@ -218,20 +268,19 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$table: ...
-	 * @param	[type]		$fieldList: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$table: ...
+	 * @param 	[type]		$fieldList: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function init($name, $table, $fieldList = '') {
-
-			// Analysing the fields in the table.
+	public function init($name, $table, $fieldList = '') {
+		// Analysing the fields in the table.
 		if (is_array($GLOBALS['TCA'][$table])) {
 			t3lib_div::loadTCA($table);
 			$this->name = $name;
 			$this->table = $table;
 			$this->fieldList = $fieldList ? $fieldList : $this->makeFieldList();
-
 			$fieldArr = t3lib_div::trimExplode(',', $this->fieldList, 1);
 			foreach ($fieldArr as $fN) {
 				$fC = $GLOBALS['TCA'][$this->table]['columns'][$fN];
@@ -240,126 +289,131 @@ class t3lib_queryGenerator {
 				if (is_array($fC) && $fC['label']) {
 					$this->fields[$fN]['label'] = rtrim(trim($GLOBALS['LANG']->sL($fC['label'])), ':');
 					switch ($this->fields[$fN]['type']) {
-						case 'input':
-							if (preg_match('/int|year/i', $this->fields[$fN]['eval'])) {
-								$this->fields[$fN]['type'] = 'number';
-							} elseif (preg_match('/time/i', $this->fields[$fN]['eval'])) {
-								$this->fields[$fN]['type'] = 'time';
-							} elseif (preg_match('/date/i', $this->fields[$fN]['eval'])) {
-								$this->fields[$fN]['type'] = 'date';
-							} else {
-								$this->fields[$fN]['type'] = 'text';
-							}
-							break;
-						case 'check':
-							if (!$this->fields[$fN]['items']) {
-								$this->fields[$fN]['type'] = 'boolean';
-							} else {
-								$this->fields[$fN]['type'] = 'binary';
-							}
-							break;
-						case 'radio':
-							$this->fields[$fN]['type'] = 'multiple';
-							break;
-						case 'select':
-							$this->fields[$fN]['type'] = 'multiple';
-							if ($this->fields[$fN]['foreign_table']) {
-								$this->fields[$fN]['type'] = 'relation';
-							}
-							if ($this->fields[$fN]['special']) {
-								$this->fields[$fN]['type'] = 'text';
-							}
-							break;
-						case 'group':
-							$this->fields[$fN]['type'] = 'files';
-							if ($this->fields[$fN]['internal_type'] == 'db') {
-								$this->fields[$fN]['type'] = 'relation';
-							}
-							break;
-						case 'user':
-						case 'flex':
-						case 'passthrough':
-						case 'none':
-						case 'text':
-						default:
-							$this->fields[$fN]['type'] = 'text';
-							break;
-					}
-
-				} else {
-					$this->fields[$fN]['label'] = '[FIELD: ' . $fN . ']';
-					switch ($fN) {
-						case 'pid':
-							$this->fields[$fN]['type'] = 'relation';
-							$this->fields[$fN]['allowed'] = 'pages';
-							break;
-						case 'cruser_id':
-							$this->fields[$fN]['type'] = 'relation';
-							$this->fields[$fN]['allowed'] = 'be_users';
-							break;
-						case 'tstamp':
-						case 'crdate':
-							$this->fields[$fN]['type'] = 'time';
-							break;
-						case 'deleted':
-							$this->fields[$fN]['type'] = 'boolean';
-							break;
-						default:
+					case 'input':
+						if (preg_match('/int|year/i', $this->fields[$fN]['eval'])) {
 							$this->fields[$fN]['type'] = 'number';
-							break;
+						} elseif (preg_match('/time/i', $this->fields[$fN]['eval'])) {
+							$this->fields[$fN]['type'] = 'time';
+						} elseif (preg_match('/date/i', $this->fields[$fN]['eval'])) {
+							$this->fields[$fN]['type'] = 'date';
+						} else {
+							$this->fields[$fN]['type'] = 'text';
+						}
+						break;
+					case 'check':
+						if (!$this->fields[$fN]['items']) {
+							$this->fields[$fN]['type'] = 'boolean';
+						} else {
+							$this->fields[$fN]['type'] = 'binary';
+						}
+						break;
+					case 'radio':
+						$this->fields[$fN]['type'] = 'multiple';
+						break;
+					case 'select':
+						$this->fields[$fN]['type'] = 'multiple';
+						if ($this->fields[$fN]['foreign_table']) {
+							$this->fields[$fN]['type'] = 'relation';
+						}
+						if ($this->fields[$fN]['special']) {
+							$this->fields[$fN]['type'] = 'text';
+						}
+						break;
+					case 'group':
+						$this->fields[$fN]['type'] = 'files';
+						if ($this->fields[$fN]['internal_type'] == 'db') {
+							$this->fields[$fN]['type'] = 'relation';
+						}
+						break;
+					case 'user':
+
+					case 'flex':
+
+					case 'passthrough':
+
+					case 'none':
+
+					case 'text':
+
+					default:
+						$this->fields[$fN]['type'] = 'text';
+						break;
+					}
+				} else {
+					$this->fields[$fN]['label'] = ('[FIELD: ' . $fN) . ']';
+					switch ($fN) {
+					case 'pid':
+						$this->fields[$fN]['type'] = 'relation';
+						$this->fields[$fN]['allowed'] = 'pages';
+						break;
+					case 'cruser_id':
+						$this->fields[$fN]['type'] = 'relation';
+						$this->fields[$fN]['allowed'] = 'be_users';
+						break;
+					case 'tstamp':
+
+					case 'crdate':
+						$this->fields[$fN]['type'] = 'time';
+						break;
+					case 'deleted':
+						$this->fields[$fN]['type'] = 'boolean';
+						break;
+					default:
+						$this->fields[$fN]['type'] = 'number';
+						break;
 					}
 				}
 			}
 		}
-
 		/*	// EXAMPLE:
 		$this->queryConfig = array(
-			array(
-				'operator' => 'AND',
-				'type' => 'FIELD_spaceBefore',
-			),
-			array(
-				'operator' => 'AND',
-				'type' => 'FIELD_records',
-				'negate' => 1,
-				'inputValue' => 'foo foo'
-			),
-			array(
-				'type' => 'newlevel',
-				'nl' => array(
-					array(
-						'operator' => 'AND',
-						'type' => 'FIELD_spaceBefore',
-						'negate' => 1,
-						'inputValue' => 'foo foo'
-					),
-					array(
-						'operator' => 'AND',
-						'type' => 'FIELD_records',
-						'negate' => 1,
-						'inputValue' => 'foo foo'
-					)
-				)
-			),
-			array(
-				'operator' => 'OR',
-				'type' => 'FIELD_maillist',
-			)
+		array(
+		'operator' => 'AND',
+		'type' => 'FIELD_spaceBefore',
+		),
+		array(
+		'operator' => 'AND',
+		'type' => 'FIELD_records',
+		'negate' => 1,
+		'inputValue' => 'foo foo'
+		),
+		array(
+		'type' => 'newlevel',
+		'nl' => array(
+		array(
+		'operator' => 'AND',
+		'type' => 'FIELD_spaceBefore',
+		'negate' => 1,
+		'inputValue' => 'foo foo'
+		),
+		array(
+		'operator' => 'AND',
+		'type' => 'FIELD_records',
+		'negate' => 1,
+		'inputValue' => 'foo foo'
+		)
+		)
+		),
+		array(
+		'operator' => 'OR',
+		'type' => 'FIELD_maillist',
+		)
 		);
-		*/
+		 */
 		$this->initUserDef();
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$list: ...
-	 * @param	[type]		$force: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$list: ...
+	 * @param 	[type]		$force: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function setAndCleanUpExternalLists($name, $list, $force = '') {
-		$fields = array_unique(t3lib_div::trimExplode(',', $list . ',' . $force, 1));
+	public function setAndCleanUpExternalLists($name, $list, $force = '') {
+		$fields = array_unique(t3lib_div::trimExplode(',', ($list . ',') . $force, 1));
 		$reList = array();
 		foreach ($fields as $fN) {
 			if ($this->fields[$fN]) {
@@ -372,70 +426,66 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$qC: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$qC: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function procesData($qC = '') {
+	public function procesData($qC = '') {
 		$this->queryConfig = $qC;
-
 		$POST = t3lib_div::_POST();
-
-			// If delete...
+		// If delete...
 		if ($POST['qG_del']) {
-				// Initialize array to work on, save special parameters
+			// Initialize array to work on, save special parameters
 			$ssArr = $this->getSubscript($POST['qG_del']);
 			$workArr =& $this->queryConfig;
 			for ($i = 0; $i < sizeof($ssArr) - 1; $i++) {
 				$workArr =& $workArr[$ssArr[$i]];
 			}
-				// Delete the entry and move the other entries
+			// Delete the entry and move the other entries
 			unset($workArr[$ssArr[$i]]);
 			for ($j = $ssArr[$i]; $j < sizeof($workArr); $j++) {
 				$workArr[$j] = $workArr[$j + 1];
 				unset($workArr[$j + 1]);
 			}
 		}
-
-			// If insert...
+		// If insert...
 		if ($POST['qG_ins']) {
-				// Initialize array to work on, save special parameters
+			// Initialize array to work on, save special parameters
 			$ssArr = $this->getSubscript($POST['qG_ins']);
 			$workArr =& $this->queryConfig;
 			for ($i = 0; $i < sizeof($ssArr) - 1; $i++) {
 				$workArr =& $workArr[$ssArr[$i]];
 			}
-				// Move all entries above position where new entry is to be inserted
+			// Move all entries above position where new entry is to be inserted
 			for ($j = sizeof($workArr); $j > $ssArr[$i]; $j--) {
 				$workArr[$j] = $workArr[$j - 1];
 			}
-				// Clear new entry position
+			// Clear new entry position
 			unset($workArr[$ssArr[$i] + 1]);
 			$workArr[$ssArr[$i] + 1]['type'] = 'FIELD_';
 		}
-
-			// If move up...
+		// If move up...
 		if ($POST['qG_up']) {
-				// Initialize array to work on
+			// Initialize array to work on
 			$ssArr = $this->getSubscript($POST['qG_up']);
 			$workArr =& $this->queryConfig;
 			for ($i = 0; $i < sizeof($ssArr) - 1; $i++) {
 				$workArr =& $workArr[$ssArr[$i]];
 			}
-				// Swap entries
+			// Swap entries
 			$qG_tmp = $workArr[$ssArr[$i]];
 			$workArr[$ssArr[$i]] = $workArr[$ssArr[$i] - 1];
 			$workArr[$ssArr[$i] - 1] = $qG_tmp;
 		}
-
-			// If new level...
+		// If new level...
 		if ($POST['qG_nl']) {
-				// Initialize array to work on
+			// Initialize array to work on
 			$ssArr = $this->getSubscript($POST['qG_nl']);
 			$workArr =& $this->queryConfig;
 			for ($i = 0; $i < sizeof($ssArr) - 1; $i++) {
 				$workArr =& $workArr[$ssArr[$i]];
 			}
-				// Do stuff:
+			// Do stuff:
 			$tempEl = $workArr[$ssArr[$i]];
 			if (is_array($tempEl)) {
 				if ($tempEl['type'] != 'newlevel') {
@@ -447,17 +497,15 @@ class t3lib_queryGenerator {
 				}
 			}
 		}
-
-			// If collapse level...
+		// If collapse level...
 		if ($POST['qG_remnl']) {
-				// Initialize array to work on
+			// Initialize array to work on
 			$ssArr = $this->getSubscript($POST['qG_remnl']);
 			$workArr =& $this->queryConfig;
 			for ($i = 0; $i < sizeof($ssArr) - 1; $i++) {
 				$workArr =& $workArr[$ssArr[$i]];
 			}
-
-				// Do stuff:
+			// Do stuff:
 			$tempEl = $workArr[$ssArr[$i]];
 			if (is_array($tempEl)) {
 				if ($tempEl['type'] == 'newlevel') {
@@ -475,20 +523,21 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$queryConfig: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$queryConfig: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function cleanUpQueryConfig($queryConfig) {
-			// Since we dont traverse the array using numeric keys in the upcoming whileloop make sure it's fresh and clean before displaying
+	public function cleanUpQueryConfig($queryConfig) {
+		// Since we dont traverse the array using numeric keys in the upcoming whileloop make sure it's fresh and clean before displaying
 		if (is_array($queryConfig)) {
 			ksort($queryConfig);
 		} else {
-				// queryConfig should never be empty!
+			// queryConfig should never be empty!
 			if (!$queryConfig[0] || !$queryConfig[0]['type']) {
 				$queryConfig[0] = array('type' => 'FIELD_');
 			}
 		}
-			// Traverse:
+		// Traverse:
 		$c = 0;
 		$arrCount = 0;
 		foreach ($queryConfig as $key => $conf) {
@@ -500,31 +549,28 @@ class t3lib_queryGenerator {
 			} else {
 				$fType = 'ignore';
 			}
-
 			switch ($fType) {
-				case 'newlevel':
-					if (!$queryConfig[$key]['nl']) {
-						$queryConfig[$key]['nl'][0]['type'] = 'FIELD_';
-					}
-					$queryConfig[$key]['nl'] = $this->cleanUpQueryConfig($queryConfig[$key]['nl']);
-					break;
-				case 'userdef':
-					$queryConfig[$key] = $this->userDefCleanUp($queryConfig[$key]);
-					break;
-				case 'ignore':
-				default:
-					$verifiedName = $this->verifyType($fName);
-					$queryConfig[$key]['type'] = 'FIELD_' . $this->verifyType($verifiedName);
+			case 'newlevel':
+				if (!$queryConfig[$key]['nl']) {
+					$queryConfig[$key]['nl'][0]['type'] = 'FIELD_';
+				}
+				$queryConfig[$key]['nl'] = $this->cleanUpQueryConfig($queryConfig[$key]['nl']);
+				break;
+			case 'userdef':
+				$queryConfig[$key] = $this->userDefCleanUp($queryConfig[$key]);
+				break;
+			case 'ignore':
 
-					if ($conf['comparison'] >> 5 != $this->comp_offsets[$fType]) {
-						$conf['comparison'] = $this->comp_offsets[$fType] << 5;
-					}
-					$queryConfig[$key]['comparison'] = $this->verifyComparison($conf['comparison'], $conf['negate'] ? 1 : 0);
-
-					$queryConfig[$key]['inputValue'] = $this->cleanInputVal($queryConfig[$key]);
-					$queryConfig[$key]['inputValue1'] = $this->cleanInputVal($queryConfig[$key], 1);
-
-					break;
+			default:
+				$verifiedName = $this->verifyType($fName);
+				$queryConfig[$key]['type'] = 'FIELD_' . $this->verifyType($verifiedName);
+				if ($conf['comparison'] >> 5 != $this->comp_offsets[$fType]) {
+					$conf['comparison'] = $this->comp_offsets[$fType] << 5;
+				}
+				$queryConfig[$key]['comparison'] = $this->verifyComparison($conf['comparison'], $conf['negate'] ? 1 : 0);
+				$queryConfig[$key]['inputValue'] = $this->cleanInputVal($queryConfig[$key]);
+				$queryConfig[$key]['inputValue1'] = $this->cleanInputVal($queryConfig[$key], 1);
+				break;
 			}
 		}
 		return $queryConfig;
@@ -533,24 +579,24 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$subLevel: ...
-	 * @param	[type]		$queryConfig: ...
-	 * @param	[type]		$parent: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$subLevel: ...
+	 * @param 	[type]		$queryConfig: ...
+	 * @param 	[type]		$parent: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getFormElements($subLevel = 0, $queryConfig = '', $parent = '') {
+	public function getFormElements($subLevel = 0, $queryConfig = '', $parent = '') {
 		$codeArr = array();
 		if (!is_array($queryConfig)) {
 			$queryConfig = $this->queryConfig;
 		}
-
 		$c = 0;
 		$arrCount = 0;
 		$loopcount = 0;
 		foreach ($queryConfig as $key => $conf) {
-			$subscript = $parent . '[' . $key . ']';
+			$subscript = (($parent . '[') . $key) . ']';
 			$lineHTML = '';
-			$lineHTML .= $this->mkOperatorSelect($this->name . $subscript, $conf['operator'], $c, ($conf['type'] != 'FIELD_'));
+			$lineHTML .= $this->mkOperatorSelect($this->name . $subscript, $conf['operator'], $c, $conf['type'] != 'FIELD_');
 			if (substr($conf['type'], 0, 6) == 'FIELD_') {
 				$fName = substr($conf['type'], 6);
 				$this->fieldName = $fName;
@@ -558,131 +604,130 @@ class t3lib_queryGenerator {
 				if ($conf['comparison'] >> 5 != $this->comp_offsets[$fType]) {
 					$conf['comparison'] = $this->comp_offsets[$fType] << 5;
 				}
-
-					//nasty nasty...
-					//make sure queryConfig contains _actual_ comparevalue.
-					//mkCompSelect don't care, but getQuery does.
-				$queryConfig[$key]['comparison'] += (isset($conf['negate']) - ($conf['comparison'] % 2));
-
+				//nasty nasty...
+				//make sure queryConfig contains _actual_ comparevalue.
+				//mkCompSelect don't care, but getQuery does.
+				$queryConfig[$key]['comparison'] += isset($conf['negate']) - $conf['comparison'] % 2;
 			} elseif ($conf['type'] == 'newlevel') {
 				$fType = $conf['type'];
 			} else {
 				$fType = 'ignore';
 			}
 			switch ($fType) {
-				case 'ignore':
-					break;
-				case 'newlevel':
-					if (!$queryConfig[$key]['nl']) {
-						$queryConfig[$key]['nl'][0]['type'] = 'FIELD_';
-					}
-					$lineHTML .= '<input type="hidden" name="' . $this->name . $subscript . '[type]" value="newlevel">';
-					$codeArr[$arrCount]['sub'] = $this->getFormElements($subLevel + 1, $queryConfig[$key]['nl'], $subscript . '[nl]');
-					break;
-				case 'userdef':
-					$lineHTML .= $this->userDef($this->name . $subscript, $conf, $fName, $fType);
-					break;
-				case 'date':
-					$lineHTML .= $this->mkTypeSelect($this->name . $subscript . '[type]', $fName);
-					$lineHTML .= $this->mkCompSelect($this->name . $subscript . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
-					$lineHTML .= '<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '') . ' name="' . $this->name . $subscript . '[negate]' . '" onClick="submit();">';
+			case 'ignore':
+				break;
+			case 'newlevel':
+				if (!$queryConfig[$key]['nl']) {
+					$queryConfig[$key]['nl'][0]['type'] = 'FIELD_';
+				}
+				$lineHTML .= (('<input type="hidden" name="' . $this->name) . $subscript) . '[type]" value="newlevel">';
+				$codeArr[$arrCount]['sub'] = $this->getFormElements($subLevel + 1, $queryConfig[$key]['nl'], $subscript . '[nl]');
+				break;
+			case 'userdef':
+				$lineHTML .= $this->userDef($this->name . $subscript, $conf, $fName, $fType);
+				break;
+			case 'date':
+				$lineHTML .= $this->mkTypeSelect(($this->name . $subscript) . '[type]', $fName);
+				$lineHTML .= $this->mkCompSelect(($this->name . $subscript) . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+				$lineHTML .= ((((('<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '')) . ' name="') . $this->name) . $subscript) . '[negate]') . '" onClick="submit();">';
+				if ($conf['comparison'] == 100 || $conf['comparison'] == 101) {
+					// between
+					$lineHTML .= (((((((((((((((('<input type="text" name="' . $this->name) . $subscript) . '[inputValue]_hr') . '" value="') . strftime('%e-%m-%Y', $conf['inputValue'])) . '" ') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . ' onChange="typo3form.fieldGet(\'') . $this->name) . $subscript) . '[inputValue]\', \'date\', \'\', 0,0);"><input type="hidden" value="') . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '">';
+					$lineHTML .= (((((((((((((((('<input type="text" name="' . $this->name) . $subscript) . '[inputValue1]_hr') . '" value="') . strftime('%e-%m-%Y', $conf['inputValue1'])) . '" ') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . ' onChange="typo3form.fieldGet(\'') . $this->name) . $subscript) . '[inputValue1]\', \'date\', \'\', 0,0);"><input type="hidden" value="') . htmlspecialchars($conf['inputValue1'])) . '" name="') . $this->name) . $subscript) . '[inputValue1]') . '">';
+					$this->extJSCODE .= (('typo3form.fieldSet("' . $this->name) . $subscript) . '[inputValue]", "date", "", 0,0);';
+					$this->extJSCODE .= (('typo3form.fieldSet("' . $this->name) . $subscript) . '[inputValue1]", "date", "", 0,0);';
+				} else {
+					$lineHTML .= (((((((((((((((('<input type="text" name="' . $this->name) . $subscript) . '[inputValue]_hr') . '" value="') . strftime('%e-%m-%Y', $conf['inputValue'])) . '" ') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . ' onChange="typo3form.fieldGet(\'') . $this->name) . $subscript) . '[inputValue]\', \'date\', \'\', 0,0);"><input type="hidden" value="') . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '">';
+					$this->extJSCODE .= (('typo3form.fieldSet("' . $this->name) . $subscript) . '[inputValue]", "date", "", 0,0);';
+				}
+				break;
+			case 'time':
+				$lineHTML .= $this->mkTypeSelect(($this->name . $subscript) . '[type]', $fName);
+				$lineHTML .= $this->mkCompSelect(($this->name . $subscript) . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+				$lineHTML .= ((((('<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '')) . ' name="') . $this->name) . $subscript) . '[negate]') . '" onClick="submit();">';
+				if ($conf['comparison'] == 100 || $conf['comparison'] == 101) {
+					// between:
+					$lineHTML .= (((((((((((((((('<input type="text" name="' . $this->name) . $subscript) . '[inputValue]_hr') . '" value="') . strftime('%H:%M %e-%m-%Y', $conf['inputValue'])) . '" ') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . ' onChange="typo3form.fieldGet(\'') . $this->name) . $subscript) . '[inputValue]\', \'datetime\', \'\', 0,0);"><input type="hidden" value="') . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '">';
+					$lineHTML .= (((((((((((((((('<input type="text" name="' . $this->name) . $subscript) . '[inputValue1]_hr') . '" value="') . strftime('%H:%M %e-%m-%Y', $conf['inputValue1'])) . '" ') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . ' onChange="typo3form.fieldGet(\'') . $this->name) . $subscript) . '[inputValue1]\', \'datetime\', \'\', 0,0);"><input type="hidden" value="') . htmlspecialchars($conf['inputValue1'])) . '" name="') . $this->name) . $subscript) . '[inputValue1]') . '">';
+					$this->extJSCODE .= (('typo3form.fieldSet("' . $this->name) . $subscript) . '[inputValue]", "datetime", "", 0,0);';
+					$this->extJSCODE .= (('typo3form.fieldSet("' . $this->name) . $subscript) . '[inputValue1]", "datetime", "", 0,0);';
+				} else {
+					$lineHTML .= (((((((((((((((('<input type="text" name="' . $this->name) . $subscript) . '[inputValue]_hr') . '" value="') . strftime('%H:%M %e-%m-%Y', intval($conf['inputValue']))) . '" ') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . ' onChange="typo3form.fieldGet(\'') . $this->name) . $subscript) . '[inputValue]\', \'datetime\', \'\', 0,0);"><input type="hidden" value="') . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '">';
+					$this->extJSCODE .= (('typo3form.fieldSet("' . $this->name) . $subscript) . '[inputValue]", "datetime", "", 0,0);';
+				}
+				break;
+			case 'multiple':
 
-					if ($conf['comparison'] == 100 || $conf['comparison'] == 101) { // between
-						$lineHTML .= '<input type="text" name="' . $this->name . $subscript . '[inputValue]_hr' . '" value="' . strftime('%e-%m-%Y', $conf['inputValue']) . '" ' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . ' onChange="typo3form.fieldGet(\'' . $this->name . $subscript . '[inputValue]\', \'date\', \'\', 0,0);"><input type="hidden" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '">';
-						$lineHTML .= '<input type="text" name="' . $this->name . $subscript . '[inputValue1]_hr' . '" value="' . strftime('%e-%m-%Y', $conf['inputValue1']) . '" ' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . ' onChange="typo3form.fieldGet(\'' . $this->name . $subscript . '[inputValue1]\', \'date\', \'\', 0,0);"><input type="hidden" value="' . htmlspecialchars($conf['inputValue1']) . '" name="' . $this->name . $subscript . '[inputValue1]' . '">';
-						$this->extJSCODE .= 'typo3form.fieldSet("' . $this->name . $subscript . '[inputValue]", "date", "", 0,0);';
-						$this->extJSCODE .= 'typo3form.fieldSet("' . $this->name . $subscript . '[inputValue1]", "date", "", 0,0);';
-					} else {
-						$lineHTML .= '<input type="text" name="' . $this->name . $subscript . '[inputValue]_hr' . '" value="' . strftime('%e-%m-%Y', $conf['inputValue']) . '" ' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . ' onChange="typo3form.fieldGet(\'' . $this->name . $subscript . '[inputValue]\', \'date\', \'\', 0,0);"><input type="hidden" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '">';
-						$this->extJSCODE .= 'typo3form.fieldSet("' . $this->name . $subscript . '[inputValue]", "date", "", 0,0);';
-					}
-					break;
-				case 'time':
-					$lineHTML .= $this->mkTypeSelect($this->name . $subscript . '[type]', $fName);
-					$lineHTML .= $this->mkCompSelect($this->name . $subscript . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+			case 'binary':
 
-					$lineHTML .= '<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '') . ' name="' . $this->name . $subscript . '[negate]' . '" onClick="submit();">';
-					if ($conf['comparison'] == 100 || $conf['comparison'] == 101) { // between:
-						$lineHTML .= '<input type="text" name="' . $this->name . $subscript . '[inputValue]_hr' . '" value="' . strftime('%H:%M %e-%m-%Y', $conf['inputValue']) . '" ' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . ' onChange="typo3form.fieldGet(\'' . $this->name . $subscript . '[inputValue]\', \'datetime\', \'\', 0,0);"><input type="hidden" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '">';
-						$lineHTML .= '<input type="text" name="' . $this->name . $subscript . '[inputValue1]_hr' . '" value="' . strftime('%H:%M %e-%m-%Y', $conf['inputValue1']) . '" ' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . ' onChange="typo3form.fieldGet(\'' . $this->name . $subscript . '[inputValue1]\', \'datetime\', \'\', 0,0);"><input type="hidden" value="' . htmlspecialchars($conf['inputValue1']) . '" name="' . $this->name . $subscript . '[inputValue1]' . '">';
-						$this->extJSCODE .= 'typo3form.fieldSet("' . $this->name . $subscript . '[inputValue]", "datetime", "", 0,0);';
-						$this->extJSCODE .= 'typo3form.fieldSet("' . $this->name . $subscript . '[inputValue1]", "datetime", "", 0,0);';
-					} else {
-						$lineHTML .= '<input type="text" name="' . $this->name . $subscript . '[inputValue]_hr' . '" value="' . strftime('%H:%M %e-%m-%Y', intval($conf['inputValue'])) . '" ' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . ' onChange="typo3form.fieldGet(\'' . $this->name . $subscript . '[inputValue]\', \'datetime\', \'\', 0,0);"><input type="hidden" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '">';
-						$this->extJSCODE .= 'typo3form.fieldSet("' . $this->name . $subscript . '[inputValue]", "datetime", "", 0,0);';
+			case 'relation':
+				$lineHTML .= $this->mkTypeSelect(($this->name . $subscript) . '[type]', $fName);
+				$lineHTML .= $this->mkCompSelect(($this->name . $subscript) . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+				$lineHTML .= ((((('<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '')) . ' name="') . $this->name) . $subscript) . '[negate]') . '" onClick="submit();">';
+				if ((($conf['comparison'] == 68 || $conf['comparison'] == 69) || $conf['comparison'] == 162) || $conf['comparison'] == 163) {
+					$lineHTML .= ((('<select name="' . $this->name) . $subscript) . '[inputValue]') . '[]" style="vertical-align:top;" size="5" multiple>';
+				} elseif ($conf['comparison'] == 66 || $conf['comparison'] == 67) {
+					if (is_array($conf['inputValue'])) {
+						$conf['inputValue'] = implode(',', $conf['inputValue']);
 					}
-					break;
-				case 'multiple':
-				case 'binary':
-				case 'relation':
-					$lineHTML .= $this->mkTypeSelect($this->name . $subscript . '[type]', $fName);
-					$lineHTML .= $this->mkCompSelect($this->name . $subscript . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
-					$lineHTML .= '<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '') . ' name="' . $this->name . $subscript . '[negate]' . '" onClick="submit();">';
-					if ($conf['comparison'] == 68 || $conf['comparison'] == 69 || $conf['comparison'] == 162 || $conf['comparison'] == 163) {
-						$lineHTML .= '<select name="' . $this->name . $subscript . '[inputValue]' . '[]" style="vertical-align:top;" size="5" multiple>';
-					} elseif ($conf['comparison'] == 66 || $conf['comparison'] == 67) {
-						if (is_array($conf['inputValue'])) {
-							$conf['inputValue'] = implode(',', $conf['inputValue']);
-						}
-						$lineHTML .= '<input type="text" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . '>';
-					} else {
-						$lineHTML .= '<select name="' . $this->name . $subscript . '[inputValue]' . '" style="vertical-align:top;" onChange="submit();">';
-					}
-					if ($conf['comparison'] != 66 && $conf['comparison'] != 67) {
-						$lineHTML .= $this->makeOptionList($fName, $conf, $this->table);
-						$lineHTML .= '</select>';
-					}
-					break;
-				case 'files':
-					$lineHTML .= $this->mkTypeSelect($this->name . $subscript . '[type]', $fName);
-					$lineHTML .= $this->mkCompSelect($this->name . $subscript . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
-					$lineHTML .= '<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '') . ' name="' . $this->name . $subscript . '[negate]' . '" onClick="submit();">';
-					if ($conf['comparison'] == 68 || $conf['comparison'] == 69) {
-						$lineHTML .= '<select name="' . $this->name . $subscript . '[inputValue]' . '[]" style="vertical-align:top;" size="5" multiple>';
-					} else {
-						$lineHTML .= '<select name="' . $this->name . $subscript . '[inputValue]' . '" style="vertical-align:top;" onChange="submit();">';
-					}
-					$lineHTML .= '<option value=""></option>' . $this->makeOptionList($fName, $conf, $this->table);
+					$lineHTML .= ((((((('<input type="text" value="' . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . '>';
+				} else {
+					$lineHTML .= ((('<select name="' . $this->name) . $subscript) . '[inputValue]') . '" style="vertical-align:top;" onChange="submit();">';
+				}
+				if ($conf['comparison'] != 66 && $conf['comparison'] != 67) {
+					$lineHTML .= $this->makeOptionList($fName, $conf, $this->table);
 					$lineHTML .= '</select>';
-					if ($conf['comparison'] == 66 || $conf['comparison'] == 67) {
-						$lineHTML .= ' + <input type="text" value="' . htmlspecialchars($conf['inputValue1']) . '" name="' . $this->name . $subscript . '[inputValue1]' . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . '>';
-					}
-					break;
-				case 'boolean':
-					$lineHTML .= $this->mkTypeSelect($this->name . $subscript . '[type]', $fName);
-					$lineHTML .= $this->mkCompSelect($this->name . $subscript . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
-					$lineHTML .= '<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '') . ' name="' . $this->name . $subscript . '[negate]' . '" onClick="submit();">';
-					$lineHTML .= '<input type="hidden" value="1" name="' . $this->name . $subscript . '[inputValue]' . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . '>';
-					break;
-				default:
-					$lineHTML .= $this->mkTypeSelect($this->name . $subscript . '[type]', $fName);
-					$lineHTML .= $this->mkCompSelect($this->name . $subscript . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
-					$lineHTML .= '<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '') . ' name="' . $this->name . $subscript . '[negate]' . '" onClick="submit();">';
-					if ($conf['comparison'] == 37 || $conf['comparison'] == 36) { // between:
-						$lineHTML .= '<input type="text" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(5) . '>
-						<input type="text" value="' . htmlspecialchars($conf['inputValue1']) . '" name="' . $this->name . $subscript . '[inputValue1]' . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(5) . '>'; // onChange='submit();'
-					} else {
-						$lineHTML .= '<input type="text" value="' . htmlspecialchars($conf['inputValue']) . '" name="' . $this->name . $subscript . '[inputValue]' . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . '>'; // onChange="submit();"
-					}
-					break;
+				}
+				break;
+			case 'files':
+				$lineHTML .= $this->mkTypeSelect(($this->name . $subscript) . '[type]', $fName);
+				$lineHTML .= $this->mkCompSelect(($this->name . $subscript) . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+				$lineHTML .= ((((('<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '')) . ' name="') . $this->name) . $subscript) . '[negate]') . '" onClick="submit();">';
+				if ($conf['comparison'] == 68 || $conf['comparison'] == 69) {
+					$lineHTML .= ((('<select name="' . $this->name) . $subscript) . '[inputValue]') . '[]" style="vertical-align:top;" size="5" multiple>';
+				} else {
+					$lineHTML .= ((('<select name="' . $this->name) . $subscript) . '[inputValue]') . '" style="vertical-align:top;" onChange="submit();">';
+				}
+				$lineHTML .= '<option value=""></option>' . $this->makeOptionList($fName, $conf, $this->table);
+				$lineHTML .= '</select>';
+				if ($conf['comparison'] == 66 || $conf['comparison'] == 67) {
+					$lineHTML .= (((((((' + <input type="text" value="' . htmlspecialchars($conf['inputValue1'])) . '" name="') . $this->name) . $subscript) . '[inputValue1]') . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . '>';
+				}
+				break;
+			case 'boolean':
+				$lineHTML .= $this->mkTypeSelect(($this->name . $subscript) . '[type]', $fName);
+				$lineHTML .= $this->mkCompSelect(($this->name . $subscript) . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+				$lineHTML .= ((((('<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '')) . ' name="') . $this->name) . $subscript) . '[negate]') . '" onClick="submit();">';
+				$lineHTML .= ((((('<input type="hidden" value="1" name="' . $this->name) . $subscript) . '[inputValue]') . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . '>';
+				break;
+			default:
+				$lineHTML .= $this->mkTypeSelect(($this->name . $subscript) . '[type]', $fName);
+				$lineHTML .= $this->mkCompSelect(($this->name . $subscript) . '[comparison]', $conf['comparison'], $conf['negate'] ? 1 : 0);
+				$lineHTML .= ((((('<input type="checkbox" class="checkbox"' . ($conf['negate'] ? ' checked' : '')) . ' name="') . $this->name) . $subscript) . '[negate]') . '" onClick="submit();">';
+				if ($conf['comparison'] == 37 || $conf['comparison'] == 36) {
+					// between:
+					$lineHTML .= ((((((((((((((('<input type="text" value="' . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(5)) . '>
+						<input type="text" value="') . htmlspecialchars($conf['inputValue1'])) . '" name="') . $this->name) . $subscript) . '[inputValue1]') . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(5)) . '>';
+				} else {
+					$lineHTML .= ((((((('<input type="text" value="' . htmlspecialchars($conf['inputValue'])) . '" name="') . $this->name) . $subscript) . '[inputValue]') . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . '>';
+				}
+				break;
 			}
 			if ($fType != 'ignore') {
 				$lineHTML .= $this->updateIcon();
 				if ($loopcount) {
-					$lineHTML .= '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="11" height="12"') . 'title="Remove condition" name="qG_del' . $subscript . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="11" height="12"')) . 'title="Remove condition" name="qG_del') . $subscript) . '">';
 				}
-				$lineHTML .= '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/add.gif', 'width="12" height="12"') . ' title="Add condition" name="qG_ins' . $subscript . '">';
+				$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/add.gif', 'width="12" height="12"')) . ' title="Add condition" name="qG_ins') . $subscript) . '">';
 				if ($c != 0) {
-					$lineHTML .= '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2up.gif', 'width="12" height="7"') . ' title="Move up" name="qG_up' . $subscript . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2up.gif', 'width="12" height="7"')) . ' title="Move up" name="qG_up') . $subscript) . '">';
 				}
-
 				if ($c != 0 && $fType != 'newlevel') {
-					$lineHTML .= '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2right.gif', 'height="12" width="7"') . ' title="New level" name="qG_nl' . $subscript . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2right.gif', 'height="12" width="7"')) . ' title="New level" name="qG_nl') . $subscript) . '">';
 				}
 				if ($fType == 'newlevel') {
-					$lineHTML .= '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2left.gif', 'height="12" width="7"') . ' title="Collapse new level" name="qG_remnl' . $subscript . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2left.gif', 'height="12" width="7"')) . ' title="Collapse new level" name="qG_remnl') . $subscript) . '">';
 				}
-
 				$codeArr[$arrCount]['html'] = $lineHTML;
 				$codeArr[$arrCount]['query'] = $this->getQuerySingle($conf, $c > 0 ? 0 : 1);
 				$arrCount++;
@@ -691,19 +736,19 @@ class t3lib_queryGenerator {
 			$loopcount = 1;
 		}
 		$this->queryConfig = $queryConfig;
-
 		return $codeArr;
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$codeArr: ...
-	 * @param	[type]		$l: ...
-	 * @param	[type]		$table: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$codeArr: ...
+	 * @param 	[type]		$l: ...
+	 * @param 	[type]		$table: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function makeOptionList($fN, $conf, $table) {
+	public function makeOptionList($fN, $conf, $table) {
 		$out = '';
 		$fieldSetup = $this->fields[$fN];
 		if ($fieldSetup['type'] == 'files') {
@@ -712,9 +757,9 @@ class t3lib_queryGenerator {
 				natcasesort($fileExtArray);
 				foreach ($fileExtArray as $fileExt) {
 					if (t3lib_div::inList($conf['inputValue'], $fileExt)) {
-						$out .= '<option value="' . $fileExt . '" selected>.' . $fileExt . '</option>';
+						$out .= ((('<option value="' . $fileExt) . '" selected>.') . $fileExt) . '</option>';
 					} else {
-						$out .= '<option value="' . $fileExt . '">.' . $fileExt . '</option>';
+						$out .= ((('<option value="' . $fileExt) . '">.') . $fileExt) . '</option>';
 					}
 				}
 			}
@@ -729,9 +774,9 @@ class t3lib_queryGenerator {
 			natcasesort($fileArray);
 			foreach ($fileArray as $fileName) {
 				if (t3lib_div::inList($conf['inputValue'], $fileName)) {
-					$out .= '<option value="' . $fileName . '" selected>' . $fileName . '</option>';
+					$out .= ((('<option value="' . $fileName) . '" selected>') . $fileName) . '</option>';
 				} else {
-					$out .= '<option value="' . $fileName . '">' . $fileName . '</option>';
+					$out .= ((('<option value="' . $fileName) . '">') . $fileName) . '</option>';
 				}
 			}
 		}
@@ -743,9 +788,9 @@ class t3lib_queryGenerator {
 					$value = $val[0];
 				}
 				if (t3lib_div::inList($conf['inputValue'], $val[1])) {
-					$out .= '<option value="' . $val[1] . '" selected>' . $value . '</option>';
+					$out .= ((('<option value="' . $val[1]) . '" selected>') . $value) . '</option>';
 				} else {
-					$out .= '<option value="' . $val[1] . '">' . $value . '</option>';
+					$out .= ((('<option value="' . $val[1]) . '">') . $value) . '</option>';
 				}
 			}
 		}
@@ -757,9 +802,9 @@ class t3lib_queryGenerator {
 					$value = $val[0];
 				}
 				if (t3lib_div::inList($conf['inputValue'], pow(2, $key))) {
-					$out .= '<option value="' . pow(2, $key) . '" selected>' . $value . '</option>';
+					$out .= ((('<option value="' . pow(2, $key)) . '" selected>') . $value) . '</option>';
 				} else {
-					$out .= '<option value="' . pow(2, $key) . '">' . $value . '</option>';
+					$out .= ((('<option value="' . pow(2, $key)) . '">') . $value) . '</option>';
 				}
 			}
 		}
@@ -772,9 +817,9 @@ class t3lib_queryGenerator {
 						$value = $val[0];
 					}
 					if (t3lib_div::inList($conf['inputValue'], $val[1])) {
-						$out .= '<option value="' . $val[1] . '" selected>' . $value . '</option>';
+						$out .= ((('<option value="' . $val[1]) . '" selected>') . $value) . '</option>';
 					} else {
-						$out .= '<option value="' . $val[1] . '">' . $value . '</option>';
+						$out .= ((('<option value="' . $val[1]) . '">') . $value) . '</option>';
 					}
 				}
 			}
@@ -782,7 +827,7 @@ class t3lib_queryGenerator {
 				$from_table_Arr = explode(',', $fieldSetup['allowed']);
 				$useTablePrefix = 1;
 				if (!$fieldSetup['prepend_tname']) {
-					$checkres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fN, $table, t3lib_BEfunc::deleteClause($table), $groupBy = '', $orderBy = '', $limit = '');
+					$checkres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fN, $table, t3lib_BEfunc::deleteClause($table), ($groupBy = ''), ($orderBy = ''), ($limit = ''));
 					if ($checkres) {
 						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($checkres)) {
 							if (stristr($row[$fN], ',')) {
@@ -799,7 +844,6 @@ class t3lib_queryGenerator {
 								}
 							}
 						}
-
 						$GLOBALS['TYPO3_DB']->sql_free_result($checkres);
 					}
 				}
@@ -815,7 +859,7 @@ class t3lib_queryGenerator {
 			$counter = 0;
 			$webMountPageTree = '';
 			while (list(, $from_table) = each($from_table_Arr)) {
-				if (($useTablePrefix && !$dontPrefixFirstTable && $counter != 1) || $counter == 1) {
+				if (($useTablePrefix && !$dontPrefixFirstTable) && $counter != 1 || $counter == 1) {
 					$tablePrefix = $from_table . '_';
 				}
 				$counter = 1;
@@ -844,7 +888,7 @@ class t3lib_queryGenerator {
 						$useAltSelectLabels = 1;
 					}
 					$altLabelFieldSelect = $altLabelField ? ',' . $altLabelField : '';
-					$select_fields = 'uid,' . $labelField . $altLabelFieldSelect;
+					$select_fields = ('uid,' . $labelField) . $altLabelFieldSelect;
 					if (!$GLOBALS['BE_USER']->isAdmin() && $GLOBALS['TYPO3_CONF_VARS']['BE']['lockBeUserToDBmounts']) {
 						$webMounts = $GLOBALS['BE_USER']->returnWebmounts();
 						$perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
@@ -852,15 +896,15 @@ class t3lib_queryGenerator {
 							if ($webMountPageTree) {
 								$webMountPageTreePrefix = ',';
 							}
-							$webMountPageTree .= $webMountPageTreePrefix . $this->getTreeList($val, 999, $begin = 0, $perms_clause);
+							$webMountPageTree .= $webMountPageTreePrefix . $this->getTreeList($val, 999, ($begin = 0), $perms_clause);
 						}
 						if ($from_table == 'pages') {
-							$where_clause = 'uid IN (' . $webMountPageTree . ') ';
+							$where_clause = ('uid IN (' . $webMountPageTree) . ') ';
 							if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
-								$where_clause .= t3lib_BEfunc::deleteClause($from_table) . ' AND' . $perms_clause;
+								$where_clause .= (t3lib_BEfunc::deleteClause($from_table) . ' AND') . $perms_clause;
 							}
 						} else {
-							$where_clause = 'pid IN (' . $webMountPageTree . ') ';
+							$where_clause = ('pid IN (' . $webMountPageTree) . ') ';
 							if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
 								$where_clause .= t3lib_BEfunc::deleteClause($from_table);
 							}
@@ -873,13 +917,12 @@ class t3lib_queryGenerator {
 					}
 					$orderBy = 'uid';
 					if (!$this->tableArray[$from_table]) {
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy, $limit = '');
+						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select_fields, $from_table, $where_clause, ($groupBy = ''), $orderBy, ($limit = ''));
 					}
 					if ($res) {
 						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 							$this->tableArray[$from_table][] = $row;
 						}
-
 						$GLOBALS['TYPO3_DB']->sql_free_result($res);
 					}
 					foreach ($this->tableArray[$from_table] as $key => $val) {
@@ -900,9 +943,9 @@ class t3lib_queryGenerator {
 			}
 			foreach ($outArray as $key2 => $val2) {
 				if (t3lib_div::inList($conf['inputValue'], $key2)) {
-					$out .= '<option value="' . $key2 . '" selected>[' . $key2 . '] ' . $val2 . '</option>';
+					$out .= ((((('<option value="' . $key2) . '" selected>[') . $key2) . '] ') . $val2) . '</option>';
 				} else {
-					$out .= '<option value="' . $key2 . '">[' . $key2 . '] ' . $val2 . '</option>';
+					$out .= ((((('<option value="' . $key2) . '">[') . $key2) . '] ') . $val2) . '</option>';
 				}
 			}
 		}
@@ -912,11 +955,12 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$codeArr: ...
-	 * @param	[type]		$l: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$codeArr: ...
+	 * @param 	[type]		$l: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function printCodeArray($codeArr, $l = 0) {
+	public function printCodeArray($codeArr, $l = 0) {
 		$line = '';
 		if ($l) {
 			$indent = '<td style="vertical-align:top;"><img height="1" width="50"></td>';
@@ -924,47 +968,49 @@ class t3lib_queryGenerator {
 		$lf = $l * 30;
 		$bgColor = t3lib_div::modifyHTMLColor($GLOBALS['TBE_TEMPLATE']->bgColor2, $lf, $lf, $lf);
 		foreach ($codeArr as $k => $v) {
-			$line .= '<tr>' . $indent . '<td bgcolor="' . $bgColor . '"' . $this->noWrap . '>' . $v['html'] . '</td></tr>';
+			$line .= ((((((('<tr>' . $indent) . '<td bgcolor="') . $bgColor) . '"') . $this->noWrap) . '>') . $v['html']) . '</td></tr>';
 			if ($this->enableQueryParts) {
-				$line .= '<tr>' . $indent . '<td>' . $this->formatQ($v['query']) . '</td></tr>';
+				$line .= ((('<tr>' . $indent) . '<td>') . $this->formatQ($v['query'])) . '</td></tr>';
 			}
 			if (is_array($v['sub'])) {
-				$line .= '<tr>' . $indent . '<td' . $this->noWrap . '>' . $this->printCodeArray($v['sub'], $l + 1) . '</td></tr>';
+				$line .= ((((('<tr>' . $indent) . '<td') . $this->noWrap) . '>') . $this->printCodeArray($v['sub'], ($l + 1))) . '</td></tr>';
 			}
 		}
-		$out = '<table border="0" cellpadding="0" cellspacing="1">' . $line . '</table>';
+		$out = ('<table border="0" cellpadding="0" cellspacing="1">' . $line) . '</table>';
 		return $out;
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$str: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$str: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function formatQ($str) {
-		return '<font size="1" face="verdana" color="maroon"><i>' . htmlspecialchars($str) . '</i></font>';
+	public function formatQ($str) {
+		return ('<font size="1" face="verdana" color="maroon"><i>' . htmlspecialchars($str)) . '</i></font>';
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$op: ...
-	 * @param	[type]		$draw: ...
-	 * @param	[type]		$submit: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$op: ...
+	 * @param 	[type]		$draw: ...
+	 * @param 	[type]		$submit: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function mkOperatorSelect($name, $op, $draw, $submit) {
+	public function mkOperatorSelect($name, $op, $draw, $submit) {
 		if ($draw) {
-			$out = '<select name="' . $name . '[operator]"' . ($submit ? ' onChange="submit();"' : '') . '>'; //
-			$out .= '<option value="AND"' . (!$op || $op == 'AND' ? ' selected' : '') . '>' . $this->lang['AND'] . '</option>';
-			$out .= '<option value="OR"' . ($op == 'OR' ? ' selected' : '') . '>' . $this->lang['OR'] . '</option>';
+			$out = ((('<select name="' . $name) . '[operator]"') . ($submit ? ' onChange="submit();"' : '')) . '>';
+			//
+			$out .= ((('<option value="AND"' . (!$op || $op == 'AND' ? ' selected' : '')) . '>') . $this->lang['AND']) . '</option>';
+			$out .= ((('<option value="OR"' . ($op == 'OR' ? ' selected' : '')) . '>') . $this->lang['OR']) . '</option>';
 			$out .= '</select>';
 		} else {
-			$out = '<input type="hidden" value="' . $op . '" name="' . $name . '[operator]">';
+			$out = ((('<input type="hidden" value="' . $op) . '" name="') . $name) . '[operator]">';
 			$out .= '<img src="clear.gif" height="1" width="47">';
-
 		}
 		return $out;
 	}
@@ -972,19 +1018,20 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$fieldName: ...
-	 * @param	[type]		$prepend: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$fieldName: ...
+	 * @param 	[type]		$prepend: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function mkTypeSelect($name, $fieldName, $prepend = 'FIELD_') {
-		$out = '<select name="' . $name . '" onChange="submit();">';
+	public function mkTypeSelect($name, $fieldName, $prepend = 'FIELD_') {
+		$out = ('<select name="' . $name) . '" onChange="submit();">';
 		$out .= '<option value=""></option>';
 		foreach ($this->fields as $key => $value) {
-			if (!$value['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields', $this->table . ':' . $key)) {
+			if (!$value['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields', ($this->table . ':') . $key)) {
 				$label = $this->fields[$key]['label'];
 				$label_alt = $this->fields[$key]['label_alt'];
-				$out .= '<option value="' . $prepend . $key . '"' . ($key == $fieldName ? ' selected' : '') . '>' . $label . '</option>';
+				$out .= (((((('<option value="' . $prepend) . $key) . '"') . ($key == $fieldName ? ' selected' : '')) . '>') . $label) . '</option>';
 			}
 		}
 		$out .= '</select>';
@@ -994,10 +1041,11 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$fieldName: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$fieldName: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function verifyType($fieldName) {
+	public function verifyType($fieldName) {
 		$first = '';
 		foreach ($this->fields as $key => $value) {
 			if (!$first) {
@@ -1013,18 +1061,19 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$comparison: ...
-	 * @param	[type]		$neg: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$comparison: ...
+	 * @param 	[type]		$neg: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function verifyComparison($comparison, $neg) {
+	public function verifyComparison($comparison, $neg) {
 		$compOffSet = $comparison >> 5;
 		$first = -1;
 		for ($i = 32 * $compOffSet + $neg; $i < 32 * ($compOffSet + 1); $i += 2) {
 			if ($first == -1) {
 				$first = $i;
 			}
-			if (($i >> 1) == ($comparison >> 1)) {
+			if ($i >> 1 == $comparison >> 1) {
 				return $i;
 			}
 		}
@@ -1034,19 +1083,20 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$fieldName: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$fieldName: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function mkFieldToInputSelect($name, $fieldName) {
-		$out = '<input type="Text" value="' . htmlspecialchars($fieldName) . '" name="' . $name . '"' . $GLOBALS['TBE_TEMPLATE']->formWidth() . '>' . $this->updateIcon();
-		$out .= '<a href="#" onClick="document.forms[0][\'' . $name . '\'].value=\'\';return false;">' . t3lib_iconWorks::getSpriteIcon('actions-edit-delete', array('title' => 'Clear list')) . '</a>';
-		$out .= '<BR><select name="_fieldListDummy" size="5" onChange="document.forms[0][\'' . $name . '\'].value+=\',\'+this.value">';
+	public function mkFieldToInputSelect($name, $fieldName) {
+		$out = (((((('<input type="Text" value="' . htmlspecialchars($fieldName)) . '" name="') . $name) . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth()) . '>') . $this->updateIcon();
+		$out .= ((('<a href="#" onClick="document.forms[0][\'' . $name) . '\'].value=\'\';return false;">') . t3lib_iconWorks::getSpriteIcon('actions-edit-delete', array('title' => 'Clear list'))) . '</a>';
+		$out .= ('<BR><select name="_fieldListDummy" size="5" onChange="document.forms[0][\'' . $name) . '\'].value+=\',\'+this.value">';
 		foreach ($this->fields as $key => $value) {
-			if (!$value['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields', $this->table . ':' . $key)) {
+			if (!$value['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields', ($this->table . ':') . $key)) {
 				$label = $this->fields[$key]['label'];
 				$label_alt = $this->fields[$key]['label_alt'];
-				$out .= '<option value="' . $key . '"' . ($key == $fieldName ? ' selected' : '') . '>' . $label . '</option>';
+				$out .= ((((('<option value="' . $key) . '"') . ($key == $fieldName ? ' selected' : '')) . '>') . $label) . '</option>';
 			}
 		}
 		$out .= '</select>';
@@ -1056,16 +1106,17 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$cur: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$cur: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function mkTableSelect($name, $cur) {
-		$out = '<select name="' . $name . '" onChange="submit();">';
+	public function mkTableSelect($name, $cur) {
+		$out = ('<select name="' . $name) . '" onChange="submit();">';
 		$out .= '<option value=""></option>';
 		foreach ($GLOBALS['TCA'] as $tN => $value) {
 			if ($GLOBALS['BE_USER']->check('tables_select', $tN)) {
-				$out .= '<option value="' . $tN . '"' . ($tN == $cur ? ' selected' : '') . '>' . $GLOBALS['LANG']->sl($GLOBALS['TCA'][$tN]['ctrl']['title']) . '</option>';
+				$out .= ((((('<option value="' . $tN) . '"') . ($tN == $cur ? ' selected' : '')) . '>') . $GLOBALS['LANG']->sl($GLOBALS['TCA'][$tN]['ctrl']['title'])) . '</option>';
 			}
 		}
 		$out .= '</select>';
@@ -1075,17 +1126,18 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$name: ...
-	 * @param	[type]		$comparison: ...
-	 * @param	[type]		$neg: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$name: ...
+	 * @param 	[type]		$comparison: ...
+	 * @param 	[type]		$neg: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function mkCompSelect($name, $comparison, $neg) {
+	public function mkCompSelect($name, $comparison, $neg) {
 		$compOffSet = $comparison >> 5;
-		$out = '<select name="' . $name . '" onChange="submit();">';
+		$out = ('<select name="' . $name) . '" onChange="submit();">';
 		for ($i = 32 * $compOffSet + $neg; $i < 32 * ($compOffSet + 1); $i += 2) {
 			if ($this->lang['comparison'][$i . '_']) {
-				$out .= '<option value="' . $i . '"' . (($i >> 1) == ($comparison >> 1) ? ' selected' : '') . '>' . $this->lang['comparison'][$i . '_'] . '</option>';
+				$out .= ((((('<option value="' . $i) . '"') . ($i >> 1 == $comparison >> 1 ? ' selected' : '')) . '>') . $this->lang['comparison'][($i . '_')]) . '</option>';
 			}
 		}
 		$out .= '</select>';
@@ -1095,13 +1147,14 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$arr: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$arr: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getSubscript($arr) {
+	public function getSubscript($arr) {
 		while (is_array($arr)) {
 			reset($arr);
-			list($key,) = each($arr);
+			list($key, ) = each($arr);
 			$retArr[] = $key;
 			$arr = $arr[$key];
 		}
@@ -1111,53 +1164,58 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @return	[type]		...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function initUserDef() {
+	public function initUserDef() {
 
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @return	[type]		...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function userDef() {
+	public function userDef() {
+
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$queryConfig: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$queryConfig: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function userDefCleanUp($queryConfig) {
+	public function userDefCleanUp($queryConfig) {
 		return $queryConfig;
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$queryConfig: ...
-	 * @param	[type]		$pad: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$queryConfig: ...
+	 * @param 	[type]		$pad: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getQuery($queryConfig, $pad = '') {
+	public function getQuery($queryConfig, $pad = '') {
 		$qs = '';
-			// Since we don't traverse the array using numeric keys in the upcoming whileloop make sure it's fresh and clean
+		// Since we don't traverse the array using numeric keys in the upcoming whileloop make sure it's fresh and clean
 		ksort($queryConfig);
 		$first = 1;
 		foreach ($queryConfig as $key => $conf) {
 			switch ($conf['type']) {
-				case 'newlevel':
-					$qs .= LF . $pad . trim($conf['operator']) . ' (' . $this->getQuery($queryConfig[$key]['nl'], $pad . '   ') . LF . $pad . ')';
-					break;
-				case 'userdef':
-					$qs .= LF . $pad . getUserDefQuery($conf, $first);
-					break;
-				default:
-					$qs .= LF . $pad . $this->getQuerySingle($conf, $first);
-					break;
+			case 'newlevel':
+				$qs .= ((((((LF . $pad) . trim($conf['operator'])) . ' (') . $this->getQuery($queryConfig[$key]['nl'], ($pad . '   '))) . LF) . $pad) . ')';
+				break;
+			case 'userdef':
+				$qs .= (LF . $pad) . getUserDefQuery($conf, $first);
+				break;
+			default:
+				$qs .= (LF . $pad) . $this->getQuerySingle($conf, $first);
+				break;
 			}
 			$first = 0;
 		}
@@ -1167,15 +1225,16 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$first: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$conf: ...
+	 * @param 	[type]		$first: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getQuerySingle($conf, $first) {
+	public function getQuerySingle($conf, $first) {
 		$qs = '';
 		$prefix = $this->enablePrefix ? $this->table . '.' : '';
 		if (!$first) {
-				// Is it OK to insert the AND operator if none is set?
+			// Is it OK to insert the AND operator if none is set?
 			$qs .= trim(($conf['operator'] ? $conf['operator'] : 'AND')) . ' ';
 		}
 		$qsTmp = str_replace('#FIELD#', $prefix . trim(substr($conf['type'], 6)), $this->compSQL[$conf['comparison']]);
@@ -1183,7 +1242,7 @@ class t3lib_queryGenerator {
 		if ($conf['comparison'] == 68 || $conf['comparison'] == 69) {
 			$inputVal = explode(',', $inputVal);
 			foreach ($inputVal as $key => $fileName) {
-				$inputVal[$key] = "'" . $fileName . "'";
+				$inputVal[$key] = ('\'' . $fileName) . '\'';
 			}
 			$inputVal = implode(',', $inputVal);
 			$qsTmp = str_replace('#VALUE#', $inputVal, $qsTmp);
@@ -1197,7 +1256,8 @@ class t3lib_queryGenerator {
 		} else {
 			$qsTmp = str_replace('#VALUE#', $GLOBALS['TYPO3_DB']->quoteStr($inputVal, $this->table), $qsTmp);
 		}
-		if ($conf['comparison'] == 37 || $conf['comparison'] == 36 || $conf['comparison'] == 66 || $conf['comparison'] == 67 || $conf['comparison'] == 100 || $conf['comparison'] == 101) { // between:
+		if ((((($conf['comparison'] == 37 || $conf['comparison'] == 36) || $conf['comparison'] == 66) || $conf['comparison'] == 67) || $conf['comparison'] == 100) || $conf['comparison'] == 101) {
+			// between:
 			$inputVal = $this->cleanInputVal($conf, '1');
 			$qsTmp = str_replace('#VALUE1#', $GLOBALS['TYPO3_DB']->quoteStr($inputVal, $this->table), $qsTmp);
 		}
@@ -1208,16 +1268,19 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$conf: ...
-	 * @param	[type]		$suffix: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$conf: ...
+	 * @param 	[type]		$suffix: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function cleanInputVal($conf, $suffix = '') {
-		if (($conf['comparison'] >> 5 == 0) || ($conf['comparison'] == 32 || $conf['comparison'] == 33 || $conf['comparison'] == 64 || $conf['comparison'] == 65 || $conf['comparison'] == 66 || $conf['comparison'] == 67 || $conf['comparison'] == 96 || $conf['comparison'] == 97)) {
+	public function cleanInputVal($conf, $suffix = '') {
+		if ($conf['comparison'] >> 5 == 0 || ((((((($conf['comparison'] == 32 || $conf['comparison'] == 33) || $conf['comparison'] == 64) || $conf['comparison'] == 65) || $conf['comparison'] == 66) || $conf['comparison'] == 67) || $conf['comparison'] == 96) || $conf['comparison'] == 97)) {
 			$inputVal = $conf['inputValue' . $suffix];
-		} elseif ($conf['comparison'] == 39 || $conf['comparison'] == 38) { // in list:
+		} elseif ($conf['comparison'] == 39 || $conf['comparison'] == 38) {
+			// in list:
 			$inputVal = implode(',', t3lib_div::intExplode(',', $conf['inputValue' . $suffix]));
-		} elseif ($conf['comparison'] == 68 || $conf['comparison'] == 69 || $conf['comparison'] == 162 || $conf['comparison'] == 163) { // in list:
+		} elseif ((($conf['comparison'] == 68 || $conf['comparison'] == 69) || $conf['comparison'] == 162) || $conf['comparison'] == 163) {
+			// in list:
 			if (is_array($conf['inputValue' . $suffix])) {
 				$inputVal = implode(',', $conf['inputValue' . $suffix]);
 			} elseif ($conf['inputValue' . $suffix]) {
@@ -1234,57 +1297,59 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$qcArr: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$qcArr: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getUserDefQuery($qcArr) {
+	public function getUserDefQuery($qcArr) {
+
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @return	[type]		...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function updateIcon() {
-		return '<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="14" height="14"') . ' title="Update" name="just_update">';
+	public function updateIcon() {
+		return ('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="14" height="14"')) . ' title="Update" name="just_update">';
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @return	[type]		...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getLabelCol() {
+	public function getLabelCol() {
 		return $GLOBALS['TCA'][$this->table]['ctrl']['label'];
 	}
 
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$modSettings: ...
-	 * @param	[type]		$enableList: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$modSettings: ...
+	 * @param 	[type]		$enableList: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function makeSelectorTable($modSettings, $enableList = 'table,fields,query,group,order,limit') {
+	public function makeSelectorTable($modSettings, $enableList = 'table,fields,query,group,order,limit') {
 		$enableArr = explode(',', $enableList);
-			// Make output
+		// Make output
 		$TDparams = ' class="bgColor5" nowrap';
-
 		if (in_array('table', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableSelectATable']) {
-			$out = '
+			$out = ((((('
 			<tr>
-				<td' . $TDparams . '><strong>Select a table:</strong></td>
-				<td' . $TDparams . '>' . $this->mkTableSelect('SET[queryTable]', $this->table) . '</td>
+				<td' . $TDparams) . '><strong>Select a table:</strong></td>
+				<td') . $TDparams) . '>') . $this->mkTableSelect('SET[queryTable]', $this->table)) . '</td>
 			</tr>';
 		}
 		if ($this->table) {
-
-				// Init fields:
+			// Init fields:
 			$this->setAndCleanUpExternalLists('queryFields', $modSettings['queryFields'], 'uid,' . $this->getLabelCol());
 			$this->setAndCleanUpExternalLists('queryGroup', $modSettings['queryGroup']);
-			$this->setAndCleanUpExternalLists('queryOrder', $modSettings['queryOrder'] . ',' . $modSettings['queryOrder2']);
-
-				// Limit:
+			$this->setAndCleanUpExternalLists('queryOrder', ($modSettings['queryOrder'] . ',') . $modSettings['queryOrder2']);
+			// Limit:
 			$this->extFieldLists['queryLimit'] = $modSettings['queryLimit'];
 			if (!$this->extFieldLists['queryLimit']) {
 				$this->extFieldLists['queryLimit'] = 100;
@@ -1297,10 +1362,9 @@ class t3lib_queryGenerator {
 				$this->limitLength = $this->extFieldLists['queryLimit'];
 			}
 			$this->extFieldLists['queryLimit'] = implode(',', array_slice($parts, 0, 2));
-
-				// Insert Descending parts
+			// Insert Descending parts
 			if ($this->extFieldLists['queryOrder']) {
-				$descParts = explode(',', $modSettings['queryOrderDesc'] . ',' . $modSettings['queryOrder2Desc']);
+				$descParts = explode(',', ($modSettings['queryOrderDesc'] . ',') . $modSettings['queryOrder2Desc']);
 				$orderParts = explode(',', $this->extFieldLists['queryOrder']);
 				$reList = array();
 				foreach ($orderParts as $kk => $vv) {
@@ -1308,60 +1372,51 @@ class t3lib_queryGenerator {
 				}
 				$this->extFieldLists['queryOrder_SQL'] = implode(',', $reList);
 			}
-
-				// Query Generator:
+			// Query Generator:
 			$this->procesData($modSettings['queryConfig'] ? unserialize($modSettings['queryConfig']) : '');
-
 			$this->queryConfig = $this->cleanUpQueryConfig($this->queryConfig);
-
 			$this->enableQueryParts = $modSettings['search_query_smallparts'];
-
 			$codeArr = $this->getFormElements();
 			$queryCode = $this->printCodeArray($codeArr);
-
 			if (in_array('fields', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableSelectFields']) {
-				$out .= '
+				$out .= ((((('
 				<tr>
-					<td' . $TDparams . '><strong>Select fields:</strong></td>
-					<td' . $TDparams . '>' . $this->mkFieldToInputSelect('SET[queryFields]', $this->extFieldLists['queryFields']) . '</td>
+					<td' . $TDparams) . '><strong>Select fields:</strong></td>
+					<td') . $TDparams) . '>') . $this->mkFieldToInputSelect('SET[queryFields]', $this->extFieldLists['queryFields'])) . '</td>
 				</tr>';
 			}
 			if (in_array('query', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableMakeQuery']) {
-				$out .= '<tr>
-					<td colspan="2"' . $TDparams . '><strong>Make Query:</strong></td>
+				$out .= ((('<tr>
+					<td colspan="2"' . $TDparams) . '><strong>Make Query:</strong></td>
 				</tr>
 				<tr>
-					<td colspan="2">' . $queryCode . '</td>
+					<td colspan="2">') . $queryCode) . '</td>
 				</tr>
 				';
 			}
 			if (in_array('group', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableGroupBy']) {
-				$out .= '<tr>
-					<td' . $TDparams . '><strong>Group By:</strong></td>
-					<td' . $TDparams . '>' . $this->mkTypeSelect('SET[queryGroup]', $this->extFieldLists['queryGroup'], '') . '</td>
+				$out .= ((((('<tr>
+					<td' . $TDparams) . '><strong>Group By:</strong></td>
+					<td') . $TDparams) . '>') . $this->mkTypeSelect('SET[queryGroup]', $this->extFieldLists['queryGroup'], '')) . '</td>
 				</tr>';
 			}
 			if (in_array('order', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableOrderBy']) {
 				$orderByArr = explode(',', $this->extFieldLists['queryOrder']);
 				$orderBy = '';
-				$orderBy .= $this->mkTypeSelect('SET[queryOrder]', $orderByArr[0], '') .
-							'&nbsp;' . t3lib_BEfunc::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrderDesc]', $modSettings['queryOrderDesc'], '', '', 'id="checkQueryOrderDesc"') . '&nbsp;<label for="checkQueryOrderDesc">Descending</label>';
+				$orderBy .= (($this->mkTypeSelect('SET[queryOrder]', $orderByArr[0], '') . '&nbsp;') . t3lib_BEfunc::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrderDesc]', $modSettings['queryOrderDesc'], '', '', 'id="checkQueryOrderDesc"')) . '&nbsp;<label for="checkQueryOrderDesc">Descending</label>';
 				if ($orderByArr[0]) {
-					$orderBy .= '<BR>' . $this->mkTypeSelect('SET[queryOrder2]', $orderByArr[1], '') .
-								'&nbsp;' . t3lib_BEfunc::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrder2Desc]', $modSettings['queryOrder2Desc'], '', '', 'id="checkQueryOrder2Desc"') . '&nbsp;<label for="checkQueryOrder2Desc">Descending</label>';
+					$orderBy .= ((('<BR>' . $this->mkTypeSelect('SET[queryOrder2]', $orderByArr[1], '')) . '&nbsp;') . t3lib_BEfunc::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrder2Desc]', $modSettings['queryOrder2Desc'], '', '', 'id="checkQueryOrder2Desc"')) . '&nbsp;<label for="checkQueryOrder2Desc">Descending</label>';
 				}
-				$out .= '<tr>
-					<td' . $TDparams . '><strong>Order By:</strong></td>
-					<td' . $TDparams . '>' . $orderBy . '</td>
+				$out .= ((((('<tr>
+					<td' . $TDparams) . '><strong>Order By:</strong></td>
+					<td') . $TDparams) . '>') . $orderBy) . '</td>
 				</tr>';
 			}
 			if (in_array('limit', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableLimit']) {
-				$limit = '<input type="Text" value="' . htmlspecialchars($this->extFieldLists['queryLimit']) . '" name="SET[queryLimit]" id="queryLimit"' . $GLOBALS['TBE_TEMPLATE']->formWidth(10) . '>' . $this->updateIcon();
-
-				$prevLimit = ($this->limitBegin - $this->limitLength) < 0 ? 0 :
-						$this->limitBegin - $this->limitLength;
+				$limit = (((('<input type="Text" value="' . htmlspecialchars($this->extFieldLists['queryLimit'])) . '" name="SET[queryLimit]" id="queryLimit"') . $GLOBALS['TBE_TEMPLATE']->formWidth(10)) . '>') . $this->updateIcon();
+				$prevLimit = $this->limitBegin - $this->limitLength < 0 ? 0 : $this->limitBegin - $this->limitLength;
 				if ($this->limitBegin) {
-					$prevButton = '<input type="button" value="previous ' . $this->limitLength . '" onclick=\'document.getElementById("queryLimit").value="' . $prevLimit . ',' . $this->limitLength . '";document.forms[0].submit();\'>';
+					$prevButton = ((((('<input type="button" value="previous ' . $this->limitLength) . '" onclick=\'document.getElementById("queryLimit").value="') . $prevLimit) . ',') . $this->limitLength) . '";document.forms[0].submit();\'>';
 				}
 				if (!$this->limitLength) {
 					$this->limitLength = 100;
@@ -1371,21 +1426,20 @@ class t3lib_queryGenerator {
 					$nextLimit = 0;
 				}
 				if ($nextLimit) {
-					$nextButton = '<input type="button" value="next ' . $this->limitLength . '" onclick=\'document.getElementById("queryLimit").value="' . $nextLimit . ',' . $this->limitLength . '";document.forms[0].submit();\'>';
+					$nextButton = ((((('<input type="button" value="next ' . $this->limitLength) . '" onclick=\'document.getElementById("queryLimit").value="') . $nextLimit) . ',') . $this->limitLength) . '";document.forms[0].submit();\'>';
 				}
-
 				$numberButtons = '<input type="button" value="10" onclick=\'document.getElementById("queryLimit").value="10";document.forms[0].submit();\'>';
 				$numberButtons .= '<input type="button" value="20" onclick=\'document.getElementById("queryLimit").value="20";document.forms[0].submit();\'>';
 				$numberButtons .= '<input type="button" value="50" onclick=\'document.getElementById("queryLimit").value="50";document.forms[0].submit();\'>';
 				$numberButtons .= '<input type="button" value="100" onclick=\'document.getElementById("queryLimit").value="100";document.forms[0].submit();\'>';
-				$out .= '<tr>
-					<td' . $TDparams . '><strong>Limit:</strong></td>
-					<td' . $TDparams . '>' . $limit . $prevButton . $nextButton . '&nbsp;' . $numberButtons . '</td>
+				$out .= ((((((((('<tr>
+					<td' . $TDparams) . '><strong>Limit:</strong></td>
+					<td') . $TDparams) . '>') . $limit) . $prevButton) . $nextButton) . '&nbsp;') . $numberButtons) . '</td>
 				</tr>
 				';
 			}
 		}
-		$out = '<table border="0" cellpadding="3" cellspacing="1" class="qg-make-query">' . $out . '</table>';
+		$out = ('<table border="0" cellpadding="3" cellspacing="1" class="qg-make-query">' . $out) . '</table>';
 		$out .= $this->JSbottom($this->formName);
 		return $out;
 	}
@@ -1393,13 +1447,14 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$qString: ...
-	 * @param	[type]		$depth: ...
-	 * @param	[type]		$begin: ...
-	 * @param	[type]		$perms_clause: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$qString: ...
+	 * @param 	[type]		$depth: ...
+	 * @param 	[type]		$begin: ...
+	 * @param 	[type]		$perms_clause: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getTreeList($id, $depth, $begin = 0, $perms_clause) {
+	public function getTreeList($id, $depth, $begin = 0, $perms_clause) {
 		$depth = intval($depth);
 		$begin = intval($begin);
 		$id = intval($id);
@@ -1409,11 +1464,7 @@ class t3lib_queryGenerator {
 			$theList = '';
 		}
 		if ($id && $depth > 0) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'uid',
-				'pages',
-				'pid=' . $id . ' ' . t3lib_BEfunc::deleteClause('pages') . ' AND ' . $perms_clause
-			);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', (((('pid=' . $id) . ' ') . t3lib_BEfunc::deleteClause('pages')) . ' AND ') . $perms_clause);
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				if ($begin <= 0) {
 					$theList .= ',' . $row['uid'];
@@ -1422,7 +1473,6 @@ class t3lib_queryGenerator {
 					$theList .= $this->getTreeList($row['uid'], $depth - 1, $begin - 1, $perms_clause);
 				}
 			}
-
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $theList;
@@ -1431,15 +1481,16 @@ class t3lib_queryGenerator {
 	/**
 	 * [Describe function...]
 	 *
-	 * @param	[type]		$qString: ...
-	 * @param	[type]		$fN: ...
-	 * @return	[type]		...
+	 * @param 	[type]		$qString: ...
+	 * @param 	[type]		$fN: ...
+	 * @return 	[type]		...
+	 * @todo Define visibility
 	 */
-	function getSelectQuery($qString = '', $fN = '') {
+	public function getSelectQuery($qString = '', $fN = '') {
 		if (!$qString) {
 			$qString = $this->getQuery($this->queryConfig);
 		}
-		$qString = '(' . $qString . ')';
+		$qString = ('(' . $qString) . ')';
 		if (!$GLOBALS['BE_USER']->isAdmin() && $GLOBALS['TYPO3_CONF_VARS']['BE']['lockBeUserToDBmounts']) {
 			$webMounts = $GLOBALS['BE_USER']->returnWebmounts();
 			$perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
@@ -1448,28 +1499,19 @@ class t3lib_queryGenerator {
 				if ($webMountPageTree) {
 					$webMountPageTreePrefix = ',';
 				}
-				$webMountPageTree .= $webMountPageTreePrefix . $this->getTreeList($val, 999, $begin = 0, $perms_clause);
+				$webMountPageTree .= $webMountPageTreePrefix . $this->getTreeList($val, 999, ($begin = 0), $perms_clause);
 			}
 			if ($this->table == 'pages') {
-				$qString .= ' AND uid IN (' . $webMountPageTree . ')';
+				$qString .= (' AND uid IN (' . $webMountPageTree) . ')';
 			} else {
-				$qString .= ' AND pid IN (' . $webMountPageTree . ')';
+				$qString .= (' AND pid IN (' . $webMountPageTree) . ')';
 			}
 		}
-		$fieldlist = $this->extFieldLists['queryFields'] .
-					',pid' .
-					($GLOBALS['TCA'][$this->table]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$this->table]['ctrl']['delete'] : '');
+		$fieldlist = ($this->extFieldLists['queryFields'] . ',pid') . ($GLOBALS['TCA'][$this->table]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$this->table]['ctrl']['delete'] : '');
 		if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
 			$qString .= t3lib_BEfunc::deleteClause($this->table);
 		}
-		$query = $GLOBALS['TYPO3_DB']->SELECTquery(
-			$fieldlist,
-			$this->table,
-			$qString,
-			trim($this->extFieldLists['queryGroup']),
-			$this->extFieldLists['queryOrder'] ? trim($this->extFieldLists['queryOrder_SQL']) : '',
-			$this->extFieldLists['queryLimit']
-		);
+		$query = $GLOBALS['TYPO3_DB']->SELECTquery($fieldlist, $this->table, $qString, trim($this->extFieldLists['queryGroup']), $this->extFieldLists['queryOrder'] ? trim($this->extFieldLists['queryOrder_SQL']) : '', $this->extFieldLists['queryLimit']);
 		return $query;
 	}
 
@@ -1478,18 +1520,19 @@ class t3lib_queryGenerator {
 	 *
 	 * @param string $formname
 	 * @return string
+	 * @todo Define visibility
 	 */
-	function JSbottom($formname) {
+	public function JSbottom($formname) {
 		$out = '';
 		if ($this->extJSCODE) {
-			$out .= '
-			<script language="javascript" type="text/javascript" src="' . $GLOBALS['BACK_PATH'] . '../t3lib/jsfunc.evalfield.js"></script>
-			<script language="javascript" type="text/javascript" src="' . $GLOBALS['BACK_PATH'] . 'jsfunc.tbe_editor.js"></script>
+			$out .= ((((((((((('
+			<script language="javascript" type="text/javascript" src="' . $GLOBALS['BACK_PATH']) . '../t3lib/jsfunc.evalfield.js"></script>
+			<script language="javascript" type="text/javascript" src="') . $GLOBALS['BACK_PATH']) . 'jsfunc.tbe_editor.js"></script>
 			<script language="javascript" type="text/javascript">
-				TBE_EDITOR.formname = "' . $formname . '";
-				TBE_EDITOR.formnameUENC = "' . rawurlencode($formname) . '";
-				TBE_EDITOR.backend_interface = "' . $GLOBALS['BE_USER']->uc['interfaceSetup'] . '";
-				' . $this->extJSCODE . '
+				TBE_EDITOR.formname = "') . $formname) . '";
+				TBE_EDITOR.formnameUENC = "') . rawurlencode($formname)) . '";
+				TBE_EDITOR.backend_interface = "') . $GLOBALS['BE_USER']->uc['interfaceSetup']) . '";
+				') . $this->extJSCODE) . '
 			</script>';
 		}
 		return $out;
@@ -1504,6 +1547,7 @@ class t3lib_queryGenerator {
 	public function setFormName($formName) {
 		$this->formName = trim($formName);
 	}
+
 }
 
 ?>

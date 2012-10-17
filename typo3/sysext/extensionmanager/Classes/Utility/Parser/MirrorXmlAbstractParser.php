@@ -27,13 +27,11 @@
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-09
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-abstract class Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
-	extends Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
+abstract class Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser extends Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 
 	/**
 	 * Keeps country of currently processed mirror.
@@ -83,7 +81,6 @@ abstract class Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
 	 * @var string
 	 */
 	protected $title = NULL;
-
 
 	/**
 	 * Returns an assoziative array of all mirror properties.
@@ -192,10 +189,9 @@ abstract class Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
 	 * @see $country, $host, $path, $sponsorlink, $sponsorlogo, $sponsorname, $title
 	 */
 	protected function resetProperties() {
-		$this->title = $this->host = $this->path =
-				$this->country = $this->sponsorname = $this->sponsorlink =
-						$this->sponsorlogo;
+		$this->title = ($this->host = ($this->path = ($this->country = ($this->sponsorname = ($this->sponsorlink = $this->sponsorlogo)))));
 	}
 
 }
+
 ?>

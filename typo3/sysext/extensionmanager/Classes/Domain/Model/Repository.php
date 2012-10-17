@@ -22,13 +22,11 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Repository object for extension manager.
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-11
  * @package Extension Manager
  * @subpackage Model
@@ -155,7 +153,7 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	 * @see $mirrorListUrl, getMirrorListUrl()
 	 */
 	public function setMirrorListUrl($url) {
-		if (empty($url) || (!empty($url) && t3lib_div::isValidUrl($url))) {
+		if (empty($url) || !empty($url) && t3lib_div::isValidUrl($url)) {
 			$this->mirrorListUrl = $url;
 		}
 	}
@@ -277,6 +275,7 @@ class Tx_Extensionmanager_Domain_Model_Repository extends Tx_Extbase_DomainObjec
 	public function removeMirrors() {
 		unset($this->mirrors);
 	}
+
 }
 
 ?>

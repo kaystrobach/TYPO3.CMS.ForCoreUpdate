@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Ingo Renner <ingo@typo3.org>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Ingo Renner <ingo@typo3.org>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Performs some checks about the install tool protection status
  *
@@ -43,7 +42,7 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 *
 	 * @var integer
 	 */
-	protected $deprecationLogFileSizeErrorThreshold   = 104857600;
+	protected $deprecationLogFileSizeErrorThreshold = 104857600;
 
 	/**
 	 * Backpath to the typo3 main directory
@@ -60,27 +59,22 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 */
 	public function getStatus() {
 		$this->executeAdminCommand();
-
 		$statuses = array(
 			'emptyReferenceIndex' => $this->getReferenceIndexStatus(),
-			'deprecationLog' => $this->getDeprecationLogStatus(),
+			'deprecationLog' => $this->getDeprecationLogStatus()
 		);
-
-			// Do not show status about non-existent features
+		// Do not show status about non-existent features
 		if (version_compare(phpversion(), '5.4', '<')) {
 			$statuses['safeModeEnabled'] = $this->getPhpSafeModeStatus();
 			$statuses['magicQuotesGpcEnabled'] = $this->getPhpMagicQuotesGpcStatus();
 		}
-
 		if ($this->isMemcachedUsed()) {
 			$statuses['memcachedConnection'] = $this->getMemcachedConnectionStatus();
 		}
-
 		if (TYPO3_OS !== 'WIN') {
 			$statuses['createdFilesWorldWritable'] = $this->getCreatedFilesWorldWritableStatus();
 			$statuses['createdDirectoriesWorldWritable'] = $this->getCreatedDirectoriesWorldWritableStatus();
 		}
-
 		return $statuses;
 	}
 
@@ -90,29 +84,19 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return tx_reports_reports_status_Status An tx_reports_reports_status_Status object representing whether the reference index is empty or not
 	 */
 	protected function getReferenceIndexStatus() {
-		$value    = $GLOBALS['LANG']->getLL('status_ok');
-		$message  = '';
+		$value = $GLOBALS['LANG']->getLL('status_ok');
+		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
 		$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('*', 'sys_refindex');
 		$registry = t3lib_div::makeInstance('t3lib_Registry');
 		$lastRefIndexUpdate = $registry->get('core', 'sys_refindex_lastUpdate');
-
 		if (!$count && $lastRefIndexUpdate) {
-			$value    = $GLOBALS['LANG']->getLL('status_empty');
+			$value = $GLOBALS['LANG']->getLL('status_empty');
 			$severity = tx_reports_reports_status_Status::WARNING;
-
 			$url = 'sysext/lowlevel/dbint/index.php?&id=0&SET[function]=refindex';
-			$message  = sprintf(
-				$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.backend_reference_index'),
-				'<a href="' . $url . '">',
-				'</a>',
-				t3lib_BeFunc::dateTime($lastRefIndexUpdate)
-			);
+			$message = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.backend_reference_index'), ('<a href="' . $url) . '">', '</a>', t3lib_BeFunc::dateTime($lastRefIndexUpdate));
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_referenceIndex'), $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_referenceIndex'), $value, $message, $severity);
 	}
 
 	/**
@@ -121,19 +105,15 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return tx_reports_reports_status_Status A tx_reports_reports_status_Status object representing whether the safe_mode is enabled or not
 	 */
 	protected function getPhpSafeModeStatus() {
-		$value    = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
-		$message  = '';
+		$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
+		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
 		if (t3lib_utility_PhpOptions::isSafeModeEnabled()) {
-			$value    = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
+			$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
 			$severity = tx_reports_reports_status_Status::WARNING;
-			$message  = $GLOBALS['LANG']->getLL('status_configuration_PhpSafeModeEnabled');
+			$message = $GLOBALS['LANG']->getLL('status_configuration_PhpSafeModeEnabled');
 		}
-
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_PhpSafeMode'), $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_PhpSafeMode'), $value, $message, $severity);
 	}
 
 	/**
@@ -142,19 +122,15 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return tx_reports_reports_status_Status A tx_reports_reports_status_Status object representing whether the magic_quote_gpc is enabled or not
 	 */
 	protected function getPhpMagicQuotesGpcStatus() {
-		$value    = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
-		$message  = '';
+		$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
+		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
 		if (t3lib_utility_PhpOptions::isMagicQuotesGpcEnabled()) {
-			$value    = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
+			$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
 			$severity = tx_reports_reports_status_Status::WARNING;
-			$message  = $GLOBALS['LANG']->getLL('status_configuration_PhpMagicQuotesGpcEnabled');
+			$message = $GLOBALS['LANG']->getLL('status_configuration_PhpMagicQuotesGpcEnabled');
 		}
-
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_PhpMagicQuotesGpc'), $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_PhpMagicQuotesGpc'), $value, $message, $severity);
 	}
 
 	/**
@@ -164,12 +140,10 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 */
 	protected function isMemcachedUsed() {
 		$memcachedUsed = FALSE;
-
 		$memcachedServers = $this->getConfiguredMemcachedServers();
 		if (count($memcachedServers)) {
 			$memcachedUsed = TRUE;
 		}
-
 		return $memcachedUsed;
 	}
 
@@ -180,7 +154,6 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 */
 	protected function getConfiguredMemcachedServers() {
 		$memcachedServers = array();
-
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] as $table => $conf) {
 				if (is_array($conf)) {
@@ -193,7 +166,6 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 				}
 			}
 		}
-
 		return $memcachedServers;
 	}
 
@@ -203,14 +175,12 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return tx_reports_reports_status_Status An tx_reports_reports_status_Status object representing whether TYPO3 can connect to the configured memcached servers
 	 */
 	protected function getMemcachedConnectionStatus() {
-		$value    = $GLOBALS['LANG']->getLL('status_ok');
-		$message  = '';
+		$value = $GLOBALS['LANG']->getLL('status_ok');
+		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
-		$failedConnections    = array();
+		$failedConnections = array();
 		$defaultMemcachedPort = ini_get('memcache.default_port');
-		$memcachedServers     = $this->getConfiguredMemcachedServers();
-
+		$memcachedServers = $this->getConfiguredMemcachedServers();
 		if (function_exists('memcache_connect') && is_array($memcachedServers)) {
 			foreach ($memcachedServers as $testServer) {
 				$configuredServer = $testServer;
@@ -236,21 +206,12 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 				}
 			}
 		}
-
 		if (count($failedConnections)) {
-			$value    = $GLOBALS['LANG']->getLL('status_connectionFailed');
+			$value = $GLOBALS['LANG']->getLL('status_connectionFailed');
 			$severity = tx_reports_reports_status_Status::WARNING;
-
-			$message = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.memcache_not_usable')
-				. '<br /><br />'
-				. '<ul><li>'
-				. implode('</li><li>', $failedConnections)
-				. '</li></ul>';
+			$message = ((($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.memcache_not_usable') . '<br /><br />') . '<ul><li>') . implode('</li><li>', $failedConnections)) . '</li></ul>';
 		}
-
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_memcachedConfiguration'), $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_memcachedConfiguration'), $value, $message, $severity);
 	}
 
 	/**
@@ -260,47 +221,30 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return tx_reports_reports_status_Status The deprecation log status.
 	 */
 	protected function getDeprecationLogStatus() {
-		$title    = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLog');
-		$value    = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
-		$message  = '';
+		$title = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLog');
+		$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
+		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['enableDeprecationLog']) {
-			$value    = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
-			$message  = '<p>' . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogEnabled') . '</p>';
+			$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
+			$message = ('<p>' . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogEnabled')) . '</p>';
 			$severity = tx_reports_reports_status_Status::NOTICE;
-
-			$logFile     = t3lib_div::getDeprecationLogFileName();
+			$logFile = t3lib_div::getDeprecationLogFileName();
 			$logFileSize = 0;
-
 			if (@file_exists($logFile)) {
 				$logFileSize = filesize($logFile);
-
-				$message .= '<p>' . sprintf(
-						$GLOBALS['LANG']->getLL('status_configuration_DeprecationLogFile'),
-						$this->getDeprecationLogFileLink()
-					) . '</p>';
-
+				$message .= ('<p>' . sprintf($GLOBALS['LANG']->getLL('status_configuration_DeprecationLogFile'), $this->getDeprecationLogFileLink())) . '</p>';
 				$removeDeprecationLogFileUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL') . '&amp;adminCmd=removeDeprecationLogFile';
-				$message .= '<p>' . sprintf(
-						$GLOBALS['LANG']->getLL('status_configuration_DeprecationLogSize'),
-						t3lib_div::formatSize($logFileSize)
-					)
-					. ' <a href="' . $removeDeprecationLogFileUrl . '">' . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeleteLink') . '</a></p>';
+				$message .= ((((('<p>' . sprintf($GLOBALS['LANG']->getLL('status_configuration_DeprecationLogSize'), t3lib_div::formatSize($logFileSize))) . ' <a href="') . $removeDeprecationLogFileUrl) . '">') . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeleteLink')) . '</a></p>';
 			}
-
 			if ($logFileSize > $this->deprecationLogFileSizeWarningThreshold) {
 				$severity = tx_reports_reports_status_Status::WARNING;
 			}
-
 			if ($logFileSize > $this->deprecationLogFileSizeErrorThreshold) {
 				$severity = tx_reports_reports_status_Status::ERROR;
 			}
 		}
-
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status',
-			$title, $value, $message, $severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $title, $value, $message, $severity);
 	}
 
 	/**
@@ -312,20 +256,12 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
-		if (((int)$GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'] % 10) & 2) {
+		if ((int) $GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'] % 10 & 2) {
 			$value = $GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'];
 			$severity = tx_reports_reports_status_Status::WARNING;
 			$message = $GLOBALS['LANG']->getLL('status_CreatedFilePermissions.writable');
 		}
-
-		return t3lib_div::makeInstance(
-			'tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_CreatedFilePermissions'),
-			$value,
-			$message,
-			$severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_CreatedFilePermissions'), $value, $message, $severity);
 	}
 
 	/**
@@ -337,20 +273,12 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
 		$severity = tx_reports_reports_status_Status::OK;
-
-		if (((int)$GLOBALS['TYPO3_CONF_VARS']['BE']['folderCreateMask'] %10) & 2) {
+		if ((int) $GLOBALS['TYPO3_CONF_VARS']['BE']['folderCreateMask'] % 10 & 2) {
 			$value = $GLOBALS['TYPO3_CONF_VARS']['BE']['folderCreateMask'];
 			$severity = tx_reports_reports_status_Status::WARNING;
 			$message = $GLOBALS['LANG']->getLL('status_CreatedDirectoryPermissions.writable');
 		}
-
-		return t3lib_div::makeInstance(
-			'tx_reports_reports_status_Status',
-			$GLOBALS['LANG']->getLL('status_CreatedDirectoryPermissions'),
-			$value,
-			$message,
-			$severity
-		);
+		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_CreatedDirectoryPermissions'), $value, $message, $severity);
 	}
 
 	/**
@@ -361,11 +289,8 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 */
 	protected function getDeprecationLogFileLink() {
 		$logFile = t3lib_div::getDeprecationLogFileName();
-		$relativePath = t3lib_div::resolveBackPath(
-			$this->backPath . substr($logFile, strlen(PATH_site))
-		);
-		$link = '<a href="' . $relativePath . '">' . $logFile . '</a>';
-
+		$relativePath = t3lib_div::resolveBackPath($this->backPath . substr($logFile, strlen(PATH_site)));
+		$link = ((('<a href="' . $relativePath) . '">') . $logFile) . '</a>';
 		return $link;
 	}
 
@@ -373,20 +298,19 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * Executes admin commands.
 	 *
 	 * Currently implemented commands are:
-	 *  - Remove deprecation log file
+	 * - Remove deprecation log file
 	 *
 	 * @return void
 	 */
 	protected function executeAdminCommand() {
 		$command = t3lib_div::_GET('adminCmd');
-
 		switch ($command) {
-			case 'removeDeprecationLogFile':
-				self::removeDeprecationLogFile();
-				break;
-			default:
-					// intentionally left blank
-				break;
+		case 'removeDeprecationLogFile':
+			self::removeDeprecationLogFile();
+			break;
+		default:
+			// intentionally left blank
+			break;
 		}
 	}
 
@@ -395,21 +319,17 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 *
 	 * @return void
 	 */
-	protected static function removeDeprecationLogFile() {
+	static protected function removeDeprecationLogFile() {
 		if (@unlink(t3lib_div::getDeprecationLogFileName())) {
 			$message = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeletedSuccessful');
-			$severity =  t3lib_FlashMessage::OK;
+			$severity = t3lib_FlashMessage::OK;
 		} else {
 			$message = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeletionFailed');
-			$severity =  t3lib_FlashMessage::ERROR;
+			$severity = t3lib_FlashMessage::ERROR;
 		}
-		t3lib_FlashMessageQueue::addMessage(t3lib_div::makeInstance(
-			't3lib_FlashMessage',
-			$message,
-			'',
-			$severity,
-			TRUE
-		));
+		t3lib_FlashMessageQueue::addMessage(t3lib_div::makeInstance('t3lib_FlashMessage', $message, '', $severity, TRUE));
 	}
+
 }
+
 ?>

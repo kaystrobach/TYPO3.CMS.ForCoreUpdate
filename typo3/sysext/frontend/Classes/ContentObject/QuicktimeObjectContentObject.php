@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains QTOBJECT class object.
  *
@@ -41,84 +40,59 @@ class tslib_content_QuicktimeObject extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-		$params = $prefix = '';
+		$params = ($prefix = '');
 		if ($GLOBALS['TSFE']->baseUrl) {
 			$prefix = $GLOBALS['TSFE']->baseUrl;
 		}
 		if ($GLOBALS['TSFE']->absRefPrefix) {
 			$prefix = $GLOBALS['TSFE']->absRefPrefix;
 		}
-
-		$filename = isset( $conf['file.'])
-			? $this->cObj->stdWrap($conf['file'], $conf['file.'])
-			: $conf['file'];
-
-		$type = isset( $conf['type.'])
-			? $this->cObj->stdWrap($conf['type'], $conf['type.'])
-			: $conf['type'];
-
+		$filename = isset($conf['file.']) ? $this->cObj->stdWrap($conf['file'], $conf['file.']) : $conf['file'];
+		$type = isset($conf['type.']) ? $this->cObj->stdWrap($conf['type'], $conf['type.']) : $conf['type'];
 		$typeConf = $conf[$type . '.'];
-
-			// Add QTobject js-file
+		// Add QTobject js-file
 		$GLOBALS['TSFE']->getPageRenderer()->addJsFile(TYPO3_mainDir . 'contrib/flashmedia/qtobject/qtobject.js');
 		$replaceElementIdString = uniqid('mmqt');
 		$GLOBALS['TSFE']->register['MMQTID'] = $replaceElementIdString;
 		$qtObject = 'QTObject' . $replaceElementIdString;
-
-			// Merge with default parameters
+		// Merge with default parameters
 		$conf['params.'] = array_merge((array) $typeConf['default.']['params.'], (array) $conf['params.']);
-
 		if (is_array($conf['params.'])) {
 			t3lib_div::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
 			foreach ($conf['params.'] as $key => $value) {
-				$params .= $qtObject . '.addParam("' . $key . '", "' . $value . '");' . LF;
+				$params .= ((((($qtObject . '.addParam("') . $key) . '", "') . $value) . '");') . LF;
 			}
 		}
-		$params = ($params ? substr($params, 0, -2) : '') . LF . $qtObject . '.write("' . $replaceElementIdString . '");';
-
-		$alternativeContent = isset($conf['alternativeContent.'])
-			? $this->cObj->stdWrap($conf['alternativeContent'], $conf['alternativeContent.'])
-			:  $conf['alternativeContent'];
-
-		$layout = isset($conf['layout.'])
-			? $this->cObj->stdWrap($conf['layout'], $conf['layout.'])
-			: $conf['layout'];
+		$params = ((((($params ? substr($params, 0, -2) : '') . LF) . $qtObject) . '.write("') . $replaceElementIdString) . '");';
+		$alternativeContent = isset($conf['alternativeContent.']) ? $this->cObj->stdWrap($conf['alternativeContent'], $conf['alternativeContent.']) : $conf['alternativeContent'];
+		$layout = isset($conf['layout.']) ? $this->cObj->stdWrap($conf['layout'], $conf['layout.']) : $conf['layout'];
 		$layout = str_replace('###ID###', $replaceElementIdString, $layout);
-		$layout = str_replace('###QTOBJECT###', '<div id="' . $replaceElementIdString . '">' . $alternativeContent . '</div>', $layout);
-
-		$width = isset($conf['width.'])
-			? $this->cObj->stdWrap($conf['width'], $conf['width.'])
-			: $conf['width'];
+		$layout = str_replace('###QTOBJECT###', ((('<div id="' . $replaceElementIdString) . '">') . $alternativeContent) . '</div>', $layout);
+		$width = isset($conf['width.']) ? $this->cObj->stdWrap($conf['width'], $conf['width.']) : $conf['width'];
 		if (!$width) {
 			$width = $conf[$type . '.']['defaultWidth'];
 		}
-
-		$height = isset($conf['height.'])
-			? $this->cObj->stdWrap($conf['height'], $conf['height.'])
-			: $conf['height'];
+		$height = isset($conf['height.']) ? $this->cObj->stdWrap($conf['height'], $conf['height.']) : $conf['height'];
 		if (!$height) {
 			$height = $conf[$type . '.']['defaultHeight'];
 		}
-
 		$fullFilename = $filename;
-			// If the file name doesn't contain a scheme, prefix with appropriate data
+		// If the file name doesn't contain a scheme, prefix with appropriate data
 		if (strpos($filename, '://') === FALSE && !empty($prefix)) {
 			$fullFilename = $prefix . $filename;
 		}
-		$embed = 'var ' . $qtObject . ' = new QTObject("' . $fullFilename . '", "' .
-			$replaceElementIdString . '", "' . $width . '", "' . $height . '");';
-
-		$content = $layout . '
+		$embed = ((((((((('var ' . $qtObject) . ' = new QTObject("') . $fullFilename) . '", "') . $replaceElementIdString) . '", "') . $width) . '", "') . $height) . '");';
+		$content = (((($layout . '
 			<script type="text/javascript">
-				' . $embed . '
-				' . $params . '
+				') . $embed) . '
+				') . $params) . '
 			</script>';
-
 		if (isset($conf['stdWrap.'])) {
 			$content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
 		}
-
 		return $content;
 	}
+
 }
+
 ?>

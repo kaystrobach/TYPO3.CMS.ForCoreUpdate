@@ -1,29 +1,29 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 1999-2011 Kasper Skårhøj (kasperYYYY@typo3.com)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains class for "Create pages" wizard
  *
@@ -32,7 +32,6 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * Creates the "Create pages" wizard
  *
@@ -50,29 +49,28 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 	protected $loremIpsumObject = NULL;
 
 	/**
-	* Complete tsConfig
-	*
-	* @var array
-	*/
+	 * Complete tsConfig
+	 *
+	 * @var array
+	 */
 	protected $tsConfig = array();
 
 	/**
-	* Part of tsConfig with TCEFORM.pages. settings
-	*
-	* @var array
-	*/
+	 * Part of tsConfig with TCEFORM.pages. settings
+	 *
+	 * @var array
+	 */
 	protected $pagesTsConfig = array();
-
 
 	/**
 	 * Adds menu items... but I think this is not used at all. Looks very much like some testing code. If anyone cares to check it we can remove it some day...
 	 *
 	 * @return array
 	 * @ignore
+	 * @todo Define visibility
 	 */
-	function modMenu() {
+	public function modMenu() {
 		global $LANG;
-
 		$modMenuAdd = array(
 			'cr_333' => array(
 				'0' => 'nul',
@@ -86,20 +84,18 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 	 * Main function creating the content for the module.
 	 *
 	 * @return string HTML content for the module, actually a "section" made through the parent object in $this->pObj
+	 * @todo Define visibility
 	 */
-	function main() {
+	public function main() {
 		global $SOBE, $LANG;
-
 		$theCode = '';
-
 		$this->tsConfig = t3lib_BEfunc::getPagesTSconfig($this->pObj->id);
 		$this->pagesTsConfig = isset($this->tsConfig['TCEFORM.']['pages.']) ? $this->tsConfig['TCEFORM.']['pages.'] : array();
-
-			// Create loremIpsum code:
+		// Create loremIpsum code:
 		if (t3lib_extMgm::isLoaded('lorem_ipsum')) {
 			$this->loremIpsumObject = t3lib_div::getUserObj('EXT:lorem_ipsum/class.tx_loremipsum_wiz.php:tx_loremipsum_wiz');
 		}
-			// Create new pages here?
+		// Create new pages here?
 		$m_perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(8);
 		$pRec = t3lib_BEfunc::getRecord('pages', $this->pObj->id, 'uid', ' AND ' . $m_perms_clause);
 		$sys_pages = t3lib_div::makeInstance('t3lib_pageSelect');
@@ -116,10 +112,8 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 				} else {
 					$thePid = $this->pObj->id;
 				}
-
 				$firstRecord = TRUE;
 				$previousIdentifier = '';
-
 				foreach ($data['pages'] as $identifier => $dat) {
 					if (!trim($dat['title'])) {
 						unset($data['pages'][$identifier]);
@@ -134,74 +128,46 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 						$previousIdentifier = $identifier;
 					}
 				}
-
 				if (count($data['pages'])) {
 					reset($data);
 					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
-					$tce->stripslashes_values=0;
-
-						// set default TCA values specific for the user
+					$tce->stripslashes_values = 0;
+					// set default TCA values specific for the user
 					$TCAdefaultOverride = $GLOBALS['BE_USER']->getTSConfigProp('TCAdefaults');
 					if (is_array($TCAdefaultOverride)) {
 						$tce->setDefaultsFromUserTS($TCAdefaultOverride);
 					}
-
 					$tce->start($data, array());
 					$tce->process_datamap();
 					t3lib_BEfunc::setUpdateSignal('updatePageTree');
-
-					$flashMessage = t3lib_div::makeInstance(
-						't3lib_FlashMessage',
-						'',
-						$GLOBALS['LANG']->getLL('wiz_newPages_create')
-					);
+					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', '', $GLOBALS['LANG']->getLL('wiz_newPages_create'));
 				} else {
-					$flashMessage = t3lib_div::makeInstance(
-						't3lib_FlashMessage',
-						'',
-						$GLOBALS['LANG']->getLL('wiz_newPages_noCreate'),
-						t3lib_FlashMessage::ERROR
-					);
+					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', '', $GLOBALS['LANG']->getLL('wiz_newPages_noCreate'), t3lib_FlashMessage::ERROR);
 				}
-
-				$theCode.= $flashMessage->render();
-
-					// Display result:
+				$theCode .= $flashMessage->render();
+				// Display result:
 				$menuItems = $sys_pages->getMenu($this->pObj->id, '*', 'sorting', '', 0);
-				$lines=array();
+				$lines = array();
 				foreach ($menuItems as $rec) {
 					t3lib_BEfunc::workspaceOL('pages', $rec);
 					if (is_array($rec)) {
-						$lines[] = '<nobr>' . t3lib_iconWorks::getSpriteIconForRecord('pages', $rec, array('title' => t3lib_BEfunc::titleAttribForPages($rec, '', FALSE))) .
-							htmlspecialchars(t3lib_div::fixed_lgd_cs($rec['title'], $GLOBALS['BE_USER']->uc['titleLen'])) . '</nobr>';
+						$lines[] = (('<nobr>' . t3lib_iconWorks::getSpriteIconForRecord('pages', $rec, array('title' => t3lib_BEfunc::titleAttribForPages($rec, '', FALSE)))) . htmlspecialchars(t3lib_div::fixed_lgd_cs($rec['title'], $GLOBALS['BE_USER']->uc['titleLen']))) . '</nobr>';
 					}
 				}
-				$theCode.= '<h4>' . $LANG->getLL('wiz_newPages_currentMenu') . '</h4>' . implode('<br />', $lines);
+				$theCode .= (('<h4>' . $LANG->getLL('wiz_newPages_currentMenu')) . '</h4>') . implode('<br />', $lines);
 			} else {
-
-					// Display create form
+				// Display create form
 				$lines = array();
 				for ($a = 0; $a < 9; $a++) {
 					$lines[] = $this->getFormLine($a);
 				}
-
-				$theCode .= '<h4>' . $LANG->getLL('wiz_newPages') . ':</h4>' .
-				'<div id="formFieldContainer">' . implode('', $lines) . '</div>' .
-				'<br class="clearLeft" />' .
-				'<input type="button" id="createNewFormFields" value="' . $LANG->getLL('wiz_newPages_addMoreLines') . '" />' .
-
-				'<br /><br />
-				<input type="checkbox" name="createInListEnd" id="createInListEnd" value="1" /> <label for="createInListEnd">'.$LANG->getLL('wiz_newPages_listEnd').'</label><br />
-				<input type="checkbox" name="hidePages" id="hidePages" value="1" /> <label for="hidePages">'.$LANG->getLL('wiz_newPages_hidePages').'</label><br /><br />
-				<input type="submit" name="create" value="' . $LANG->getLL('wiz_newPages_lCreate') . '" />&nbsp;<input type="reset" value="' . $LANG->getLL('wiz_newPages_lReset') . '" /><br />';
-
+				$theCode .= ((((((((((((((((('<h4>' . $LANG->getLL('wiz_newPages')) . ':</h4>') . '<div id="formFieldContainer">') . implode('', $lines)) . '</div>') . '<br class="clearLeft" />') . '<input type="button" id="createNewFormFields" value="') . $LANG->getLL('wiz_newPages_addMoreLines')) . '" />') . '<br /><br />
+				<input type="checkbox" name="createInListEnd" id="createInListEnd" value="1" /> <label for="createInListEnd">') . $LANG->getLL('wiz_newPages_listEnd')) . '</label><br />
+				<input type="checkbox" name="hidePages" id="hidePages" value="1" /> <label for="hidePages">') . $LANG->getLL('wiz_newPages_hidePages')) . '</label><br /><br />
+				<input type="submit" name="create" value="') . $LANG->getLL('wiz_newPages_lCreate')) . '" />&nbsp;<input type="reset" value="') . $LANG->getLL('wiz_newPages_lReset')) . '" /><br />';
 				// Add ExtJS inline code
-				$extCode = '
-					var tpl = "' . addslashes(str_replace(
-						array(LF, TAB),
-						array('', ''),
-						$this->getFormLine('#')
-					)) . '", i, line, div, bg, label;
+				$extCode = ('
+					var tpl = "' . addslashes(str_replace(array(LF, TAB), array('', ''), $this->getFormLine('#')))) . '", i, line, div, bg, label;
 					var lineCounter = 9;
 					Ext.get("createNewFormFields").on("click", function() {
 						div = Ext.get("formFieldContainer");
@@ -214,10 +180,8 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 						lineCounter += 5;
 					});
 				';
-
-				/** @var t3lib_pageRenderer **/
+				/** @var t3lib_pageRenderer * */
 				$pageRenderer = $GLOBALS['TBE_TEMPLATE']->getPageRenderer();
-
 				$pageRenderer->loadExtJS();
 				$pageRenderer->addExtOnReadyCode($extCode);
 				$pageRenderer->addCssInlineBlock('tx_wizardcrpages_webfunc_2', '
@@ -229,12 +193,10 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 				');
 			}
 		} else {
-			$theCode.=$GLOBALS['TBE_TEMPLATE']->rfw($LANG->getLL('wiz_newPages_errorMsg1'));
+			$theCode .= $GLOBALS['TBE_TEMPLATE']->rfw($LANG->getLL('wiz_newPages_errorMsg1'));
 		}
-
-			// CSH
-		$theCode.= t3lib_BEfunc::cshItem('_MOD_web_func', 'tx_wizardcrpages', $GLOBALS['BACK_PATH'], '<br />|');
-
+		// CSH
+		$theCode .= t3lib_BEfunc::cshItem('_MOD_web_func', 'tx_wizardcrpages', $GLOBALS['BACK_PATH'], '<br />|');
 		$out = $this->pObj->doc->header($LANG->getLL('wiz_crMany'));
 		$out .= $this->pObj->doc->section('', $theCode, 0, 1);
 		return $out;
@@ -244,9 +206,10 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 	 * Return the helpbubble image tag.
 	 *
 	 * @return string HTML code for a help-bubble image.
+	 * @todo Define visibility
 	 */
-	function helpBubble() {
-		return '<img src="' . $GLOBALS['BACK_PATH'] . 'gfx/helpbubble.gif" width="14" height="14" hspace="2" align="top" alt="" />';
+	public function helpBubble() {
+		return ('<img src="' . $GLOBALS['BACK_PATH']) . 'gfx/helpbubble.gif" width="14" height="14" hspace="2" align="top" alt="" />';
 	}
 
 	/**
@@ -257,35 +220,26 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 	 */
 	protected function getFormLine($index) {
 		$backPath = $GLOBALS['BACK_PATH'];
-
-		if (is_numeric(($index))) {
-			$backgroundClass = ($index % 2 === 0 ? 'bgColor4' : 'bgColor6');
+		if (is_numeric($index)) {
+			$backgroundClass = $index % 2 === 0 ? 'bgColor4' : 'bgColor6';
 			$label = $index + 1;
 		} else {
-				// used as template for ExtJS
+			// used as template for ExtJS
 			$index = '{0}';
 			$backgroundClass = 'bgColor{2}';
 			$label = '{1}';
 		}
-
-		$content = '<label for="page_new_' . $index . '"> ' . $GLOBALS['LANG']->getLL('wiz_newPages_page') .' '. $label;
+		$content = (((('<label for="page_new_' . $index) . '"> ') . $GLOBALS['LANG']->getLL('wiz_newPages_page')) . ' ') . $label;
 		$content .= ':&nbsp;</label>';
-
-			// Title
-		$content .= '<input type="text" id="page_new_' . $index . '" name="data[pages][NEW' . $index . '][title]"' . $this->pObj->doc->formWidth(35) . ' />&nbsp';
-
-			// Lorem ipsum link, if available
-		$content .= (is_object($this->loremIpsumObject) ?
-			'<a href="#" onclick="' . htmlspecialchars($this->loremIpsumObject->getHeaderTitleJS('document.forms[0][\'data[pages][NEW' .
-			$index . '][title]\'].value', 'title')) . '">' . $this->loremIpsumObject->getIcon('', $this->pObj->doc->backPath) . '</a>'
-			: '');
-
-			// type selector
-		$content .= '<span>' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_general.php:LGL.type') . '</span>';
+		// Title
+		$content .= ((((('<input type="text" id="page_new_' . $index) . '" name="data[pages][NEW') . $index) . '][title]"') . $this->pObj->doc->formWidth(35)) . ' />&nbsp';
+		// Lorem ipsum link, if available
+		$content .= is_object($this->loremIpsumObject) ? ((('<a href="#" onclick="' . htmlspecialchars($this->loremIpsumObject->getHeaderTitleJS((('document.forms[0][\'data[pages][NEW' . $index) . '][title]\'].value'), 'title'))) . '">') . $this->loremIpsumObject->getIcon('', $this->pObj->doc->backPath)) . '</a>' : '';
+		// type selector
+		$content .= ('<span>' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_general.php:LGL.type')) . '</span>';
 		$content .= '<select onchange="this.style.backgroundImage=this.options[this.selectedIndex].style.backgroundImage;if (this.options[this.selectedIndex].value==\'--div--\') {this.selectedIndex=1;}" ';
-		$content .= 'class="select icon-select" name="data[pages][NEW' . $index . '][doktype]" style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/pages.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); padding: 1px 1px 1px 24px;">';
-
-			// dokType
+		$content .= ((('class="select icon-select" name="data[pages][NEW' . $index) . '][doktype]" style="background: url(&quot;') . $backPath) . 'sysext/t3skin/icons/gfx/i/pages.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); padding: 1px 1px 1px 24px;">';
+		// dokType
 		$types = $GLOBALS['PAGES_TYPES'];
 		unset($types['default']);
 		$types = array_keys($types);
@@ -293,44 +247,41 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 		if (!$GLOBALS['BE_USER']->isAdmin() && isset($GLOBALS['BE_USER']->groupData['pagetypes_select'])) {
 			$types = t3lib_div::trimExplode(',', $GLOBALS['BE_USER']->groupData['pagetypes_select'], TRUE);
 		}
-
 		$removeItems = isset($this->pagesTsConfig['doktype.']['removeItems']) ? t3lib_div::trimExplode(',', $this->pagesTsConfig['doktype.']['removeItems'], TRUE) : array();
-
 		$group = '';
 		if (in_array(1, $types) && !in_array(1, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/pages.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" selected="selected" value="1">Standard</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/pages.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" selected="selected" value="1">Standard</option>';
 		}
 		if (in_array(6, $types) && !in_array(6, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'gfx/i/be_users_section.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="6">Backend User Section</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'gfx/i/be_users_section.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="6">Backend User Section</option>';
 		}
-		$content .= $group ? '<optgroup class="c-divider" label="Page">' . $group . '</optgroup>' : '';
-
+		$content .= $group ? ('<optgroup class="c-divider" label="Page">' . $group) . '</optgroup>' : '';
 		$group = '';
 		if (in_array(4, $types) && !in_array(4, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/pages_shortcut.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="4">Shortcut</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/pages_shortcut.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="4">Shortcut</option>';
 		}
 		if (in_array(7, $types) && !in_array(7, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'gfx/i/pages_mountpoint.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="7">Mount Point</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'gfx/i/pages_mountpoint.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="7">Mount Point</option>';
 		}
 		if (in_array(3, $types) && !in_array(3, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/pages_link.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="3">Link to external URL</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/pages_link.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="3">Link to external URL</option>';
 		}
-		$content .= $group ? '<optgroup class="c-divider" label="Link">' . $group . '</optgroup>' : '';
-
+		$content .= $group ? ('<optgroup class="c-divider" label="Link">' . $group) . '</optgroup>' : '';
 		$group = '';
 		if (in_array(254, $types) && !in_array(254, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/sysf.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="254">Folder</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/sysf.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="254">Folder</option>';
 		}
 		if (in_array(255, $types) && !in_array(255, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/recycler.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="255">Recycler</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/recycler.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="255">Recycler</option>';
 		}
 		if (in_array(199, $types) && !in_array(199, $removeItems)) {
-			$group .= '<option style="background: url(&quot;' . $backPath . 'sysext/t3skin/icons/gfx/i/spacer_icon.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="199">Visual menu separator</option>';
+			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/spacer_icon.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" value="199">Visual menu separator</option>';
 		}
-		$content .= $group ? '<optgroup class="c-divider" label="Special">' . $group . '</optgroup>' : '';
+		$content .= $group ? ('<optgroup class="c-divider" label="Special">' . $group) . '</optgroup>' : '';
 		$content .= '</select>';
-
-		return '<div id="form-line-' . $index . '" class="' . $backgroundClass . '">' . $content . '</div>';
+		return ((((('<div id="form-line-' . $index) . '" class="') . $backgroundClass) . '">') . $content) . '</div>';
 	}
+
 }
+
 ?>

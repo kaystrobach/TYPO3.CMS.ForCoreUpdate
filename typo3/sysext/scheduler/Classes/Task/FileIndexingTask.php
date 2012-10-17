@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This class provides Scheduler plugin implementation
  *
@@ -30,6 +29,7 @@
  * @subpackage media
  */
 class tx_scheduler_FileIndexing extends tx_scheduler_Task {
+
 	/**
 	 * @var string
 	 */
@@ -90,20 +90,16 @@ class tx_scheduler_FileIndexing extends tx_scheduler_Task {
 		/** @var $indexerService t3lib_file_Service_IndexerService */
 		$indexerService = t3lib_div::makeInstance('t3lib_file_Service_IndexerService');
 		$indexerService->setFactory($fileFactory);
-
-			// run indexing of every storage
-		$storageRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'*',
-			'sys_file_storage',
-			'deleted = 0'
-		);
+		// run indexing of every storage
+		$storageRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_file_storage', 'deleted = 0');
 		foreach ($storageRecords as $storageRecord) {
 			$storageObject = $fileFactory->getStorageObject($storageRecord['uid'], $storageRecord);
 			$folder = $storageObject->getRootLevelFolder();
 			$indexerService->indexFilesInFolder($folder);
 		}
-
 		return $successfullyExecuted;
 	}
+
 }
+
 ?>

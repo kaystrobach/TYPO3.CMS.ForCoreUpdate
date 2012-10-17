@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Find system history entries
  *
@@ -33,6 +32,7 @@
  * @subpackage belog
  */
 class Tx_Belog_Domain_Repository_HistoryEntryRepository extends Tx_Extbase_Persistence_Repository {
+
 	/**
 	 * Initializes the repository.
 	 *
@@ -44,5 +44,7 @@ class Tx_Belog_Domain_Repository_HistoryEntryRepository extends Tx_Extbase_Persi
 		$querySettings->setRespectStoragePage(FALSE);
 		$this->setDefaultQuerySettings($querySettings);
 	}
+
 }
+
 ?>

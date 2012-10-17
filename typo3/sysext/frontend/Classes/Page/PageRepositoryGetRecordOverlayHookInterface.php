@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * interface for classes which hook into t3lib_pageSelect
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_pageSelect_getRecordOverlayHook {
-
+interface t3lib_pageSelect_getRecordOverlayHook
+{
 	/**
 	 * Enables to preprocess a record overlay
 	 *
@@ -57,5 +56,4 @@ interface t3lib_pageSelect_getRecordOverlayHook {
 	public function getRecordOverlay_postProcess($table, &$row, &$sys_language_content, $OLmode, t3lib_pageSelect $parent);
 
 }
-
 ?>

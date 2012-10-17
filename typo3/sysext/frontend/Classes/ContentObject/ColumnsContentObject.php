@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains COLUMNS class object.
  *
@@ -52,64 +51,57 @@ class tslib_content_Columns extends tslib_content_Abstract {
 			$rows = t3lib_utility_Math::forceIntegerInRange($rows, 2, 20);
 			$totalWidth = isset($conf['totalWidth.']) ? intval($this->cObj->stdWrap($conf['totalWidth'], $conf['totalWidth.'])) : intval($conf['totalWidth']);
 			$columnWidth = 0;
-
 			$totalGapWidth = 0;
 			$gapData = array(
 				'gapWidth' => isset($conf['gapWidth.']) ? $this->cObj->stdWrap($conf['gapWidth'], $conf['gapWidth.']) : $conf['gapWidth'],
 				'gapBgCol' => isset($conf['gapBgCol.']) ? $this->cObj->stdWrap($conf['gapBgCol'], $conf['gapBgCol.']) : $conf['gapBgCol'],
 				'gapLineThickness' => isset($conf['gapLineThickness.']) ? $this->cObj->stdWrap($conf['gapLineThickness'], $conf['gapLineThickness.']) : $conf['gapLineThickness'],
-				'gapLineCol' => isset($conf['gapLineCol.']) ? $this->cObj->stdWrap($conf['gapLineCol'], $conf['gapLineCol.']) : $conf['gapLineCol'],
+				'gapLineCol' => isset($conf['gapLineCol.']) ? $this->cObj->stdWrap($conf['gapLineCol'], $conf['gapLineCol.']) : $conf['gapLineCol']
 			);
 			$gapData = $GLOBALS['TSFE']->tmpl->splitConfArray($gapData, $rows - 1);
 			foreach ($gapData as $val) {
 				$totalGapWidth += intval($val['gapWidth']);
 			}
-
 			if ($totalWidth) {
 				$columnWidth = ceil(($totalWidth - $totalGapWidth) / $rows);
-				$TDparams .= ' width="' . $columnWidth . '"';
-				$tableParams .= ' width="' . $totalWidth . '"';
+				$TDparams .= (' width="' . $columnWidth) . '"';
+				$tableParams .= (' width="' . $totalWidth) . '"';
 			} else {
-				$TDparams .= ' width="' . floor(100 / $rows) . '%"';
+				$TDparams .= (' width="' . floor(100 / $rows)) . '%"';
 				$tableParams .= ' width="100%"';
 			}
-
 			for ($a = 1; $a <= $rows; $a++) {
 				$tdRowCount++;
-				$content .= '<td' . $TDparams . '>';
+				$content .= ('<td' . $TDparams) . '>';
 				$content .= $this->cObj->cObjGetSingle($conf[$a], $conf[$a . '.'], $a);
 				$content .= '</td>';
 				if ($a < $rows) {
-					$gapConf = $gapData[($a - 1)];
+					$gapConf = $gapData[$a - 1];
 					$gapWidth = intval($gapConf['gapWidth']);
 					if ($gapWidth) {
-						$tdPar = $gapConf['gapBgCol'] ? ' bgcolor="' . $gapConf['gapBgCol'] . '"' : '';
+						$tdPar = $gapConf['gapBgCol'] ? (' bgcolor="' . $gapConf['gapBgCol']) . '"' : '';
 						$gapLine = intval($gapConf['gapLineThickness']);
 						if ($gapLine) {
 							$gapSurround = t3lib_utility_Math::forceIntegerInRange(($gapWidth - $gapLine) / 2, 1, 1000);
-								// right gap
-							$content .= '<td' . $tdPar . '><img src="' . $GLOBALS['TSFE']->absRefPrefix . 'clear.gif" width="' .
-								$gapSurround . '" height="1" alt="" title="" /></td>';
+							// right gap
+							$content .= ((((('<td' . $tdPar) . '><img src="') . $GLOBALS['TSFE']->absRefPrefix) . 'clear.gif" width="') . $gapSurround) . '" height="1" alt="" title="" /></td>';
 							$tdRowCount++;
-								// line:
-							$GtdPar = $gapConf['gapLineCol'] ? ' bgcolor="' . $gapConf['gapLineCol'] . '"' : ' bgcolor="black"';
-							$content .= '<td' . $GtdPar . '><img src="' . $GLOBALS['TSFE']->absRefPrefix . 'clear.gif" width="' .
-								$gapLine . '" height="1" alt="" title="" /></td>';
+							// line:
+							$GtdPar = $gapConf['gapLineCol'] ? (' bgcolor="' . $gapConf['gapLineCol']) . '"' : ' bgcolor="black"';
+							$content .= ((((('<td' . $GtdPar) . '><img src="') . $GLOBALS['TSFE']->absRefPrefix) . 'clear.gif" width="') . $gapLine) . '" height="1" alt="" title="" /></td>';
 							$tdRowCount++;
-								// left gap
-							$content .= '<td' . $tdPar . '><img src="' . $GLOBALS['TSFE']->absRefPrefix . 'clear.gif" width="' .
-								$gapSurround . '" height="1" alt="" title="" /></td>';
+							// left gap
+							$content .= ((((('<td' . $tdPar) . '><img src="') . $GLOBALS['TSFE']->absRefPrefix) . 'clear.gif" width="') . $gapSurround) . '" height="1" alt="" title="" /></td>';
 							$tdRowCount++;
 						} else {
-							$content .= '<td' . $tdPar . '><img src="' . $GLOBALS['TSFE']->absRefPrefix . 'clear.gif" width="' .
-								$gapWidth . '" height="1" alt="" title="" /></td>';
+							$content .= ((((('<td' . $tdPar) . '><img src="') . $GLOBALS['TSFE']->absRefPrefix) . 'clear.gif" width="') . $gapWidth) . '" height="1" alt="" title="" /></td>';
 							$tdRowCount++;
 						}
 					}
 				}
 			}
-			$content = '<tr>' . $content . '</tr>';
-			$content = '<table' . $tableParams . '>' . $content . '</table>';
+			$content = ('<tr>' . $content) . '</tr>';
+			$content = ((('<table' . $tableParams) . '>') . $content) . '</table>';
 			if ($conf['after'] || isset($conf['after.'])) {
 				$content .= $this->cObj->cObjGetSingle($conf['after'], $conf['after.'], 'after');
 			}
@@ -119,5 +111,7 @@ class tslib_content_Columns extends tslib_content_Abstract {
 		}
 		return $content;
 	}
+
 }
+
 ?>

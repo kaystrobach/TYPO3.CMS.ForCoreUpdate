@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract Context Menu Renderer
  *
@@ -33,6 +32,7 @@
  * @subpackage t3lib
  */
 abstract class t3lib_contextmenu_renderer_Abstract {
+
 	/**
 	 * Renders an action recursive or just a single one
 	 *
@@ -49,9 +49,7 @@ abstract class t3lib_contextmenu_renderer_Abstract {
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderActionCollection(
-		t3lib_contextmenu_ActionCollection $actionCollection, $recursive = FALSE
-	);
+	abstract public function renderActionCollection(t3lib_contextmenu_ActionCollection $actionCollection, $recursive = FALSE);
 
 	/**
 	 * Renders a context menu recursive or just a single one
@@ -60,9 +58,8 @@ abstract class t3lib_contextmenu_renderer_Abstract {
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderContextMenu(
-		t3lib_contextmenu_AbstractContextMenu $contextMenu, $recursive = FALSE
-	);
+	abstract public function renderContextMenu(t3lib_contextmenu_AbstractContextMenu $contextMenu, $recursive = FALSE);
+
 }
 
 ?>

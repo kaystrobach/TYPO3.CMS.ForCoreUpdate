@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Static methods for validation
  *
@@ -58,6 +57,7 @@ class tx_form_System_Validate implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function __construct() {
+
 	}
 
 	/**
@@ -81,9 +81,7 @@ class tx_form_System_Validate implements t3lib_Singleton {
 	public function createRule($class, $arguments = array()) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_System_Validate_' . ucfirst($class);
-
 		$rule = t3lib_div::makeInstance($className, $arguments);
-
 		return $rule;
 	}
 
@@ -101,9 +99,8 @@ class tx_form_System_Validate implements t3lib_Singleton {
 		$this->rules[$prefix][] = array(
 			'instance' => (object) $rule,
 			'fieldName' => (string) $fieldName,
-			'breakOnError' => (boolean) $breakOnError
+			'breakOnError' => (bool) $breakOnError
 		);
-
 		if ($rule->messageMustBeDisplayed()) {
 			if (!isset($this->messages[$prefix][$fieldName])) {
 				$this->messages[$prefix][$fieldName] = array();
@@ -114,10 +111,8 @@ class tx_form_System_Validate implements t3lib_Singleton {
 			$this->messages[$prefix][$fieldName][$key][$key + 1] = $message['cObj'];
 			$this->messages[$prefix][$fieldName][$key][($key + 1) . '.'] = $message['cObj.'];
 		}
-
 		return $this;
 	}
-
 
 	/**
 	 * Returns TRUE when each rule in the chain returns valid
@@ -130,11 +125,9 @@ class tx_form_System_Validate implements t3lib_Singleton {
 		$prefix = $this->getPrefix();
 		$this->errors[$prefix] = array();
 		$result = TRUE;
-
 		foreach ($this->rules[$prefix] as $key => $element) {
 			$rule = $element['instance'];
 			$fieldName = $element['fieldName'];
-
 			if ($rule->isValid()) {
 				continue;
 			}
@@ -215,5 +208,7 @@ class tx_form_System_Validate implements t3lib_Singleton {
 		}
 		return FALSE;
 	}
+
 }
+
 ?>

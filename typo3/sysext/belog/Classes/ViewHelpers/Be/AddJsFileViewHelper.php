@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * View helper to add a additional javascript file to the backend header
  *
@@ -32,6 +31,7 @@
  * @subpackage belog
  */
 class Tx_Belog_ViewHelpers_Be_AddJsFileViewHelper extends Tx_Fluid_ViewHelpers_Be_AbstractBackendViewHelper {
+
 	/**
 	 * Includes a JavaScript file into the to-be-rendered page
 	 *
@@ -45,5 +45,7 @@ class Tx_Belog_ViewHelpers_Be_AddJsFileViewHelper extends Tx_Fluid_ViewHelpers_B
 		$pageRenderer = $doc->getPageRenderer();
 		$pageRenderer->addJsFile($file);
 	}
+
 }
+
 ?>

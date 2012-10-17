@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class t3lib_formprotection_Factory.
  *
@@ -45,23 +44,24 @@
  *
  * @package TYPO3
  * @subpackage t3lib
- *
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  * @author Ernesto Baschny <ernst@cron-it.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
 final class t3lib_formprotection_Factory {
+
 	/**
 	 * created instances of form protections using the type as array key
 	 *
 	 * @var array<t3lib_formProtectionAbstract>
 	 */
-	protected static $instances = array();
+	static protected $instances = array();
 
 	/**
 	 * Private constructor to prevent instantiation.
 	 */
 	private function __construct() {
+
 	}
 
 	/**
@@ -72,12 +72,9 @@ final class t3lib_formprotection_Factory {
 	 * detects the scope and returns the appropriate form protection object.
 	 *
 	 * @param string $className
-	 *		the name of the class for which to return an instance, must be
-	 *		"t3lib_formProtection_BackEnd" or "t3lib_formprotection_InstallToolFormProtection"
-	 *
 	 * @return t3lib_formprotection_Abstract the requested instance
 	 */
-	public static function get($className = NULL) {
+	static public function get($className = NULL) {
 		if ($className === NULL) {
 			$className = self::getClassNameByState();
 		}
@@ -93,17 +90,18 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @return string
 	 */
-	protected static function getClassNameByState() {
+	static protected function getClassNameByState() {
 		switch (TRUE) {
-			case self::isInstallToolSession():
-				$className = 't3lib_formprotection_InstallToolFormProtection';
-				break;
-			case self::isBackendSession():
-				$className = 't3lib_formprotection_BackendFormProtection';
-				break;
-			case self::isFrontendSession():
-			default:
-				$className = 't3lib_formprotection_DisabledFormProtection';
+		case self::isInstallToolSession():
+			$className = 't3lib_formprotection_InstallToolFormProtection';
+			break;
+		case self::isBackendSession():
+			$className = 't3lib_formprotection_BackendFormProtection';
+			break;
+		case self::isFrontendSession():
+
+		default:
+			$className = 't3lib_formprotection_DisabledFormProtection';
 		}
 		return $className;
 	}
@@ -113,8 +111,8 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @return boolean
 	 */
-	protected static function isInstallToolSession() {
-		return (defined(TYPO3_enterInstallScript) && TYPO3_enterInstallScript);
+	static protected function isInstallToolSession() {
+		return defined(TYPO3_enterInstallScript) && TYPO3_enterInstallScript;
 	}
 
 	/**
@@ -122,12 +120,8 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @return boolean
 	 */
-	protected static function isBackendSession() {
-		return (isset($GLOBALS['BE_USER']) &&
-			$GLOBALS['BE_USER'] instanceof t3lib_beUserAuth &&
-			isset($GLOBALS['BE_USER']->user['uid']) &&
-			!(TYPO3_MODE === 'FE')
-		);
+	static protected function isBackendSession() {
+		return ((isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof t3lib_beUserAuth) && isset($GLOBALS['BE_USER']->user['uid'])) && !(TYPO3_MODE === 'FE');
 	}
 
 	/**
@@ -135,12 +129,8 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @return boolean
 	 */
-	protected static function isFrontendSession() {
-		return (is_object($GLOBALS['TSFE']) &&
-			$GLOBALS['TSFE']->fe_user instanceof tslib_feUserAuth &&
-			isset($GLOBALS['TSFE']->fe_user->user['uid']) &&
-			(TYPO3_MODE === 'FE')
-		);
+	static protected function isFrontendSession() {
+		return ((is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->fe_user instanceof tslib_feUserAuth) && isset($GLOBALS['TSFE']->fe_user->user['uid'])) && TYPO3_MODE === 'FE';
 	}
 
 	/**
@@ -148,30 +138,17 @@ final class t3lib_formprotection_Factory {
 	 * and stores it internally.
 	 *
 	 * @param string $className
-	 *		the name of the class for which to return an instance, must be
-	 *		"t3lib_formProtection_BackEnd" or "t3lib_formprotection_InstallToolFormProtection"
-	 *
 	 * @throws InvalidArgumentException
 	 */
-	protected static function createAndStoreInstance($className) {
-			if (!class_exists($className, TRUE)) {
-				throw new InvalidArgumentException(
-					'$className must be the name of an existing class, but ' .
-					'actually was "' . $className . '".',
-					1285352962
-				);
-			}
-
-			$instance = t3lib_div::makeInstance($className);
-			if (!$instance instanceof t3lib_formprotection_Abstract) {
-				throw new InvalidArgumentException(
-					'$className must be a subclass of ' .
-					't3lib_formprotection_Abstract, but actually was "' .
-					$className . '".',
-					1285353026
-				);
-			}
-			self::$instances[$className] = $instance;
+	static protected function createAndStoreInstance($className) {
+		if (!class_exists($className, TRUE)) {
+			throw new InvalidArgumentException((('$className must be the name of an existing class, but ' . 'actually was "') . $className) . '".', 1285352962);
+		}
+		$instance = t3lib_div::makeInstance($className);
+		if (!$instance instanceof t3lib_formprotection_Abstract) {
+			throw new InvalidArgumentException((('$className must be a subclass of ' . 't3lib_formprotection_Abstract, but actually was "') . $className) . '".', 1285353026);
+		}
+		self::$instances[$className] = $instance;
 	}
 
 	/**
@@ -182,14 +159,10 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @access private
 	 * @param string $className
-	 *		the name of the class for which to set an instance, must be
-	 *		"t3lib_formProtection_BackEnd" or "t3lib_formprotection_InstallToolFormProtection"
 	 * @param t3lib_formprotection_Abstract $instance
-	 *		the instance to set
-	 *
 	 * @return void
 	 */
-	public static function set($className, t3lib_formprotection_Abstract $instance) {
+	static public function set($className, t3lib_formprotection_Abstract $instance) {
 		self::$instances[$className] = $instance;
 	}
 
@@ -200,12 +173,13 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @return void
 	 */
-	public static function purgeInstances() {
+	static public function purgeInstances() {
 		foreach (self::$instances as $key => $instance) {
 			$instance->__destruct();
 			unset(self::$instances[$key]);
 		}
 	}
+
 }
 
 ?>

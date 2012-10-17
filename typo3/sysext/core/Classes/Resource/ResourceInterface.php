@@ -24,17 +24,15 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * FileResourceInterface
  *
- * @author  Ingmar Schlecht <ingmar@typo3.org>
- * @package  TYPO3
- * @subpackage  t3lib
+ * @author Ingmar Schlecht <ingmar@typo3.org>
+ * @package TYPO3
+ * @subpackage t3lib
  */
-interface t3lib_file_ResourceInterface {
-
+interface t3lib_file_ResourceInterface
+{
 	/**
 	 * Returns the identifier of this file
 	 *
@@ -57,5 +55,4 @@ interface t3lib_file_ResourceInterface {
 	public function getStorage();
 
 }
-
 ?>

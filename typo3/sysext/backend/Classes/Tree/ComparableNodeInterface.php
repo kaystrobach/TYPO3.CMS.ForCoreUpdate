@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface that defines the comparison of nodes
  *
@@ -32,7 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_ComparableNode {
+interface t3lib_tree_ComparableNode
+{
 	/**
 	 * Compare Node against another one
 	 *
@@ -43,18 +43,19 @@ interface t3lib_tree_ComparableNode {
 	 *
 	 * <strong>Example</strong>
 	 * <pre>
-	 *	 if ($this->sortValue > $other->sortValue) {
-	 *		return 1;
-	 *	} elseif ($this->sortValue < $other->sortValue) {
-	 *		return -1;
-	 *	} else {
-	 *		return 0;
-	 *	}
+	 * if ($this->sortValue > $other->sortValue) {
+	 * return 1;
+	 * } elseif ($this->sortValue < $other->sortValue) {
+	 * return -1;
+	 * } else {
+	 * return 0;
+	 * }
 	 * </pre>
 	 *
 	 * @param t3lib_tree_Node $other
 	 * @return integer see description
 	 */
 	public function compareTo($other);
+
 }
 ?>

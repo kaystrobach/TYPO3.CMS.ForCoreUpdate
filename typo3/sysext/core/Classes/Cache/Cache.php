@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A cache handling helper class
  *
@@ -32,9 +31,9 @@
 class t3lib_cache {
 
 	/**
-	 * @var	boolean
+	 * @var 	boolean
 	 */
-	protected static $isCachingFrameworkInitialized = FALSE;
+	static protected $isCachingFrameworkInitialized = FALSE;
 
 	/**
 	 * Initializes the caching framework by loading the cache manager and factory
@@ -42,13 +41,13 @@ class t3lib_cache {
 	 *
 	 * @return void
 	 */
-	public static function initializeCachingFramework() {
+	static public function initializeCachingFramework() {
 		if (!self::isCachingFrameworkInitialized()) {
-				// New operator used on purpose, makeInstance() is not ready to be used so early in bootstrap
+			// New operator used on purpose, makeInstance() is not ready to be used so early in bootstrap
 			$GLOBALS['typo3CacheManager'] = new t3lib_cache_Manager();
 			t3lib_div::setSingletonInstance('t3lib_cache_Manager', $GLOBALS['typo3CacheManager']);
 			$GLOBALS['typo3CacheManager']->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
-				// New operator used on purpose, makeInstance() is not ready to be used so early in bootstrap
+			// New operator used on purpose, makeInstance() is not ready to be used so early in bootstrap
 			$GLOBALS['typo3CacheFactory'] = new t3lib_cache_Factory('production', $GLOBALS['typo3CacheManager']);
 			t3lib_div::setSingletonInstance('t3lib_cache_Factory', $GLOBALS['typo3CacheFactory']);
 			self::$isCachingFrameworkInitialized = TRUE;
@@ -61,14 +60,10 @@ class t3lib_cache {
 	 *
 	 * @return boolean True if caching framework is initialized
 	 */
-	public static function isCachingFrameworkInitialized() {
-		if (!self::$isCachingFrameworkInitialized
-				&& isset($GLOBALS['typo3CacheManager']) && $GLOBALS['typo3CacheManager'] instanceof t3lib_cache_Manager
-				&& isset($GLOBALS['typo3CacheFactory']) && $GLOBALS['typo3CacheFactory'] instanceof t3lib_cache_Factory
-		) {
+	static public function isCachingFrameworkInitialized() {
+		if ((((!self::$isCachingFrameworkInitialized && isset($GLOBALS['typo3CacheManager'])) && $GLOBALS['typo3CacheManager'] instanceof t3lib_cache_Manager) && isset($GLOBALS['typo3CacheFactory'])) && $GLOBALS['typo3CacheFactory'] instanceof t3lib_cache_Factory) {
 			self::$isCachingFrameworkInitialized = TRUE;
 		}
-
 		return self::$isCachingFrameworkInitialized;
 	}
 
@@ -80,7 +75,7 @@ class t3lib_cache {
 	 *
 	 * @return string Required table structure of all registered caches
 	 */
-	public static function getDatabaseTableDefinitions() {
+	static public function getDatabaseTableDefinitions() {
 		$tableDefinitions = '';
 		foreach ($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] as $cacheName => $_) {
 			$backend = $GLOBALS['typo3CacheManager']->getCache($cacheName)->getBackend();
@@ -90,5 +85,7 @@ class t3lib_cache {
 		}
 		return $tableDefinitions;
 	}
+
 }
+
 ?>

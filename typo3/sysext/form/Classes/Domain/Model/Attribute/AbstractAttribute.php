@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract for attribute objects
  *
@@ -61,7 +60,7 @@ abstract class tx_form_Domain_Model_Attributes_Abstract {
 	public function __construct($value, $elementId) {
 		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
 		$this->setValue($value);
-		$this->elementId = (integer) $elementId;
+		$this->elementId = (int) $elementId;
 	}
 
 	/**
@@ -74,7 +73,6 @@ abstract class tx_form_Domain_Model_Attributes_Abstract {
 		if (is_string($value) === FALSE) {
 			$value = '';
 		}
-
 		$this->value = $value;
 	}
 
@@ -84,5 +82,7 @@ abstract class tx_form_Domain_Model_Attributes_Abstract {
 	 * @return string
 	 */
 	abstract public function getValue();
+
 }
+
 ?>

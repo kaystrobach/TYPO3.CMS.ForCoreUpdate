@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Controller for actions relating to update of full extension list from TER
  *
@@ -101,20 +100,18 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 	public function updateExtensionListFromTerAction($forceUpdateCheck = FALSE) {
 		$updated = FALSE;
 		$errorMessage = '';
-
 		/** @var $repository Tx_Extensionmanager_Domain_Model_Repository */
-		$repository = $this->repositoryRepository->findOneByUid((int)$this->settings['repositoryUid']);
-		if ($repository->getLastUpdate()->getTimestamp() < ($GLOBALS['EXEC_TIME'] - 24 * 60 * 60) || $forceUpdateCheck) {
+		$repository = $this->repositoryRepository->findOneByUid((int) $this->settings['repositoryUid']);
+		if ($repository->getLastUpdate()->getTimestamp() < $GLOBALS['EXEC_TIME'] - (24 * 60) * 60 || $forceUpdateCheck) {
 			try {
 				$updated = $this->repositoryHelper->updateExtList();
 			} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
 				$errorMessage = $e->getMessage();
 			}
 		}
-		$this->view->assign('updated', $updated)
-			->assign('repository', $repository)
-			->assign('errorMessage', $errorMessage);
+		$this->view->assign('updated', $updated)->assign('repository', $repository)->assign('errorMessage', $errorMessage);
 	}
 
 }
+
 ?>

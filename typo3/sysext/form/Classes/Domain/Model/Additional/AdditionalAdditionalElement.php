@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Additional elements for FORM object
  *
@@ -49,9 +48,7 @@ class tx_form_Domain_Model_Additional_Additional {
 	public function addAdditional($class, $type, $value) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_Domain_Model_Additional_' . ucfirst($class);
-
 		$this->additional[$class] = t3lib_div::makeInstance($className, $type, $value);
-
 		return $this;
 	}
 
@@ -105,5 +102,7 @@ class tx_form_Domain_Model_Additional_Additional {
 	public function getValue($key) {
 		return $this->getAdditionalObjectByKey($key)->getValue();
 	}
+
 }
+
 ?>

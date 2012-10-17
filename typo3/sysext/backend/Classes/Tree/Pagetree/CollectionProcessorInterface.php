@@ -24,16 +24,15 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which perform pre or post processing
  *
  * @author Tolleiv Nietsch <typo3@tolleiv.de>
- * @package	TYPO3
+ * @package 	TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_pagetree_interfaces_CollectionProcessor {
-
+interface t3lib_tree_pagetree_interfaces_CollectionProcessor
+{
 	/**
 	 * Post process the subelement collection of a specific node
 	 *
@@ -67,6 +66,6 @@ interface t3lib_tree_pagetree_interfaces_CollectionProcessor {
 	 * @return void
 	 */
 	public function postProcessGetTreeMounts($searchFilter, $nodeCollection);
-}
 
+}
 ?>

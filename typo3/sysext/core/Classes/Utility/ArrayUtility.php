@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class with helper functions for array handling
  *
@@ -46,20 +45,20 @@ class t3lib_utility_Array {
 	 * Example:
 	 * - Needle: 'findMe'
 	 * - Given array:
-	 * 	array(
-	 * 		'foo' => 'noMatch',
-	 * 		'bar' => 'findMe',
-	 * 		'foobar => array(
-	 * 			'foo' => 'findMe',
-	 * 		),
-	 * 	);
+	 * array(
+	 * 'foo' => 'noMatch',
+	 * 'bar' => 'findMe',
+	 * 'foobar => array(
+	 * 'foo' => 'findMe',
+	 * ),
+	 * );
 	 * - Result:
-	 * 	array(
-	 * 		'bar' => 'findMe',
-	 * 		'foobar' => array(
-	 * 			'foo' => findMe',
-	 * 		),
-	 * 	);
+	 * array(
+	 * 'bar' => 'findMe',
+	 * 'foobar' => array(
+	 * 'foo' => findMe',
+	 * ),
+	 * );
 	 *
 	 * See the unit tests for more examples and expected behaviour
 	 *
@@ -67,28 +66,24 @@ class t3lib_utility_Array {
 	 * @param array $haystack The array in which to search
 	 * @return array $haystack array reduced matching $needle values
 	 */
-	public static function filterByValueRecursive($needle = '', array $haystack = array()) {
+	static public function filterByValueRecursive($needle = '', array $haystack = array()) {
 		$resultArray = array();
-
-			// Define a lambda function to be applied to all members of this array dimension
-			// Call recursive if current value is of type array
-			// Write to $resultArray (by reference!) if types and value match
-		$callback = function(&$value, $key) use ($needle, &$resultArray) {
+		// Define a lambda function to be applied to all members of this array dimension
+		// Call recursive if current value is of type array
+		// Write to $resultArray (by reference!) if types and value match
+		$callback = function (&$value, $key) use($needle, &$resultArray) {
 			if ($value === $needle) {
-				$resultArray[$key] = $value;
+				($resultArray[$key] = $value);
 			} elseif (is_array($value)) {
-					// self does not work in lambda functions, use t3lib_utility_Array for recursion
-				$subArrayMatches = t3lib_utility_Array::filterByValueRecursive($needle, $value);
+				($subArrayMatches = t3lib_utility_Array::filterByValueRecursive($needle, $value));
 				if (count($subArrayMatches) > 0) {
-					$resultArray[$key] = $subArrayMatches;
+					($resultArray[$key] = $subArrayMatches);
 				}
 			}
 		};
-
-			// array_walk() is not affected by the internal pointers, no need to reset
+		// array_walk() is not affected by the internal pointers, no need to reset
 		array_walk($haystack, $callback);
-
-			// Pointers to result array are reset internally
+		// Pointers to result array are reset internally
 		return $resultArray;
 	}
 
@@ -97,9 +92,9 @@ class t3lib_utility_Array {
 	 *
 	 * array:
 	 * array(
-	 * 	'foo' => array(
-	 * 		'bar' = 'test',
-	 * 	)
+	 * 'foo' => array(
+	 * 'bar' = 'test',
+	 * )
 	 * );
 	 * path: 'foo/bar'
 	 * return: TRUE
@@ -109,15 +104,11 @@ class t3lib_utility_Array {
 	 * @param string $delimiter Delimeter for path, default /
 	 * @return boolean TRUE if path exists in array
 	 */
-	public static function isValidPath(array $array, $path,  $delimiter = '/') {
+	static public function isValidPath(array $array, $path, $delimiter = '/') {
 		$isValid = TRUE;
 		try {
-				// Use late static binding to enable mocking of this call in unit tests
-			static::getValueByPath(
-				$array,
-				$path,
-				$delimiter
-			);
+			// Use late static binding to enable mocking of this call in unit tests
+			static::getValueByPath($array, $path, $delimiter);
 		} catch (RuntimeException $e) {
 			$isValid = FALSE;
 		}
@@ -130,11 +121,11 @@ class t3lib_utility_Array {
 	 * Simple example
 	 * Input array:
 	 * array(
-	 * 	'foo' => array(
-	 * 		'bar' => array(
-	 * 			'baz' => 42
-	 * 		)
-	 * 	)
+	 * 'foo' => array(
+	 * 'bar' => array(
+	 * 'baz' => 42
+	 * )
+	 * )
 	 * );
 	 * Path to get: foo/bar/baz
 	 * Will return: 42
@@ -148,32 +139,23 @@ class t3lib_utility_Array {
 	 * @return mixed
 	 * @throws RuntimeException
 	 */
-	public static function getValueByPath(array $array, $path,  $delimiter = '/') {
+	static public function getValueByPath(array $array, $path, $delimiter = '/') {
 		if (empty($path)) {
-			throw new RuntimeException(
-				'Path must not be empty',
-				1341397767
-			);
+			throw new RuntimeException('Path must not be empty', 1341397767);
 		}
-
-			// Extract parts of the path
+		// Extract parts of the path
 		$path = str_getcsv($path, $delimiter);
-
-			// Loop through each part and extract its value
+		// Loop through each part and extract its value
 		$value = $array;
 		foreach ($path as $segment) {
 			if (array_key_exists($segment, $value)) {
-					// Replace current value with child
+				// Replace current value with child
 				$value = $value[$segment];
 			} else {
-					// Fail if key does not exist
-				throw new RuntimeException(
-					'Path does not exist in array',
-					1341397869
-				);
+				// Fail if key does not exist
+				throw new RuntimeException('Path does not exist in array', 1341397869);
 			}
 		}
-
 		return $value;
 	}
 
@@ -182,17 +164,17 @@ class t3lib_utility_Array {
 	 *
 	 * Input array:
 	 * array(
-	 * 	'foo' => array(
-	 * 		'bar' => 42,
-	 * 	),
+	 * 'foo' => array(
+	 * 'bar' => 42,
+	 * ),
 	 * );
 	 * Path to get: foo/bar
 	 * Value to set: 23
 	 * Will return:
 	 * array(
-	 * 	'foo' => array(
-	 * 		'bar' => 23,
-	 * 	),
+	 * 'foo' => array(
+	 * 'bar' => 23,
+	 * ),
 	 * );
 	 *
 	 * @param array $array Input array to manipulate
@@ -202,48 +184,32 @@ class t3lib_utility_Array {
 	 * @return array Modified array
 	 * @throws RuntimeException
 	 */
-	public static function setValueByPath(array $array, $path, $value, $delimiter = '/') {
+	static public function setValueByPath(array $array, $path, $value, $delimiter = '/') {
 		if (empty($path)) {
-			throw new RuntimeException(
-				'Path must not be empty',
-				1341406194
-			);
+			throw new RuntimeException('Path must not be empty', 1341406194);
 		}
 		if (!is_string($path)) {
-			throw new RuntimeException(
-				'Path must be a string',
-				1341406402
-			);
+			throw new RuntimeException('Path must be a string', 1341406402);
 		}
-
-			// Extract parts of the path
+		// Extract parts of the path
 		$path = str_getcsv($path, $delimiter);
-
-			// Point to the root of the array
-		$pointer = &$array;
-
-			// Find path in given array
+		// Point to the root of the array
+		$pointer =& $array;
+		// Find path in given array
 		foreach ($path as $segment) {
-				// Fail if the part is empty
+			// Fail if the part is empty
 			if (empty($segment)) {
-				throw new RuntimeException(
-					'Invalid path specified: ' . $path,
-					1341406846
-				);
+				throw new RuntimeException('Invalid path specified: ' . $path, 1341406846);
 			}
-
-				// Create cell if it doesn't exist
+			// Create cell if it doesn't exist
 			if (!array_key_exists($segment, $pointer)) {
 				$pointer[$segment] = array();
 			}
-
-				// Set pointer to new cell
-			$pointer = &$pointer[$segment];
+			// Set pointer to new cell
+			$pointer =& $pointer[$segment];
 		}
-
-			// Set value of target cell
+		// Set value of target cell
 		$pointer = $value;
-
 		return $array;
 	}
 
@@ -253,7 +219,7 @@ class t3lib_utility_Array {
 	 * @param $array Array to sort recursively by key
 	 * @return array Sorted array
 	 */
-	public static function sortByKeyRecursive(array $array) {
+	static public function sortByKeyRecursive(array $array) {
 		ksort($array);
 		foreach ($array as $key => $value) {
 			if (is_array($value) && !empty($value)) {
@@ -271,31 +237,27 @@ class t3lib_utility_Array {
 	 * @param integer $level Internal level used for recursion, do *not* set from outside!
 	 * @return string String representation of array
 	 */
-	public static function arrayExport(array $array = array(), $level = 0) {
+	static public function arrayExport(array $array = array(), $level = 0) {
 		$lines = 'array(' . LF;
-		$level ++;
-
+		$level++;
 		$writeKeyIndex = FALSE;
 		$expectedKeyIndex = 0;
 		foreach ($array as $key => $value) {
 			if ($key === $expectedKeyIndex) {
-				$expectedKeyIndex ++;
+				$expectedKeyIndex++;
 			} else {
-					// Found a non integer or non consecutive key, so we can break here
+				// Found a non integer or non consecutive key, so we can break here
 				$writeKeyIndex = TRUE;
 				break;
 			}
 		}
-
 		foreach ($array as $key => $value) {
-				// Indention
+			// Indention
 			$lines .= str_repeat(TAB, $level);
-
 			if ($writeKeyIndex) {
-					// Numeric / string keys
-				$lines .= is_int($key) ? $key . ' => ' : '\'' . $key . '\' => ';
+				// Numeric / string keys
+				$lines .= is_int($key) ? $key . ' => ' : ('\'' . $key) . '\' => ';
 			}
-
 			if (is_array($value)) {
 				if (count($value) > 0) {
 					$lines .= self::arrayExport($value, $level);
@@ -303,26 +265,23 @@ class t3lib_utility_Array {
 					$lines .= 'array(),' . LF;
 				}
 			} elseif (is_int($value)) {
-				$lines .= $value . ',' . LF;
+				$lines .= ($value . ',') . LF;
 			} elseif (is_null($value)) {
-				$lines .= 'NULL' . ',' . LF;
+				$lines .= ('NULL' . ',') . LF;
 			} elseif (is_bool($value)) {
 				$lines .= $value ? 'TRUE' : 'FALSE';
 				$lines .= ',' . LF;
 			} elseif (is_string($value)) {
-					// Quote \ to \\
+				// Quote \ to \\
 				$stringContent = str_replace('\\', '\\\\', $value);
-					// Quote ' to \'
+				// Quote ' to \'
 				$stringContent = str_replace('\'', '\\\'', $stringContent);
-				$lines .= '\'' . $stringContent . '\'' . ',' . LF;
+				$lines .= ((('\'' . $stringContent) . '\'') . ',') . LF;
 			} else {
-				throw new RuntimeException(
-					'Objects are not supported',
-					1342294986
-				);
+				throw new RuntimeException('Objects are not supported', 1342294986);
 			}
 		}
-		$lines .= str_repeat(TAB, $level - 1) . ')' . ($level - 1 == 0 ? '' : ',' . LF);
+		$lines .= (str_repeat(TAB, ($level - 1)) . ')') . ($level - 1 == 0 ? '' : ',' . LF);
 		return $lines;
 	}
 
@@ -337,25 +296,20 @@ class t3lib_utility_Array {
 	 * @param string $prefix The (relative) prefix to be used (e.g. 'section.')
 	 * @return array
 	 */
-	public static function flatten(array $array, $prefix = '') {
+	static public function flatten(array $array, $prefix = '') {
 		$flatArray = array();
-
 		foreach ($array as $key => $value) {
-				// Ensure there is no trailling dot:
+			// Ensure there is no trailling dot:
 			$key = rtrim($key, '.');
-
 			if (!is_array($value)) {
 				$flatArray[$prefix . $key] = $value;
 			} else {
-				$flatArray = array_merge(
-					$flatArray,
-					self::flatten($value, $prefix . $key . '.')
-				);
+				$flatArray = array_merge($flatArray, self::flatten($value, ($prefix . $key) . '.'));
 			}
 		}
-
 		return $flatArray;
 	}
+
 }
 
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'type'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Type extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * @var array
 	 */
@@ -57,12 +57,12 @@ class tx_form_Domain_Model_Attributes_Type extends tx_form_Domain_Model_Attribut
 	 */
 	public function getValue() {
 		$attribute = strtolower((string) $this->value);
-
 		if (empty($attribute) || !in_array($attribute, $this->allowedValues)) {
 			$attribute = 'text';
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

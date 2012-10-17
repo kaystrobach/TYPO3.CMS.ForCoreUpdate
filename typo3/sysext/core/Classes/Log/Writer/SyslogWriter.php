@@ -22,8 +22,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Log writer that writes to syslog
  *
@@ -41,17 +39,17 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 	 * @var array Facilities
 	 */
 	private $facilities = array(
-		'auth'     => LOG_AUTH,
+		'auth' => LOG_AUTH,
 		'authpriv' => LOG_AUTHPRIV,
-		'cron'     => LOG_CRON,
-		'daemon'   => LOG_DAEMON,
-		'kern'     => LOG_KERN,
-		'lpr'      => LOG_LPR,
-		'mail'     => LOG_MAIL,
-		'news'     => LOG_NEWS,
-		'syslog'   => LOG_SYSLOG,
-		'user'     => LOG_USER,
-		'uucp'     => LOG_UUCP,
+		'cron' => LOG_CRON,
+		'daemon' => LOG_DAEMON,
+		'kern' => LOG_KERN,
+		'lpr' => LOG_LPR,
+		'mail' => LOG_MAIL,
+		'news' => LOG_NEWS,
+		'syslog' => LOG_SYSLOG,
+		'user' => LOG_USER,
+		'uucp' => LOG_UUCP
 	);
 
 	/**
@@ -69,7 +67,7 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 	 * @see t3lib_log_writer_Abstract
 	 */
 	public function __construct(array $options = array()) {
-			// additional facilities for *nix environments
+		// additional facilities for *nix environments
 		if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
 			$this->facilities['local0'] = LOG_LOCAL0;
 			$this->facilities['local1'] = LOG_LOCAL1;
@@ -80,22 +78,15 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 			$this->facilities['local6'] = LOG_LOCAL6;
 			$this->facilities['local7'] = LOG_LOCAL7;
 		}
-
 		parent::__construct($options);
-
-		if (!openlog('TYPO3', LOG_ODELAY | LOG_PID, $this->facility)) {
+		if (!openlog('TYPO3', (LOG_ODELAY | LOG_PID), $this->facility)) {
 			$facilityName = array_search($this->facility, $this->facilities);
-
-			throw new RuntimeException(
-				'Could not open syslog for facility ' . $facilityName,
-				1321722682
-			);
+			throw new RuntimeException('Could not open syslog for facility ' . $facilityName, 1321722682);
 		}
 	}
 
 	/**
 	 * Destructor, closes connection to syslog.
-	 *
 	 */
 	public function __destruct() {
 		closelog();
@@ -121,16 +112,8 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 	 */
 	public function getMessageForSyslog(t3lib_log_Record $record) {
 		$data = $record->getData();
-		$data = (!empty($data)) ? '- ' . json_encode($data) : '';
-
-		$message = sprintf(
-			'[request="%s" component="%s"] %s %s',
-			$record->getRequestId(),
-			$record->getComponent(),
-			$record->getMessage(),
-			$data
-		);
-
+		$data = !empty($data) ? '- ' . json_encode($data) : '';
+		$message = sprintf('[request="%s" component="%s"] %s %s', $record->getRequestId(), $record->getComponent(), $record->getMessage(), $data);
 		return $message;
 	}
 
@@ -145,7 +128,6 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 		if (FALSE === syslog($record->getLevel(), $this->getMessageForSyslog($record))) {
 			throw new RuntimeException('Could not write log record to syslog', 1345036337);
 		}
-
 		return $this;
 	}
 

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'lang'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Lang extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'lang'.
 	 * Used with all elements
@@ -54,8 +54,9 @@ class tx_form_Domain_Model_Attributes_Lang extends tx_form_Domain_Model_Attribut
 	 */
 	public function getValue() {
 		$attribute = (string) $this->value;
-
 		return $attribute;
 	}
+
 }
+
 ?>

@@ -32,7 +32,6 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-
 /**
  * This class has functions which generates a difference output of a content string
  *
@@ -42,17 +41,30 @@
  */
 class t3lib_diff {
 
-		// External, static
-		// If set, the HTML tags are stripped from the input strings first.
-	var $stripTags = 0;
-		// Diff options. eg "--unified=3"
-	var $diffOptions = '';
+	// External, static
+	// If set, the HTML tags are stripped from the input strings first.
+	/**
+	 * @todo Define visibility
+	 */
+	public $stripTags = 0;
 
-		// Internal, dynamic
-		// This indicates the number of times the function addClearBuffer has been called - and used to detect the very first call...
-	var $clearBufferIdx = 0;
-	var $differenceLgd = 0;
+	// Diff options. eg "--unified=3"
+	/**
+	 * @todo Define visibility
+	 */
+	public $diffOptions = '';
 
+	// Internal, dynamic
+	// This indicates the number of times the function addClearBuffer has been called - and used to detect the very first call...
+	/**
+	 * @todo Define visibility
+	 */
+	public $clearBufferIdx = 0;
+
+	/**
+	 * @todo Define visibility
+	 */
+	public $differenceLgd = 0;
 
 	/**
 	 * This will produce a color-marked-up diff output in HTML from the input strings.
@@ -61,8 +73,9 @@ class t3lib_diff {
 	 * @param string $str2 String 2
 	 * @param string $wrapTag Setting the wrapping tag name
 	 * @return string Formatted output.
+	 * @todo Define visibility
 	 */
-	function makeDiffDisplay($str1, $str2, $wrapTag = 'span') {
+	public function makeDiffDisplay($str1, $str2, $wrapTag = 'span') {
 		if ($this->stripTags) {
 			$str1 = strip_tags($str1);
 			$str2 = strip_tags($str2);
@@ -72,9 +85,7 @@ class t3lib_diff {
 		}
 		$str1Lines = $this->explodeStringIntoWords($str1);
 		$str2Lines = $this->explodeStringIntoWords($str2);
-
 		$diffRes = $this->getDiff(implode(LF, $str1Lines) . LF, implode(LF, $str2Lines) . LF);
-
 		if (is_array($diffRes)) {
 			$c = 0;
 			$diffResArray = array();
@@ -85,45 +96,41 @@ class t3lib_diff {
 					$diffResArray[$c]['changeInfo'] = $lValue;
 				}
 				if (substr($lValue, 0, 1) == '<') {
-					$differenceStr .= $diffResArray[$c]['old'][] = substr($lValue, 2);
+					$differenceStr .= ($diffResArray[$c]['old'][] = substr($lValue, 2));
 				}
 				if (substr($lValue, 0, 1) == '>') {
-					$differenceStr .= $diffResArray[$c]['new'][] = substr($lValue, 2);
+					$differenceStr .= ($diffResArray[$c]['new'][] = substr($lValue, 2));
 				}
 			}
-
 			$this->differenceLgd = strlen($differenceStr);
-
 			$outString = '';
 			$clearBuffer = '';
 			for ($a = -1; $a < count($str1Lines); $a++) {
 				if (is_array($diffResArray[$a + 1])) {
-						// a=Add, c=change, d=delete: If a, then the content is Added after the entry and we must insert the line content as well.
+					// a=Add, c=change, d=delete: If a, then the content is Added after the entry and we must insert the line content as well.
 					if (strstr($diffResArray[$a + 1]['changeInfo'], 'a')) {
 						$clearBuffer .= htmlspecialchars($str1Lines[$a]) . ' ';
 					}
-
 					$outString .= $this->addClearBuffer($clearBuffer);
 					$clearBuffer = '';
 					if (is_array($diffResArray[$a + 1]['old'])) {
-						$outString .= '<' . $wrapTag . ' class="diff-r">' . htmlspecialchars(implode(' ', $diffResArray[$a + 1]['old'])) . '</' . $wrapTag . '> ';
+						$outString .= ((((('<' . $wrapTag) . ' class="diff-r">') . htmlspecialchars(implode(' ', $diffResArray[($a + 1)]['old']))) . '</') . $wrapTag) . '> ';
 					}
 					if (is_array($diffResArray[$a + 1]['new'])) {
-						$outString .= '<' . $wrapTag . ' class="diff-g">' . htmlspecialchars(implode(' ', $diffResArray[$a + 1]['new'])) . '</' . $wrapTag . '> ';
+						$outString .= ((((('<' . $wrapTag) . ' class="diff-g">') . htmlspecialchars(implode(' ', $diffResArray[($a + 1)]['new']))) . '</') . $wrapTag) . '> ';
 					}
 					$chInfParts = explode(',', $diffResArray[$a + 1]['changeInfo']);
-					if (!strcmp($chInfParts[0], $a + 1)) {
+					if (!strcmp($chInfParts[0], ($a + 1))) {
 						$newLine = intval($chInfParts[1]) - 1;
 						if ($newLine > $a) {
 							$a = $newLine;
-						} // Security that $a is not set lower than current for some reason...
+						}
 					}
 				} else {
 					$clearBuffer .= htmlspecialchars($str1Lines[$a]) . ' ';
 				}
 			}
 			$outString .= $this->addClearBuffer($clearBuffer, 1);
-
 			$outString = str_replace('  ', LF, $outString);
 			if (!$this->stripTags) {
 				$outString = $this->tagSpace($outString, 1);
@@ -140,22 +147,21 @@ class t3lib_diff {
 	 * @param string $str2 String 2
 	 * @return array The result from the exec() function call.
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function getDiff($str1, $str2) {
-			// Create file 1 and write string
+	public function getDiff($str1, $str2) {
+		// Create file 1 and write string
 		$file1 = t3lib_div::tempnam('diff1_');
 		t3lib_div::writeFile($file1, $str1);
-			// Create file 2 and write string
+		// Create file 2 and write string
 		$file2 = t3lib_div::tempnam('diff2_');
 		t3lib_div::writeFile($file2, $str2);
-			// Perform diff.
-		$cmd = $GLOBALS['TYPO3_CONF_VARS']['BE']['diff_path'] . ' ' . $this->diffOptions . ' ' . $file1 . ' ' . $file2;
+		// Perform diff.
+		$cmd = ((((($GLOBALS['TYPO3_CONF_VARS']['BE']['diff_path'] . ' ') . $this->diffOptions) . ' ') . $file1) . ' ') . $file2;
 		$res = array();
 		t3lib_utility_Command::exec($cmd, $res);
-
 		unlink($file1);
 		unlink($file2);
-
 		return $res;
 	}
 
@@ -166,10 +172,11 @@ class t3lib_diff {
 	 * @param boolean $last If set, it indicates that the string should just end with ... (thus no "complete" ending)
 	 * @return string Processed string.
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function addClearBuffer($clearBuffer, $last = 0) {
+	public function addClearBuffer($clearBuffer, $last = 0) {
 		if (strlen($clearBuffer) > 200) {
-			$clearBuffer = ($this->clearBufferIdx ? t3lib_div::fixed_lgd_cs($clearBuffer, 70) : '') . '[' . strlen($clearBuffer) . ']' . (!$last ? t3lib_div::fixed_lgd_cs($clearBuffer, -70) : '');
+			$clearBuffer = (((($this->clearBufferIdx ? t3lib_div::fixed_lgd_cs($clearBuffer, 70) : '') . '[') . strlen($clearBuffer)) . ']') . (!$last ? t3lib_div::fixed_lgd_cs($clearBuffer, -70) : '');
 		}
 		$this->clearBufferIdx++;
 		return $clearBuffer;
@@ -182,8 +189,9 @@ class t3lib_diff {
 	 * @param string $str The string input
 	 * @return array Array with words.
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function explodeStringIntoWords($str) {
+	public function explodeStringIntoWords($str) {
 		$strArr = t3lib_div::trimExplode(LF, $str);
 		$outArray = array();
 		foreach ($strArr as $lineOfWords) {
@@ -202,14 +210,16 @@ class t3lib_diff {
 	 * @param boolean $rev If set, the < > searched for will be &lt; and &gt;
 	 * @return string Processed string
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function tagSpace($str, $rev = 0) {
+	public function tagSpace($str, $rev = 0) {
 		if ($rev) {
 			return str_replace(' &lt;', '&lt;', str_replace('&gt; ', '&gt;', $str));
 		} else {
 			return str_replace('<', ' <', str_replace('>', '> ', $str));
 		}
 	}
+
 }
 
 ?>

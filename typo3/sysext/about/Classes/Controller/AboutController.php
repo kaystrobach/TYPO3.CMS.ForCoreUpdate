@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Module 'about' shows some standard information for TYPO3 CMS: About-text, version number and so on.
  *
@@ -35,6 +34,7 @@
  * @subpackage about
  */
 class Tx_About_Controller_AboutController extends Tx_Extbase_MVC_Controller_ActionController {
+
 	/**
 	 * @var Tx_About_Domain_Repository_ExtensionRepository
 	 */
@@ -55,12 +55,7 @@ class Tx_About_Controller_AboutController extends Tx_Extbase_MVC_Controller_Acti
 	 */
 	public function indexAction() {
 		$extensions = $this->extensionRepository->findAllLoaded();
-		$this->view
-			->assign('TYPO3Version', TYPO3_version)
-			->assign('TYPO3CopyrightYear', TYPO3_copyright_year)
-			->assign('TYPO3UrlDonate', TYPO3_URL_DONATE)
-			->assign('loadedExtensions', $extensions)
-			->assign('customContents', $this->getCustomContent());
+		$this->view->assign('TYPO3Version', TYPO3_version)->assign('TYPO3CopyrightYear', TYPO3_copyright_year)->assign('TYPO3UrlDonate', TYPO3_URL_DONATE)->assign('loadedExtensions', $extensions)->assign('customContents', $this->getCustomContent());
 	}
 
 	/**
@@ -72,23 +67,19 @@ class Tx_About_Controller_AboutController extends Tx_Extbase_MVC_Controller_Acti
 	protected function getCustomContent() {
 		$sections = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['about/index.php']['addSection'])) {
-			t3lib_div::deprecationLog(
-				'Hook about/index.php addSection is deprecated and will be removed in TYPO3 6.1, use fluid overrides instead.'
-			);
-
+			t3lib_div::deprecationLog('Hook about/index.php addSection is deprecated and will be removed in TYPO3 6.1, use fluid overrides instead.');
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['about/index.php']['addSection'] as $classRef) {
-					/** @var $hookObject tx_about_customSections */
+				/** @var $hookObject tx_about_customSections */
 				$hookObject = t3lib_div::getUserObj($classRef);
-				if (!($hookObject instanceof tx_about_customSections)) {
-					throw new UnexpectedValueException(
-						'$hookObject must implement interface tx_about_customSections',
-						1298121573
-					);
+				if (!$hookObject instanceof tx_about_customSections) {
+					throw new UnexpectedValueException('$hookObject must implement interface tx_about_customSections', 1298121573);
 				}
 				$hookObject->addSection($sections);
 			}
 		}
 		return $sections;
 	}
+
 }
+
 ?>

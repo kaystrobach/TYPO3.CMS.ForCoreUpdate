@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'action'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Action extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'action'
 	 * Used with the element 'form'
@@ -42,14 +42,13 @@ class tx_form_Domain_Model_Attributes_Action extends tx_form_Domain_Model_Attrib
 	 */
 	public function getValue() {
 		$value = $this->value;
-
 		if (empty($value)) {
 			$value = $GLOBALS['TSFE']->id;
 		}
-
 		$attribute = $this->localCobj->getTypoLink_URL($value);
-
 		return $attribute;
 	}
+
 }
+
 ?>

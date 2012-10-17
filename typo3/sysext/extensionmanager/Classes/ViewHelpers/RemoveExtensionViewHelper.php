@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * view helper for displaying a remove extension link
  *
@@ -65,9 +63,9 @@ class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid
 		$this->tag->addAttribute('class', $cssClass);
 		$label = 'Remove';
 		$this->tag->setContent($label);
-
 		return $this->tag->render();
 	}
+
 }
 
 ?>

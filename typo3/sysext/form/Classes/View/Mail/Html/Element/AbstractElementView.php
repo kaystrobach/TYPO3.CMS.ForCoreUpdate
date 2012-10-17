@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract class for the form elements view
  *
@@ -80,98 +79,90 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 */
 	protected function parseXML(DOMDocument $dom, DOMNode $reference, $emptyElement = FALSE) {
 		$node = $reference->firstChild;
-
 		while (!is_null($node)) {
 			$deleteNode = FALSE;
 			$nodeType = $node->nodeType;
 			$nodeName = $node->nodeName;
 			switch ($nodeType) {
-				case XML_TEXT_NODE:
+			case XML_TEXT_NODE:
+				break;
+			case XML_ELEMENT_NODE:
+				switch ($nodeName) {
+				case 'containerWrap':
+					$containerWrap = $this->render('containerWrap');
+					if ($containerWrap) {
+						$this->replaceNodeWithFragment($dom, $node, $containerWrap);
+					} else {
+						$emptyElement = TRUE;
+					}
+					$deleteNode = TRUE;
 					break;
-				case XML_ELEMENT_NODE:
-					switch($nodeName) {
-						case 'containerWrap':
-							$containerWrap = $this->render('containerWrap');
-							if ($containerWrap) {
-								$this->replaceNodeWithFragment($dom, $node, $containerWrap);
-							} else {
-								$emptyElement = TRUE;
-							}
-							$deleteNode = TRUE;
-							break;
-						case 'elements':
-							$replaceNode = $this->getChildElements($dom);
-							if ($replaceNode) {
-								$node->parentNode->replaceChild($replaceNode, $node);
-							} else {
-								$emptyElement = TRUE;
-							}
-							break;
-						case 'label':
-							if (!strstr(get_class($this), '_Additional_')) {
-								if ($this->model->additionalIsSet($nodeName)) {
-									$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('label'));
-								} else {
-									$replaceNode = $dom->createTextNode($this->model->getName());
-									$node->parentNode->insertBefore($replaceNode, $node);
-								}
-							}
-							$deleteNode = TRUE;
-							break;
-						case 'legend':
-							if (!strstr(get_class($this), '_Additional_')) {
-								if ($this->model->additionalIsSet($nodeName)) {
-									$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('legend'));
-								}
-								$deleteNode = TRUE;
-							}
-							break;
-						case 'inputvalue':
-							if (array_key_exists('checked', $this->model->getAllowedAttributes())) {
-								if (!$this->model->hasAttribute('checked')) {
-									$emptyElement = TRUE;
-								}
-							} elseif (
-								array_key_exists('selected', $this->model->getAllowedAttributes()) &&
-								!$this->model->hasAttribute('selected')
-							) {
-								$emptyElement = TRUE;
-							} else {
-								$inputValue = $this->getInputValue();
-								if ($inputValue != '') {
-									$replaceNode = $dom->createTextNode($this->getInputValue());
-									$node->parentNode->insertBefore($replaceNode, $node);
-								}
-							}
-							$deleteNode = TRUE;
-							break;
-						case 'labelvalue':
-						case 'legendvalue':
-							$replaceNode = $dom->createTextNode($this->getAdditionalValue());
-							$node->parentNode->insertBefore($replaceNode, $node);
-							$deleteNode = TRUE;
-							break;
+				case 'elements':
+					$replaceNode = $this->getChildElements($dom);
+					if ($replaceNode) {
+						$node->parentNode->replaceChild($replaceNode, $node);
+					} else {
+						$emptyElement = TRUE;
 					}
 					break;
-			}
+				case 'label':
+					if (!strstr(get_class($this), '_Additional_')) {
+						if ($this->model->additionalIsSet($nodeName)) {
+							$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('label'));
+						} else {
+							$replaceNode = $dom->createTextNode($this->model->getName());
+							$node->parentNode->insertBefore($replaceNode, $node);
+						}
+					}
+					$deleteNode = TRUE;
+					break;
+				case 'legend':
+					if (!strstr(get_class($this), '_Additional_')) {
+						if ($this->model->additionalIsSet($nodeName)) {
+							$this->replaceNodeWithFragment($dom, $node, $this->getAdditional('legend'));
+						}
+						$deleteNode = TRUE;
+					}
+					break;
+				case 'inputvalue':
+					if (array_key_exists('checked', $this->model->getAllowedAttributes())) {
+						if (!$this->model->hasAttribute('checked')) {
+							$emptyElement = TRUE;
+						}
+					} elseif (array_key_exists('selected', $this->model->getAllowedAttributes()) && !$this->model->hasAttribute('selected')) {
+						$emptyElement = TRUE;
+					} else {
+						$inputValue = $this->getInputValue();
+						if ($inputValue != '') {
+							$replaceNode = $dom->createTextNode($this->getInputValue());
+							$node->parentNode->insertBefore($replaceNode, $node);
+						}
+					}
+					$deleteNode = TRUE;
+					break;
+				case 'labelvalue':
 
-				// Parse the child nodes of this node if available
+				case 'legendvalue':
+					$replaceNode = $dom->createTextNode($this->getAdditionalValue());
+					$node->parentNode->insertBefore($replaceNode, $node);
+					$deleteNode = TRUE;
+					break;
+				}
+				break;
+			}
+			// Parse the child nodes of this node if available
 			if ($node->hasChildNodes()) {
 				$emptyElement = $this->parseXML($dom, $node, $emptyElement);
 			}
-
-				// Get the current node for deletion if replaced. We need this because nextSibling can be empty
+			// Get the current node for deletion if replaced. We need this because nextSibling can be empty
 			$oldNode = $node;
-
-				// Go to next sibling to parse
+			// Go to next sibling to parse
 			$node = $node->nextSibling;
-
-				// Delete the old node. This can only be done after going to the next sibling
+			// Delete the old node. This can only be done after going to the next sibling
 			if ($deleteNode) {
 				$oldNode->parentNode->removeChild($oldNode);
 			}
 		}
-
 		return $emptyElement;
 	}
 
@@ -184,14 +175,11 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 */
 	public function render($type = 'element', $returnFirstChild = TRUE) {
 		$useLayout = $this->getLayout((string) $type);
-
 		$dom = new DOMDocument('1.0', 'utf-8');
 		$dom->formatOutput = TRUE;
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->loadXML($useLayout);
-
 		$emptyElement = $this->parseXML($dom, $dom);
-
 		if ($emptyElement) {
 			return NULL;
 		} elseif ($returnFirstChild) {
@@ -210,32 +198,21 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	public function getLayout($type) {
 		/** @var $layoutHandler tx_form_System_Layout */
 		$layoutHandler = t3lib_div::makeInstance('tx_form_System_Layout');
-
-		switch($type) {
-			case 'element':
-				$layoutDefault = $this->layout;
-				$layout = $layoutHandler->getLayoutByObject(
-					tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE),
-					$layoutDefault
-				);
-				break;
-			case 'elementWrap':
-				$layoutDefault = $this->elementWrap;
-				$elementWrap = $layoutHandler->getLayoutByObject(
-					$type,
-					$layoutDefault
-				);
-				$layout = str_replace('<element />', $this->getLayout('element'), $elementWrap);
-				break;
-			case 'containerWrap':
-				$layoutDefault = $this->containerWrap;
-				$layout = $layoutHandler->getLayoutByObject(
-					$type,
-					$layoutDefault
-				);
-				break;
+		switch ($type) {
+		case 'element':
+			$layoutDefault = $this->layout;
+			$layout = $layoutHandler->getLayoutByObject(tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE), $layoutDefault);
+			break;
+		case 'elementWrap':
+			$layoutDefault = $this->elementWrap;
+			$elementWrap = $layoutHandler->getLayoutByObject($type, $layoutDefault);
+			$layout = str_replace('<element />', $this->getLayout('element'), $elementWrap);
+			break;
+		case 'containerWrap':
+			$layoutDefault = $this->containerWrap;
+			$layout = $layoutHandler->getLayoutByObject($type, $layoutDefault);
+			break;
 		}
-
 		return $layout;
 	}
 
@@ -282,7 +259,6 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 */
 	public function setAttribute(DOMElement $domElement, $key) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $key), ENT_QUOTES);
-
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
 		}
@@ -299,7 +275,6 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 */
 	public function setAttributeWithValueofOtherAttribute(DOMElement $domElement, $key, $other) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $other), ENT_QUOTES);
-
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
 		}
@@ -314,7 +289,6 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	protected function createAdditional($class) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_View_Mail_Html_Additional_' . ucfirst($class);
-
 		return t3lib_div::makeInstance($className, $this->model);
 	}
 
@@ -335,7 +309,6 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 		} else {
 			$inputValue = $this->model->getAttributeValue('value');
 		}
-
 		return htmlspecialchars($inputValue, ENT_QUOTES);
 	}
 
@@ -346,9 +319,8 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @return string
 	 */
 	public function getElementWrapId() {
-		$elementId = (integer) $this->model->getElementId();
+		$elementId = (int) $this->model->getElementId();
 		$wrapId = 'csc-form-' . $elementId;
-
 		return $wrapId;
 	}
 
@@ -359,11 +331,8 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @return string
 	 */
 	public function getElementWrapType() {
-		$elementType = strtolower(
-			tx_form_Common::getInstance()->getLastPartOfClassName($this->model)
-		);
+		$elementType = strtolower(tx_form_Common::getInstance()->getLastPartOfClassName($this->model));
 		$wrapType = 'csc-form-element csc-form-element-' . $elementType;
-
 		return $wrapType;
 	}
 
@@ -375,9 +344,8 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	public function getElementWraps() {
 		$wraps = array(
 			$this->getElementWrapId(),
-			$this->getElementWrapType(),
+			$this->getElementWrapType()
 		);
-
 		return implode(' ', $wraps);
 	}
 
@@ -391,5 +359,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	public function noWrap() {
 		return $this->noWrap;
 	}
+
 }
+
 ?>

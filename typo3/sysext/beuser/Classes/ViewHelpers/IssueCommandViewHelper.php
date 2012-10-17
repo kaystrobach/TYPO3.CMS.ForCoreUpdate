@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Issue command ViewHelper, see TYPO3 Core Engine method issueCommand
  *
@@ -36,7 +35,7 @@ class Tx_Beuser_ViewHelpers_IssueCommandViewHelper extends Tx_Fluid_Core_ViewHel
 	/**
 	 * Returns a URL with a command to TYPO3 Core Engine (tce_db.php)
 	 *
-	 * @param string $parameters Is a set of GET params to send to tce_db.php. Example: "&cmd[tt_content][123][move]=456" or "&data[tt_content][123][hidden]=1&data[tt_content][123][title]=Hello%20World"
+	 * @param string $parameters Is a set of GET params to send to tce_db.php. Example: "&cmd[tt_content][123][move]=456" or "&data[tt_content][123][hidden]=1&data[tt_content][123][title]=Hello%20World
 	 * @param string $redirectUrl Redirect URL if any other that t3lib_div::getIndpEnv('REQUEST_URI') is wished
 	 * @return string URL to tce_db.php + parameters
 	 * @see t3lib_BEfunc::editOnClick()
@@ -44,14 +43,9 @@ class Tx_Beuser_ViewHelpers_IssueCommandViewHelper extends Tx_Fluid_Core_ViewHel
 	 */
 	public function render($parameters, $redirectUrl = '') {
 		$redirectUrl = $redirectUrl ? $redirectUrl : t3lib_div::getIndpEnv('REQUEST_URI');
-
-		return $GLOBALS['BACK_PATH'] .
-			'tce_db.php?' . $parameters .
-			'&redirect=' . ($redirectUrl == '' ? "' + T3_THIS_LOCATION + '" : rawurlencode($redirectUrl)) .
-			'&vC=' . rawurlencode($GLOBALS['BE_USER']->veriCode()) .
-			t3lib_BEfunc::getUrlToken('tceAction') .
-			'&prErr=1&uPT=1';
+		return ((((((($GLOBALS['BACK_PATH'] . 'tce_db.php?') . $parameters) . '&redirect=') . ($redirectUrl == '' ? '\' + T3_THIS_LOCATION + \'' : rawurlencode($redirectUrl))) . '&vC=') . rawurlencode($GLOBALS['BE_USER']->veriCode())) . t3lib_BEfunc::getUrlToken('tceAction')) . '&prErr=1&uPT=1';
 	}
+
 }
 
 ?>

@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Typoscript factory for form
  *
@@ -33,8 +32,8 @@
  * @subpackage form
  */
 class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
-	const PROPERTY_DisableContentElement = 'disableContentElement';
 
+	const PROPERTY_DisableContentElement = 'disableContentElement';
 	/**
 	 * @var tslib_cObj
 	 */
@@ -55,11 +54,8 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 		if (isset($typoscript[self::PROPERTY_DisableContentElement])) {
 			$this->setDisableContentElement($typoscript[self::PROPERTY_DisableContentElement]);
 		}
-
 		$this->setLayoutHandler($typoscript);
-
 		$form = $this->createElement('form', $typoscript);
-
 		return $form;
 	}
 
@@ -97,10 +93,7 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 				}
 			}
 		} else {
-			throw new InvalidArgumentException(
-				'Container element with id=' . $parentElement->getElementId() . ' has no configuration which means no children.',
-				1333754854
-			);
+			throw new InvalidArgumentException(('Container element with id=' . $parentElement->getElementId()) . ' has no configuration which means no children.', 1333754854);
 		}
 	}
 
@@ -117,7 +110,6 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 	public function setElementType(tx_form_Domain_Model_Element_Abstract $parentElement, $class, array $arguments) {
 		if (in_array($class, tx_form_Common::getInstance()->getFormObjects())) {
 			$this->addElement($parentElement, $class, $arguments);
-
 		} elseif ($this->disableContentElement === FALSE) {
 			if (substr($class, 0, 1) == '<') {
 				$key = trim(substr($class, 1));
@@ -131,14 +123,14 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 				$GLOBALS['TT']->incStackPointer();
 				$contentObject = array(
 					'cObj' => $class,
-					'cObj.' => $arguments,
+					'cObj.' => $arguments
 				);
 				$this->addElement($parentElement, 'content', $contentObject);
 				$GLOBALS['TT']->decStackPointer();
 			} else {
 				$contentObject = array(
 					'cObj' => $class,
-					'cObj.' => $arguments,
+					'cObj.' => $arguments
 				);
 				$this->addElement($parentElement, 'content', $contentObject);
 			}
@@ -168,16 +160,13 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 	 */
 	public function createElement($class, array $arguments = array()) {
 		$class = strtolower((string) $class);
-
 		if ($class === 'form') {
 			$className = 'tx_form_Domain_Model_' . ucfirst($class);
 		} else {
 			$className = 'tx_form_Domain_Model_Element_' . ucfirst($class);
 		}
-
 		/** @var $object tx_form_Domain_Model_Element_Abstract */
 		$object = t3lib_div::makeInstance($className);
-
 		if ($object->getElementType() === tx_form_Domain_Model_Element_Abstract::ELEMENT_TYPE_CONTENT) {
 			$object->setData($arguments['cObj'], $arguments['cObj.']);
 		} elseif ($object->getElementType() === tx_form_Domain_Model_Element_Abstract::ELEMENT_TYPE_PLAIN) {
@@ -186,9 +175,8 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 			$object->setData($arguments['data']);
 			$this->reconstituteElement($object, $arguments);
 		} else {
-			throw new InvalidArgumentException('Element type "' . $object->getElementType() . '" is not supported.', 1333754878);
+			throw new InvalidArgumentException(('Element type "' . $object->getElementType()) . '" is not supported.', 1333754878);
 		}
-
 		return $object;
 	}
 
@@ -202,19 +190,15 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 	protected function reconstituteElement(tx_form_Domain_Model_Element_Abstract $element, array $arguments = array()) {
 		$this->setAttributes($element, $arguments);
 		$this->setAdditionals($element, $arguments);
-
 		if (isset($arguments['filters.'])) {
 			$this->setFilters($element, $arguments['filters.']);
 		}
-
 		$element->setLayout($arguments['layout']);
 		$element->setValue($arguments['value']);
 		$element->setName($arguments['name']);
-
 		$element->setMessagesFromValidation();
 		$element->setErrorsFromValidation();
 		$element->checkFilterAndSetIncomingDataFromRequest();
-
 		$this->getChildElementsByIntegerKey($element, $arguments);
 	}
 
@@ -230,18 +214,12 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 			$attributes = $element->getAllowedAttributes();
 			$mandatoryAttributes = $element->getMandatoryAttributes();
 			foreach ($attributes as $attribute => $value) {
-				if (
-					isset($arguments[$attribute]) ||
-					isset($arguments[$attribute . '.']) ||
-					in_array($attribute, $mandatoryAttributes) ||
-					!empty($value)
-				) {
+				if (((isset($arguments[$attribute]) || isset($arguments[$attribute . '.'])) || in_array($attribute, $mandatoryAttributes)) || !empty($value)) {
 					if (!empty($arguments[$attribute])) {
 						$value = $arguments[$attribute];
-					} elseif (!empty($arguments[$attribute . '.'])) {
+					} elseif (!empty($arguments[($attribute . '.')])) {
 						$value = $arguments[$attribute . '.'];
 					}
-
 					try {
 						$element->setAttribute($attribute, $value);
 					} catch (Exception $exception) {
@@ -250,9 +228,7 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 				}
 			}
 		} else {
-			throw new InvalidArgumentException(
-				'The element with id=' . $element->getElementId() . ' has no default attributes set.', 1333754925
-			);
+			throw new InvalidArgumentException(('The element with id=' . $element->getElementId()) . ' has no default attributes set.', 1333754925);
 		}
 	}
 
@@ -279,13 +255,10 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 							$value['value'] = $arguments[$additional];
 							$type = 'TEXT';
 						}
-
 						try {
 							$element->setAdditional($additional, $type, $value);
 						} catch (Exception $exception) {
-							throw new RuntimeException(
-								'Cannot call user function for additional ' . ucfirst($additional), 1333754941
-							);
+							throw new RuntimeException('Cannot call user function for additional ' . ucfirst($additional), 1333754941);
 						}
 					}
 					if (isset($arguments['layout.'][$additional]) && $element->additionalIsSet($additional)) {
@@ -294,10 +267,7 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 					}
 				}
 			} else {
-				throw new InvalidArgumentException(
-					'The element with id=' . $element->getElementId() . ' has no additionals set.',
-					1333754962
-				);
+				throw new InvalidArgumentException(('The element with id=' . $element->getElementId()) . ' has no additionals set.', 1333754962);
 			}
 		}
 	}
@@ -329,12 +299,11 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 	 */
 	public function setLayoutHandler(array $typoscript) {
 		/** @var $layoutHandler tx_form_System_Layout */
-		$layoutHandler = t3lib_div::makeInstance('tx_form_System_Layout'); // singleton
-
+		$layoutHandler = t3lib_div::makeInstance('tx_form_System_Layout');
+		// singleton
 		if (isset($typoscript['layout.'])) {
 			$layoutHandler->setLayout($typoscript['layout.']);
 		}
-
 		return $layoutHandler;
 	}
 
@@ -347,13 +316,12 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 	public function setRequestHandler($typoscript) {
 		$prefix = isset($typoscript['prefix']) ? $typoscript['prefix'] : '';
 		$method = isset($typoscript['method']) ? $typoscript['method'] : '';
-
 		/** @var $requestHandler tx_form_System_Request */
-		$requestHandler = t3lib_div::makeInstance('tx_form_System_Request'); // singleton
+		$requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
+		// singleton
 		$requestHandler->setPrefix($prefix);
 		$requestHandler->setMethod($method);
 		$requestHandler->storeFiles();
-
 		return $requestHandler;
 	}
 
@@ -368,8 +336,8 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 	public function setRules(array $typoscript) {
 		$rulesTyposcript = isset($typoscript['rules.']) ? $typoscript['rules.'] : NULL;
 		/** @var $rulesClass tx_form_System_Validate */
-		$rulesClass = t3lib_div::makeInstance('tx_form_System_Validate', $rulesTyposcript); // singleton
-
+		$rulesClass = t3lib_div::makeInstance('tx_form_System_Validate', $rulesTyposcript);
+		// singleton
 		if (is_array($rulesTyposcript)) {
 			$keys = t3lib_TStemplate::sortedKeyList($rulesTyposcript);
 			foreach ($keys as $key) {
@@ -383,7 +351,6 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 				}
 			}
 		}
-
 		return $rulesClass;
 	}
 
@@ -398,5 +365,7 @@ class tx_form_Domain_Factory_Typoscript implements t3lib_Singleton {
 		}
 		return $this->localContentObject;
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Controller for handling extension related actions like
  * installing, removing, downloading of data or files
@@ -67,10 +66,7 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 	 */
 	public function initializeAction() {
 		if (!$this->request->hasArgument('extension')) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				'Required argument extension not set!',
-				1342874433
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager('Required argument extension not set!', 1342874433);
 		}
 	}
 
@@ -83,10 +79,10 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 		$installedExtensions = t3lib_extMgm::getLoadedExtensionListArray();
 		$extension = $this->request->getArgument('extension');
 		if (in_array($extension, $installedExtensions)) {
-				// uninstall
+			// uninstall
 			$this->installUtility->uninstall($extension);
 		} else {
-				// install
+			// install
 			$this->installUtility->install($extension);
 		}
 		$this->redirect('index', 'List');
@@ -110,10 +106,7 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 			$message = $e->getMessage();
 			$success = FALSE;
 		}
-		$this->view->assign('success', $success)
-			->assign('message', $message)
-			->assign('extension', $extension);
-
+		$this->view->assign('success', $success)->assign('message', $message)->assign('extension', $extension);
 	}
 
 	/**
@@ -139,12 +132,11 @@ class Tx_Extensionmanager_Controller_ActionController extends Tx_Extensionmanage
 		$sqlData = $this->installUtility->getExtensionSqlDataDump($extension);
 		$dump = $sqlData['extTables'] . $sqlData['staticSql'];
 		$fileName = $extension . '_sqlDump.sql';
-		$filePath = PATH_site . 'typo3temp/' . $fileName;
+		$filePath = (PATH_site . 'typo3temp/') . $fileName;
 		$error = t3lib_div::writeFileToTypo3tempDir($filePath, $dump);
 		if (is_string($error)) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager($error, 1343048718);
 		}
-
 		$this->fileHandlingUtility->sendSqlDumpFileToBrowserAndDelete($filePath, $fileName);
 	}
 

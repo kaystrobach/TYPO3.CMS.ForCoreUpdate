@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains an abstract class for all tslib content class implementations.
  *
@@ -55,7 +54,7 @@ abstract class tslib_content_Abstract {
 	 * @param array $conf
 	 * @return string
 	 */
-	public abstract function render($conf = array());
+	abstract public function render($conf = array());
 
 	/**
 	 * Getter for current cObj
@@ -70,6 +69,7 @@ abstract class tslib_content_Abstract {
 	 * @var t3lib_file_Factory
 	 */
 	protected $fileFactory = NULL;
+
 }
 
 ?>

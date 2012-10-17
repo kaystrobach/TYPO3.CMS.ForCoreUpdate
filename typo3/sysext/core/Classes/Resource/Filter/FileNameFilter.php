@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility methods for filtering filenames
  *
@@ -39,7 +38,7 @@ class t3lib_file_Utility_FilenameFilters {
 	 *
 	 * @var boolean
 	 */
-	protected static $showHiddenFilesAndFolders = FALSE;
+	static protected $showHiddenFilesAndFolders = FALSE;
 
 	/**
 	 * Filter method that checks if a file/folder name starts with a dot (e.g. .htaccess)
@@ -54,8 +53,8 @@ class t3lib_file_Utility_FilenameFilters {
 	 * @param t3lib_file_Driver_AbstractDriver $driverInstance
 	 * @return boolean|integer -1 if the file should not be included in a listing
 	 */
-	public static function filterHiddenFilesAndFolders($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, t3lib_file_Driver_AbstractDriver $driverInstance) {
-			// Only apply the filter if you want to hide the hidden files
+	static public function filterHiddenFilesAndFolders($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, t3lib_file_Driver_AbstractDriver $driverInstance) {
+		// Only apply the filter if you want to hide the hidden files
 		if (self::$showHiddenFilesAndFolders === FALSE && substr($itemName, 0, 1) == '.') {
 			return -1;
 		} else {
@@ -69,7 +68,7 @@ class t3lib_file_Utility_FilenameFilters {
 	 * @static
 	 * @return boolean
 	 */
-	public static function getShowHiddenFilesAndFolders() {
+	static public function getShowHiddenFilesAndFolders() {
 		return self::$showHiddenFilesAndFolders;
 	}
 
@@ -80,8 +79,10 @@ class t3lib_file_Utility_FilenameFilters {
 	 * @param boolean $showHiddenFilesAndFolders
 	 * @return boolean
 	 */
-	public static function setShowHiddenFilesAndFolders($showHiddenFilesAndFolders) {
+	static public function setShowHiddenFilesAndFolders($showHiddenFilesAndFolders) {
 		return self::$showHiddenFilesAndFolders = (bool) $showHiddenFilesAndFolders;
 	}
+
 }
+
 ?>

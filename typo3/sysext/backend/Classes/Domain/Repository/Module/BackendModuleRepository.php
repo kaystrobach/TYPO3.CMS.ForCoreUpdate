@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Repository for backend module menu
  *
@@ -80,6 +79,7 @@ class Typo3_Domain_Repository_BackendModuleRepository implements t3lib_Singleton
 		}
 		return FALSE;
 	}
+
 }
 
 ?>

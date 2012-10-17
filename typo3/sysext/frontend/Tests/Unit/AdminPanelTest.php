@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for the "tslib_AdminPanel" class in the TYPO3 Core.
  *
@@ -49,17 +48,14 @@ class tslib_AdminPanelTest extends tx_phpunit_testcase {
 	/////////////////////////////////////////////
 	// Test concerning extendAdminPanel hook
 	/////////////////////////////////////////////
-
 	/**
 	 * @test
 	 * @expectedException UnexpectedValueException
 	 */
 	public function extendAdminPanelHookThrowsExceptionIfHookClassDoesNotImplementInterface() {
 		$hookClass = uniqid('tx_coretest');
-		eval('class ' . $hookClass . ' {}');
-
+		eval(('class ' . $hookClass) . ' {}');
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_adminpanel.php']['extendAdminPanel'][] = $hookClass;
-
 		$adminPanelMock = $this->getMock('tslib_AdminPanel', array('dummy'), array(), '', FALSE);
 		$adminPanelMock->display();
 	}
@@ -69,22 +65,14 @@ class tslib_AdminPanelTest extends tx_phpunit_testcase {
 	 */
 	public function extendAdminPanelHookCallsExtendAdminPanelMethodOfHook() {
 		$hookClass = uniqid('tx_coretest');
-		$hookMock = $this->getMock(
-			'tslib_adminPanelHook',
-			array(),
-			array(),
-			$hookClass
-		);
+		$hookMock = $this->getMock('tslib_adminPanelHook', array(), array(), $hookClass);
 		$GLOBALS['T3_VAR']['getUserObj'][$hookClass] = $hookMock;
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_adminpanel.php']['extendAdminPanel'][] = $hookClass;
-
 		$adminPanelMock = $this->getMock('tslib_AdminPanel', array('dummy'), array(), '', FALSE);
-
-		$hookMock->expects($this->once())
-			->method('extendAdminPanel')
-			->with($this->isType('string'), $this->isInstanceOf('tslib_AdminPanel'));
-
+		$hookMock->expects($this->once())->method('extendAdminPanel')->with($this->isType('string'), $this->isInstanceOf('tslib_AdminPanel'));
 		$adminPanelMock->display();
 	}
+
 }
+
 ?>

@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Layout class for the form elements
  *
@@ -66,7 +65,6 @@ class tx_form_System_Layout implements t3lib_Singleton {
 		} else {
 			$layout = $layoutDefault;
 		}
-
 		return $layout;
 	}
 
@@ -80,7 +78,6 @@ class tx_form_System_Layout implements t3lib_Singleton {
 		if (!empty($layout)) {
 			$this->layout = $layout;
 		}
-
 		return $this;
 	}
 
@@ -94,8 +91,9 @@ class tx_form_System_Layout implements t3lib_Singleton {
 	 */
 	public function setLayoutByElement($elementName, $layout) {
 		$this->layout[$elementName] = (string) $layout;
-
 		return $this;
 	}
+
 }
+
 ?>

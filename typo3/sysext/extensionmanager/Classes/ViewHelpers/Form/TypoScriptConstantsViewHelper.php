@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * View Helper for rendering Extension Manager Configuration Form
  *
@@ -33,20 +31,19 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
-	extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
 
 	public $viewHelperMapping = array(
 		'int' => 'renderIntegerField',
-		'int+' =>  'renderPositiveIntegerField',
+		'int+' => 'renderPositiveIntegerField',
 		'integer' => 'renderIntegerField',
-		'color' =>  'renderColorPicker',
-		'wrap' =>  'renderWrapField',
-		'offset' =>  'renderOffsetField',
+		'color' => 'renderColorPicker',
+		'wrap' => 'renderWrapField',
+		'offset' => 'renderOffsetField',
 		'options' => 'renderOptionSelect',
 		'boolean' => 'renderCheckbox',
 		'user' => 'renderUserFunction',
-		'small' =>  'renderSmallTextField',
+		'small' => 'renderSmallTextField',
 		'string' => 'renderTextField'
 	);
 
@@ -72,10 +69,7 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 	 */
 	public function render(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
 		$input = '';
-		if (
-			isset($this->viewHelperMapping[$configuration->getType()]) &&
-			method_exists($this, $this->viewHelperMapping[$configuration->getType()])
-		) {
+		if (isset($this->viewHelperMapping[$configuration->getType()]) && method_exists($this, $this->viewHelperMapping[$configuration->getType()])) {
 			$input = $this->{$this->viewHelperMapping[$configuration->getType()]}($configuration);
 		}
 		return $input;
@@ -92,17 +86,15 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$this->tag->addAttribute('type', 'text');
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
-
 		$doc = $this->getDocInstance();
 		$pageRenderer = $doc->getPageRenderer();
 		$pageRenderer->addCssFile('sysext/extensionmanager/Resources/Public/Contrib/Farbtastic/farbtastic.css');
 		$pageRenderer->addJsFile('sysext/extensionmanager/Resources/Public/Contrib/Farbtastic/farbtastic.js');
-		$pageRenderer->addJsInlineCode('colorpicker', '
+		$pageRenderer->addJsInlineCode('colorpicker', ('
 			jQuery(document).ready(function() {
-				jQuery(".colorPicker").farbtastic("#' . $configuration->getName() . '");
+				jQuery(".colorPicker").farbtastic("#' . $configuration->getName()) . '");
 			});
 		');
-
 		if ($configuration->getValue() !== NULL) {
 			$this->tag->addAttribute('value', $configuration->getValue());
 		}
@@ -121,7 +113,6 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
 		$this->tag->addAttribute('class', 'offset');
-
 		if ($configuration->getValue() !== NULL) {
 			$this->tag->addAttribute('value', $configuration->getValue());
 		}
@@ -140,7 +131,6 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
 		$this->tag->addAttribute('class', 'wrap');
-
 		if ($configuration->getValue() !== NULL) {
 			$this->tag->addAttribute('value', $configuration->getValue());
 		}
@@ -160,11 +150,11 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$optionValueArray = $configuration->getGeneric();
 		$output = '';
 		foreach ($optionValueArray as $label => $value) {
-			$output .= '<option value="' . htmlspecialchars($value) . '"';
+			$output .= ('<option value="' . htmlspecialchars($value)) . '"';
 			if ($configuration->getValue() == $value) {
 				$output .= ' selected="selected"';
 			}
-			$output .= '>' . htmlspecialchars($label) . '</option>';
+			$output .= ('>' . htmlspecialchars($label)) . '</option>';
 		}
 		$this->tag->setContent($output);
 		return $this->tag->render();
@@ -182,7 +172,6 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$this->tag->addAttribute('min', '0');
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
-
 		if ($configuration->getValue() !== NULL) {
 			$this->tag->addAttribute('value', $configuration->getValue());
 		}
@@ -200,7 +189,6 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$this->tag->addAttribute('type', 'number');
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
-
 		if ($configuration->getValue() !== NULL) {
 			$this->tag->addAttribute('value', $configuration->getValue());
 		}
@@ -218,7 +206,6 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$this->tag->addAttribute('type', 'text');
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
-
 		if ($configuration->getValue() !== NULL) {
 			$this->tag->addAttribute('value', $configuration->getValue());
 		}
@@ -250,7 +237,6 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		if ($configuration->getValue() == 1) {
 			$this->tag->addAttribute('checked', 'checked');
 		}
-
 		$hiddenField = $this->renderHiddenFieldForEmptyValue($configuration);
 		return $hiddenField . $this->tag->render();
 	}
@@ -266,7 +252,7 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		$userFunctionParams = array(
 			'fieldName' => $this->getName($configuration),
 			'fieldValue' => $configuration->getValue(),
-			'propertyName' => $configuration->getName(),
+			'propertyName' => $configuration->getName()
 		);
 		return t3lib_div::callUserFunction($userFunction, $userFunctionParams, $this, '');
 	}
@@ -278,9 +264,7 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 	 * @return string
 	 */
 	protected function getName(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
-		return 'tx_extensionmanager_tools_extensionmanagerextensionmanager[config][' .
-			$configuration->getName() .
-			'][value]';
+		return ('tx_extensionmanager_tools_extensionmanagerextensionmanager[config][' . $configuration->getName()) . '][value]';
 	}
 
 	/**
@@ -294,29 +278,23 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		if ($this->viewHelperVariableContainer->exists('Tx_Fluid_ViewHelpers_FormViewHelper', 'renderedHiddenFields')) {
 			$hiddenFieldNames = $this->viewHelperVariableContainer->get('Tx_Fluid_ViewHelpers_FormViewHelper', 'renderedHiddenFields');
 		}
-
 		$fieldName = $this->getName($configuration);
 		if (substr($fieldName, -2) === '[]') {
 			$fieldName = substr($fieldName, 0, -2);
 		}
 		if (!in_array($fieldName, $hiddenFieldNames)) {
 			$hiddenFieldNames[] = $fieldName;
-			$this->viewHelperVariableContainer->addOrUpdate(
-				'Tx_Fluid_ViewHelpers_FormViewHelper',
-				'renderedHiddenFields',
-				$hiddenFieldNames
-			);
-
-			return '<input type="hidden" name="' . htmlspecialchars($fieldName) . '" value="0" />';
+			$this->viewHelperVariableContainer->addOrUpdate('Tx_Fluid_ViewHelpers_FormViewHelper', 'renderedHiddenFields', $hiddenFieldNames);
+			return ('<input type="hidden" name="' . htmlspecialchars($fieldName)) . '" value="0" />';
 		}
 		return '';
 	}
 
 	/**
-	* Gets instance of template if exists or create a new one.
-	*
-	* @return template $doc
-	*/
+	 * Gets instance of template if exists or create a new one.
+	 *
+	 * @return template $doc
+	 */
 	public function getDocInstance() {
 		if (!isset($GLOBALS['SOBE']->doc)) {
 			$GLOBALS['SOBE']->doc = t3lib_div::makeInstance('template');
@@ -324,6 +302,7 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper
 		}
 		return $GLOBALS['SOBE']->doc;
 	}
+
 }
 
 ?>

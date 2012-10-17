@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2008 Patrick Broens (patrick@patrickbroens.nl)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * File Maximum size rule
  * The file size must be smaller or equal than the maximum
@@ -47,7 +46,6 @@ class tx_form_System_Validate_Filemaximumsize extends tx_form_System_Validate_Ab
 	 */
 	public function __construct($arguments) {
 		$this->setMaximum($arguments['maximum']);
-
 		parent::__construct($arguments);
 	}
 
@@ -61,7 +59,6 @@ class tx_form_System_Validate_Filemaximumsize extends tx_form_System_Validate_Ab
 		if ($this->requestHandler->has($this->fieldName)) {
 			$fileValue = $this->requestHandler->getByMethod($this->fieldName);
 			$value = $fileValue['size'];
-
 			if ($value > $this->maximum) {
 				return FALSE;
 			}
@@ -76,8 +73,7 @@ class tx_form_System_Validate_Filemaximumsize extends tx_form_System_Validate_Ab
 	 * @return object Rule object
 	 */
 	public function setMaximum($maximum) {
-		$this->maximum = (integer) $maximum;
-
+		$this->maximum = (int) $maximum;
 		return $this;
 	}
 
@@ -89,13 +85,10 @@ class tx_form_System_Validate_Filemaximumsize extends tx_form_System_Validate_Ab
 	 * @return string Message text with substituted markers
 	 */
 	protected function substituteValues($message) {
-		$message = str_replace(
-			'%maximum',
-			t3lib_div::formatSize($this->maximum),
-			$message
-		);
-
+		$message = str_replace('%maximum', t3lib_div::formatSize($this->maximum), $message);
 		return $message;
 	}
+
 }
+
 ?>

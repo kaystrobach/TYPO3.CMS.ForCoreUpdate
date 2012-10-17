@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Get history entry from for log entry
  *
@@ -57,29 +56,18 @@ class Tx_Belog_ViewHelpers_HistoryEntryViewHelper extends Tx_Fluid_Core_ViewHelp
 	public function render($uid) {
 		/** @var $historyEntry Tx_Belog_Domain_Model_HistoryEntry */
 		$historyEntry = $this->historyEntryRepository->findOneBySysLogUid($uid);
-
-		if (!($historyEntry instanceof Tx_Belog_Domain_Model_HistoryEntry)) {
+		if (!$historyEntry instanceof Tx_Belog_Domain_Model_HistoryEntry) {
 			return '';
 		}
-
-		$historyLabel = Tx_Extbase_Utility_Localization::translate(
-			'changesInFields',
-			$this->controllerContext->getRequest()->getControllerExtensionName(),
-			array($historyEntry->getFieldlist())
-		);
-		$historyIcon = t3lib_iconWorks::getSpriteIcon(
-			'actions-document-history-open',
-			array(
-				'title' => Tx_Extbase_Utility_Localization::translate(
-					'showHistory',
-					$this->controllerContext->getRequest()->getControllerExtensionName()
-				)
-			)
-		);
-		$historyHref = 'show_rechis.php?sh_uid=' . $historyEntry->getUid() . '&returnUrl=' . rawurlencode(t3lib_div::getIndpEnv('REQUEST_URI'));
-		$historyLink = '<a href="' . htmlspecialchars($historyHref) . '">' . $historyIcon . '</a>';
-
-		return $historyLabel . '&nbsp;' . $historyLink;
+		$historyLabel = Tx_Extbase_Utility_Localization::translate('changesInFields', $this->controllerContext->getRequest()->getControllerExtensionName(), array($historyEntry->getFieldlist()));
+		$historyIcon = t3lib_iconWorks::getSpriteIcon('actions-document-history-open', array(
+			'title' => Tx_Extbase_Utility_Localization::translate('showHistory', $this->controllerContext->getRequest()->getControllerExtensionName())
+		));
+		$historyHref = (('show_rechis.php?sh_uid=' . $historyEntry->getUid()) . '&returnUrl=') . rawurlencode(t3lib_div::getIndpEnv('REQUEST_URI'));
+		$historyLink = ((('<a href="' . htmlspecialchars($historyHref)) . '">') . $historyIcon) . '</a>';
+		return ($historyLabel . '&nbsp;') . $historyLink;
 	}
+
 }
+
 ?>

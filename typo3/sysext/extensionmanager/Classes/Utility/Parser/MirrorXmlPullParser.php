@@ -30,13 +30,11 @@
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @autho Steffen Kamper <info@sk-typo3.de>
- *
  * @sincer 2010-02-19
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
-	extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
+class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
 
 	/**
 	 * Keeps list of attached observers.
@@ -52,7 +50,6 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
 	 */
 	public function __construct() {
 		$this->requiredPhpExtensions = 'xmlreader';
-
 		if ($this->isAvailable()) {
 			$this->objXml = new XMLReader();
 		}
@@ -66,18 +63,13 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
 	 * @throws Tx_Extensionmanager_Exception_ExtensionManager in case of XML parser errors
 	 */
 	public function parseXml($file) {
-		if (!(is_object($this->objXml) && (get_class($this->objXml) == 'XMLReader'))) {
+		if (!(is_object($this->objXml) && get_class($this->objXml) == 'XMLReader')) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Unable to create XML parser.', 1342640820);
 		}
 		if ($this->objXml->open($file, 'utf-8') === FALSE) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				sprintf('Unable to open file resource %s.', htmlspecialchars($file)),
-				1342640893
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Unable to open file resource %s.', htmlspecialchars($file)), 1342640893);
 		}
-
 		while ($this->objXml->read()) {
-
 			if ($this->objXml->nodeType == XMLReader::ELEMENT) {
 				$this->startElement($this->objXml->name);
 			} else {
@@ -100,28 +92,29 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
 	 */
 	protected function startElement($elementName) {
 		switch ($elementName) {
-			case 'title':
-				$this->title = $this->getElementValue($elementName);
-				break;
-			case 'host':
-				$this->host = $this->getElementValue($elementName);
-				break;
-			case 'path':
-				$this->path = $this->getElementValue($elementName);
-				break;
-			case 'country':
-				$this->country = $this->getElementValue($elementName);
-				break;
-			case 'name':
-				$this->sponsorname = $this->getElementValue($elementName);
-				break;
-			case 'link':
-				$this->sponsorlink = $this->getElementValue($elementName);
-				break;
-			case 'logo':
-				$this->sponsorlogo = $this->getElementValue($elementName);
-				break;
-			default:
+		case 'title':
+			$this->title = $this->getElementValue($elementName);
+			break;
+		case 'host':
+			$this->host = $this->getElementValue($elementName);
+			break;
+		case 'path':
+			$this->path = $this->getElementValue($elementName);
+			break;
+		case 'country':
+			$this->country = $this->getElementValue($elementName);
+			break;
+		case 'name':
+			$this->sponsorname = $this->getElementValue($elementName);
+			break;
+		case 'link':
+			$this->sponsorlink = $this->getElementValue($elementName);
+			break;
+		case 'logo':
+			$this->sponsorlogo = $this->getElementValue($elementName);
+			break;
+		default:
+
 		}
 	}
 
@@ -134,11 +127,12 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
 	 */
 	protected function endElement($elementName) {
 		switch ($elementName) {
-			case 'mirror':
-				$this->notify();
-				$this->resetProperties();
-				break;
-			default:
+		case 'mirror':
+			$this->notify();
+			$this->resetProperties();
+			break;
+		default:
+
 		}
 	}
 
@@ -157,14 +151,10 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
 		if (!$this->objXml->isEmptyElement) {
 			$value = '';
 			while ($this->objXml->read()) {
-				if ($this->objXml->nodeType == XMLReader::TEXT
-						|| $this->objXml->nodeType == XMLReader::CDATA
-						|| $this->objXml->nodeType == XMLReader::WHITESPACE
-						|| $this->objXml->nodeType == XMLReader::SIGNIFICANT_WHITESPACE) {
+				if ((($this->objXml->nodeType == XMLReader::TEXT || $this->objXml->nodeType == XMLReader::CDATA) || $this->objXml->nodeType == XMLReader::WHITESPACE) || $this->objXml->nodeType == XMLReader::SIGNIFICANT_WHITESPACE) {
 					$value .= $this->objXml->value;
 				} else {
-					if ($this->objXml->nodeType == XMLReader::END_ELEMENT
-							&& $this->objXml->name === $elementName) {
+					if ($this->objXml->nodeType == XMLReader::END_ELEMENT && $this->objXml->name === $elementName) {
 						break;
 					}
 				}
@@ -210,5 +200,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser
 			$observer->update($this);
 		}
 	}
+
 }
+
 ?>

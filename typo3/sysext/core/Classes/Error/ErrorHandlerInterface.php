@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Error handler interface for TYPO3
  *
@@ -31,13 +30,12 @@
  * @package TYPO3
  * @subpackage error
  */
-interface t3lib_error_ErrorHandlerInterface {
-
+interface t3lib_error_ErrorHandlerInterface
+{
 	/**
 	 * Registers this class as default error handler
 	 *
 	 * @param integer $errorHandlerErrors The integer representing the E_* error level which should be
-	 *					 handled by the registered error handler.
 	 * @return void
 	 */
 	public function __construct($errorHandlerErrors);
@@ -65,6 +63,6 @@ interface t3lib_error_ErrorHandlerInterface {
 	 * @throws t3lib_error_Exception with the data passed to this method if the error is registered as exceptionalError
 	 */
 	public function handleError($errorLevel, $errorMessage, $errorFile, $errorLine);
-}
 
+}
 ?>

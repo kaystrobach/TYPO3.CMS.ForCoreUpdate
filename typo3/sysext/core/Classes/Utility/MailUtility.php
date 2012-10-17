@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class to handle mail specific functionality
  *
@@ -48,49 +47,39 @@ final class t3lib_utility_Mail {
 	 * @see PHP function mail() []
 	 * @link http://www.php.net/manual/en/function.mail.php
 	 */
-	public static function mail($to, $subject, $messageBody, $additionalHeaders = NULL, $additionalParameters = NULL) {
+	static public function mail($to, $subject, $messageBody, $additionalHeaders = NULL, $additionalParameters = NULL) {
 		$success = TRUE;
-
-			// If the mail does not have a From: header, fall back to the default in TYPO3_CONF_VARS.
+		// If the mail does not have a From: header, fall back to the default in TYPO3_CONF_VARS.
 		if (!preg_match('/^From:/im', $additionalHeaders) && $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']) {
 			if (!is_null($additionalHeaders) && substr($additionalHeaders, -1) != LF) {
 				$additionalHeaders .= LF;
 			}
 			if ($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']) {
-				$additionalHeaders .= 'From: "' . $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']
-						. '" <' . $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] . '>';
+				$additionalHeaders .= ((('From: "' . $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']) . '" <') . $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']) . '>';
 			} else {
 				$additionalHeaders .= 'From: ' . $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
 			}
 		}
-
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery'])) {
 			$parameters = array(
 				'to' => $to,
 				'subject' => $subject,
 				'messageBody' => $messageBody,
 				'additionalHeaders' => $additionalHeaders,
-				'additionalParameters' => $additionalParameters,
+				'additionalParameters' => $additionalParameters
 			);
 			$fakeThis = FALSE;
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery'] as $hookSubscriber) {
 				$hookSubscriberContainsArrow = strpos($hookSubscriber, '->');
-
 				if ($hookSubscriberContainsArrow !== FALSE) {
-					throw new RuntimeException(
-						$hookSubscriber . ' is an invalid hook implementation. Please consider using an implementation of t3lib_mail_MailerAdapter.',
-						1322287600
-					);
+					throw new RuntimeException($hookSubscriber . ' is an invalid hook implementation. Please consider using an implementation of t3lib_mail_MailerAdapter.', 1322287600);
 				} else {
 					$mailerAdapter = t3lib_div::makeInstance($hookSubscriber);
 					if ($mailerAdapter instanceof t3lib_mail_MailerAdapter) {
 						$success = $success && $mailerAdapter->mail($to, $subject, $messageBody, $additionalHeaders, $additionalParameters, $fakeThis);
 					} else {
-						throw new RuntimeException(
-							$hookSubscriber . ' is not an implementation of t3lib_mail_MailerAdapter,
-							but must implement that interface to be used in the substituteMailDelivery hook.',
-							1294062286
-						);
+						throw new RuntimeException($hookSubscriber . ' is not an implementation of t3lib_mail_MailerAdapter,
+							but must implement that interface to be used in the substituteMailDelivery hook.', 1294062286);
 					}
 				}
 			}
@@ -101,13 +90,8 @@ final class t3lib_utility_Mail {
 				$success = @mail($to, $subject, $messageBody, $additionalHeaders, $additionalParameters);
 			}
 		}
-
 		if (!$success) {
-			t3lib_div::sysLog(
-				'Mail to "' . $to . '" could not be sent (Subject: "' . $subject . '").',
-				'Core',
-				t3lib_div::SYSLOG_SEVERITY_ERROR
-			);
+			t3lib_div::sysLog(((('Mail to "' . $to) . '" could not be sent (Subject: "') . $subject) . '").', 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
 		}
 		return $success;
 	}
@@ -119,7 +103,7 @@ final class t3lib_utility_Mail {
 	 *
 	 * @return array key=Valid email address which can be used as sender, value=Valid name which can be used as a sender. NULL if no address is configured
 	 */
-	public static function getSystemFrom() {
+	static public function getSystemFrom() {
 		$address = self::getSystemFromAddress();
 		$name = self::getSystemFromName();
 		if (!$address) {
@@ -138,7 +122,7 @@ final class t3lib_utility_Mail {
 	 *
 	 * @return string The name (unquoted, unformatted). NULL if none is set
 	 */
-	public static function getSystemFromName() {
+	static public function getSystemFromName() {
 		if ($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']) {
 			return $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
 		} else {
@@ -150,54 +134,41 @@ final class t3lib_utility_Mail {
 	 * Creates a valid email address for the sender of mail messages.
 	 *
 	 * Uses a fallback chain:
-	 *     $TYPO3_CONF_VARS['MAIL']['defaultMailFromAddress'] ->
-	 *     no-reply@FirstDomainRecordFound ->
-	 *     no-reply@php_uname('n') ->
-	 *     no-reply@example.com
+	 * $TYPO3_CONF_VARS['MAIL']['defaultMailFromAddress'] ->
+	 * no-reply@FirstDomainRecordFound ->
+	 * no-reply@php_uname('n') ->
+	 * no-reply@example.com
 	 *
 	 * Ready to be passed to $mail->setFrom() (t3lib_mail)
 	 *
 	 * @return string An email address
 	 */
-	public static function getSystemFromAddress() {
-			// default, first check the localconf setting
+	static public function getSystemFromAddress() {
+		// default, first check the localconf setting
 		$address = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-
 		if (!t3lib_div::validEmail($address)) {
-				// just get us a domain record we can use as the host
+			// just get us a domain record we can use as the host
 			$host = '';
-			$domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-				'domainName',
-				'sys_domain',
-				'hidden = 0',
-				'',
-				'pid ASC, sorting ASC'
-			);
-
+			$domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('domainName', 'sys_domain', 'hidden = 0', '', 'pid ASC, sorting ASC');
 			if (!empty($domainRecord['domainName'])) {
 				$tempUrl = $domainRecord['domainName'];
-
 				if (!t3lib_div::isFirstPartOfStr($tempUrl, 'http')) {
-						// shouldn't be the case anyways, but you never know
-						// ... there're crazy people out there
+					// shouldn't be the case anyways, but you never know
+					// ... there're crazy people out there
 					$tempUrl = 'http://' . $tempUrl;
 				}
 				$host = parse_url($tempUrl, PHP_URL_HOST);
 			}
-
 			$address = 'no-reply@' . $host;
-
 			if (!t3lib_div::validEmail($address)) {
-					// still nothing, get host name from server
+				// still nothing, get host name from server
 				$address = 'no-reply@' . php_uname('n');
-
 				if (!t3lib_div::validEmail($address)) {
-						// if everything fails use a dummy address
+					// if everything fails use a dummy address
 					$address = 'no-reply@example.com';
 				}
 			}
 		}
-
 		return $address;
 	}
 
@@ -209,43 +180,42 @@ final class t3lib_utility_Mail {
 	 * @param integer $lineWidth The line width
 	 * @return string Reformated text
 	 */
-	public static function breakLinesForEmail($str, $newlineChar = LF, $lineWidth = 76) {
+	static public function breakLinesForEmail($str, $newlineChar = LF, $lineWidth = 76) {
 		$lines = array();
 		$substrStart = 0;
 		while (strlen($str) > $substrStart) {
 			$substr = substr($str, $substrStart, $lineWidth);
-
-				// has line exceeded (reached) the maximum width?
+			// has line exceeded (reached) the maximum width?
 			if (strlen($substr) == $lineWidth) {
-					// find last space-char
+				// find last space-char
 				$spacePos = strrpos(rtrim($substr), ' ');
-					// space-char found?
+				// space-char found?
 				if ($spacePos !== FALSE) {
-						// take everything up to last space-char
+					// take everything up to last space-char
 					$theLine = substr($substr, 0, $spacePos);
 				} else {
-						// search for space-char in remaining text
-						// makes this line longer than $lineWidth!
+					// search for space-char in remaining text
+					// makes this line longer than $lineWidth!
 					$afterParts = explode(' ', substr($str, $lineWidth + $substrStart), 2);
 					$theLine = $substr . $afterParts[0];
 				}
 				if (!strlen($theLine)) {
-						// prevent endless loop because of empty line
+					// prevent endless loop because of empty line
 					break;
 				}
 			} else {
 				$theLine = $substr;
 			}
-
 			$lines[] = trim($theLine);
 			$substrStart += strlen($theLine);
 			if (trim(substr($str, $substrStart, $lineWidth)) === '') {
-					// no more text
+				// no more text
 				break;
 			}
 		}
 		return implode($newlineChar, $lines);
 	}
+
 }
 
 ?>

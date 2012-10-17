@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Additional 'error'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Additional_Error extends tx_form_Domain_Model_Additional_Abstract {
+
 	/**
 	 * Return the value of the object
 	 *
@@ -37,14 +37,13 @@ class tx_form_Domain_Model_Additional_Error extends tx_form_Domain_Model_Additio
 	 */
 	public function getValue() {
 		$errors = array();
-
 		foreach ($this->value as $error) {
 			$errors[] = $this->localCobj->cObjGetSingle($this->type, $error);
 		}
-
 		$value = implode(' - ', $errors);
-
 		return $value;
 	}
+
 }
+
 ?>

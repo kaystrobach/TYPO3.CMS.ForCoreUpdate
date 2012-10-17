@@ -26,9 +26,10 @@
  * eID controller for ExtDirect
  *
  * @author Stefan Galinski <stefan.galinski@gmail.com>
- * @package	TYPO3
+ * @package 	TYPO3
  */
 class tslib_ExtDirectEid {
+
 	/**
 	 * Ajax Instance
 	 *
@@ -45,11 +46,9 @@ class tslib_ExtDirectEid {
 	public function routeAction() {
 		tslib_eidtools::initLanguage();
 		tslib_eidtools::connectDB();
-
 		$ajaxID = t3lib_div::_GP('action');
 		$ajaxScript = $GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['ExtDirect::' . $ajaxID];
 		$this->ajaxObject = t3lib_div::makeInstance('TYPO3AJAX', 'ExtDirect::' . $ajaxID);
-
 		$parameters = array();
 		t3lib_div::callUserFunction($ajaxScript, $parameters, $this->ajaxObject, FALSE, TRUE);
 	}
@@ -63,7 +62,6 @@ class tslib_ExtDirectEid {
 		if (!in_array(t3lib_div::_GP('action'), array('route', 'getAPI'))) {
 			return FALSE;
 		}
-
 		return TRUE;
 	}
 
@@ -75,6 +73,7 @@ class tslib_ExtDirectEid {
 	public function render() {
 		$this->ajaxObject->render();
 	}
+
 }
 
 ?>

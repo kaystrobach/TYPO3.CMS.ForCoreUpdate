@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into t3lib_DB and do additional processing
  * before a query has been executed.
@@ -33,8 +32,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_DB_preProcessQueryHook {
-
+interface t3lib_DB_preProcessQueryHook
+{
 	/**
 	 * Pre-processor for the INSERTquery method.
 	 *
@@ -92,5 +91,4 @@ interface t3lib_DB_preProcessQueryHook {
 	public function TRUNCATEquery_preProcessAction(&$table, t3lib_DB $parentObject);
 
 }
-
 ?>

@@ -21,34 +21,32 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Hooks for tslib_fe (TSFE).
  *
- * @author		Oliver Hader <oliver@typo3.org>
- * @package		TYPO3
- * @subpackage	tx_indexedsearch
+ * @author 		Oliver Hader <oliver@typo3.org>
+ * @package 		TYPO3
+ * @subpackage 	tx_indexedsearch
  */
 class tx_indexedsearch_tslib_fe_hook {
+
 	/**
 	 * Frontend hook: If the page is not being re-generated this is our chance to force it to be (because re-generation of the page is required in order to have the indexer called!)
 	 *
-	 * @param	array		Parameters from frontend
-	 * @param	object		TSFE object (reference under PHP5)
-	 * @return	void
+	 * @param 	array		Parameters from frontend
+	 * @param 	object		TSFE object (reference under PHP5)
+	 * @return 	void
 	 */
 	public function headerNoCache(array &$params, $ref) {
-			// Requirements are that the crawler is loaded, a crawler session is running and re-indexing requested as processing instruction:
-		if (t3lib_extMgm::isLoaded('crawler')
-				&& $params['pObj']->applicationData['tx_crawler']['running']
-				&& in_array('tx_indexedsearch_reindex', $params['pObj']->applicationData['tx_crawler']['parameters']['procInstructions'])) {
-
-				// Setting simple log entry:
-			$params['pObj']->applicationData['tx_crawler']['log'][] = 'RE_CACHE (indexed), old status: '.$params['disableAcquireCacheData'];
-
-				// Disables a look-up for cached page data - thus resulting in re-generation of the page even if cached.
+		// Requirements are that the crawler is loaded, a crawler session is running and re-indexing requested as processing instruction:
+		if ((t3lib_extMgm::isLoaded('crawler') && $params['pObj']->applicationData['tx_crawler']['running']) && in_array('tx_indexedsearch_reindex', $params['pObj']->applicationData['tx_crawler']['parameters']['procInstructions'])) {
+			// Setting simple log entry:
+			$params['pObj']->applicationData['tx_crawler']['log'][] = 'RE_CACHE (indexed), old status: ' . $params['disableAcquireCacheData'];
+			// Disables a look-up for cached page data - thus resulting in re-generation of the page even if cached.
 			$params['disableAcquireCacheData'] = TRUE;
 		}
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Resizes a given image (if required) and renders the respective img tag
  * In general just calls the parent image view helper but catches
@@ -68,25 +67,18 @@ class Tx_Extensionmanager_ViewHelpers_ImageViewHelper extends Tx_Fluid_ViewHelpe
 	 * @param integer $minHeight minimum height of the image
 	 * @param integer $maxWidth maximum width of the image
 	 * @param integer $maxHeight maximum height of the image
-	 *
 	 * @return string rendered tag.
 	 */
-	public function render(
-		$src,
-		$width = NULL,
-		$height = NULL,
-		$minWidth = NULL,
-		$minHeight = NULL,
-		$maxWidth = NULL,
-		$maxHeight = NULL
-	) {
+	public function render($src, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL) {
 		$image = '';
 		try {
 			$image = parent::render($src, $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight);
 		} catch (t3lib_file_exception_FileDoesNotExistException $e) {
-			// ignore not found images
+
 		}
 		return $image;
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A collection containing a static set of files. This collection is persisted
  * to the database with references to all files it contains.
@@ -38,12 +37,12 @@ class t3lib_file_Collection_StaticFileCollection extends t3lib_file_Collection_A
 	/**
 	 * @var string
 	 */
-	protected static $type = 'static';
+	static protected $type = 'static';
 
 	/**
 	 * @var string
 	 */
-	protected static $itemsCriteriaField = 'items';
+	static protected $itemsCriteriaField = 'items';
 
 	/**
 	 * @var string
@@ -63,16 +62,14 @@ class t3lib_file_Collection_StaticFileCollection extends t3lib_file_Collection_A
 	 * @return void
 	 */
 	public function loadContents() {
-		/**
-		 * @var t3lib_file_Repository_FileRepository $fileRepository
-		 */
+		/** @var t3lib_file_Repository_FileRepository $fileRepository */
 		$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
 		$fileReferences = $fileRepository->findByRelation('sys_file_collection', 'files', $this->getIdentifier());
-
 		foreach ($fileReferences as $file) {
 			$this->add($file);
 		}
 	}
+
 }
 
 ?>

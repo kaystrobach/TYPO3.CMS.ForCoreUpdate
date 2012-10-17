@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'style'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Style extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'style'.
 	 * Used with all elements
@@ -41,8 +41,9 @@ class tx_form_Domain_Model_Attributes_Style extends tx_form_Domain_Model_Attribu
 	 */
 	public function getValue() {
 		$attribute = (string) $this->value;
-
 		return $attribute;
 	}
+
 }
+
 ?>

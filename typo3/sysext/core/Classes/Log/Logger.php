@@ -23,8 +23,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Logger to log events and data for different components.
  *
@@ -85,9 +83,7 @@ class t3lib_log_Logger {
 	 */
 	protected function setMinimumLogLevel($level) {
 		t3lib_log_Level::validateLevel($level);
-
 		$this->minimumLogLevel = $level;
-
 		return $this;
 	}
 
@@ -118,20 +114,17 @@ class t3lib_log_Logger {
 	 */
 	public function addWriter($minimumLevel, t3lib_log_writer_Writer $writer) {
 		t3lib_log_Level::validateLevel($minimumLevel);
-
-			// Cycle through all the log levels which are as severe as or higher
-			// than $minimumLevel and add $writer to each severity level
+		// Cycle through all the log levels which are as severe as or higher
+		// than $minimumLevel and add $writer to each severity level
 		for ($logLevelWhichTriggersWriter = t3lib_log_Level::EMERGENCY; $logLevelWhichTriggersWriter <= $minimumLevel; $logLevelWhichTriggersWriter++) {
 			if (!isset($this->writers[$logLevelWhichTriggersWriter])) {
 				$this->writers[$logLevelWhichTriggersWriter] = array();
 			}
 			$this->writers[$logLevelWhichTriggersWriter][] = $writer;
 		}
-
 		if ($minimumLevel > $this->getMinimumLogLevel()) {
 			$this->setMinimumLogLevel($minimumLevel);
 		}
-
 		return $this;
 	}
 
@@ -153,16 +146,14 @@ class t3lib_log_Logger {
 	 */
 	public function addProcessor($minimumLevel, t3lib_log_processor_Processor $processor) {
 		t3lib_log_Level::validateLevel($minimumLevel);
-
-			// Cycle through all the log levels which are as severe as or higher
-			// than $minimumLevel and add $processor to each severity level
+		// Cycle through all the log levels which are as severe as or higher
+		// than $minimumLevel and add $processor to each severity level
 		for ($logLevelWhichTriggersProcessor = t3lib_log_Level::EMERGENCY; $logLevelWhichTriggersProcessor <= $minimumLevel; $logLevelWhichTriggersProcessor++) {
 			if (!isset($this->processors[$logLevelWhichTriggersProcessor])) {
 				$this->processors[$logLevelWhichTriggersProcessor] = array();
 			}
 			$this->processors[$logLevelWhichTriggersProcessor][] = $processor;
 		}
-
 		if ($minimumLevel > $this->getMinimumLogLevel()) {
 			$this->setMinimumLogLevel($minimumLevel);
 		}
@@ -190,19 +181,10 @@ class t3lib_log_Logger {
 		if ($level > $this->minimumLogLevel) {
 			return $this;
 		}
-
 		/** @var $record t3lib_log_Record */
-		$record = t3lib_div::makeInstance('t3lib_log_Record',
-			$this->name,
-			$level,
-			$message,
-			$data
-		);
-
+		$record = t3lib_div::makeInstance('t3lib_log_Record', $this->name, $level, $message, $data);
 		$record = $this->callProcessors($record);
-
 		$this->writeLog($record);
-
 		return $this;
 	}
 
@@ -218,7 +200,7 @@ class t3lib_log_Logger {
 			foreach ($this->processors[$record->getLevel()] as $processor) {
 				$processedRecord = $processor->processLogRecord($record);
 				if (!$processedRecord instanceof t3lib_log_Record) {
-					throw new RuntimeException('Processor ' . get_class($processor) . ' returned invalid data. Instance of t3lib_log_Record expected', 1343593398);
+					throw new RuntimeException(('Processor ' . get_class($processor)) . ' returned invalid data. Instance of t3lib_log_Record expected', 1343593398);
 				}
 				$record = $processedRecord;
 			}
@@ -327,6 +309,7 @@ class t3lib_log_Logger {
 	public function debug($message, array $data = array()) {
 		return $this->log(t3lib_log_Level::DEBUG, $message, $data);
 	}
+
 }
 
 ?>

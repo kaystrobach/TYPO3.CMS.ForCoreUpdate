@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Model for backend user
  *
@@ -61,7 +60,7 @@ class Tx_Beuser_Domain_Model_BackendUser extends Tx_Extbase_Domain_Model_Backend
 	 * @return void
 	 */
 	public function setAllowedLanguages($allowedLanguages) {
-		$this->allowedLanguages= $allowedLanguages;
+		$this->allowedLanguages = $allowedLanguages;
 	}
 
 	/**
@@ -110,10 +109,8 @@ class Tx_Beuser_Domain_Model_BackendUser extends Tx_Extbase_Domain_Model_Backend
 		if ($this->getIsDisabled()) {
 			return FALSE;
 		}
-
 		$now = new DateTime('now');
-		return (!$this->getStartDateAndTime() && !$this->getEndDateAndTime()) ||
-				($this->getStartDateAndTime() <= $now && (!$this->getEndDateAndTime() || $this->getEndDateAndTime() > $now));
+		return !$this->getStartDateAndTime() && !$this->getEndDateAndTime() || $this->getStartDateAndTime() <= $now && (!$this->getEndDateAndTime() || $this->getEndDateAndTime() > $now);
 	}
 
 	/**

@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Test case for class Tx_Beuser_Domain_Model_BackendUser
  *
@@ -32,6 +31,7 @@
  * @subpackage beuser
  */
 class Tx_Beuser_Domain_Model_BackendUserTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+
 	/**
 	 * @var Tx_Beuser_Domain_Model_BackendUser
 	 */
@@ -65,11 +65,7 @@ class Tx_Beuser_Domain_Model_BackendUserTest extends Tx_Extbase_Tests_Unit_BaseT
 	public function setUserNameForStringSetsUserName() {
 		$newUserName = 'DonJuan';
 		$this->fixture->setUserName($newUserName);
-
-		$this->assertSame(
-			$this->fixture->getUserName(),
-			$newUserName
-		);
+		$this->assertSame($this->fixture->getUserName(), $newUserName);
 	}
 
 	/**
@@ -85,11 +81,7 @@ class Tx_Beuser_Domain_Model_BackendUserTest extends Tx_Extbase_Tests_Unit_BaseT
 	public function setRealNameForStringSetsName() {
 		$realName = 'Conceived at T3CON2018';
 		$this->fixture->setRealName($realName);
-
-		$this->assertSame(
-			$this->fixture->getRealName(),
-			$realName
-		);
+		$this->assertSame($this->fixture->getRealName(), $realName);
 	}
 
 	/**

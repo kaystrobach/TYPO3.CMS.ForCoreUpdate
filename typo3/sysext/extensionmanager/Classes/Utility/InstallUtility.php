@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Extension Manager Install Utility
  *
@@ -131,11 +130,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	public function uninstall($extensionKey) {
 		$dependentExtensions = $this->dependencyUtility->findInstalledExtensionsThatDependOnMe($extensionKey);
 		if (is_array($dependentExtensions) && count($dependentExtensions) > 0) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				'Cannot deactivate extension ' . $extensionKey . ' - The extension(s) ' . implode(',', $dependentExtensions) .
-				' depend on it',
-				1342554622
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(((('Cannot deactivate extension ' . $extensionKey) . ' - The extension(s) ') . implode(',', $dependentExtensions)) . ' depend on it', 1342554622);
 		} else {
 			$this->unloadExtension($extensionKey);
 		}
@@ -193,11 +188,9 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		if (isset($availableExtensions[$extensionKey])) {
 			$extension = $availableExtensions[$extensionKey];
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Extension ' . $extensionKey . ' is not available', 1342864081);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(('Extension ' . $extensionKey) . ' is not available', 1342864081);
 		}
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(
-			array($extensionKey => $extension)
-		);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(array($extensionKey => $extension));
 		return $availableAndInstalledExtensions[$extensionKey];
 	}
 
@@ -209,13 +202,13 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function processDatabaseUpdates($extension) {
-		$extTablesSqlFile = PATH_site . $extension['siteRelPath'] . '/ext_tables.sql';
+		$extTablesSqlFile = (PATH_site . $extension['siteRelPath']) . '/ext_tables.sql';
 		if (file_exists($extTablesSqlFile)) {
 			$extTablesSqlContent = t3lib_div::getUrl($extTablesSqlFile);
 			$extTablesSqlContent .= t3lib_cache::getDatabaseTableDefinitions();
 			$this->updateDbWithExtTablesSql($extTablesSqlContent);
 		}
-		$extTablesStaticSqlFile = PATH_site . $extension['siteRelPath'] .  '/ext_tables_static+adt.sql';
+		$extTablesStaticSqlFile = (PATH_site . $extension['siteRelPath']) . '/ext_tables_static+adt.sql';
 		if (file_exists($extTablesStaticSqlFile)) {
 			$extTablesStaticSqlContent = t3lib_div::getUrl($extTablesStaticSqlFile);
 			$this->importStaticSql($extTablesStaticSqlContent);
@@ -239,15 +232,11 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function reloadCaches() {
 		t3lib_extMgm::removeCacheFiles();
-
-			// Set new extlist / extlistArray for extension load changes at runtime
+		// Set new extlist / extlistArray for extension load changes at runtime
 		$localConfiguration = t3lib_Configuration::getLocalConfiguration();
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $localConfiguration['EXT']['extList'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extListArray'] = $localConfiguration['EXT']['extListArray'];
-
-		Typo3_Bootstrap::getInstance()
-			->populateTypo3LoadedExtGlobal(FALSE)
-			->loadAdditionalConfigurationFromExtensions(FALSE);
+		Typo3_Bootstrap::getInstance()->populateTypo3LoadedExtGlobal(FALSE)->loadAdditionalConfigurationFromExtensions(FALSE);
 	}
 
 	/**
@@ -270,19 +259,17 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 */
 	public function updateDbWithExtTablesSql($rawDefinitions) {
 		$fieldDefinitionsFromFile = $this->installToolSqlParser->getFieldDefinitions_fileContent($rawDefinitions);
-
 		if (count($fieldDefinitionsFromFile)) {
 			$fieldDefinitionsFromCurrentDatabase = $this->installToolSqlParser->getFieldDefinitions_database();
 			$diff = $this->installToolSqlParser->getDatabaseExtra($fieldDefinitionsFromFile, $fieldDefinitionsFromCurrentDatabase);
 			$updateStatements = $this->installToolSqlParser->getUpdateSuggestions($diff);
-
-			foreach ((array)$updateStatements['add'] as $string) {
+			foreach ((array) $updateStatements['add'] as $string) {
 				$GLOBALS['TYPO3_DB']->admin_query($string);
 			}
-			foreach ((array)$updateStatements['change'] as $string) {
+			foreach ((array) $updateStatements['change'] as $string) {
 				$GLOBALS['TYPO3_DB']->admin_query($string);
 			}
-			foreach ((array)$updateStatements['create_table'] as $string) {
+			foreach ((array) $updateStatements['create_table'] as $string) {
 				$GLOBALS['TYPO3_DB']->admin_query($string);
 			}
 		}
@@ -297,15 +284,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	public function importStaticSql($rawDefinitions) {
 		$statements = $this->installToolSqlParser->getStatementarray($rawDefinitions, 1);
 		list($statementsPerTable, $insertCount) = $this->installToolSqlParser->getCreateTables($statements, 1);
-
-			// Traverse the tables
+		// Traverse the tables
 		foreach ($statementsPerTable as $table => $query) {
 			$GLOBALS['TYPO3_DB']->admin_query('DROP TABLE IF EXISTS ' . $table);
 			$GLOBALS['TYPO3_DB']->admin_query($query);
-
 			if ($insertCount[$table]) {
 				$insertStatements = $this->installToolSqlParser->getTableInsertStatements($statements, $table);
-
 				foreach ($insertStatements as $statement) {
 					$GLOBALS['TYPO3_DB']->admin_query($statement);
 				}
@@ -380,7 +364,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return boolean
 	 */
 	public function isUpdateAvailable(Tx_Extensionmanager_Domain_Model_Extension $extensionData) {
-			// Only check for update for TER extensions
+		// Only check for update for TER extensions
 		$version = $extensionData->getIntegerVersion();
 		/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
 		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionData->getExtensionKey());

@@ -1,5 +1,4 @@
 <?php
-
 /*                                                                        *
  * This script belongs to the FLOW3 framework.                            *
  *                                                                        *
@@ -9,14 +8,13 @@
  *                                                                        *
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
-
 /**
  * A contract for a cache backend which can be frozen.
  *
  * @api
  */
-interface t3lib_cache_backend_FreezableBackend extends t3lib_cache_backend_Backend {
-
+interface t3lib_cache_backend_FreezableBackend extends t3lib_cache_backend_Backend
+{
 	/**
 	 * Freezes this cache backend.
 	 *

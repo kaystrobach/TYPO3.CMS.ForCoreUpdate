@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Representation of a specific usage of a file with possibilities to override certain
  * properties of the original file just for this usage of the file.
@@ -92,33 +90,24 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 */
 	public function __construct(array $fileReferenceData, $factory = NULL) {
 		$this->propertiesOfFileReference = $fileReferenceData;
-
 		if (!$fileReferenceData['uid_local']) {
 			throw new InvalidArgumentException('Incorrect reference to original file given for FileReference.', 1300098528);
 		}
-
 		if (!$factory) {
 			/** @var $factory t3lib_file_Factory */
 			$factory = t3lib_div::makeInstance('t3lib_file_Factory');
 		}
-
 		$this->originalFile = $factory->getFileObject($fileReferenceData['uid_local']);
-
 		$this->fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
-
 		if (!is_object($this->originalFile)) {
 			throw new RuntimeException('Original File not found for FileReference.', 1300098529);
 		}
-
 		$this->name = $fileReferenceData['name'] !== '' ? $fileReferenceData['name'] : $this->originalFile->getName();
 	}
-
 
 	/*******************************
 	 * VARIOUS FILE PROPERTY GETTERS
 	 *******************************/
-
-
 	/**
 	 * Returns true if the given key exists for this file.
 	 *
@@ -138,9 +127,8 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 */
 	public function getProperty($key) {
 		if (!$this->hasProperty($key)) {
-			throw new InvalidArgumentException('Property "' . $key . '" was not found.', 1314226805);
+			throw new InvalidArgumentException(('Property "' . $key) . '" was not found.', 1314226805);
 		}
-
 		return $this->propertiesOfFileReference[$key];
 	}
 
@@ -150,10 +138,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return array
 	 */
 	public function getProperties() {
-		return t3lib_div::array_merge_recursive_overrule(
-			$this->originalFile->getProperties(),
-			$this->propertiesOfFileReference
-		);
+		return t3lib_div::array_merge_recursive_overrule($this->originalFile->getProperties(), $this->propertiesOfFileReference);
 	}
 
 	/**
@@ -215,7 +200,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return integer
 	 */
 	public function getUid() {
-		return (int)$this->propertiesOfFileReference['uid'];
+		return (int) $this->propertiesOfFileReference['uid'];
 	}
 
 	/**
@@ -224,7 +209,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return integer
 	 */
 	public function getSize() {
-		return (int)$this->originalFile->getSize();
+		return (int) $this->originalFile->getSize();
 	}
 
 	/**
@@ -235,7 +220,6 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	public function getSha1() {
 		return $this->originalFile->getSha1();
 	}
-
 
 	/**
 	 * Get the file extension of this file
@@ -261,7 +245,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return integer
 	 */
 	public function getModificationTime() {
-		return (int)$this->originalFile->getModificationTime();
+		return (int) $this->originalFile->getModificationTime();
 	}
 
 	/**
@@ -270,7 +254,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return integer
 	 */
 	public function getCreationTime() {
-		return (int)$this->originalFile->getCreationTime();
+		return (int) $this->originalFile->getCreationTime();
 	}
 
 	/**
@@ -279,14 +263,12 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return integer $fileType
 	 */
 	public function getType() {
-		return (int)$this->originalFile->getType();
+		return (int) $this->originalFile->getType();
 	}
-
 
 	/******************
 	 * CONTENTS RELATED
 	 ******************/
-
 	/**
 	 * Get the contents of this file
 	 *
@@ -306,12 +288,9 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 		return $this->originalFile->setContents($contents);
 	}
 
-
 	/****************************************
 	 * STORAGE AND MANAGEMENT RELATED METHDOS
 	 ****************************************/
-
-
 	/**
 	 * Get the storage the original file is located in
 	 *
@@ -330,7 +309,6 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 		return $this->originalFile->getIdentifier();
 	}
 
-
 	/**
 	 * Returns a combined identifier of the underlying original file
 	 *
@@ -347,8 +325,8 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return boolean TRUE if deletion succeeded
 	 */
 	public function delete() {
-			// TODO: Implement this function. This should only delete the
-			// FileReference (sys_file_reference) record, not the file itself.
+		// TODO: Implement this function. This should only delete the
+		// FileReference (sys_file_reference) record, not the file itself.
 		throw new BadMethodCallException('Function not implemented FileReference::delete().', 1333754461);
 		return $this->fileRepository->removeUsageRecord($this);
 	}
@@ -360,17 +338,15 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return t3lib_file_FileReference
 	 */
 	public function rename($newName) {
-			// TODO: Implement this function. This should only rename the
-			// FileReference (sys_file_reference) record, not the file itself.
+		// TODO: Implement this function. This should only rename the
+		// FileReference (sys_file_reference) record, not the file itself.
 		throw new BadMethodCallException('Function not implemented FileReference::rename().', 1333754473);
 		return $this->fileRepository->renameUsageRecord($this, $newName);
 	}
 
-
 	/*****************
 	 * SPECIAL METHODS
 	 *****************/
-
 	/**
 	 * Returns a publicly accessible URL for this file
 	 *
@@ -378,7 +354,6 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * some web-based authentication. You have to take care of this yourself.
 	 *
 	 * @param bool  $relativeToCurrentScript   Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
-	 *
 	 * @return string
 	 */
 	public function getPublicUrl($relativeToCurrentScript = FALSE) {
@@ -416,10 +391,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return array Array of main data of the file. Don't rely on all data to be present here, it's just a selection of the most relevant information.
 	 */
 	public function toArray() {
-		$array = array_merge(
-			$this->originalFile->toArray(),
-			$this->propertiesOfFileReference
-		);
+		$array = array_merge($this->originalFile->toArray(), $this->propertiesOfFileReference);
 		return $array;
 	}
 
@@ -431,6 +403,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	public function getOriginalFile() {
 		return $this->originalFile;
 	}
+
 }
 
 ?>

@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Controller for extension listings (TER or local extensions)
  *
@@ -34,7 +32,6 @@
  * @subpackage Controller
  */
 class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_Controller_AbstractController {
-
 
 	/**
 	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
@@ -86,9 +83,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$this->pageRenderer->addJsFile('../t3lib/js/extjs/notifications.js');
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensions($availableExtensions);
-		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(
-			$availableAndInstalledExtensions
-		);
+		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation($availableAndInstalledExtensions);
 		$this->view->assign('extensions', $availableAndInstalledExtensions);
 	}
 
@@ -101,18 +96,13 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	public function terAction() {
 		$this->pageRenderer->addJsFile('../t3lib/js/extjs/notifications.js');
 		$search = $this->getSearchParam();
-
 		$availableAndInstalledExtensions = $this->listUtility->getAvailableAndInstalledExtensionsWithAdditionalInformation();
-
 		if (is_string($search) && !empty($search)) {
 			$extensions = $this->extensionRepository->findByTitleOrAuthorNameOrExtensionKey($search);
 		} else {
 			$extensions = $this->extensionRepository->findAll();
 		}
-		$this->view
-			->assign('extensions', $extensions)
-			->assign('search', $search)
-			->assign('availableAndInstalled', $availableAndInstalledExtensions);
+		$this->view->assign('extensions', $extensions)->assign('search', $search)->assign('availableAndInstalled', $availableAndInstalledExtensions);
 	}
 
 	/**
@@ -124,20 +114,13 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		$this->pageRenderer->addJsFile($this->backPath . '../t3lib/js/extjs/notifications.js');
 		$extensions = array();
 		$extensionKey = '';
-		if (
-			$this->request->hasArgument('allVersions') &&
-			$this->request->getArgument('allVersions') == 1 &&
-			$this->request->hasArgument('extensionKey') &&
-			is_string($this->request->getArgument('extensionKey'))
-		) {
+		if ((($this->request->hasArgument('allVersions') && $this->request->getArgument('allVersions') == 1) && $this->request->hasArgument('extensionKey')) && is_string($this->request->getArgument('extensionKey'))) {
 			$extensionKey = $this->request->getArgument('extensionKey');
 			$extensions = $this->extensionRepository->findByExtensionKeyOrderedByVersion($extensionKey);
 		} else {
 			$this->redirect('ter');
 		}
-		$this->view
-			->assign('extensions', $extensions)
-			->assign('extensionKey', $extensionKey);
+		$this->view->assign('extensions', $extensions)->assign('extensionKey', $extensionKey);
 	}
 
 	/**
@@ -155,11 +138,11 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 	}
 
 	/**
-	* Gets instance of template if exists or create a new one.
-	* Saves instance in viewHelperVariableContainer
-	*
-	* @return template $doc
-	*/
+	 * Gets instance of template if exists or create a new one.
+	 * Saves instance in viewHelperVariableContainer
+	 *
+	 * @return template $doc
+	 */
 	public function getDocInstance() {
 		if (!isset($GLOBALS['SOBE']->doc)) {
 			$GLOBALS['SOBE']->doc = t3lib_div::makeInstance('template');
@@ -167,5 +150,7 @@ class Tx_Extensionmanager_Controller_ListController extends Tx_Extensionmanager_
 		}
 		return $GLOBALS['SOBE']->doc;
 	}
+
 }
+
 ?>

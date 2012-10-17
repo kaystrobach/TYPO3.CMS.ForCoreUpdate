@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into t3lib_DB and do additional processing
  * after a query has been executed.
@@ -33,8 +32,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_DB_postProcessQueryHook {
-
+interface t3lib_DB_postProcessQueryHook
+{
 	/**
 	 * Post-processor for the exec_INSERTquery method.
 	 *
@@ -90,5 +89,4 @@ interface t3lib_DB_postProcessQueryHook {
 	public function exec_TRUNCATEquery_postProcessAction(&$table, t3lib_DB $parentObject);
 
 }
-
 ?>

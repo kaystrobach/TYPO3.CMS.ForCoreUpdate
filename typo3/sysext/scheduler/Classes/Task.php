@@ -1,45 +1,42 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2005 Christian Jul Jensen (julle@typo3.org)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
-
+ *  Copyright notice
+ *
+ *  (c) 2005 Christian Jul Jensen (julle@typo3.org)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * This is the base class for all Scheduler tasks
  * It's an abstract class, not designed to be instantiated directly
  * All Scheduler tasks should inherit from this class
  *
- * @author	François Suter <francois@typo3.org>
- * @author	Christian Jul Jensen <julle@typo3.org>
- *
- * @package		TYPO3
- * @subpackage	tx_scheduler
+ * @author 	François Suter <francois@typo3.org>
+ * @author 	Christian Jul Jensen <julle@typo3.org>
+ * @package 		TYPO3
+ * @subpackage 	tx_scheduler
  */
 abstract class tx_scheduler_Task {
 
 	/**
 	 * Reference to a scheduler object
 	 *
-	 * @var	tx_scheduler
+	 * @var 	tx_scheduler
 	 */
 	protected $scheduler;
 
@@ -53,7 +50,7 @@ abstract class tx_scheduler_Task {
 	/**
 	 * Disable flag, TRUE if task is disabled, FALSE otherwise
 	 *
-	 * @var	boolean
+	 * @var 	boolean
 	 */
 	protected $disabled = FALSE;
 
@@ -216,7 +213,7 @@ abstract class tx_scheduler_Task {
 	 * @param integer $timestamp Timestamp of the next execution
 	 */
 	public function registerSingleExecution($timestamp) {
-			/** @var $execution tx_scheduler_Execution */
+		/** @var $execution tx_scheduler_Execution */
 		$execution = t3lib_div::makeInstance('tx_scheduler_Execution');
 		$execution->setStart($timestamp);
 		$execution->setInterval(0);
@@ -224,7 +221,7 @@ abstract class tx_scheduler_Task {
 		$execution->setCronCmd('');
 		$execution->setMultiple(0);
 		$execution->setIsNewSingleExecution(TRUE);
-			// Replace existing execution object
+		// Replace existing execution object
 		$this->execution = $execution;
 	}
 
@@ -239,23 +236,22 @@ abstract class tx_scheduler_Task {
 	 * @return void
 	 */
 	public function registerRecurringExecution($start, $interval, $end = 0, $multiple = FALSE, $cron_cmd = '') {
-			/** @var $execution tx_scheduler_Execution */
+		/** @var $execution tx_scheduler_Execution */
 		$execution = t3lib_div::makeInstance('tx_scheduler_Execution');
-			// Set general values
+		// Set general values
 		$execution->setStart($start);
 		$execution->setEnd($end);
 		$execution->setMultiple($multiple);
-
 		if (empty($cron_cmd)) {
-				// Use interval
+			// Use interval
 			$execution->setInterval($interval);
 			$execution->setCronCmd('');
 		} else {
-				// Use cron syntax
+			// Use cron syntax
 			$execution->setInterval(0);
 			$execution->setCronCmd($cron_cmd);
 		}
-			// Replace existing execution object
+		// Replace existing execution object
 		$this->execution = $execution;
 	}
 
@@ -283,8 +279,7 @@ abstract class tx_scheduler_Task {
 	 * @return integer Date and time of the next execution as a timestamp
 	 */
 	public function getNextDueExecution() {
-
-			// NOTE: this call may throw an exception, but we let it bubble up
+		// NOTE: this call may throw an exception, but we let it bubble up
 		return $this->execution->getNextExecution();
 	}
 
@@ -304,22 +299,19 @@ abstract class tx_scheduler_Task {
 	 */
 	public function isExecutionRunning() {
 		$isRunning = FALSE;
-
 		$queryArr = array(
 			'SELECT' => 'serialized_executions',
-			'FROM'   => 'tx_scheduler_task',
-			'WHERE'  => 'uid = ' . intval($this->taskUid),
-			'LIMIT'  => 1
+			'FROM' => 'tx_scheduler_task',
+			'WHERE' => 'uid = ' . intval($this->taskUid),
+			'LIMIT' => 1
 		);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryArr);
-
-		if (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+		if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			if (strlen($row['serialized_executions']) > 0) {
 				$isRunning = TRUE;
 			}
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
 		return $isRunning;
 	}
 
@@ -332,41 +324,32 @@ abstract class tx_scheduler_Task {
 	public function markExecution() {
 		$queryArr = array(
 			'SELECT' => 'serialized_executions',
-			'FROM'   => 'tx_scheduler_task',
-			'WHERE'  => 'uid = ' . intval($this->taskUid),
-			'LIMIT'  => 1
+			'FROM' => 'tx_scheduler_task',
+			'WHERE' => 'uid = ' . intval($this->taskUid),
+			'LIMIT' => 1
 		);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryArr);
-
 		$runningExecutions = array();
-		if (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+		if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			if (strlen($row['serialized_executions']) > 0) {
 				$runningExecutions = unserialize($row['serialized_executions']);
 			}
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
-			// Count the number of existing executions and use that number as a key
-			// (we need to know that number, because it is returned at the end of the method)
+		// Count the number of existing executions and use that number as a key
+		// (we need to know that number, because it is returned at the end of the method)
 		$numExecutions = count($runningExecutions);
 		$runningExecutions[$numExecutions] = time();
-
-			// Define the context in which the script is running
+		// Define the context in which the script is running
 		$context = 'BE';
 		if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI) {
 			$context = 'CLI';
 		}
-
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-			'tx_scheduler_task',
-			'uid = ' . intval($this->taskUid),
-			array(
-				'serialized_executions' => serialize($runningExecutions),
-				'lastexecution_time'    => time(),
-				'lastexecution_context' => $context
-			)
-		);
-
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_scheduler_task', 'uid = ' . intval($this->taskUid), array(
+			'serialized_executions' => serialize($runningExecutions),
+			'lastexecution_time' => time(),
+			'lastexecution_context' => $context
+		));
 		return $numExecutions;
 	}
 
@@ -375,53 +358,41 @@ abstract class tx_scheduler_Task {
 	 *
 	 * @param integer $executionID Id of the execution to remove.
 	 * @param Exception $failure An exception to signal a failed execution
-	 * @return	void
+	 * @return 	void
 	 */
 	public function unmarkExecution($executionID, Exception $failure = NULL) {
-			// Get the executions for the task
+		// Get the executions for the task
 		$queryArr = array(
 			'SELECT' => 'serialized_executions',
-			'FROM'   => 'tx_scheduler_task',
-			'WHERE'  => 'uid = ' . intval($this->taskUid),
-			'LIMIT'  => 1
+			'FROM' => 'tx_scheduler_task',
+			'WHERE' => 'uid = ' . intval($this->taskUid),
+			'LIMIT' => 1
 		);
-
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryArr);
-		if (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
+		if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			if (strlen($row['serialized_executions']) > 0) {
 				$runningExecutions = unserialize($row['serialized_executions']);
-					// Remove the selected execution
+				// Remove the selected execution
 				unset($runningExecutions[$executionID]);
-
 				if (count($runningExecutions) > 0) {
-						// Re-serialize the updated executions list (if necessary)
+					// Re-serialize the updated executions list (if necessary)
 					$runningExecutionsSerialized = serialize($runningExecutions);
 				} else {
 					$runningExecutionsSerialized = '';
 				}
-
 				if ($failure instanceof Exception) {
-						// Log failed execution
-					$logMessage = 'Task failed to execute successfully. Class: '
-							. get_class($this) . ', UID: '
-							. $this->taskUid . '. '
-							. $failure->getMessage();
+					// Log failed execution
+					$logMessage = (((('Task failed to execute successfully. Class: ' . get_class($this)) . ', UID: ') . $this->taskUid) . '. ') . $failure->getMessage();
 					$this->scheduler->log($logMessage, 1, $failure->getCode());
-
 					$failure = serialize($failure);
 				} else {
 					$failure = '';
 				}
-
-					// Save the updated executions list
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-					'tx_scheduler_task',
-					'uid = ' . intval($this->taskUid),
-					array(
-						'serialized_executions' => $runningExecutionsSerialized,
-						'lastexecution_failure' => $failure
-					)
-				);
+				// Save the updated executions list
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_scheduler_task', 'uid = ' . intval($this->taskUid), array(
+					'serialized_executions' => $runningExecutionsSerialized,
+					'lastexecution_failure' => $failure
+				));
 			}
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
@@ -433,14 +404,10 @@ abstract class tx_scheduler_Task {
 	 * @return boolean TRUE if the clearing succeeded, FALSE otherwise
 	 */
 	public function unmarkAllExecutions() {
-			// Set the serialized executions field to empty
-		$result = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-			'tx_scheduler_task',
-			'uid = ' . intval($this->taskUid),
-			array(
-				'serialized_executions' => ''
-			)
-		);
+		// Set the serialized executions field to empty
+		$result = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_scheduler_task', 'uid = ' . intval($this->taskUid), array(
+			'serialized_executions' => ''
+		));
 		return $result;
 	}
 
@@ -457,7 +424,7 @@ abstract class tx_scheduler_Task {
 	 * Stops the task, by replacing the execution object by an empty one
 	 * NOTE: the task still needs to be saved after that
 	 *
-	 * @return	void
+	 * @return 	void
 	 */
 	public function stop() {
 		$this->execution = t3lib_div::makeInstance('tx_scheduler_Execution');
@@ -466,10 +433,12 @@ abstract class tx_scheduler_Task {
 	/**
 	 * Removes the task totally from the system.
 	 *
-	 * @return	void
+	 * @return 	void
 	 */
 	public function remove() {
 		$this->scheduler->removeTask($this);
 	}
+
 }
+
 ?>

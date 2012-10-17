@@ -21,19 +21,18 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which stores cache entries by using Memcached.
  *
  * This backend uses the following types of Memcache keys:
  * - tag_xxx
- *   xxx is tag name, value is array of associated identifiers identifier. This
- *   is "forward" tag index. It is mainly used for obtaining content by tag
- *   (get identifier by tag -> get content by identifier)
+ * xxx is tag name, value is array of associated identifiers identifier. This
+ * is "forward" tag index. It is mainly used for obtaining content by tag
+ * (get identifier by tag -> get content by identifier)
  * - ident_xxx
- *   xxx is identifier, value is array of associated tags. This is "reverse" tag
- *   index. It provides quick access for all tags associated with this identifier
- *   and used when removing the identifier
+ * xxx is identifier, value is array of associated tags. This is "reverse" tag
+ * index. It provides quick access for all tags associated with this identifier
+ * and used when removing the identifier
  *
  * Each key is prepended with a prefix. By default prefix consists from two parts
  * separated by underscore character and ends in yet another underscore character:
@@ -59,10 +58,10 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 
 	/**
 	 * Max bucket size, (1024*1024)-42 bytes
+	 *
 	 * @var int
 	 */
 	const MAX_BUCKET_SIZE = 1048534;
-
 	/**
 	 * Instance of the PHP Memcache class
 	 *
@@ -101,13 +100,8 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 */
 	public function __construct($context, array $options = array()) {
 		if (!extension_loaded('memcache')) {
-			throw new t3lib_cache_Exception(
-				'The PHP extension "memcache" must be installed and loaded in ' .
-				'order to use the Memcached backend.',
-				1213987706
-			);
+			throw new t3lib_cache_Exception('The PHP extension "memcache" must be installed and loaded in ' . 'order to use the Memcached backend.', 1213987706);
 		}
-
 		parent::__construct($context, $options);
 	}
 
@@ -146,15 +140,10 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 */
 	public function initializeObject() {
 		if (!count($this->servers)) {
-			throw new \t3lib_cache_Exception(
-				'No servers were given to Memcache',
-				1213115903
-			);
+			throw new \t3lib_cache_Exception('No servers were given to Memcache', 1213115903);
 		}
-
 		$this->memcache = new \Memcache();
 		$defaultPort = ini_get('memcache.default_port');
-
 		foreach ($this->servers as $server) {
 			if (substr($server, 0, 7) == 'unix://') {
 				$host = $server;
@@ -170,7 +159,6 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 					$port = $defaultPort;
 				}
 			}
-
 			$this->memcache->addserver($host, $port);
 		}
 	}
@@ -183,7 +171,7 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 */
 	public function setCache(t3lib_cache_frontend_Frontend $cache) {
 		parent::setCache($cache);
-		$this->identifierPrefix = 'TYPO3_' . md5(PATH_site) . '_';
+		$this->identifierPrefix = ('TYPO3_' . md5(PATH_site)) . '_';
 	}
 
 	/**
@@ -201,80 +189,42 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (strlen($this->identifierPrefix . $entryIdentifier) > 250) {
-			throw new \InvalidArgumentException(
-				'Could not set value. Key more than 250 characters (' . $this->identifierPrefix . $entryIdentifier . ').',
-				1232969508
-			);
+			throw new \InvalidArgumentException((('Could not set value. Key more than 250 characters (' . $this->identifierPrefix) . $entryIdentifier) . ').', 1232969508);
 		}
-
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception(
-				'No cache frontend has been set yet via setCache().',
-				1207149215
-			);
+			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1207149215);
 		}
-
 		if (!is_string($data)) {
-			throw new \t3lib_cache_Exception_InvalidData(
-				'The specified data is of type "' . gettype($data) .
-				'" but a string is expected.',
-				1207149231
-			);
+			throw new \t3lib_cache_Exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1207149231);
 		}
-
 		$tags[] = '%MEMCACHEBE%' . $this->cacheIdentifier;
 		$expiration = $lifetime !== NULL ? $lifetime : $this->defaultLifetime;
-			// Memcached consideres values over 2592000 sec (30 days) as UNIX timestamp
-			// thus $expiration should be converted from lifetime to UNIX timestamp
+		// Memcached consideres values over 2592000 sec (30 days) as UNIX timestamp
+		// thus $expiration should be converted from lifetime to UNIX timestamp
 		if ($expiration > 2592000) {
 			$expiration += $GLOBALS['EXEC_TIME'];
 		}
-
 		try {
 			if (strlen($data) > self::MAX_BUCKET_SIZE) {
 				$data = str_split($data, 1024 * 1000);
 				$success = TRUE;
 				$chunkNumber = 1;
-
 				foreach ($data as $chunk) {
-					$success = $success && $this->memcache->set(
-						$this->identifierPrefix . $entryIdentifier . '_chunk_' . $chunkNumber,
-						$chunk,
-						$this->flags,
-						$expiration
-					);
+					$success = $success && $this->memcache->set((($this->identifierPrefix . $entryIdentifier) . '_chunk_') . $chunkNumber, $chunk, $this->flags, $expiration);
 					$chunkNumber++;
 				}
-				$success = $success && $this->memcache->set(
-					$this->identifierPrefix . $entryIdentifier,
-					'TYPO3*chunked:' . $chunkNumber,
-					$this->flags,
-					$expiration
-				);
+				$success = $success && $this->memcache->set($this->identifierPrefix . $entryIdentifier, 'TYPO3*chunked:' . $chunkNumber, $this->flags, $expiration);
 			} else {
-				$success = $this->memcache->set(
-					$this->identifierPrefix . $entryIdentifier,
-					$data,
-					$this->flags,
-					$expiration
-				);
+				$success = $this->memcache->set($this->identifierPrefix . $entryIdentifier, $data, $this->flags, $expiration);
 			}
-
 			if ($success === TRUE) {
 				$this->removeIdentifierFromAllTags($entryIdentifier);
 				$this->addIdentifierToTags($entryIdentifier, $tags);
 			} else {
-				throw new \t3lib_cache_Exception(
-					'Could not set data to memcache server.',
-					1275830266
-				);
+				throw new \t3lib_cache_Exception('Could not set data to memcache server.', 1275830266);
 			}
 		} catch (Exception $exception) {
-			t3lib_div::sysLog(
-				'Memcache: could not set value. Reason: ' . $exception->getMessage(),
-				'Core',
-				t3lib_div::SYSLOG_SEVERITY_WARNING
-			);
+			t3lib_div::sysLog('Memcache: could not set value. Reason: ' . $exception->getMessage(), 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
 		}
 	}
 
@@ -291,7 +241,7 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 			list(, $chunkCount) = explode(':', $value);
 			$value = '';
 			for ($chunkNumber = 1; $chunkNumber < $chunkCount; $chunkNumber++) {
-				$value .= $this->memcache->get($this->identifierPrefix . $entryIdentifier . '_chunk_' . $chunkNumber);
+				$value .= $this->memcache->get((($this->identifierPrefix . $entryIdentifier) . '_chunk_') . $chunkNumber);
 			}
 		}
 		return $value;
@@ -331,7 +281,7 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * @api
 	 */
 	public function findIdentifiersByTag($tag) {
-		$identifiers = $this->memcache->get($this->identifierPrefix . 'tag_' . $tag);
+		$identifiers = $this->memcache->get(($this->identifierPrefix . 'tag_') . $tag);
 		if ($identifiers !== FALSE) {
 			return (array) $identifiers;
 		} else {
@@ -348,12 +298,8 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 */
 	public function flush() {
 		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception(
-				'No cache frontend has been set via setCache() yet.',
-				1204111376
-			);
+			throw new \t3lib_cache_Exception('No cache frontend has been set via setCache() yet.', 1204111376);
 		}
-
 		$this->flushByTag('%MEMCACHEBE%' . $this->cacheIdentifier);
 	}
 
@@ -380,23 +326,16 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 */
 	protected function addIdentifierToTags($entryIdentifier, array $tags) {
 		foreach ($tags as $tag) {
-				// Update tag-to-identifier index
+			// Update tag-to-identifier index
 			$identifiers = $this->findIdentifiersByTag($tag);
 			if (array_search($entryIdentifier, $identifiers) === FALSE) {
 				$identifiers[] = $entryIdentifier;
-				$this->memcache->set(
-					$this->identifierPrefix . 'tag_' . $tag,
-					$identifiers
-				);
+				$this->memcache->set(($this->identifierPrefix . 'tag_') . $tag, $identifiers);
 			}
-
-				// Update identifier-to-tag index
+			// Update identifier-to-tag index
 			$existingTags = $this->findTagsByIdentifier($entryIdentifier);
 			if (array_search($tag, $existingTags) === FALSE) {
-				$this->memcache->set(
-					$this->identifierPrefix . 'ident_' . $entryIdentifier,
-					array_merge($existingTags, $tags)
-				);
+				$this->memcache->set(($this->identifierPrefix . 'ident_') . $entryIdentifier, array_merge($existingTags, $tags));
 			}
 		}
 	}
@@ -409,30 +348,27 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * @return void
 	 */
 	protected function removeIdentifierFromAllTags($entryIdentifier) {
-			// Get tags for this identifier
+		// Get tags for this identifier
 		$tags = $this->findTagsByIdentifier($entryIdentifier);
-			// Deassociate tags with this identifier
+		// Deassociate tags with this identifier
 		foreach ($tags as $tag) {
 			$identifiers = $this->findIdentifiersByTag($tag);
-				// Formally array_search() below should never return FALSE due to
-				// the behavior of findTagsByIdentifier(). But if reverse index is
-				// corrupted, we still can get 'FALSE' from array_search(). This is
-				// not a problem because we are removing this identifier from
-				// anywhere.
+			// Formally array_search() below should never return FALSE due to
+			// the behavior of findTagsByIdentifier(). But if reverse index is
+			// corrupted, we still can get 'FALSE' from array_search(). This is
+			// not a problem because we are removing this identifier from
+			// anywhere.
 			if (($key = array_search($entryIdentifier, $identifiers)) !== FALSE) {
 				unset($identifiers[$key]);
 				if (count($identifiers)) {
-					$this->memcache->set(
-						$this->identifierPrefix . 'tag_' . $tag,
-						$identifiers
-					);
+					$this->memcache->set(($this->identifierPrefix . 'tag_') . $tag, $identifiers);
 				} else {
-					$this->memcache->delete($this->identifierPrefix . 'tag_' . $tag, 0);
+					$this->memcache->delete(($this->identifierPrefix . 'tag_') . $tag, 0);
 				}
 			}
 		}
-			// Clear reverse tag index for this identifier
-		$this->memcache->delete($this->identifierPrefix . 'ident_' . $entryIdentifier, 0);
+		// Clear reverse tag index for this identifier
+		$this->memcache->delete(($this->identifierPrefix . 'ident_') . $entryIdentifier, 0);
 	}
 
 	/**
@@ -444,8 +380,8 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * @api
 	 */
 	protected function findTagsByIdentifier($identifier) {
-		$tags = $this->memcache->get($this->identifierPrefix . 'ident_' . $identifier);
-		return ($tags === FALSE ? array() : (array) $tags);
+		$tags = $this->memcache->get(($this->identifierPrefix . 'ident_') . $identifier);
+		return $tags === FALSE ? array() : (array) $tags;
 	}
 
 	/**
@@ -455,6 +391,9 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * @api
 	 */
 	public function collectGarbage() {
+
 	}
+
 }
+
 ?>

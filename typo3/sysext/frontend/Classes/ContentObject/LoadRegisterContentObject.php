@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains LOAD_REGISTER class object.
  *
@@ -43,7 +42,6 @@ class tslib_content_LoadRegister extends tslib_content_Abstract {
 	 */
 	public function render($conf = array()) {
 		array_push($GLOBALS['TSFE']->registerStack, $GLOBALS['TSFE']->register);
-
 		if (is_array($conf)) {
 			$isExecuted = array();
 			foreach ($conf as $theKey => $theValue) {
@@ -62,5 +60,7 @@ class tslib_content_LoadRegister extends tslib_content_Abstract {
 		}
 		return '';
 	}
+
 }
+
 ?>

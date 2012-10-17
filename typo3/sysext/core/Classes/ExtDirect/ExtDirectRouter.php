@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Ext Direct Router
  *
@@ -35,6 +34,7 @@
  * @subpackage t3lib
  */
 class t3lib_extjs_ExtDirectRouter {
+
 	/**
 	 * Dispatches the incoming calls to methods about the ExtDirect API.
 	 *
@@ -44,7 +44,6 @@ class t3lib_extjs_ExtDirectRouter {
 	 */
 	public function route($ajaxParams, TYPO3AJAX $ajaxObj) {
 		$GLOBALS['error'] = t3lib_div::makeInstance('t3lib_extjs_ExtDirectDebug');
-
 		$isForm = FALSE;
 		$isUpload = FALSE;
 		$rawPostData = file_get_contents('php://input');
@@ -53,16 +52,13 @@ class t3lib_extjs_ExtDirectRouter {
 		$response = array();
 		$request = NULL;
 		$isValidRequest = TRUE;
-
 		if (!empty($postParameters['extAction'])) {
 			$isForm = TRUE;
 			$isUpload = $postParameters['extUpload'] === 'true';
-
-			$request = new stdClass;
+			$request = new stdClass();
 			$request->action = $postParameters['extAction'];
 			$request->method = $postParameters['extMethod'];
 			$request->tid = $postParameters['extTID'];
-
 			unset($_POST['securityToken']);
 			$request->data = array($_POST + $_FILES);
 			$request->data[] = $postParameters['securityToken'];
@@ -72,15 +68,13 @@ class t3lib_extjs_ExtDirectRouter {
 			$response[] = array(
 				'type' => 'exception',
 				'message' => 'Something went wrong with an ExtDirect call!',
-				'code' => 'router',
+				'code' => 'router'
 			);
 			$isValidRequest = FALSE;
 		}
-
 		if (!is_array($request)) {
 			$request = array($request);
 		}
-
 		if ($isValidRequest) {
 			$validToken = FALSE;
 			$firstCall = TRUE;
@@ -90,23 +84,19 @@ class t3lib_extjs_ExtDirectRouter {
 					'action' => $singleRequest->action,
 					'method' => $singleRequest->method
 				);
-
 				$token = array_pop($singleRequest->data);
 				if ($firstCall) {
 					$firstCall = FALSE;
 					$formprotection = t3lib_formprotection_Factory::get();
 					$validToken = $formprotection->validateToken($token, 'extDirect');
 				}
-
 				try {
 					if (!$validToken) {
 						throw new t3lib_formprotection_InvalidTokenException('ExtDirect: Invalid Security Token!');
 					}
-
 					$response[$index]['type'] = 'rpc';
 					$response[$index]['result'] = $this->processRpc($singleRequest, $namespace);
 					$response[$index]['debug'] = $GLOBALS['error']->toString();
-
 				} catch (Exception $exception) {
 					$response[$index]['type'] = 'exception';
 					$response[$index]['message'] = $exception->getMessage();
@@ -118,19 +108,14 @@ class t3lib_extjs_ExtDirectRouter {
 			$ajaxObj->setContentFormat('plain');
 			$response = json_encode($response);
 			$response = preg_replace('/&quot;/', '\\&quot;', $response);
-
 			$response = array(
-				'<html><body><textarea>' .
-				$response .
-				'</textarea></body></html>'
+				('<html><body><textarea>' . $response) . '</textarea></body></html>'
 			);
 		} else {
 			$ajaxObj->setContentFormat('jsonbody');
 		}
-
 		$ajaxObj->setContent($response);
 	}
-
 
 	/**
 	 * Processes an incoming extDirect call by executing the defined method. The configuration
@@ -143,38 +128,27 @@ class t3lib_extjs_ExtDirectRouter {
 	 * @throws UnexpectedValueException if the remote method couldn't be found
 	 */
 	protected function processRpc($singleRequest, $namespace) {
-		$endpointName = $namespace . '.' . $singleRequest->action;
-
+		$endpointName = ($namespace . '.') . $singleRequest->action;
 		if (!isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName])) {
 			throw new UnexpectedValueException('ExtDirect: Call to undefined endpoint: ' . $endpointName, 1294586450);
 		}
-
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName])) {
 			if (!isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName]['callbackClass'])) {
 				throw new UnexpectedValueException('ExtDirect: Call to undefined endpoint: ' . $endpointName, 1294586450);
 			}
-
 			$callbackClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName]['callbackClass'];
 			$configuration = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName];
-
 			if (!is_null($configuration['moduleName']) && !is_null($configuration['accessLevel'])) {
-				$GLOBALS['BE_USER']->modAccess(
-					array(
-						'name' => $configuration['moduleName'],
-						'access' => $configuration['accessLevel'],
-					),
-					TRUE
-				);
+				$GLOBALS['BE_USER']->modAccess(array(
+					'name' => $configuration['moduleName'],
+					'access' => $configuration['accessLevel']
+				), TRUE);
 			}
 		}
-
 		$endpointObject = t3lib_div::getUserObj($callbackClass, FALSE);
-
-		return call_user_func_array(
-			array($endpointObject, $singleRequest->method),
-			is_array($singleRequest->data) ? $singleRequest->data : array()
-		);
+		return call_user_func_array(array($endpointObject, $singleRequest->method), is_array($singleRequest->data) ? $singleRequest->data : array());
 	}
+
 }
 
 ?>

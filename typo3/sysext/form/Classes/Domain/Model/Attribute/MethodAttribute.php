@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'method'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Method extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Sets the attribute 'method'.
 	 * Used with element 'form'
@@ -43,14 +43,14 @@ class tx_form_Domain_Model_Attributes_Method extends tx_form_Domain_Model_Attrib
 	 */
 	public function getValue() {
 		$value = strtolower((string) $this->value);
-
 		if ($value == 'post' || $value == 'get') {
 			$attribute = $value;
 		} else {
 			$attribute = 'post';
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

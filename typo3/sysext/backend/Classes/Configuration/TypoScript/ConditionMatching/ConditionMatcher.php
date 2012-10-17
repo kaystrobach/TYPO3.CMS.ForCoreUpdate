@@ -24,24 +24,25 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Matching TypoScript conditions for backend disposal.
  *
  * Used with the TypoScript parser.
  * Matches browserinfo, IPnumbers for use with templates
  *
- * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @author 	Kasper Skårhøj <kasperYYYY@typo3.com>
  * @package TYPO3
  * @subpackage t3lib
  */
 class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
+
 	/**
 	 * Constructor for this class
 	 *
 	 * @return void
 	 */
 	public function __construct() {
+
 	}
 
 	/**
@@ -53,57 +54,55 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 */
 	protected function evaluateCondition($string) {
 		list($key, $value) = t3lib_div::trimExplode('=', $string, FALSE, 2);
-
 		$result = parent::evaluateConditionCommon($key, $value);
-
 		if (is_bool($result)) {
 			return $result;
 		} else {
 			switch ($key) {
-				case 'usergroup':
-					$groupList = $this->getGroupList();
-					$values = t3lib_div::trimExplode(',', $value, TRUE);
+			case 'usergroup':
+				$groupList = $this->getGroupList();
+				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				foreach ($values as $test) {
+					if ($test == '*' || t3lib_div::inList($groupList, $test)) {
+						return TRUE;
+					}
+				}
+				break;
+			case 'adminUser':
+				if ($this->isUserLoggedIn()) {
+					$result = !((bool) $value xor $this->isAdminUser());
+					return $result;
+				}
+				break;
+			case 'treeLevel':
+				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$treeLevel = count($this->rootline) - 1;
+				// If a new page is being edited or saved the treeLevel is higher by one:
+				if ($this->isNewPageWithPageId($this->pageId)) {
+					$treeLevel++;
+				}
+				foreach ($values as $test) {
+					if ($test == $treeLevel) {
+						return TRUE;
+					}
+				}
+				break;
+			case 'PIDupinRootline':
+
+			case 'PIDinRootline':
+				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				if (($key == 'PIDinRootline' || !in_array($this->pageId, $values)) || $this->isNewPageWithPageId($this->pageId)) {
 					foreach ($values as $test) {
-						if ($test == '*' || t3lib_div::inList($groupList, $test)) {
-							return TRUE;
-						}
-					}
-				break;
-				case 'adminUser':
-					if ($this->isUserLoggedIn()) {
-						$result = !((bool) $value XOR $this->isAdminUser());
-						return $result;
-					}
-				break;
-				case 'treeLevel':
-					$values = t3lib_div::trimExplode(',', $value, TRUE);
-					$treeLevel = count($this->rootline) - 1;
-						// If a new page is being edited or saved the treeLevel is higher by one:
-					if ($this->isNewPageWithPageId($this->pageId)) {
-						$treeLevel++;
-					}
-					foreach ($values as $test) {
-						if ($test == $treeLevel) {
-							return TRUE;
-						}
-					}
-				break;
-				case 'PIDupinRootline':
-				case 'PIDinRootline':
-					$values = t3lib_div::trimExplode(',', $value, TRUE);
-					if (($key == 'PIDinRootline') || (!in_array($this->pageId, $values)) || $this->isNewPageWithPageId($this->pageId)) {
-						foreach ($values as $test) {
-							foreach ($this->rootline as $rl_dat) {
-								if ($rl_dat['uid'] == $test) {
-									return TRUE;
-								}
+						foreach ($this->rootline as $rl_dat) {
+							if ($rl_dat['uid'] == $test) {
+								return TRUE;
 							}
 						}
 					}
+				}
 				break;
 			}
 		}
-
 		return FALSE;
 	}
 
@@ -116,9 +115,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 */
 	protected function getVariable($var) {
 		$vars = explode(':', $var, 2);
-
 		$val = parent::getVariableCommon($vars);
-
 		return $val;
 	}
 
@@ -144,33 +141,27 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 		$pageId = 0;
 		$editStatement = t3lib_div::_GP('edit');
 		$commandStatement = t3lib_div::_GP('cmd');
-
-			// Determine id from module that was called with an id:
+		// Determine id from module that was called with an id:
 		if ($id = intval(t3lib_div::_GP('id'))) {
 			$pageId = $id;
-			// Determine id from an edit statement:
 		} elseif (is_array($editStatement)) {
 			list($table, $uidAndAction) = each($editStatement);
 			list($uid, $action) = each($uidAndAction);
-
 			if ($action === 'edit') {
 				$pageId = $this->getPageIdByRecord($table, $uid);
 			} elseif ($action === 'new') {
 				$pageId = $this->getPageIdByRecord($table, $uid, TRUE);
 			}
-			// Determine id from a command statement:
 		} elseif (is_array($commandStatement)) {
 			list($table, $uidActionAndTarget) = each($commandStatement);
 			list($uid, $actionAndTarget) = each($uidActionAndTarget);
 			list($action, $target) = each($actionAndTarget);
-
 			if ($action === 'delete') {
 				$pageId = $this->getPageIdByRecord($table, $uid);
-			} elseif (($action === 'copy') || ($action === 'move')) {
+			} elseif ($action === 'copy' || $action === 'move') {
 				$pageId = $this->getPageIdByRecord($table, $target, TRUE);
 			}
 		}
-
 		return $pageId;
 	}
 
@@ -180,7 +171,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 * @return array The properties for the current page.
 	 */
 	protected function getPage() {
-		$pageId = (isset($this->pageId) ? $this->pageId : $this->determinePageId());
+		$pageId = isset($this->pageId) ? $this->pageId : $this->determinePageId();
 		return t3lib_BEfunc::getRecord('pages', $pageId);
 	}
 
@@ -190,13 +181,11 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 * @param string $table Name of the table
 	 * @param integer $id Id of the accordant record
 	 * @param boolean $ignoreTable Whether to ignore the page, if TRUE a positive
-	 *						id value is considered as page id without any further checks
 	 * @return integer Id of the page the record is persisted on
 	 */
 	protected function getPageIdByRecord($table, $id, $ignoreTable = FALSE) {
 		$pageId = 0;
 		$id = (int) $id;
-
 		if ($table && $id) {
 			if (($ignoreTable || $table === 'pages') && $id >= 0) {
 				$pageId = $id;
@@ -205,7 +194,6 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 				$pageId = $record['pid'];
 			}
 		}
-
 		return $pageId;
 	}
 
@@ -221,16 +209,15 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 			$pageId = intval($pageId);
 			$elementsData = $GLOBALS['SOBE']->elementsData;
 			$data = $GLOBALS['SOBE']->data;
-
-				// If saving a new page record:
-			if (is_array($data) && isset($data['pages']) && is_array($data['pages'])) {
+			// If saving a new page record:
+			if ((is_array($data) && isset($data['pages'])) && is_array($data['pages'])) {
 				foreach ($data['pages'] as $uid => $fields) {
 					if (strpos($uid, 'NEW') === 0 && $fields['pid'] == $pageId) {
 						return TRUE;
 					}
 				}
 			}
-				// If editing a new page record (not saved yet):
+			// If editing a new page record (not saved yet):
 			if (is_array($elementsData)) {
 				foreach ($elementsData as $element) {
 					if ($element['cmd'] == 'new' && $element['table'] == 'pages') {
@@ -245,7 +232,6 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 				}
 			}
 		}
-
 		return FALSE;
 	}
 
@@ -255,7 +241,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 * @return array The rootline for the current page.
 	 */
 	protected function determineRootline() {
-		$pageId = (isset($this->pageId) ? $this->pageId : $this->determinePageId());
+		$pageId = isset($this->pageId) ? $this->pageId : $this->determinePageId();
 		$rootline = t3lib_BEfunc::BEgetRootLine($pageId, '', TRUE);
 		return $rootline;
 	}
@@ -307,6 +293,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 			$GLOBALS['BE_USER']->writelog(3, 0, 1, 0, $message, array());
 		}
 	}
+
 }
 
 ?>

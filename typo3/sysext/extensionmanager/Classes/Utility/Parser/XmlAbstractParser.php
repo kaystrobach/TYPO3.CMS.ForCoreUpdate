@@ -22,19 +22,16 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Abstract parser for EM related TYPO3 xml files.
  *
  * @author Marcus Krause <marcus#exp2010@t3sec.info>
  * @author Steffen Kamper <info@sk-typo3.de>
- *
  * @since 2010-02-09
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
 abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
-
 
 	/**
 	 * Keeps XML parser instance.
@@ -51,7 +48,6 @@ abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 	 */
 	protected $requiredPhpExtensions;
 
-
 	/**
 	 * Method determines if a necessary PHP extension is available.
 	 *
@@ -63,19 +59,11 @@ abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 	public function isAvailable() {
 		$isAvailable = TRUE;
 		if (!extension_loaded($this->requiredPhpExtensions)) {
-			$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-			if (
-				!(
-					(bool) ini_get('enable_dl') &&
-					!(bool) ini_get('safe_mode') &&
-					function_exists('dl') &&
-					dl($prefix . $this->requiredPhpExtensions . PHP_SHLIB_SUFFIX)
-				)
-			) {
+			$prefix = PHP_SHLIB_SUFFIX === 'dll' ? 'php_' : '';
+			if (!((((bool) ini_get('enable_dl') && !(bool) ini_get('safe_mode')) && function_exists('dl')) && dl(($prefix . $this->requiredPhpExtensions) . PHP_SHLIB_SUFFIX))) {
 				$isAvailable = FALSE;
 			}
 		}
-
 		return $isAvailable;
 	}
 
@@ -87,6 +75,6 @@ abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 	 */
 	abstract public function parseXml($file);
 
-
 }
+
 ?>

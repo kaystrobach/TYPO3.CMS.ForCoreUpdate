@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Reports controller
  *
@@ -30,7 +29,6 @@
  */
 class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_ActionController {
 
-
 	/**
 	 * Redirect to the saved report
 	 *
@@ -38,8 +36,7 @@ class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_A
 	 */
 	public function initializeAction() {
 		$vars = t3lib_div::_GET('tx_reports_tools_reportstxreportsm1');
-
-		if (!isset($vars['redirect']) && $vars['action'] !== 'index' && !isset($vars['extension']) && is_array($GLOBALS['BE_USER']->uc['reports']['selection'])) {
+		if (((!isset($vars['redirect']) && $vars['action'] !== 'index') && !isset($vars['extension'])) && is_array($GLOBALS['BE_USER']->uc['reports']['selection'])) {
 			$previousSelection = $GLOBALS['BE_USER']->uc['reports']['selection'];
 			if (!empty($previousSelection['extension']) && !empty($previousSelection['report'])) {
 				$this->redirect('detail', 'Report', NULL, array('extension' => $previousSelection['extension'], 'report' => $previousSelection['report'], 'redirect' => 1));
@@ -70,18 +67,15 @@ class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_A
 	 * @return void
 	 */
 	public function detailAction($extension, $report) {
-		$content = $error = '';
+		$content = ($error = '');
 		$reportClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['reports'][$extension][$report]['report'];
-
 		$reportInstance = t3lib_div::makeInstance($reportClass, $this);
-
 		if ($reportInstance instanceof tx_reports_Report) {
 			$content = $reportInstance->getReport();
 			$this->saveState($extension, $report);
 		} else {
 			$error = $reportClass . ' does not implement the Report Interface which is necessary to be displayed here.';
 		}
-
 		$this->view->assignMultiple(array(
 			'content' => $content,
 			'error' => $error,
@@ -97,7 +91,6 @@ class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_A
 	 */
 	protected function getMenu() {
 		$reportsMenuItems = array();
-
 		foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['reports'] as $extKey => $reports) {
 			foreach ($reports as $reportName => $report) {
 				$reportsMenuItems[] = array(

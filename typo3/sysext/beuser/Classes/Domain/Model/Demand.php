@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Demand filter for listings
  *
@@ -37,7 +36,6 @@ class Tx_Beuser_Domain_Model_Demand extends Tx_Extbase_DomainObject_AbstractEnti
 	 * @var integer
 	 */
 	const ALL = 0;
-
 	/**
 	 * @var integer
 	 */
@@ -46,7 +44,6 @@ class Tx_Beuser_Domain_Model_Demand extends Tx_Extbase_DomainObject_AbstractEnti
 	 * @var integer
 	 */
 	const USERTYPE_USERONLY = 2;
-
 	/**
 	 * @var integer
 	 */
@@ -55,7 +52,6 @@ class Tx_Beuser_Domain_Model_Demand extends Tx_Extbase_DomainObject_AbstractEnti
 	 * @var integer
 	 */
 	const STATUS_INACTIVE = 2;
-
 	/**
 	 * @var integer
 	 */
@@ -64,7 +60,6 @@ class Tx_Beuser_Domain_Model_Demand extends Tx_Extbase_DomainObject_AbstractEnti
 	 * @var integer
 	 */
 	const LOGIN_NONE = 2;
-
 	/**
 	 * @var string
 	 */

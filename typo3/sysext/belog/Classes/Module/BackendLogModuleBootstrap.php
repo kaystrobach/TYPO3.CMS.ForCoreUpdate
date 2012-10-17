@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This class is a wrapper for WebInfo controller of belog.
  * It is registered in ext_tables.php with t3lib_extMgm::insertModuleFunction() and called by the
@@ -37,12 +36,14 @@
  * @subpackage belog
  */
 class tx_belog_WebInfo_Bootstrap {
+
 	/**
 	 * Dummy method, called by SCbase external object handling
 	 *
 	 * @return void
 	 */
 	public function init() {
+
 	}
 
 	/**
@@ -51,6 +52,7 @@ class tx_belog_WebInfo_Bootstrap {
 	 * @return void
 	 */
 	public function checkExtObj() {
+
 	}
 
 	/**
@@ -61,18 +63,18 @@ class tx_belog_WebInfo_Bootstrap {
 	public function main() {
 		$configuration = array(
 			'extensionName' => 'Belog',
-			'pluginName' => 'tools_BelogLog',
+			'pluginName' => 'tools_BelogLog'
 		);
-
-			// Yeah, this is ugly. But currently, there is no other direct way
-			// in extbase to force a specific controller in backend mode.
-			// Overwriting $_GET was the most simple solution here until extbase
-			// provides a clean way to solve this.
+		// Yeah, this is ugly. But currently, there is no other direct way
+		// in extbase to force a specific controller in backend mode.
+		// Overwriting $_GET was the most simple solution here until extbase
+		// provides a clean way to solve this.
 		$_GET['tx_belog_tools_beloglog']['controller'] = 'WebInfo';
-
-			/** @var $extbaseBootstrap Tx_Extbase_Core_Bootstrap */
+		/** @var $extbaseBootstrap Tx_Extbase_Core_Bootstrap */
 		$extbaseBootstrap = t3lib_div::makeInstance('Tx_Extbase_Core_Bootstrap');
 		return $extbaseBootstrap->run('', $configuration);
 	}
+
 }
+
 ?>

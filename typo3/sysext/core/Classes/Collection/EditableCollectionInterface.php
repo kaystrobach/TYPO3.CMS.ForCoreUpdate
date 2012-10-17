@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for collection classes which es enabled to be modified
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Editable {
-
+interface t3lib_collection_Editable
+{
 	/**
 	 * Adds on entry to the collection
 	 *
@@ -68,6 +67,6 @@ interface t3lib_collection_Editable {
 	 * @return void
 	 */
 	public function removeAll();
-}
 
+}
 ?>

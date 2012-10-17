@@ -21,8 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Null writer - just forgets about everything
  *
@@ -39,9 +37,10 @@ class t3lib_log_writer_Null extends t3lib_log_writer_Abstract {
 	 * @return t3lib_log_writer_Writer $this
 	 */
 	public function writeLog(t3lib_log_Record $record) {
-			// do nothing
+		// do nothing
 		return $this;
 	}
+
 }
 
 ?>

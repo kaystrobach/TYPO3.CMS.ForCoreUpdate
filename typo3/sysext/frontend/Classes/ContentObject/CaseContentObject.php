@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains CASE class object.
  *
@@ -56,5 +55,7 @@ class tslib_content_Case extends tslib_content_Abstract {
 			return $theValue;
 		}
 	}
+
 }
+
 ?>

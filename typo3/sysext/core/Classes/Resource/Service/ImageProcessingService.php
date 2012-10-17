@@ -24,8 +24,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-	// TODO should this be a singleton?
+// TODO should this be a singleton?
 /**
  * Thumbnail service
  *
@@ -53,66 +52,57 @@ class t3lib_file_Service_ImageProcessingService {
 		if (t3lib_utility_Math::canBeInterpretedAsInteger($file)) {
 			$file = t3lib_div::makeInstance('t3lib_file_Factory')->getFileObject($file);
 		}
-
 		if ($file instanceof t3lib_file_FileInterface) {
 			$theImage = $file->getForLocalProcessing(FALSE);
 		} else {
-				// clean ../ sections of the path and resolve to proper string.
-				// This is necessary for the t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService to work.
+			// clean ../ sections of the path and resolve to proper string.
+			// This is necessary for the t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService to work.
 			$file = t3lib_div::resolveBackPath($file);
-
 			$theImage = $GLOBALS['TSFE']->tmpl->getFileName($file);
 			if (!$theImage) {
 				return array();
 			}
 		}
-
 		$fileConfiguration = $this->processFileConfiguration($fileConfiguration, $contentObject);
-
 		$maskArray = $fileConfiguration['m.'];
 		$maskImages = array();
-			// Must render mask images and include in hash-calculating - else we
-			// cannot be sure the filename is unique for the setup!
+		// Must render mask images and include in hash-calculating - else we
+		// cannot be sure the filename is unique for the setup!
 		if (is_array($maskArray)) {
 			$maskImages['m_mask'] = $this->getImgResource($contentObject, $maskArray['mask'], $maskArray['mask.']);
 			$maskImages['m_bgImg'] = $this->getImgResource($contentObject, $maskArray['bgImg'], $maskArray['bgImg.']);
 			$maskImages['m_bottomImg'] = $this->getImgResource($contentObject, $maskArray['bottomImg'], $maskArray['bottomImg.']);
 			$maskImages['m_bottomImg_mask'] = $this->getImgResource($contentObject, $maskArray['bottomImg_mask'], $maskArray['bottomImg_mask.']);
 		}
-
-			// TODO use t3lib_file_FileInterface here
+		// TODO use t3lib_file_FileInterface here
 		if ($file instanceof t3lib_file_FileReference) {
 			$hash = $file->getOriginalFile()->calculateChecksum();
 		} else {
-			$hash = t3lib_div::shortMD5($theImage . serialize($fileConfiguration) . serialize($maskImages));
+			$hash = t3lib_div::shortMD5(($theImage . serialize($fileConfiguration)) . serialize($maskImages));
 		}
-
 		if (isset($GLOBALS['TSFE']->tmpl->fileCache[$hash])) {
 			return $GLOBALS['TSFE']->tmpl->fileCache[$hash];
 		}
-
 		/** @var $gifCreator tslib_gifbuilder */
 		$gifCreator = t3lib_div::makeInstance('tslib_gifbuilder');
 		$gifCreator->init();
-
 		if ($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']) {
 			$filename = basename($theImage);
-				// Remove extension
+			// Remove extension
 			$filename = substr($filename, 0, strrpos($filename, '.'));
 			$tempFilePrefixLength = intval($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']);
 			if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['UTF8filesystem']) {
-					/** @var $t3libCsInstance t3lib_cs */
+				/** @var $t3libCsInstance t3lib_cs */
 				$t3libCsInstance = t3lib_div::makeInstance('t3lib_cs');
 				$filenamePrefix = $t3libCsInstance->substr('utf-8', $filename, 0, $tempFilePrefixLength);
 			} else {
-					// Strip everything non-ascii
+				// Strip everything non-ascii
 				$filename = preg_replace('/[^A-Za-z0-9_-]/', '', trim($filename));
 				$filenamePrefix = substr($filename, 0, $tempFilePrefixLength);
 			}
 			$gifCreator->filenamePrefix = $filenamePrefix . '_';
 			unset($filename);
 		}
-
 		if ($fileConfiguration['sample']) {
 			$gifCreator->scalecmd = '-sample';
 			$GLOBALS['TT']->setTSlogMessage('Sample option: Images are scaled with -sample.');
@@ -121,7 +111,6 @@ class t3lib_file_Service_ImageProcessingService {
 			$gifCreator->tempPath = $fileConfiguration['alternativeTempPath'];
 			$GLOBALS['TT']->setTSlogMessage('Set alternativeTempPath: ' . $fileConfiguration['alternativeTempPath']);
 		}
-
 		if (!trim($fileConfiguration['ext'])) {
 			$fileConfiguration['ext'] = 'web';
 		}
@@ -141,16 +130,13 @@ class t3lib_file_Service_ImageProcessingService {
 		if ($fileConfiguration['noScale']) {
 			$options['noScale'] = $fileConfiguration['noScale'];
 		}
-
 		$fileInformation = t3lib_div::split_fileref($theImage);
-		$imgExt = (strtolower($fileInformation['fileext']) == $gifCreator->gifExtension ? $gifCreator->gifExtension : 'jpg');
-
-			// If no mask  is used or ImageMagick is disabled, processing is quite simple
+		$imgExt = strtolower($fileInformation['fileext']) == $gifCreator->gifExtension ? $gifCreator->gifExtension : 'jpg';
+		// If no mask  is used or ImageMagick is disabled, processing is quite simple
 		if (!is_array($maskArray) || !$GLOBALS['TYPO3_CONF_VARS']['GFX']['im']) {
 			$fileConfiguration['params'] = $this->modifyImageMagickStripProfileParameters($fileConfiguration['params'], $fileConfiguration);
 			$GLOBALS['TSFE']->tmpl->fileCache[$hash] = $gifCreator->imageMagickConvert($theImage, $fileConfiguration['ext'], $fileConfiguration['width'], $fileConfiguration['height'], $fileConfiguration['params'], $fileConfiguration['frame'], $options);
-
-			if (($fileConfiguration['reduceColors'] || ($imgExt === 'png' && !$gifCreator->png_truecolor)) && is_file($GLOBALS['TSFE']->tmpl->fileCache[$hash][3])) {
+			if (($fileConfiguration['reduceColors'] || $imgExt === 'png' && !$gifCreator->png_truecolor) && is_file($GLOBALS['TSFE']->tmpl->fileCache[$hash][3])) {
 				$reduced = $gifCreator->IMreduceColors($GLOBALS['TSFE']->tmpl->fileCache[$hash][3], t3lib_utility_Math::forceIntegerInRange($fileConfiguration['reduceColors'], 256, $gifCreator->truecolorColors, 256));
 				if (is_file($reduced)) {
 					unlink($GLOBALS['TSFE']->tmpl->fileCache[$hash][3]);
@@ -158,15 +144,14 @@ class t3lib_file_Service_ImageProcessingService {
 				}
 			}
 		} else {
-				// Filename:
-			$fileDestination = $gifCreator->tempPath . $hash . '.' . $imgExt;
-				// Generate!
+			// Filename:
+			$fileDestination = (($gifCreator->tempPath . $hash) . '.') . $imgExt;
+			// Generate!
 			if (!file_exists($fileDestination)) {
 				$this->processMask($maskImages, $gifCreator, $theImage, $fileConfiguration, $options, $fileDestination);
 			}
-
-				// Finish off
-			if (($fileConfiguration['reduceColors'] || ($imgExt === 'png' && !$gifCreator->png_truecolor)) && is_file($fileDestination)) {
+			// Finish off
+			if (($fileConfiguration['reduceColors'] || $imgExt === 'png' && !$gifCreator->png_truecolor) && is_file($fileDestination)) {
 				$reduced = $gifCreator->IMreduceColors($fileDestination, t3lib_utility_Math::forceIntegerInRange($fileConfiguration['reduceColors'], 256, $gifCreator->truecolorColors, 256));
 				if (is_file($reduced)) {
 					unlink($fileDestination);
@@ -175,18 +160,14 @@ class t3lib_file_Service_ImageProcessingService {
 			}
 			$GLOBALS['TSFE']->tmpl->fileCache[$hash] = $gifCreator->getImageDimensions($fileDestination);
 		}
-
 		$GLOBALS['TSFE']->tmpl->fileCache[$hash]['origFile'] = $theImage;
-			// This is needed by tslib_gifbuilder, in order for the setup-array to create a unique filename hash.
+		// This is needed by tslib_gifbuilder, in order for the setup-array to create a unique filename hash.
 		$GLOBALS['TSFE']->tmpl->fileCache[$hash]['origFile_mtime'] = @filemtime($theImage);
 		$GLOBALS['TSFE']->tmpl->fileCache[$hash]['fileCacheHash'] = $hash;
-
 		if ($file instanceof t3lib_file_FileInterface && t3lib_div::isAbsPath($GLOBALS['TSFE']->tmpl->fileCache[$hash][3])) {
 			$GLOBALS['TSFE']->tmpl->fileCache[$hash][3] = $file->getPublicUrl();
 		}
-
 		$imageResource = $GLOBALS['TSFE']->tmpl->fileCache[$hash];
-
 		return $imageResource;
 	}
 
@@ -205,48 +186,41 @@ class t3lib_file_Service_ImageProcessingService {
 		$m_bgImg = $maskImages['m_bgImg'];
 		if ($m_mask && $m_bgImg) {
 			$negate = $GLOBALS['TYPO3_CONF_VARS']['GFX']['im_negate_mask'] ? ' -negate' : '';
-
 			$temp_ext = 'png';
-				// If ImageMagick version 5+
+			// If ImageMagick version 5+
 			if ($GLOBALS['TYPO3_CONF_VARS']['GFX']['im_mask_temp_ext_gif']) {
 				$temp_ext = $gifCreator->gifExtension;
 			}
-
 			$tempFileInfo = $gifCreator->imageMagickConvert($theImage, $temp_ext, $fileConfiguration['width'], $fileConfiguration['height'], $fileConfiguration['params'], $fileConfiguration['frame'], $options);
 			if (is_array($tempFileInfo)) {
 				$m_bottomImg = $maskImages['m_bottomImg'];
 				if ($m_bottomImg) {
 					$m_bottomImg_mask = $maskImages['m_bottomImg_mask'];
 				}
-					// Scaling:
+				// Scaling:
 				$tempScale = array();
-				$command = '-geometry ' . $tempFileInfo[0] . 'x' . $tempFileInfo[1] . '!';
+				$command = ((('-geometry ' . $tempFileInfo[0]) . 'x') . $tempFileInfo[1]) . '!';
 				$command = $this->modifyImageMagickStripProfileParameters($command, $fileConfiguration);
 				$tmpStr = $gifCreator->randomName();
-
-					// m_mask
-				$tempScale['m_mask'] = $tmpStr . '_mask.' . $temp_ext;
+				// m_mask
+				$tempScale['m_mask'] = ($tmpStr . '_mask.') . $temp_ext;
 				$gifCreator->imageMagickExec($m_mask[3], $tempScale['m_mask'], $command . $negate);
-					// m_bgImg
-				$tempScale['m_bgImg'] = $tmpStr . '_bgImg.' . trim($GLOBALS['TYPO3_CONF_VARS']['GFX']['im_mask_temp_ext_noloss']);
+				// m_bgImg
+				$tempScale['m_bgImg'] = ($tmpStr . '_bgImg.') . trim($GLOBALS['TYPO3_CONF_VARS']['GFX']['im_mask_temp_ext_noloss']);
 				$gifCreator->imageMagickExec($m_bgImg[3], $tempScale['m_bgImg'], $command);
-
-					// m_bottomImg / m_bottomImg_mask
+				// m_bottomImg / m_bottomImg_mask
 				if ($m_bottomImg && $m_bottomImg_mask) {
-					$tempScale['m_bottomImg'] = $tmpStr . '_bottomImg.' . $temp_ext;
+					$tempScale['m_bottomImg'] = ($tmpStr . '_bottomImg.') . $temp_ext;
 					$gifCreator->imageMagickExec($m_bottomImg[3], $tempScale['m_bottomImg'], $command);
-					$tempScale['m_bottomImg_mask'] = $tmpStr . '_bottomImg_mask.' . $temp_ext;
+					$tempScale['m_bottomImg_mask'] = ($tmpStr . '_bottomImg_mask.') . $temp_ext;
 					$gifCreator->imageMagickExec($m_bottomImg_mask[3], $tempScale['m_bottomImg_mask'], $command . $negate);
-
-						// BEGIN combining:
-						// The image onto the background (including the mask here)
+					// BEGIN combining:
+					// The image onto the background (including the mask here)
 					$gifCreator->combineExec($tempScale['m_bgImg'], $tempScale['m_bottomImg'], $tempScale['m_bottomImg_mask'], $tempScale['m_bgImg']);
 				}
-
-					// The image onto the background
+				// The image onto the background
 				$gifCreator->combineExec($tempScale['m_bgImg'], $tempFileInfo[3], $tempScale['m_mask'], $dest);
-
-					// Remove the temporary images
+				// Remove the temporary images
 				foreach ($tempScale as $file) {
 					if (@is_file($file)) {
 						unlink($file);
@@ -264,46 +238,27 @@ class t3lib_file_Service_ImageProcessingService {
 	 * @return array
 	 */
 	protected function processFileConfiguration($fileConfiguration, $contentObject) {
-		$fileConfiguration['width'] = isset($fileConfiguration['width.'])
-			? $contentObject->stdWrap($fileConfiguration['width'], $fileConfiguration['width.'])
-			: $fileConfiguration['width'];
-		$fileConfiguration['height'] = isset($fileConfiguration['height.'])
-			? $contentObject->stdWrap($fileConfiguration['height'], $fileConfiguration['height.'])
-			: $fileConfiguration['height'];
-		$fileConfiguration['ext'] = isset($fileConfiguration['ext.'])
-			? $contentObject->stdWrap($fileConfiguration['ext'], $fileConfiguration['ext.'])
-			: $fileConfiguration['ext'];
-		$fileConfiguration['maxW'] = isset($fileConfiguration['maxW.'])
-			? intval($contentObject->stdWrap($fileConfiguration['maxW'], $fileConfiguration['maxW.']))
-			: intval($fileConfiguration['maxW']);
-		$fileConfiguration['maxH'] = isset($fileConfiguration['maxH.'])
-			? intval($contentObject->stdWrap($fileConfiguration['maxH'], $fileConfiguration['maxH.']))
-			: intval($fileConfiguration['maxH']);
-		$fileConfiguration['minW'] = isset($fileConfiguration['minW.'])
-			? intval($contentObject->stdWrap($fileConfiguration['minW'], $fileConfiguration['minW.']))
-			: intval($fileConfiguration['minW']);
-		$fileConfiguration['minH'] = isset($fileConfiguration['minH.'])
-			? intval($contentObject->stdWrap($fileConfiguration['minH'], $fileConfiguration['minH.']))
-			: intval($fileConfiguration['minH']);
-		$fileConfiguration['noScale'] = isset($fileConfiguration['noScale.'])
-			? $contentObject->stdWrap($fileConfiguration['noScale'], $fileConfiguration['noScale.'])
-			: $fileConfiguration['noScale'];
-		$fileConfiguration['params'] = isset($fileConfiguration['params.'])
-			? $contentObject->stdWrap($fileConfiguration['params'], $fileConfiguration['params.'])
-			: $fileConfiguration['params'];
-
+		$fileConfiguration['width'] = isset($fileConfiguration['width.']) ? $contentObject->stdWrap($fileConfiguration['width'], $fileConfiguration['width.']) : $fileConfiguration['width'];
+		$fileConfiguration['height'] = isset($fileConfiguration['height.']) ? $contentObject->stdWrap($fileConfiguration['height'], $fileConfiguration['height.']) : $fileConfiguration['height'];
+		$fileConfiguration['ext'] = isset($fileConfiguration['ext.']) ? $contentObject->stdWrap($fileConfiguration['ext'], $fileConfiguration['ext.']) : $fileConfiguration['ext'];
+		$fileConfiguration['maxW'] = isset($fileConfiguration['maxW.']) ? intval($contentObject->stdWrap($fileConfiguration['maxW'], $fileConfiguration['maxW.'])) : intval($fileConfiguration['maxW']);
+		$fileConfiguration['maxH'] = isset($fileConfiguration['maxH.']) ? intval($contentObject->stdWrap($fileConfiguration['maxH'], $fileConfiguration['maxH.'])) : intval($fileConfiguration['maxH']);
+		$fileConfiguration['minW'] = isset($fileConfiguration['minW.']) ? intval($contentObject->stdWrap($fileConfiguration['minW'], $fileConfiguration['minW.'])) : intval($fileConfiguration['minW']);
+		$fileConfiguration['minH'] = isset($fileConfiguration['minH.']) ? intval($contentObject->stdWrap($fileConfiguration['minH'], $fileConfiguration['minH.'])) : intval($fileConfiguration['minH']);
+		$fileConfiguration['noScale'] = isset($fileConfiguration['noScale.']) ? $contentObject->stdWrap($fileConfiguration['noScale'], $fileConfiguration['noScale.']) : $fileConfiguration['noScale'];
+		$fileConfiguration['params'] = isset($fileConfiguration['params.']) ? $contentObject->stdWrap($fileConfiguration['params'], $fileConfiguration['params.']) : $fileConfiguration['params'];
 		return $fileConfiguration;
 	}
 
 	/**
 	 * Modifies the parameters for ImageMagick for stripping of profile information.
 	 *
-	 * @param	string		$parameters: The parameters to be modified (if required)
-	 * @param	array		$configuration: The TypoScript configuration of [IMAGE].file
+	 * @param 	string		$parameters: The parameters to be modified (if required)
+	 * @param 	array		$configuration: The TypoScript configuration of [IMAGE].file
 	 * @return string		ImageMagick parameters
 	 */
 	protected function modifyImageMagickStripProfileParameters($parameters, array $configuration) {
-			// Strips profile information of image to save some space:
+		// Strips profile information of image to save some space:
 		if (isset($configuration['stripProfile'])) {
 			if ($configuration['stripProfile']) {
 				$parameters = $GLOBALS['TYPO3_CONF_VARS']['GFX']['im_stripProfileCommand'] . $parameters;
@@ -313,5 +268,7 @@ class t3lib_file_Service_ImageProcessingService {
 		}
 		return $parameters;
 	}
+
 }
+
 ?>

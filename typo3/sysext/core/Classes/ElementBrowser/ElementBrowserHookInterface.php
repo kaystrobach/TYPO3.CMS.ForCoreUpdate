@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for classes which hook into browse_links
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_browseLinksHook {
-
+interface t3lib_browseLinksHook
+{
 	/**
 	 * Initializes the hook object
 	 *
@@ -78,5 +77,4 @@ interface t3lib_browseLinksHook {
 	public function parseCurrentUrl($href, $siteUrl, $info);
 
 }
-
 ?>

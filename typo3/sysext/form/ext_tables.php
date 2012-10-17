@@ -1,11 +1,9 @@
 <?php
 if (!defined('TYPO3_MODE')) {
-	die ('Access denied.');
+	die('Access denied.');
 }
-
-	// Add Default TS to Include static (from extensions)
+// Add Default TS to Include static (from extensions)
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript/', 'Default TS');
-
 $TCA['tt_content']['columns']['bodytext']['config']['wizards']['forms'] = array(
 	'notNewRecords' => 1,
 	'enableByTypeConfig' => 1,
@@ -17,7 +15,6 @@ $TCA['tt_content']['columns']['bodytext']['config']['wizards']['forms'] = array(
 		'xmlOutput' => 0
 	)
 );
-
 $TCA['tt_content']['types']['mailform']['showitem'] = '
 	CType;;4;;1-1-1,
 	hidden,

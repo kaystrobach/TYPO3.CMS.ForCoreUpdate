@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'id'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Id extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'id'.
 	 * Used with all elements
@@ -42,7 +42,6 @@ class tx_form_Domain_Model_Attributes_Id extends tx_form_Domain_Model_Attributes
 	 */
 	public function getValue() {
 		$value = (string) $this->value;
-
 		if ($this->elementClassName === 'tx_form_Domain_Model_Form') {
 			if (empty($value)) {
 				$value = 'form-' . $GLOBALS['TSFE']->id;
@@ -53,18 +52,17 @@ class tx_form_Domain_Model_Attributes_Id extends tx_form_Domain_Model_Attributes
 				$value = 'field-' . $value;
 			}
 		}
-
-			// Change spaces into hyphens
-		$attribute = preg_replace('/\s/', '-', $value);
-
-			// Change first non-letter to field-
+		// Change spaces into hyphens
+		$attribute = preg_replace('/\\s/', '-', $value);
+		// Change first non-letter to field-
 		if (preg_match('/^([^a-zA-Z]{1})/', $attribute)) {
 			$attribute = 'field-' . $attribute;
 		}
-			// Remove non-word characters
-		$attribute = preg_replace('/([^a-zA-Z0-9_:\-\.]*)/', '', $attribute);
-
+		// Remove non-word characters
+		$attribute = preg_replace('/([^a-zA-Z0-9_:\\-\\.]*)/', '', $attribute);
 		return $attribute;
 	}
+
 }
+
 ?>

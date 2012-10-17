@@ -21,7 +21,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Log processor interface
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_log_processor_Processor {
-
+interface t3lib_log_processor_Processor
+{
 	/**
 	 * Processes a log record and adds additional data.
 	 *
@@ -43,5 +42,4 @@ interface t3lib_log_processor_Processor {
 	public function processLogRecord(t3lib_log_Record $logRecord);
 
 }
-
 ?>

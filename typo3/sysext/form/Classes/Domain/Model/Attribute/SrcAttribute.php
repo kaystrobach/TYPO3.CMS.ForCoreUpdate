@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'src'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Src extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'src'.
 	 * Used with the element 'input'
@@ -44,8 +44,9 @@ class tx_form_Domain_Model_Attributes_Src extends tx_form_Domain_Model_Attribute
 	 */
 	public function getValue() {
 		$attribute = $this->localCobj->IMG_RESOURCE($this->value);
-
 		return $attribute;
 	}
+
 }
+
 ?>

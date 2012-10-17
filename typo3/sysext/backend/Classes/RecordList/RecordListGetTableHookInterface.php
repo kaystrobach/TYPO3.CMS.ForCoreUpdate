@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * interface for classes which hook into localRecordList and do additional getTable processing
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_localRecordListGetTableHook {
-
+interface t3lib_localRecordListGetTableHook
+{
 	/**
 	 * modifies the DB list query
 	 *
@@ -47,5 +46,4 @@ interface t3lib_localRecordListGetTableHook {
 	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject);
 
 }
-
 ?>

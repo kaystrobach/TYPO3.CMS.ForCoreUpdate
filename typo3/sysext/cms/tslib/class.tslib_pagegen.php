@@ -1,0 +1,26 @@
+<?php
+/*
+ * @deprecated since 6.0, the classname TSpagegen and this file is obsolete
+ * and will be removed by 7.0. The class was renamed and is now located at:
+ * typo3/sysext/frontend/Classes/Page/PageGenerator.php
+ */
+require_once t3lib_extMgm::extPath('frontend') . 'Classes/Page/PageGenerator.php';
+/**
+ * Class for fetching record relations for the frontend.
+ *
+ * @author Kasper Skårhøj <kasperYYYY@typo3.com>
+ * @package TYPO3
+ * @subpackage tslib
+ * @see tslib_cObj::RECORDS()
+ */
+class FE_loadDBGroup extends t3lib_loadDBGroup {
+
+	// Means that everything is returned instead of only uid and label-field
+	/**
+	 * @todo Define visibility
+	 */
+	public $fromTC = 0;
+
+}
+
+?>

@@ -22,7 +22,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Test case for class tx_form_System_Postprocessor
  *
@@ -61,20 +60,15 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 	 * set up
 	 */
 	public function setUp() {
-		$this->form = new tx_form_Domain_Model_Form;
-		$this->postprocessor = $this->getMock(
-			'tx_form_System_Postprocessor',
-			array('sortTypoScriptKeyList'),
-			array(
-				$this->form,
-				array()
-			));
+		$this->form = new tx_form_Domain_Model_Form();
+		$this->postprocessor = $this->getMock('tx_form_System_Postprocessor', array('sortTypoScriptKeyList'), array(
+			$this->form,
+			array()
+		));
 		$this->classNameWithoutPrefix = uniqid('postprocess');
 		$this->classNameWithPrefix = uniqid('postprocess');
 		$this->classNameWithoutInterface = uniqid('postprocess');
-
-		eval(
-			'class ' . $this->classNameWithoutPrefix . ' implements tx_form_System_Postprocessor_Interface {
+		eval(((((((('class ' . $this->classNameWithoutPrefix) . ' implements tx_form_System_Postprocessor_Interface {
 
 				public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
 
@@ -83,8 +77,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 				public function process() {
 					return \'processedWithoutPrefix\';
 				}
-			}' .
-			'class tx_form_System_Postprocessor_' . $this->classNameWithPrefix . ' implements tx_form_System_Postprocessor_Interface {
+			}') . 'class tx_form_System_Postprocessor_') . $this->classNameWithPrefix) . ' implements tx_form_System_Postprocessor_Interface {
 
 				public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
 
@@ -93,8 +86,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 				public function process() {
 					return \'processedWithPrefix\';
 				}
-			}' .
-			'class ' . $this->classNameWithoutInterface . '{
+			}') . 'class ') . $this->classNameWithoutInterface) . '{
 
 				public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
 
@@ -103,8 +95,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 				public function process() {
 					return \'withoutInterface\';
 				}
-			}'
-		);
+			}');
 	}
 
 	/**
@@ -116,9 +107,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 			20 => $this->classNameWithoutPrefix
 		);
 		$this->postprocessor->typoScript = $typoScript;
-		$this->postprocessor->expects($this->once())
-			->method('sortTypoScriptKeyList')
-			->will($this->returnValue(array(10,20)));
+		$this->postprocessor->expects($this->once())->method('sortTypoScriptKeyList')->will($this->returnValue(array(10, 20)));
 		$returnValue = $this->postprocessor->process();
 		$this->assertEquals('processedWithoutPrefix', $returnValue);
 	}
@@ -132,9 +121,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 			20 => $this->classNameWithPrefix
 		);
 		$this->postprocessor->typoScript = $typoScript;
-		$this->postprocessor->expects($this->once())
-			->method('sortTypoScriptKeyList')
-			->will($this->returnValue(array(10,20)));
+		$this->postprocessor->expects($this->once())->method('sortTypoScriptKeyList')->will($this->returnValue(array(10, 20)));
 		$returnValue = $this->postprocessor->process();
 		$this->assertEquals('processedWithPrefix', $returnValue);
 	}
@@ -148,11 +135,11 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 			20 => $this->classNameWithoutInterface
 		);
 		$this->postprocessor->typoScript = $typoScript;
-		$this->postprocessor->expects($this->once())
-			->method('sortTypoScriptKeyList')
-			->will($this->returnValue(array(10,20)));
+		$this->postprocessor->expects($this->once())->method('sortTypoScriptKeyList')->will($this->returnValue(array(10, 20)));
 		$returnValue = $this->postprocessor->process();
 		$this->assertEquals('', $returnValue);
 	}
+
 }
+
 ?>

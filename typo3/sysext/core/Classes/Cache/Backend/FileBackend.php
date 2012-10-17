@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which stores cache entries in files
  *
@@ -37,12 +36,9 @@
 class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBackend implements t3lib_cache_backend_PhpCapableBackend, t3lib_cache_backend_FreezableBackend, t3lib_cache_backend_TaggableBackend {
 
 	const SEPARATOR = '^';
-
 	const EXPIRYTIME_FORMAT = 'YmdHis';
 	const EXPIRYTIME_LENGTH = 14;
-
 	const DATASIZE_DIGITS = 10;
-
 	/**
 	 * A file extension to use for each cache entry.
 	 *
@@ -75,27 +71,21 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 */
 	public function freeze() {
 		if ($this->frozen === TRUE) {
-			throw new \RuntimeException(
-				sprintf('The cache "%s" is already frozen.', $this->cacheIdentifier),
-				1323353176
-			);
+			throw new \RuntimeException(sprintf('The cache "%s" is already frozen.', $this->cacheIdentifier), 1323353176);
 		}
-
 		$cacheEntryFileExtensionLength = strlen($this->cacheEntryFileExtension);
-
-		for($directoryIterator = new \DirectoryIterator($this->cacheDirectory); $directoryIterator->valid(); $directoryIterator->next()) {
+		for ($directoryIterator = new \DirectoryIterator($this->cacheDirectory); $directoryIterator->valid(); $directoryIterator->next()) {
 			if ($directoryIterator->isDot()) {
 				continue;
 			}
 			if ($cacheEntryFileExtensionLength > 0) {
-				$entryIdentifier = substr($directoryIterator->getFilename(), 0, - $cacheEntryFileExtensionLength);
+				$entryIdentifier = substr($directoryIterator->getFilename(), 0, -$cacheEntryFileExtensionLength);
 			} else {
 				$entryIdentifier = $directoryIterator->getFilename();
 			}
 			$this->cacheEntryIdentifiers[$entryIdentifier] = TRUE;
-			file_put_contents($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension, $this->get($entryIdentifier));
+			file_put_contents(($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension, $this->get($entryIdentifier));
 		}
-
 		if ($this->useIgBinary === TRUE) {
 			file_put_contents($this->cacheDirectory . 'FrozenCache.data', igbinary_serialize($this->cacheEntryIdentifiers));
 		} else {
@@ -129,7 +119,6 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 */
 	public function setCache(t3lib_cache_frontend_Frontend $cache) {
 		parent::setCache($cache);
-
 		if (file_exists($this->cacheDirectory . 'FrozenCache.data')) {
 			$this->frozen = TRUE;
 			if ($this->useIgBinary === TRUE) {
@@ -156,58 +145,34 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (!is_string($data)) {
-			throw new \t3lib_cache_Exception_InvalidData(
-				'The specified data is of type "' . gettype($data) . '" but a string is expected.',
-				1204481674
-			);
+			throw new \t3lib_cache_Exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1204481674);
 		}
-
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1282073032
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073032);
 		}
 		if ($entryIdentifier === '') {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not be empty.',
-				1298114280
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not be empty.', 1298114280);
 		}
 		if ($this->frozen === TRUE) {
-			throw new \RuntimeException(
-				sprintf('Cannot add or modify cache entry because the backend of cache "%s" is frozen.', $this->cacheIdentifier),
-				1323344192
-			);
+			throw new \RuntimeException(sprintf('Cannot add or modify cache entry because the backend of cache "%s" is frozen.', $this->cacheIdentifier), 1323344192);
 		}
-
 		$this->remove($entryIdentifier);
-
-		$temporaryCacheEntryPathAndFilename = $this->cacheDirectory . uniqid() . '.temp';
+		$temporaryCacheEntryPathAndFilename = ($this->cacheDirectory . uniqid()) . '.temp';
 		$lifetime = $lifetime === NULL ? $this->defaultLifetime : $lifetime;
-		$expiryTime = ($lifetime === 0) ? 0 : ($GLOBALS['EXEC_TIME'] + $lifetime);
-		$metaData = str_pad($expiryTime, self::EXPIRYTIME_LENGTH) . implode(' ', $tags) . str_pad(strlen($data), self::DATASIZE_DIGITS);
+		$expiryTime = $lifetime === 0 ? 0 : $GLOBALS['EXEC_TIME'] + $lifetime;
+		$metaData = (str_pad($expiryTime, self::EXPIRYTIME_LENGTH) . implode(' ', $tags)) . str_pad(strlen($data), self::DATASIZE_DIGITS);
 		$result = file_put_contents($temporaryCacheEntryPathAndFilename, $data . $metaData);
 		t3lib_div::fixPermissions($temporaryCacheEntryPathAndFilename);
-
 		if ($result === FALSE) {
-			throw new \t3lib_cache_exception(
-				'The temporary cache file "' . $temporaryCacheEntryPathAndFilename . '" could not be written.',
-				1204026251
-			);
+			throw new \t3lib_cache_exception(('The temporary cache file "' . $temporaryCacheEntryPathAndFilename) . '" could not be written.', 1204026251);
 		}
-
 		$i = 0;
-		$cacheEntryPathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		$cacheEntryPathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		while (($result = rename($temporaryCacheEntryPathAndFilename, $cacheEntryPathAndFilename)) === FALSE && $i < 5) {
 			$i++;
 		}
-
 		if ($result === FALSE) {
-			throw new \t3lib_cache_exception(
-				'The cache file "' . $cacheEntryPathAndFilename . '" could not be written.',
-				1222361632
-			);
+			throw new \t3lib_cache_exception(('The cache file "' . $cacheEntryPathAndFilename) . '" could not be written.', 1222361632);
 		}
 	}
 
@@ -221,21 +186,16 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 */
 	public function get($entryIdentifier) {
 		if ($this->frozen === TRUE) {
-			return (isset($this->cacheEntryIdentifiers[$entryIdentifier]) ? file_get_contents($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension) : FALSE);
+			return isset($this->cacheEntryIdentifiers[$entryIdentifier]) ? file_get_contents(($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension) : FALSE;
 		}
-
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1282073033
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073033);
 		}
-
-		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		if ($this->isCacheFileExpired($pathAndFilename)) {
 			return FALSE;
 		}
-		$dataSize = (integer) file_get_contents($pathAndFilename, NULL, NULL, filesize($pathAndFilename) - self::DATASIZE_DIGITS, self::DATASIZE_DIGITS);
+		$dataSize = (int) file_get_contents($pathAndFilename, NULL, NULL, (filesize($pathAndFilename) - self::DATASIZE_DIGITS), self::DATASIZE_DIGITS);
 		return file_get_contents($pathAndFilename, NULL, NULL, 0, $dataSize);
 	}
 
@@ -252,13 +212,9 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 			return isset($this->cacheEntryIdentifiers[$entryIdentifier]);
 		}
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1282073034
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073034);
 		}
-
-		return !$this->isCacheFileExpired($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension);
+		return !$this->isCacheFileExpired((($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension));
 	}
 
 	/**
@@ -273,25 +229,15 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 */
 	public function remove($entryIdentifier) {
 		if ($entryIdentifier !== basename($entryIdentifier)) {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not contain a path segment.',
-				1282073035
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073035);
 		}
 		if ($entryIdentifier === '') {
-			throw new \InvalidArgumentException(
-				'The specified entry identifier must not be empty.',
-				1298114279
-			);
+			throw new \InvalidArgumentException('The specified entry identifier must not be empty.', 1298114279);
 		}
 		if ($this->frozen === TRUE) {
-			throw new \RuntimeException(
-				sprintf('Cannot remove cache entry because the backend of cache "%s" is frozen.', $this->cacheIdentifier),
-				1323344193
-			);
+			throw new \RuntimeException(sprintf('Cannot remove cache entry because the backend of cache "%s" is frozen.', $this->cacheIdentifier), 1323344193);
 		}
-
-		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		if (file_exists($pathAndFilename) === FALSE) {
 			return FALSE;
 		}
@@ -318,16 +264,15 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 				continue;
 			}
 			$cacheEntryPathAndFilename = $directoryIterator->getPathname();
-			$index = (integer) file_get_contents($cacheEntryPathAndFilename, NULL, NULL, filesize($cacheEntryPathAndFilename) - self::DATASIZE_DIGITS, self::DATASIZE_DIGITS);
+			$index = (int) file_get_contents($cacheEntryPathAndFilename, NULL, NULL, (filesize($cacheEntryPathAndFilename) - self::DATASIZE_DIGITS), self::DATASIZE_DIGITS);
 			$metaData = file_get_contents($cacheEntryPathAndFilename, NULL, NULL, $index);
-
-			$expiryTime = (integer) substr($metaData, 0, self::EXPIRYTIME_LENGTH);
+			$expiryTime = (int) substr($metaData, 0, self::EXPIRYTIME_LENGTH);
 			if ($expiryTime !== 0 && $expiryTime < $now) {
 				continue;
 			}
 			if (in_array($searchedTag, explode(' ', substr($metaData, self::EXPIRYTIME_LENGTH, -self::DATASIZE_DIGITS)))) {
 				if ($cacheEntryFileExtensionLength > 0) {
-					$entryIdentifiers[] = substr($directoryIterator->getFilename(), 0, - $cacheEntryFileExtensionLength);
+					$entryIdentifiers[] = substr($directoryIterator->getFilename(), 0, -$cacheEntryFileExtensionLength);
 				} else {
 					$entryIdentifiers[] = $directoryIterator->getFilename();
 				}
@@ -362,7 +307,6 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 		if (count($identifiers) === 0) {
 			return;
 		}
-
 		foreach ($identifiers as $entryIdentifier) {
 			$this->remove($entryIdentifier);
 		}
@@ -380,9 +324,9 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 		if (file_exists($cacheEntryPathAndFilename) === FALSE) {
 			return TRUE;
 		}
-		$index = (integer) file_get_contents($cacheEntryPathAndFilename, NULL, NULL, filesize($cacheEntryPathAndFilename) - self::DATASIZE_DIGITS, self::DATASIZE_DIGITS);
+		$index = (int) file_get_contents($cacheEntryPathAndFilename, NULL, NULL, (filesize($cacheEntryPathAndFilename) - self::DATASIZE_DIGITS), self::DATASIZE_DIGITS);
 		$expiryTime = intval(file_get_contents($cacheEntryPathAndFilename, NULL, NULL, $index, self::EXPIRYTIME_LENGTH));
-		return ($expiryTime !== 0 && $expiryTime < $GLOBALS['EXEC_TIME']);
+		return $expiryTime !== 0 && $expiryTime < $GLOBALS['EXEC_TIME'];
 	}
 
 	/**
@@ -395,16 +339,14 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 		if ($this->frozen === TRUE) {
 			return;
 		}
-
 		for ($directoryIterator = new \DirectoryIterator($this->cacheDirectory); $directoryIterator->valid(); $directoryIterator->next()) {
 			if ($directoryIterator->isDot()) {
 				continue;
 			}
-
 			if ($this->isCacheFileExpired($directoryIterator->getPathname())) {
 				$cacheEntryFileExtensionLength = strlen($this->cacheEntryFileExtension);
 				if ($cacheEntryFileExtensionLength > 0) {
-					$this->remove(substr($directoryIterator->getFilename(), 0, - $cacheEntryFileExtensionLength));
+					$this->remove(substr($directoryIterator->getFilename(), 0, -$cacheEntryFileExtensionLength));
 				} else {
 					$this->remove($directoryIterator->getFilename());
 				}
@@ -426,7 +368,6 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 		if ($filesFound === FALSE || count($filesFound) === 0) {
 			return FALSE;
 		}
-
 		return $filesFound;
 	}
 
@@ -441,22 +382,20 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	public function requireOnce($entryIdentifier) {
 		if ($this->frozen === TRUE) {
 			if (isset($this->cacheEntryIdentifiers[$entryIdentifier])) {
-				return require_once($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension);
+				return require_once ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 			} else {
 				return FALSE;
 			}
 		} else {
-			$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+			$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 			if ($entryIdentifier !== basename($entryIdentifier)) {
-				throw new \InvalidArgumentException(
-					'The specified entry identifier must not contain a path segment.',
-					1282073036
-				);
+				throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073036);
 			}
-
-			$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
-			return ($this->isCacheFileExpired($pathAndFilename)) ? FALSE : require_once($pathAndFilename);
+			$pathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
+			return $this->isCacheFileExpired($pathAndFilename) ? FALSE : require_once $pathAndFilename;
 		}
 	}
+
 }
+
 ?>

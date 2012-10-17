@@ -1,27 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Christian Kuhn <lolli@schwarzbu.ch>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-
+ *  Copyright notice
+ *
+ *  (c) 2011 Christian Kuhn <lolli@schwarzbu.ch>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Additional BE fields for sys log table garbage collection task.
  *
@@ -49,7 +48,6 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		$additionalFields['task_tableGarbageCollection_allTables'] = $this->getAllTablesAdditionalField($taskInfo, $task, $parentObject);
 		$additionalFields['task_tableGarbageCollection_table'] = $this->getTableAdditionalField($taskInfo, $task, $parentObject);
 		$additionalFields['task_tableGarbageCollection_numberOfDays'] = $this->getNumberOfDaysAdditionalField($taskInfo, $task, $parentObject);
-
 		return $additionalFields;
 	}
 
@@ -81,22 +79,15 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		} else {
 			$checked = '';
 		}
-
 		$fieldName = 'tx_scheduler[scheduler_tableGarbageCollection_allTables]';
 		$fieldId = 'task_tableGarbageCollection_allTables';
-		$fieldHtml = '<input type="checkbox" ' .
-			$checked .
-			'onChange="actOnChangeSchedulerTableGarbageCollectionAllTables(this)" ' .
-			'name="' . $fieldName . '" ' .
-			'id="' . $fieldId . '" />';
-
+		$fieldHtml = ((((((('<input type="checkbox" ' . $checked) . 'onChange="actOnChangeSchedulerTableGarbageCollectionAllTables(this)" ') . 'name="') . $fieldName) . '" ') . 'id="') . $fieldId) . '" />';
 		$fieldConfiguration = array(
 			'code' => $fieldHtml,
 			'label' => 'LLL:EXT:scheduler/mod1/locallang.xml:label.tableGarbageCollection.allTables',
 			'cshKey' => '_MOD_tools_txschedulerM1',
-			'cshLabel' => $fieldId,
+			'cshLabel' => $fieldId
 		);
-
 		return $fieldConfiguration;
 	}
 
@@ -110,53 +101,39 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 	 */
 	protected function getTableAdditionalField(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
 		$tableConfiguration = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables'];
-
 		$options = array();
-
-				// Add an empty option on top if an existing task is configured
-				// with a table that can not be found in configuration anymore
+		// Add an empty option on top if an existing task is configured
+		// with a table that can not be found in configuration anymore
 		if ($parentObject->CMD === 'edit' && !array_key_exists($task->table, $tableConfiguration)) {
 			$options[] = '<option value="" selected="selected"></option>';
 		}
-
 		foreach ($tableConfiguration as $tableName => $configuration) {
 			if ($parentObject->CMD === 'add' && count($options) === 0) {
-					// Select first table by default if adding a new task
-				$options[] = '<option value="' . $tableName . '" selected="selected">' . $tableName . '</option>';
+				// Select first table by default if adding a new task
+				$options[] = ((('<option value="' . $tableName) . '" selected="selected">') . $tableName) . '</option>';
 			} elseif ($task->table === $tableName) {
-					// Select currently selected table
-				$options[] = '<option value="' . $tableName . '" selected="selected">' . $tableName . '</option>';
+				// Select currently selected table
+				$options[] = ((('<option value="' . $tableName) . '" selected="selected">') . $tableName) . '</option>';
 			} else {
-				$options[] = '<option value="' . $tableName . '">' . $tableName . '</option>';
+				$options[] = ((('<option value="' . $tableName) . '">') . $tableName) . '</option>';
 			}
 		}
-
 		$disabled = $task->allTables === TRUE ? ' disabled="disabled"' : '';
-
 		$fieldName = 'tx_scheduler[scheduler_tableGarbageCollection_table]';
 		$fieldId = 'task_tableGarbageCollection_table';
-
 		$fieldHtml = array();
-			// Add table drop down html
-		$fieldHtml[] = '<select ' .
-			'name="' . $fieldName . '" ' .
-			$disabled .
-			'onChange="actOnChangeSchedulerTableGarbageCollectionTable(this)"' .
-			'id="' . $fieldId . '">' .
-			implode(LF, $options) .
-			'</select>';
-			// Add js array for default 'number of days' values
+		// Add table drop down html
+		$fieldHtml[] = ((((((((('<select ' . 'name="') . $fieldName) . '" ') . $disabled) . 'onChange="actOnChangeSchedulerTableGarbageCollectionTable(this)"') . 'id="') . $fieldId) . '">') . implode(LF, $options)) . '</select>';
+		// Add js array for default 'number of days' values
 		$fieldHtml[] = '<script type="text/javascript">/*<![CDATA[*/<!--';
-		$fieldHtml[] = 'var defaultNumberOfDays = ' . json_encode($this->defaultNumberOfDays) . ';';
+		$fieldHtml[] = ('var defaultNumberOfDays = ' . json_encode($this->defaultNumberOfDays)) . ';';
 		$fieldHtml[] = '// -->/*]]>*/</script>';
-
 		$fieldConfiguration = array(
 			'code' => implode(LF, $fieldHtml),
 			'label' => 'LLL:EXT:scheduler/mod1/locallang.xml:label.tableGarbageCollection.table',
 			'cshKey' => '_MOD_tools_txschedulerM1',
-			'cshLabel' => $fieldId,
+			'cshLabel' => $fieldId
 		);
-
 		return $fieldConfiguration;
 	}
 
@@ -169,41 +146,32 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 	 * @return array Array containing all the information pertaining to the additional fields
 	 */
 	protected function getNumberOfDaysAdditionalField(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
-			// Initialize selected fields
+		// Initialize selected fields
 		$disabled = '';
 		if (empty($taskInfo['scheduler_tableGarbageCollection_numberOfDays'])) {
 			if ($parentObject->CMD === 'add') {
-					// In case of new task, set to 180 days
+				// In case of new task, set to 180 days
 				$taskInfo['scheduler_tableGarbageCollection_numberOfDays'] = 180;
 			} elseif ($parentObject->CMD === 'edit') {
-					// In case of editing the task, set to currently selected value
+				// In case of editing the task, set to currently selected value
 				$taskInfo['scheduler_tableGarbageCollection_numberOfDays'] = $task->numberOfDays;
 				if ($task->numberOfDays === 0 && !isset($this->defaultNumberOfDays[$task->table])) {
 					$disabled = ' disabled="disabled"';
 				}
 			}
 		}
-
 		if ($task->allTables === TRUE) {
 			$disabled = ' disabled="disabled"';
 		}
-
 		$fieldName = 'tx_scheduler[scheduler_tableGarbageCollection_numberOfDays]';
 		$fieldId = 'task_tableGarbageCollection_numberOfDays';
-		$fieldHtml = '<input type="text" ' .
-			'name="' . $fieldName . '" ' .
-			'id="' . $fieldId . '" ' .
-			$disabled .
-			'value="' . intval($taskInfo['scheduler_tableGarbageCollection_numberOfDays']) . '" ' .
-			'size="4" />';
-
+		$fieldHtml = (((((((((('<input type="text" ' . 'name="') . $fieldName) . '" ') . 'id="') . $fieldId) . '" ') . $disabled) . 'value="') . intval($taskInfo['scheduler_tableGarbageCollection_numberOfDays'])) . '" ') . 'size="4" />';
 		$fieldConfiguration = array(
 			'code' => $fieldHtml,
 			'label' => 'LLL:EXT:scheduler/mod1/locallang.xml:label.tableGarbageCollection.numberOfDays',
 			'cshKey' => '_MOD_tools_txschedulerM1',
-			'cshLabel' => $fieldId,
+			'cshLabel' => $fieldId
 		);
-
 		return $fieldConfiguration;
 	}
 
@@ -218,7 +186,6 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		$validData = $this->validateAllTablesAdditionalField($submittedData, $parentObject);
 		$validData &= $this->validateTableAdditionalField($submittedData, $parentObject);
 		$validData &= $this->validateNumberOfDaysAdditionalField($submittedData, $parentObject);
-
 		return $validData;
 	}
 
@@ -236,7 +203,6 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		} elseif ($submittedData['scheduler_tableGarbageCollection_allTables'] === 'on') {
 			$validData = TRUE;
 		}
-
 		return $validData;
 	}
 
@@ -255,7 +221,6 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		} elseif (array_key_exists($submittedData['scheduler_tableGarbageCollection_table'], $tableConfiguration)) {
 			$validData = TRUE;
 		}
-
 		return $validData;
 	}
 
@@ -273,10 +238,9 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		} elseif (intval($submittedData['scheduler_tableGarbageCollection_numberOfDays']) >= 0) {
 			$validData = TRUE;
 		} else {
-				// Issue error message
+			// Issue error message
 			$parentObject->addMessage($GLOBALS['LANG']->sL('LLL:EXT:scheduler/mod1/locallang.xml:msg.invalidNumberOfDays'), t3lib_FlashMessage::ERROR);
 		}
-
 		return $validData;
 	}
 
@@ -292,5 +256,7 @@ class tx_scheduler_TableGarbageCollection_AdditionalFieldProvider implements tx_
 		$task->table = $submittedData['scheduler_tableGarbageCollection_table'];
 		$task->numberOfDays = intval($submittedData['scheduler_tableGarbageCollection_numberOfDays']);
 	}
+
 }
+
 ?>

@@ -25,7 +25,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Contains TEXT class object.
  *
@@ -51,5 +50,7 @@ class tslib_content_Text extends tslib_content_Abstract {
 		}
 		return $content;
 	}
+
 }
+
 ?>

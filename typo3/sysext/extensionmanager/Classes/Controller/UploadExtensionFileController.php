@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Controller for handling upload of a local extension file
  * Handles .t3x or .zip files
@@ -93,11 +92,7 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		$file = $_FILES['tx_extensionmanager_tools_extensionmanagerextensionmanager'];
 		$fileExtension = pathinfo($file['name']['extensionFile'], PATHINFO_EXTENSION);
 		$fileName = pathinfo($file['name']['extensionFile'], PATHINFO_BASENAME);
-		if (isset($file['name']['extensionFile']) && (
-				$fileExtension !== 't3x' &&
-				$fileExtension !== 'zip'
-			)
-		) {
+		if (isset($file['name']['extensionFile']) && ($fileExtension !== 't3x' && $fileExtension !== 'zip')) {
 			throw new Tx_Extensionmanager_Exception_ExtensionManager('Wrong file format given.', 1342858853);
 		}
 		if (isset($file['tmp_name']['extensionFile'])) {
@@ -110,7 +105,6 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		} else {
 			$extensionData = $this->getExtensionFromZipFile($tempFile, $fileName);
 		}
-
 		$this->view->assign('extensionKey', $extensionData['extKey']);
 	}
 
@@ -152,5 +146,7 @@ class Tx_Extensionmanager_Controller_UploadExtensionFileController extends Tx_Ex
 		$this->installUtility->install($fileNameParts[0]);
 		return array('extKey' => $fileNameParts[0]);
 	}
+
 }
+
 ?>

@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Describes necessary methods if the nodes are draggable and dropable
  * within the tree.
@@ -34,7 +33,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_DraggableAndDropable {
+interface t3lib_tree_DraggableAndDropable
+{
 	/**
 	 * Moves given node inside a destination node
 	 *

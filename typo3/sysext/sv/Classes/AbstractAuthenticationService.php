@@ -1,37 +1,4 @@
 <?php
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2004-2011 René Fritz <r.fritz@colorcube.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
-/**
- * Service base class for 'User authentication'.
- *
- * @author René Fritz <r.fritz@colorcube.de>
- */
-
-require_once(PATH_t3lib . 'class.t3lib_svbase.php');
-
 /**
  * Authentication services class
  *
@@ -45,22 +12,51 @@ class tx_sv_authbase extends t3lib_svbase {
 	 * User object
 	 *
 	 * @var t3lib_userAuth
+	 * @todo Define visibility
 	 */
-	var $pObj;
-		// Subtype of the service which is used to call the service.
-	var $mode;
-		// Submitted login form data
-	var $login = array();
-		// Various data
-	var $authInfo = array();
-		// User db table definition
-	var $db_user = array();
-		// Usergroups db table definition
-	var $db_groups = array();
-		// If the writelog() functions is called if a login-attempt has be tried without success
-	var $writeAttemptLog = FALSE;
-		// If the t3lib_div::devLog() function should be used
-	var $writeDevLog = FALSE;
+	public $pObj;
+
+	// Subtype of the service which is used to call the service.
+	/**
+	 * @todo Define visibility
+	 */
+	public $mode;
+
+	// Submitted login form data
+	/**
+	 * @todo Define visibility
+	 */
+	public $login = array();
+
+	// Various data
+	/**
+	 * @todo Define visibility
+	 */
+	public $authInfo = array();
+
+	// User db table definition
+	/**
+	 * @todo Define visibility
+	 */
+	public $db_user = array();
+
+	// Usergroups db table definition
+	/**
+	 * @todo Define visibility
+	 */
+	public $db_groups = array();
+
+	// If the writelog() functions is called if a login-attempt has be tried without success
+	/**
+	 * @todo Define visibility
+	 */
+	public $writeAttemptLog = FALSE;
+
+	// If the t3lib_div::devLog() function should be used
+	/**
+	 * @todo Define visibility
+	 */
+	public $writeDevLog = FALSE;
 
 	/**
 	 * Initialize authentication service
@@ -70,20 +66,18 @@ class tx_sv_authbase extends t3lib_svbase {
 	 * @param array $authInfo Information array. Holds submitted form data etc.
 	 * @param object $pObj Parent object
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function initAuth($mode, $loginData, $authInfo, $pObj) {
-
+	public function initAuth($mode, $loginData, $authInfo, $pObj) {
 		$this->pObj = $pObj;
-			// Sub type
+		// Sub type
 		$this->mode = $mode;
 		$this->login = $loginData;
 		$this->authInfo = $authInfo;
-
 		$this->db_user = $this->getServiceOption('db_user', $authInfo['db_user'], FALSE);
 		$this->db_groups = $this->getServiceOption('db_groups', $authInfo['db_groups'], FALSE);
-
 		$this->writeAttemptLog = $this->pObj->writeAttemptLog;
-		$this->writeDevLog	 = $this->pObj->writeDevLog;
+		$this->writeDevLog = $this->pObj->writeDevLog;
 	}
 
 	/**
@@ -93,19 +87,19 @@ class tx_sv_authbase extends t3lib_svbase {
 	 * @param array $loginData Login data array
 	 * @param string $passwordCompareStrategy Password compare strategy
 	 * @return boolean TRUE if login data matched
+	 * @todo Define visibility
 	 */
-	function compareUident(array $user, array $loginData, $passwordCompareStrategy = '') {
+	public function compareUident(array $user, array $loginData, $passwordCompareStrategy = '') {
 		if ($this->authInfo['loginType'] === 'BE') {
-				// Challenge is only stored in session during BE login with the superchallenged login type.
-				// In the frontend context the challenge is never stored in the session.
+			// Challenge is only stored in session during BE login with the superchallenged login type.
+			// In the frontend context the challenge is never stored in the session.
 			if ($passwordCompareStrategy !== 'superchallenged') {
 				$this->pObj->challengeStoredInCookie = FALSE;
 			}
-				// The TYPO3 standard login service relies on $passwordCompareStrategy being set
-				// to 'superchallenged' because of the password in the database is stored as md5 hash
+			// The TYPO3 standard login service relies on $passwordCompareStrategy being set
+			// to 'superchallenged' because of the password in the database is stored as md5 hash
 			$passwordCompareStrategy = 'superchallenged';
 		}
-
 		return $this->pObj->compareUident($user, $loginData, $passwordCompareStrategy);
 	}
 
@@ -123,9 +117,10 @@ class tx_sv_authbase extends t3lib_svbase {
 	 * @param integer $recpid Special field used by tce_main.php. These ($tablename, $recuid, $recpid) holds the reference to the record which the log-entry is about. (Was used in attic status.php to update the interface.)
 	 * @return void
 	 * @see t3lib_beUserAuth::writelog()
+	 * @todo Define visibility
 	 */
-	function writelog($type, $action, $error, $details_nr, $details, $data, $tablename='', $recuid='', $recpid='') {
-		if($this->writeAttemptLog) {
+	public function writelog($type, $action, $error, $details_nr, $details, $data, $tablename = '', $recuid = '', $recpid = '') {
+		if ($this->writeAttemptLog) {
 			$this->pObj->writelog($type, $action, $error, $details_nr, $details, $data, $tablename, $recuid, $recpid);
 		}
 	}
@@ -135,7 +130,6 @@ class tx_sv_authbase extends t3lib_svbase {
 	 * create/update user - EXPERIMENTAL
 	 *
 	 *************************/
-
 	/**
 	 * Get a user from DB by username
 	 *
@@ -143,14 +137,14 @@ class tx_sv_authbase extends t3lib_svbase {
 	 * @param string $extraWhere Additional WHERE clause: " AND ...
 	 * @param array $dbUserSetup User db table definition: $this->db_user
 	 * @return mixed User array or FALSE
+	 * @todo Define visibility
 	 */
-	function fetchUserRecord($username, $extraWhere = '', $dbUserSetup = '') {
-
+	public function fetchUserRecord($username, $extraWhere = '', $dbUserSetup = '') {
 		$dbUser = is_array($dbUserSetup) ? $dbUserSetup : $this->db_user;
 		$user = $this->pObj->fetchUserRecord($dbUser, $username, $extraWhere);
-
 		return $user;
 	}
+
 }
 
 ?>

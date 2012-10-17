@@ -24,8 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * Main extension model
  *
@@ -58,7 +56,7 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 	/**
 	 * @var array
 	 */
-	protected static $dependencyTypes = array(
+	static protected $dependencyTypes = array(
 		'depends',
 		'conflicts'
 	);
@@ -66,7 +64,7 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 	/**
 	 * @var array
 	 */
-	public static $specialDependencies = array(
+	static public $specialDependencies = array(
 		'typo3',
 		'php'
 	);
@@ -135,6 +133,7 @@ class Tx_Extensionmanager_Domain_Model_Dependency extends Tx_Extbase_DomainObjec
 	public function getType() {
 		return $this->type;
 	}
+
 }
 
 ?>

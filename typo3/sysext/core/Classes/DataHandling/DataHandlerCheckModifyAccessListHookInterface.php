@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Interface for hook in t3lib_TCEmain::checkModifyAccessList
  *
@@ -32,8 +31,8 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_TCEmain_checkModifyAccessListHook {
-
+interface t3lib_TCEmain_checkModifyAccessListHook
+{
 	/**
 	 * Hook that determines whether a user has access to modify a table.
 	 *
@@ -43,6 +42,6 @@ interface t3lib_TCEmain_checkModifyAccessListHook {
 	 * @return void
 	 */
 	public function checkModifyAccessList(&$accessAllowed, $table, t3lib_TCEmain $parent);
-}
 
+}
 ?>

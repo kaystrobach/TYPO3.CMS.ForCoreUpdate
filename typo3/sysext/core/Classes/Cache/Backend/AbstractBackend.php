@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An abstract caching backend
  *
@@ -38,9 +37,9 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 
 	const DATETIME_EXPIRYTIME_UNLIMITED = '9999-12-31T23:59:59+0000';
 	const UNLIMITED_LIFETIME = 0;
-
 	/**
 	 * Reference to the cache which uses this backend
+	 *
 	 * @var t3lib_cache_frontend_Frontend
 	 */
 	protected $cache;
@@ -63,6 +62,7 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 
 	/**
 	 * Default lifetime of a cache entry in seconds
+	 *
 	 * @var integer
 	 */
 	protected $defaultLifetime = 3600;
@@ -81,12 +81,9 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 			foreach ($options as $optionKey => $optionValue) {
 				$methodName = 'set' . ucfirst($optionKey);
 				if (method_exists($this, $methodName)) {
-					$this->$methodName($optionValue);
+					$this->{$methodName}($optionValue);
 				} else {
-					throw new \InvalidArgumentException(
-						'Invalid cache backend option "' . $optionKey . '" for backend of type "' . get_class($this) . '"',
-						1231267498
-					);
+					throw new \InvalidArgumentException(((('Invalid cache backend option "' . $optionKey) . '" for backend of type "') . get_class($this)) . '"', 1231267498);
 				}
 			}
 		}
@@ -114,12 +111,8 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 	 */
 	public function setDefaultLifetime($defaultLifetime) {
 		if (!is_int($defaultLifetime) || $defaultLifetime < 0) {
-			throw new \InvalidArgumentException(
-				'The default lifetime must be given as a positive integer.',
-				1233072774
-			);
+			throw new \InvalidArgumentException('The default lifetime must be given as a positive integer.', 1233072774);
 		}
-
 		$this->defaultLifetime = $defaultLifetime;
 	}
 
@@ -131,16 +124,17 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 	 * @return \DateTime The expiry time
 	 */
 	protected function calculateExpiryTime($lifetime = NULL) {
-		if ($lifetime === self::UNLIMITED_LIFETIME || ($lifetime === NULL && $this->defaultLifetime === self::UNLIMITED_LIFETIME)) {
+		if ($lifetime === self::UNLIMITED_LIFETIME || $lifetime === NULL && $this->defaultLifetime === self::UNLIMITED_LIFETIME) {
 			$expiryTime = new \DateTime(self::DATETIME_EXPIRYTIME_UNLIMITED, new \DateTimeZone('UTC'));
 		} else {
 			if ($lifetime === NULL) {
 				$lifetime = $this->defaultLifetime;
 			}
-			$expiryTime = new \DateTime('now +' . $lifetime . ' seconds', new \DateTimeZone('UTC'));
+			$expiryTime = new \DateTime(('now +' . $lifetime) . ' seconds', new \DateTimeZone('UTC'));
 		}
-
 		return $expiryTime;
 	}
+
 }
+
 ?>

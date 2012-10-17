@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'size'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Size extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Gets the attribute 'size'.
 	 * Used with the element 'input'
@@ -43,15 +43,15 @@ class tx_form_Domain_Model_Attributes_Size extends tx_form_Domain_Model_Attribut
 	 * @return integer Attribute value
 	 */
 	public function getValue() {
-		$value = (integer) $this->value;
-
+		$value = (int) $this->value;
 		if ($value <= 0) {
 			$attribute = 40;
 		} else {
 			$attribute = $value;
 		}
-
 		return $attribute;
 	}
+
 }
+
 ?>

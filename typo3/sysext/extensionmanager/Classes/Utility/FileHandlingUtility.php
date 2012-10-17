@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility for dealing with files and folders
  *
@@ -72,11 +71,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @param string $pathType
 	 * @return void
 	 */
-	public function unpackExtensionFromExtensionDataArray(
-		array $extensionData,
-		Tx_Extensionmanager_Domain_Model_Extension $extension = NULL,
-		$pathType = 'Local'
-	) {
+	public function unpackExtensionFromExtensionDataArray(array $extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL, $pathType = 'Local') {
 		$extensionDir = $this->makeAndClearExtensionDir($extensionData['extKey'], $pathType);
 		$files = $this->extractFilesArrayFromExtensionData($extensionData);
 		$directories = $this->extractDirectoriesFromExtensionData($files);
@@ -94,7 +89,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	protected function extractDirectoriesFromExtensionData(array $files) {
 		$directories = array();
 		foreach ($files as $filePath => $file) {
-			preg_match('/(.*)\//', $filePath, $matches);
+			preg_match('/(.*)\\//', $filePath, $matches);
 			$directories[] = $matches[0];
 		}
 		return $directories;
@@ -136,6 +131,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 			t3lib_div::writeFile($rootPath . $file['name'], $file['content']);
 		}
 	}
+
 	/**
 	 * Removes the current extension of $type and creates the base folder for
 	 * the new one (which is going to be imported)
@@ -148,13 +144,10 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	protected function makeAndClearExtensionDir($extensionkey, $pathType = 'Local') {
 		$paths = Tx_Extensionmanager_Domain_Model_Extension::returnInstallPaths();
 		$path = $paths[$pathType];
-		if (!$path || !is_dir($path) || !$extensionkey) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				sprintf('ERROR: The extension install path "%s" was no directory!', $path),
-				1337280417
-			);
+		if ((!$path || !is_dir($path)) || !$extensionkey) {
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('ERROR: The extension install path "%s" was no directory!', $path), 1337280417);
 		} else {
-			$extDirPath = $path . $extensionkey . '/';
+			$extDirPath = ($path . $extensionkey) . '/';
 			if (is_dir($extDirPath)) {
 				$this->removeDirectory($extDirPath);
 			}
@@ -173,10 +166,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	protected function addDirectory($extDirPath) {
 		t3lib_div::mkdir($extDirPath);
 		if (!is_dir($extDirPath)) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_create_dir'), $extDirPath),
-				1337280416
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_create_dir'), $extDirPath), 1337280416);
 		}
 	}
 
@@ -190,10 +180,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	public function removeDirectory($extDirPath) {
 		$res = t3lib_div::rmdir($extDirPath, TRUE);
 		if ($res === FALSE) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(
-				sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_remove_dir'), $extDirPath),
-				1337280415
-			);
+			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_remove_dir'), $extDirPath), 1337280415);
 		}
 	}
 
@@ -205,11 +192,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
 	 * @return void
 	 */
-	protected function writeEmConfToFile(
-		array $extensionData,
-		$rootPath,
-		Tx_Extensionmanager_Domain_Model_Extension $extension = NULL
-	) {
+	protected function writeEmConfToFile(array $extensionData, $rootPath, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
 		$emConfContent = $this->emConfUtility->constructEmConf($extensionData, $extension);
 		t3lib_div::writeFile($rootPath . 'ext_emconf.php', $emConfContent);
 	}
@@ -260,13 +243,10 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 */
 	public function createZipFileFromExtension($extension) {
 		$extensionPath = $this->getAbsoluteExtensionPath($extension);
-		$fileName = PATH_site . 'typo3temp/' . $extension . '.zip';
-		$zip = new ZipArchive;
+		$fileName = ((PATH_site . 'typo3temp/') . $extension) . '.zip';
+		$zip = new ZipArchive();
 		$zip->open($fileName, ZipArchive::CREATE);
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($extensionPath)
-		);
-
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($extensionPath));
 		foreach ($iterator as $key => $value) {
 			$archiveName = str_replace($extensionPath, '', $key);
 			if (t3lib_utility_String::isLastPartOfString($key, '.')) {
@@ -275,7 +255,6 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 				$zip->addFile($key, $archiveName);
 			}
 		}
-
 		$zip->close();
 		return $fileName;
 	}
@@ -302,9 +281,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 						t3lib_div::mkdir_deep($extensionDir . $dir);
 					}
 					if (strlen(trim($file)) > 0) {
-						$return = t3lib_div::writeFile(
-							$extensionDir . $dir . '/' . $file, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry))
-						);
+						$return = t3lib_div::writeFile((($extensionDir . $dir) . '/') . $file, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
 						if ($return === FALSE) {
 							throw new Tx_Extensionmanager_Exception_ExtensionManager('Could not write file ' . $file, 1344691048);
 						}
@@ -331,10 +308,10 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		}
 		header('Content-Type: application/zip');
 		header('Content-Length: ' . filesize($fileName));
-		header('Content-Disposition: attachment; filename="' . $downloadName . '.zip"');
+		header(('Content-Disposition: attachment; filename="' . $downloadName) . '.zip"');
 		readfile($fileName);
 		unlink($fileName);
-		exit();
+		die;
 	}
 
 	/**
@@ -352,12 +329,11 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 		}
 		header('Content-Type: text');
 		header('Content-Length: ' . filesize($fileName));
-		header('Content-Disposition: attachment; filename="' . $downloadName . '.sql"');
+		header(('Content-Disposition: attachment; filename="' . $downloadName) . '.sql"');
 		readfile($fileName);
 		unlink($fileName);
-		exit();
+		die;
 	}
-
 
 }
 

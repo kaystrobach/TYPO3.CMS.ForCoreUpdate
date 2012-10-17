@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * A caching backend which forgets everything immediately
  *
@@ -46,6 +45,7 @@ class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBacken
 	 * @api
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
+
 	}
 
 	/**
@@ -99,6 +99,7 @@ class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBacken
 	 * @api
 	 */
 	public function flush() {
+
 	}
 
 	/**
@@ -109,6 +110,7 @@ class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBacken
 	 * @api
 	 */
 	public function flushByTag($tag) {
+
 	}
 
 	/**
@@ -118,6 +120,7 @@ class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBacken
 	 * @api
 	 */
 	public function collectGarbage() {
+
 	}
 
 	/**
@@ -128,6 +131,9 @@ class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBacken
 	 * @api
 	 */
 	public function requireOnce($identifier) {
+
 	}
+
 }
+
 ?>

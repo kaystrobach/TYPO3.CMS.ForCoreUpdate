@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class with utility functions for module menu
  *
@@ -110,7 +109,7 @@ class Typo3_Utility_BackendModuleUtility {
 		if (!empty($module['link']) && is_string($module['link'])) {
 			$entry->setLink($module['link']);
 		}
-		if (empty($module['link']) && !empty($module['path']) && is_string($module['path'])) {
+		if ((empty($module['link']) && !empty($module['path'])) && is_string($module['path'])) {
 			$entry->setLink($module['path']);
 		}
 		if (!empty($module['description']) && is_string($module['description'])) {
@@ -151,6 +150,7 @@ class Typo3_Utility_BackendModuleUtility {
 			}
 		}
 	}
+
 }
 
 ?>

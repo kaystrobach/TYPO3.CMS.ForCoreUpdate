@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Utility methods for filtering filenames
  *
@@ -57,36 +56,28 @@ class t3lib_file_Utility_FileExtensionFilter {
 	 */
 	public function filterInlineChildren(array $parameters, t3lib_TCEmain $tceMain) {
 		$values = $parameters['values'];
-
 		if ($parameters['allowedFileExtensions']) {
 			$this->setAllowedFileExtensions($parameters['allowedFileExtensions']);
 		}
-
 		if ($parameters['disallowedFileExtensions']) {
 			$this->setDisallowedFileExtensions($parameters['disallowedFileExtensions']);
 		}
-
 		$cleanValues = array();
-
 		foreach ($values as $value) {
 			if (empty($value)) {
 				continue;
 			}
-
 			$parts = t3lib_div::revExplode('_', $value, 2);
 			$fileReferenceUid = $parts[count($parts) - 1];
-
 			$fileReference = t3lib_file_Factory::getInstance()->getFileReferenceObject($fileReferenceUid);
 			$file = $fileReference->getOriginalFile();
-
 			if ($this->isAllowed($file)) {
 				$cleanValues[] = $value;
 			} else {
-					// Remove the erroneously created reference record again
+				// Remove the erroneously created reference record again
 				$tceMain->deleteAction('sys_file_reference', $fileReferenceUid);
 			}
 		}
-
 		return $cleanValues;
 	}
 
@@ -105,21 +96,17 @@ class t3lib_file_Utility_FileExtensionFilter {
 	 */
 	public function filterFileList($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, t3lib_file_Driver_AbstractDriver $driver) {
 		$returnCode = TRUE;
-
-			// Early return in case no file filters are set at all
+		// Early return in case no file filters are set at all
 		if ($this->allowedFileExtensions === NULL && $this->disallowedFileExtensions === NULL) {
 			return $returnCode;
 		}
-
-			// Check that this is a file and not a folder
+		// Check that this is a file and not a folder
 		if ($driver->fileExists($itemIdentifier)) {
 			$file = $driver->getFile($itemIdentifier);
-
 			if (!$this->isAllowed($file)) {
 				$returnCode = -1;
 			}
 		}
-
 		return $returnCode;
 	}
 
@@ -131,22 +118,17 @@ class t3lib_file_Utility_FileExtensionFilter {
 	 */
 	protected function isAllowed(t3lib_file_FileInterface $file) {
 		$result = TRUE;
-
 		$fileExt = $file->getExtension();
-
-			// Check allowed file extensions
-		if ($this->allowedFileExtensions !== NULL && count($this->allowedFileExtensions) > 0 && !in_array($fileExt, $this->allowedFileExtensions)) {
+		// Check allowed file extensions
+		if (($this->allowedFileExtensions !== NULL && count($this->allowedFileExtensions) > 0) && !in_array($fileExt, $this->allowedFileExtensions)) {
 			$result = FALSE;
 		}
-
-			// Check disallowed file extensions
-		if ($this->disallowedFileExtensions !== NULL && count($this->disallowedFileExtensions) > 0 && in_array($fileExt, $this->disallowedFileExtensions)) {
+		// Check disallowed file extensions
+		if (($this->disallowedFileExtensions !== NULL && count($this->disallowedFileExtensions) > 0) && in_array($fileExt, $this->disallowedFileExtensions)) {
 			$result = FALSE;
 		}
-
 		return $result;
 	}
-
 
 	/**
 	 * Set allowed file extensions
@@ -156,7 +138,6 @@ class t3lib_file_Utility_FileExtensionFilter {
 	public function setAllowedFileExtensions($allowedFileExtensions) {
 		$this->allowedFileExtensions = $this->convertToArray($allowedFileExtensions);
 	}
-
 
 	/**
 	 * Set disallowed file extensions
@@ -175,15 +156,14 @@ class t3lib_file_Utility_FileExtensionFilter {
 	 */
 	protected function convertToArray($inputArgument) {
 		$returnValue = NULL;
-
 		if (is_array($inputArgument)) {
 			$returnValue = $inputArgument;
 		} elseif (strlen($inputArgument) > 0) {
 			$returnValue = t3lib_div::trimExplode(',', $inputArgument);
 		}
-
 		return $returnValue;
 	}
+
 }
 
 ?>

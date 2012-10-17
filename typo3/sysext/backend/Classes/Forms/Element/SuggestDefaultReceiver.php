@@ -24,7 +24,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Default implementation of a handler class for an ajax record selector.
  *
@@ -33,9 +32,9 @@
  *
  * @author Andreas Wolf <andreas.wolf@ikt-werk.de>
  * @author Benjamin Mack <benni@typo3.org>
- *
  */
 class t3lib_TCEforms_Suggest_DefaultReceiver {
+
 	/**
 	 * The name of the table to query
 	 *
@@ -109,10 +108,9 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	public function __construct($table, $config) {
 		$this->table = $table;
 		$this->config = $config;
-
-			// get a list of all the pages that should be looked on
+		// get a list of all the pages that should be looked on
 		if (isset($config['pidList'])) {
-			$allowedPages = $pageIds = t3lib_div::trimExplode(',', $config['pidList']);
+			$allowedPages = ($pageIds = t3lib_div::trimExplode(',', $config['pidList']));
 			$depth = intval($config['pidDepth']);
 			foreach ($pageIds as $pageId) {
 				if ($pageId > 0) {
@@ -121,21 +119,17 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 			}
 			$this->allowedPages = array_unique($allowedPages);
 		}
-
 		if (isset($config['maxItemsInResultList'])) {
 			$this->maxItems = $config['maxItemsInResultList'];
 		}
-
 		if ($this->table == 'pages') {
 			$this->addWhere = ' AND ' . $GLOBALS['BE_USER']->getPagePermsClause(1);
 		}
-
-			// if table is versionized, only get the records from the Live Workspace
-			// the overlay itself of WS-records is done below
+		// if table is versionized, only get the records from the Live Workspace
+		// the overlay itself of WS-records is done below
 		if ($GLOBALS['TCA'][$this->table]['ctrl']['versioningWS'] == TRUE) {
 			$this->addWhere .= ' AND t3ver_wsid = 0';
 		}
-
 		if (isset($config['addWhere'])) {
 			$this->addWhere .= ' ' . $config['addWhere'];
 		}
@@ -155,72 +149,49 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 */
 	public function queryTable(&$params, $recursionCounter = 0) {
 		$rows = array();
-
-		$this->params = &$params;
+		$this->params =& $params;
 		$start = $recursionCounter * 50;
-
 		$this->prepareSelectStatement();
 		$this->prepareOrderByStatement();
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'*',
-			$this->table,
-			$this->selectClause,
-			'',
-			$this->orderByStatement,
-			$start . ', 50');
-
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->table, $this->selectClause, '', $this->orderByStatement, $start . ', 50');
 		$allRowsCount = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
-
 		if ($allRowsCount) {
-			while (($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
-
-					// check if we already have collected the maximum number of records
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				// check if we already have collected the maximum number of records
 				if (count($rows) > $this->maxItems) {
 					break;
 				}
-
 				$this->manipulateRecord($row);
 				$this->makeWorkspaceOverlay($row);
-
-					// check if the user has access to the record
+				// check if the user has access to the record
 				if (!$this->checkRecordAccess($row, $row['uid'])) {
 					continue;
 				}
-
 				$iconPath = $this->getIcon($row);
-				$uid = ($row['t3ver_oid'] > 0 ? $row['t3ver_oid'] : $row['uid']);
-
+				$uid = $row['t3ver_oid'] > 0 ? $row['t3ver_oid'] : $row['uid'];
 				$path = $this->getRecordPath($row, $uid);
 				if (strlen($path) > 30) {
-					$croppedPath = '<abbr title="' . htmlspecialchars($path) . '">' .
-								htmlspecialchars($GLOBALS['LANG']->csConvObj->crop($GLOBALS['LANG']->charSet, $path, 10) .
-													'...' . $GLOBALS['LANG']->csConvObj->crop($GLOBALS['LANG']->charSet, $path, -20)
-								) . '</abbr>';
+					$croppedPath = ((('<abbr title="' . htmlspecialchars($path)) . '">') . htmlspecialchars((($GLOBALS['LANG']->csConvObj->crop($GLOBALS['LANG']->charSet, $path, 10) . '...') . $GLOBALS['LANG']->csConvObj->crop($GLOBALS['LANG']->charSet, $path, -20)))) . '</abbr>';
 				} else {
 					$croppedPath = htmlspecialchars($path);
 				}
-
 				$label = $this->getLabel($row);
 				$entry = array(
-					'text' => '<span class="suggest-label">' . $label . '</span><span class="suggest-uid">[' . $uid . ']</span><br />
-								<span class="suggest-path">' . $croppedPath . '</span>',
-					'table' => ($this->mmForeignTable ? $this->mmForeignTable : $this->table),
+					'text' => ((((('<span class="suggest-label">' . $label) . '</span><span class="suggest-uid">[') . $uid) . ']</span><br />
+								<span class="suggest-path">') . $croppedPath) . '</span>',
+					'table' => $this->mmForeignTable ? $this->mmForeignTable : $this->table,
 					'label' => $label,
 					'path' => $path,
 					'uid' => $uid,
 					'icon' => $iconPath,
-					'style' => 'background-image:url(' . $iconPath . ');',
-					'class' => (isset($this->config['cssClass']) ? $this->config['cssClass'] : ''),
+					'style' => ('background-image:url(' . $iconPath) . ');',
+					'class' => isset($this->config['cssClass']) ? $this->config['cssClass'] : ''
 				);
-
-				$rows[$this->table . '_' . $uid] = $this->renderRecord($row, $entry);
+				$rows[($this->table . '_') . $uid] = $this->renderRecord($row, $entry);
 			}
-
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
-
-				// if there are less records than we need, call this function again to get more records
-			if (count($rows) < $this->maxItems &&
-				$allRowsCount >= 50 && $recursionCounter < $this->maxItems) {
+			// if there are less records than we need, call this function again to get more records
+			if ((count($rows) < $this->maxItems && $allRowsCount >= 50) && $recursionCounter < $this->maxItems) {
 				$tmp = self::queryTable($params, ++$recursionCounter);
 				$rows = array_merge($tmp, $rows);
 			}
@@ -236,46 +207,38 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 */
 	protected function prepareSelectStatement() {
 		$searchWholePhrase = $this->config['searchWholePhrase'];
-
 		$searchString = $this->params['value'];
 		$searchUid = intval($searchString);
 		if (strlen($searchString)) {
 			$searchString = $GLOBALS['TYPO3_DB']->quoteStr($searchString, $this->table);
-			$likeCondition = ' LIKE \'' . ($searchWholePhrase ? '%' : '') .
-							$GLOBALS['TYPO3_DB']->escapeStrForLike($searchString, $this->table) . '%\'';
-
-				// Search in all fields given by label or label_alt
-			$selectFieldsList = $GLOBALS['TCA'][$this->table]['ctrl']['label'] . ',' . $GLOBALS['TCA'][$this->table]['ctrl']['label_alt'] . ',' . $this->config['additionalSearchFields'];
+			$likeCondition = ((' LIKE \'' . ($searchWholePhrase ? '%' : '')) . $GLOBALS['TYPO3_DB']->escapeStrForLike($searchString, $this->table)) . '%\'';
+			// Search in all fields given by label or label_alt
+			$selectFieldsList = ((($GLOBALS['TCA'][$this->table]['ctrl']['label'] . ',') . $GLOBALS['TCA'][$this->table]['ctrl']['label_alt']) . ',') . $this->config['additionalSearchFields'];
 			$selectFields = t3lib_div::trimExplode(',', $selectFieldsList, TRUE);
 			$selectFields = array_unique($selectFields);
-
 			$selectParts = array();
 			foreach ($selectFields as $field) {
 				$selectParts[] = $field . $likeCondition;
 			}
-			$this->selectClause = '(' . implode(' OR ', $selectParts) . ')';
-
+			$this->selectClause = ('(' . implode(' OR ', $selectParts)) . ')';
 			if ($searchUid > 0 && $searchUid == $searchString) {
-				$this->selectClause = '(' . $this->selectClause . ' OR uid = ' . $searchUid . ')';
+				$this->selectClause = ((('(' . $this->selectClause) . ' OR uid = ') . $searchUid) . ')';
 			}
 		}
 		if (isset($GLOBALS['TCA'][$this->table]['ctrl']['delete'])) {
-			$this->selectClause .= ' AND ' . $GLOBALS['TCA'][$this->table]['ctrl']['delete'] . ' = 0';
+			$this->selectClause .= (' AND ' . $GLOBALS['TCA'][$this->table]['ctrl']['delete']) . ' = 0';
 		}
-
 		if (count($this->allowedPages)) {
 			$pidList = $GLOBALS['TYPO3_DB']->cleanIntArray($this->allowedPages);
 			if (count($pidList)) {
-				$this->selectClause .= ' AND pid IN (' . implode(', ', $pidList) . ') ';
+				$this->selectClause .= (' AND pid IN (' . implode(', ', $pidList)) . ') ';
 			}
 		}
-
-			// add an additional search condition comment
+		// add an additional search condition comment
 		if (isset($this->config['searchCondition']) && strlen($this->config['searchCondition']) > 0) {
 			$this->selectClause .= ' AND ' . $this->config['searchCondition'];
 		}
-
-			// add the global clauses to the where-statement
+		// add the global clauses to the where-statement
 		$this->selectClause .= $this->addWhere;
 	}
 
@@ -289,24 +252,19 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	protected function getAllSubpagesOfPage($uid, $depth = 99) {
 		$pageIds = array($uid);
 		$level = 0;
-
 		$pages = array($uid);
-
-			// fetch all
-		while (($depth - $level) > 0 && !empty($pageIds)) {
+		// fetch all
+		while ($depth - $level > 0 && !empty($pageIds)) {
 			++$level;
-
 			$pidList = $GLOBALS['TYPO3_DB']->cleanIntArray($pageIds);
-			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'pages', 'pid IN (' . implode(', ', $pidList) . ')', '', '', '', 'uid');
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'pages', ('pid IN (' . implode(', ', $pidList)) . ')', '', '', '', 'uid');
 			if (count($rows) > 0) {
 				$pageIds = array_keys($rows);
-
 				$pages = array_merge($pages, $pageIds);
 			} else {
 				break;
 			}
 		}
-
 		return $pages;
 	}
 
@@ -328,10 +286,11 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @param array $row
 	 */
 	protected function manipulateRecord(&$row) {
+
 	}
 
 	/**
-	 *  Selects whether the logged in Backend User is allowed to read a specific record
+	 * Selects whether the logged in Backend User is allowed to read a specific record
 	 *
 	 * @param array $row
 	 * @param integer $uid
@@ -339,12 +298,12 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 */
 	protected function checkRecordAccess($row, $uid) {
 		$retValue = TRUE;
-		$table = ($this->mmForeignTable ? $this->mmForeignTable : $this->table);
+		$table = $this->mmForeignTable ? $this->mmForeignTable : $this->table;
 		if ($table == 'pages') {
 			if (!t3lib_BEfunc::readPageAccess($uid, $GLOBALS['BE_USER']->getPagePermsClause(1))) {
 				$retValue = FALSE;
 			}
-		} elseif (isset($GLOBALS['TCA'][$table]['ctrl']['is_static']) && (bool)$GLOBALS['TCA'][$table]['ctrl']['is_static']) {
+		} elseif (isset($GLOBALS['TCA'][$table]['ctrl']['is_static']) && (bool) $GLOBALS['TCA'][$table]['ctrl']['is_static']) {
 			$retValue = TRUE;
 		} else {
 			if (!is_array(t3lib_BEfunc::readPageAccess($row['pid'], $GLOBALS['BE_USER']->getPagePermsClause(1)))) {
@@ -361,9 +320,9 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @return void (passed by reference)
 	 */
 	protected function makeWorkspaceOverlay(&$row) {
-			// Check for workspace-versions
+		// Check for workspace-versions
 		if ($GLOBALS['BE_USER']->workspace != 0 && $GLOBALS['TCA'][$this->table]['ctrl']['versioningWS'] == TRUE) {
-			t3lib_BEfunc::workspaceOL(($this->mmForeignTable ? $this->mmForeignTable : $this->table), $row);
+			t3lib_BEfunc::workspaceOL($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row);
 		}
 	}
 
@@ -374,7 +333,7 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @return string The path to the icon
 	 */
 	protected function getIcon($row) {
-		$icon = t3lib_iconWorks::getIcon(($this->mmForeignTable ? $this->mmForeignTable : $this->table), $row);
+		$icon = t3lib_iconWorks::getIcon($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row);
 		return t3lib_iconWorks::skinImg('', $icon, '', 1);
 	}
 
@@ -390,16 +349,14 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 */
 	protected function getRecordPath(&$row, $uid) {
 		$titleLimit = max($this->config['maxPathTitleLength'], 0);
-
 		if (($this->mmForeignTable ? $this->mmForeignTable : $this->table) == 'pages') {
 			$path = t3lib_BEfunc::getRecordPath($uid, '', $titleLimit);
-				// For pages we only want the first (n-1) parts of the path,
-				// because the n-th part is the page itself
+			// For pages we only want the first (n-1) parts of the path,
+			// because the n-th part is the page itself
 			$path = substr($path, 0, strrpos($path, '/', -2)) . '/';
 		} else {
 			$path = t3lib_BEfunc::getRecordPath($row['pid'], '', $titleLimit);
 		}
-
 		return $path;
 	}
 
@@ -410,7 +367,7 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @return string The label
 	 */
 	protected function getLabel($row) {
-		return t3lib_BEfunc::getRecordTitle(($this->mmForeignTable ? $this->mmForeignTable : $this->table), $row, TRUE);
+		return t3lib_BEfunc::getRecordTitle($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row, TRUE);
 	}
 
 	/**
@@ -423,7 +380,7 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @return array The rendered entry (will be put into a <li> later on
 	 */
 	protected function renderRecord($row, $entry) {
-			// Call renderlet if available (normal pages etc. usually don't have one)
+		// Call renderlet if available (normal pages etc. usually don't have one)
 		if ($this->config['renderFunc'] != '') {
 			$params = array(
 				'table' => $this->table,
@@ -433,9 +390,9 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 			);
 			t3lib_div::callUserFunction($this->config['renderFunc'], $params, $this, '');
 		}
-
 		return $entry;
 	}
+
 }
 
 ?>

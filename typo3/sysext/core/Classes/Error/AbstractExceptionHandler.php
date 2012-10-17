@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * An abstract exception handler
  *
@@ -32,9 +31,9 @@
  * @subpackage error
  */
 abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_ExceptionHandlerInterface, t3lib_Singleton {
+
 	const CONTEXT_WEB = 'WEB';
 	const CONTEXT_CLI = 'CLI';
-
 	/**
 	 * Displays the given exception
 	 *
@@ -43,11 +42,11 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 	 */
 	public function handleException(Exception $exception) {
 		switch (PHP_SAPI) {
-			case 'cli' :
-				$this->echoExceptionCLI($exception);
-				break;
-			default :
-				$this->echoExceptionWeb($exception);
+		case 'cli':
+			$this->echoExceptionCLI($exception);
+			break;
+		default:
+			$this->echoExceptionWeb($exception);
 		}
 	}
 
@@ -61,47 +60,36 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 	 */
 	protected function writeLogEntries(Exception $exception, $context) {
 		$filePathAndName = $exception->getFile();
-		$exceptionCodeNumber = ($exception->getCode() > 0) ? '#' . $exception->getCode() . ': ' : '';
-		$logTitle = 'Core: Exception handler (' . $context . ')';
-		$logMessage = 'Uncaught TYPO3 Exception: ' . $exceptionCodeNumber . $exception->getMessage() . ' | ' .
-					get_class($exception) . ' thrown in file ' . $filePathAndName . ' in line ' . $exception->getLine();
+		$exceptionCodeNumber = $exception->getCode() > 0 ? ('#' . $exception->getCode()) . ': ' : '';
+		$logTitle = ('Core: Exception handler (' . $context) . ')';
+		$logMessage = ((((((('Uncaught TYPO3 Exception: ' . $exceptionCodeNumber) . $exception->getMessage()) . ' | ') . get_class($exception)) . ' thrown in file ') . $filePathAndName) . ' in line ') . $exception->getLine();
 		if ($context === 'WEB') {
 			$logMessage .= '. Requested URL: ' . t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
 		}
-
 		$backtrace = $exception->getTrace();
-
-			// Write error message to the configured syslogs
+		// Write error message to the configured syslogs
 		t3lib_div::sysLog($logMessage, $logTitle, t3lib_div::SYSLOG_SEVERITY_FATAL);
-
-			// When database credentials are wrong, the exception is probably
-			// caused by this. Therefor we cannot do any database operation,
-			// otherwise this will lead into recurring exceptions.
+		// When database credentials are wrong, the exception is probably
+		// caused by this. Therefor we cannot do any database operation,
+		// otherwise this will lead into recurring exceptions.
 		try {
-				// In case an error occurs before a database connection exists, try
-				// to connect to the DB to be able to write the devlog/sys_log entry
-			if (isset($GLOBALS['TYPO3_DB']) && is_object($GLOBALS['TYPO3_DB']) && empty($GLOBALS['TYPO3_DB']->link)) {
+			// In case an error occurs before a database connection exists, try
+			// to connect to the DB to be able to write the devlog/sys_log entry
+			if ((isset($GLOBALS['TYPO3_DB']) && is_object($GLOBALS['TYPO3_DB'])) && empty($GLOBALS['TYPO3_DB']->link)) {
 				$GLOBALS['TYPO3_DB']->connectDB();
 			}
-
-				// Write error message to devlog
-				// see: $TYPO3_CONF_VARS['SYS']['enable_exceptionDLOG']
+			// Write error message to devlog
+			// see: $TYPO3_CONF_VARS['SYS']['enable_exceptionDLOG']
 			if (TYPO3_EXCEPTION_DLOG) {
-				t3lib_div::devLog(
-					$logMessage,
-					$logTitle,
-					3,
-					array(
-						'TYPO3_MODE' => TYPO3_MODE,
-						'backtrace' => $backtrace
-					)
-				);
+				t3lib_div::devLog($logMessage, $logTitle, 3, array(
+					'TYPO3_MODE' => TYPO3_MODE,
+					'backtrace' => $backtrace
+				));
 			}
-
-				// Write error message to sys_log table
-			$this->writeLog($logTitle . ': ' . $logMessage);
+			// Write error message to sys_log table
+			$this->writeLog(($logTitle . ': ') . $logMessage);
 		} catch (Exception $exception) {
-			// Nothing happens here. It seems the database credentials are wrong
+
 		}
 	}
 
@@ -123,8 +111,7 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 					$workspace = $GLOBALS['BE_USER']->workspace;
 				}
 			}
-
-			$fields_values = Array(
+			$fields_values = array(
 				'userid' => $userId,
 				'type' => 5,
 				'action' => 0,
@@ -135,7 +122,6 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 				'tstamp' => $GLOBALS['EXEC_TIME'],
 				'workspace' => $workspace
 			);
-
 			$GLOBALS['TYPO3_DB']->exec_INSERTquery('sys_log', $fields_values);
 		}
 	}
@@ -154,11 +140,12 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 			$headers = array(t3lib_utility_Http::HTTP_STATUS_500);
 		}
 		if (!headers_sent()) {
-			foreach($headers as $header) {
+			foreach ($headers as $header) {
 				header($header);
 			}
 		}
 	}
+
 }
 
 ?>

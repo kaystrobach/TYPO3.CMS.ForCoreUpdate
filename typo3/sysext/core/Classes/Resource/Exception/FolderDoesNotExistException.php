@@ -21,8 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-
 /**
  * An exception to throw if a folder does not exist
  *
@@ -30,6 +28,7 @@
  * @subpackage t3lib_file
  */
 class t3lib_file_exception_FolderDoesNotExistException extends t3lib_file_exception_AbstractFileException {
+
 
 }
 

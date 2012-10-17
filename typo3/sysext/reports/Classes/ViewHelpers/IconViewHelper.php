@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Render the icon of a report
  *
@@ -40,19 +39,16 @@ class Tx_Reports_ViewHelpers_IconViewHelper extends Tx_Fluid_ViewHelpers_Be_Abst
 	public function render($icon, $title = '') {
 		if (!empty($icon)) {
 			$absIconPath = t3lib_div::getFileAbsFilename($icon);
-
 			if (file_exists($absIconPath)) {
-				$icon = $GLOBALS['BACK_PATH'] . '../' . str_replace(PATH_site, '', $absIconPath);
+				$icon = ($GLOBALS['BACK_PATH'] . '../') . str_replace(PATH_site, '', $absIconPath);
 			}
 		} else {
 			$icon = t3lib_extMgm::extRelPath('reports') . 'Resources/Public/moduleicon.gif';
 		}
-
-		$content = '<img' . t3lib_iconworks::skinImg($GLOBALS['BACK_PATH'], $icon, 'width="16" height="16"') .
-			' title="' . htmlspecialchars($title) . '" alt="' . htmlspecialchars($title) . '" />';
-
+		$content = ((((('<img' . t3lib_iconworks::skinImg($GLOBALS['BACK_PATH'], $icon, 'width="16" height="16"')) . ' title="') . htmlspecialchars($title)) . '" alt="') . htmlspecialchars($title)) . '" />';
 		return $content;
 	}
 
 }
+
 ?>

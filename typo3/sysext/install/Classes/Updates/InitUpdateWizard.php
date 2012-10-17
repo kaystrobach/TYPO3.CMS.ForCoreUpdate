@@ -21,16 +21,16 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Upgrade wizard which creates all sys_file* tables. Required to ensure that all
  * other FAL migration wizards can run properly.
  *
- * @package     TYPO3
- * @author      Tolleiv Nietsch <info@tolleiv.de>
- * @license     http://www.gnu.org/copyleft/gpl.html
+ * @package TYPO3
+ * @author Tolleiv Nietsch <info@tolleiv.de>
+ * @license http://www.gnu.org/copyleft/gpl.html
  */
 class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
+
 	/**
 	 * @var string
 	 */
@@ -51,8 +51,8 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	/**
 	 * Checks if an update is needed
 	 *
-	 * @param	string		&$description: The description for the update
-	 * @return	boolean		TRUE if an update is needed, FALSE otherwise
+	 * @param 	string		&$description: The description for the update
+	 * @return 	boolean		TRUE if an update is needed, FALSE otherwise
 	 */
 	public function checkForUpdate(&$description) {
 		$description = 'Create the database tables which are required for the File Abstraction Layer in order to work. Do this as the first step for all further wizards related to FAL.';
@@ -62,9 +62,9 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	/**
 	 * Performs the database update.
 	 *
-	 * @param	array		&$dbQueries: queries done in this update
-	 * @param	mixed		&$customMessages: custom messages
-	 * @return	boolean		TRUE on success, FALSE on error
+	 * @param 	array		&$dbQueries: queries done in this update
+	 * @param 	mixed		&$customMessages: custom messages
+	 * @return 	boolean		TRUE on success, FALSE on error
 	 */
 	public function performUpdate(&$dbQueries, &$customMessages) {
 		$updates = $this->getRequiredUpdates();
@@ -75,7 +75,6 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 		return TRUE;
 	}
 
-
 	/**
 	 * Determine all create table statements which create the sys_file* tables
 	 *
@@ -83,21 +82,19 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	 */
 	protected function getRequiredUpdates() {
 		$requiredUpdates = array();
-
 		$fileContent = t3lib_div::getUrl(PATH_t3lib . 'stddb/tables.sql');
 		$FDfile = $this->installerSql->getFieldDefinitions_fileContent($fileContent);
 		$FDdb = $this->installerSql->getFieldDefinitions_database(TYPO3_db);
 		$diff = $this->installerSql->getDatabaseExtra($FDfile, $FDdb);
 		$update_statements = $this->installerSql->getUpdateSuggestions($diff);
-
 		foreach ((array) $update_statements['create_table'] as $string) {
 			if (preg_match('/^CREATE TABLE sys_file($|_)?/', $string)) {
 				$requiredUpdates[] = $string;
 			}
 		}
-
 		return $requiredUpdates;
 	}
+
 }
 
 ?>

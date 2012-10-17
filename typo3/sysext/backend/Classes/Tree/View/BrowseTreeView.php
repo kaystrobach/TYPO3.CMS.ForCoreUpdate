@@ -32,7 +32,6 @@
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  * @coauthor René Fritz <r.fritz@colorcube.de>
  */
-
 /**
  * Extension class for the t3lib_treeView class, specially made for browsing pages
  *
@@ -51,42 +50,32 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param string $clause Additional clause for selecting pages.
 	 * @param string $orderByFields record ORDER BY field
 	 * @return void
+	 * @todo Define visibility
 	 */
-	function init($clause = '', $orderByFields = '') {
-
-			// This will hide records from display - it has nothing todo with user rights!!
+	public function init($clause = '', $orderByFields = '') {
+		// This will hide records from display - it has nothing todo with user rights!!
 		$clauseExcludePidList = '';
 		if ($pidList = $GLOBALS['BE_USER']->getTSConfigVal('options.hideRecords.pages')) {
 			if ($pidList = $GLOBALS['TYPO3_DB']->cleanIntList($pidList)) {
-				$clauseExcludePidList = ' AND pages.uid NOT IN (' . $pidList . ')';
+				$clauseExcludePidList = (' AND pages.uid NOT IN (' . $pidList) . ')';
 			}
 		}
-
-			// This is very important for making trees of pages: Filtering out deleted pages, pages with no access to and sorting them correctly:
-		parent::init(' AND ' . $GLOBALS['BE_USER']->getPagePermsClause(1) . ' ' . $clause . $clauseExcludePidList, 'sorting');
-
+		// This is very important for making trees of pages: Filtering out deleted pages, pages with no access to and sorting them correctly:
+		parent::init((((' AND ' . $GLOBALS['BE_USER']->getPagePermsClause(1)) . ' ') . $clause) . $clauseExcludePidList, 'sorting');
 		$this->table = 'pages';
 		$this->setTreeName('browsePages');
 		$this->domIdPrefix = 'pages';
 		$this->iconName = '';
 		$this->title = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'];
 		$this->MOUNTS = $GLOBALS['WEBMOUNTS'];
-
 		if ($pidList) {
-				// Remove mountpoint if explicitly set in options.hideRecords.pages (see above)
+			// Remove mountpoint if explicitly set in options.hideRecords.pages (see above)
 			$hideList = explode(',', $pidList);
 			$this->MOUNTS = array_diff($this->MOUNTS, $hideList);
 		}
-
-		$this->fieldArray = array_merge(
-			$this->fieldArray,
-			array('doktype', 'php_tree_stop', 't3ver_id', 't3ver_state', 't3ver_wsid', 't3ver_state', 't3ver_move_id')
-		);
+		$this->fieldArray = array_merge($this->fieldArray, array('doktype', 'php_tree_stop', 't3ver_id', 't3ver_state', 't3ver_wsid', 't3ver_state', 't3ver_move_id'));
 		if (t3lib_extMgm::isLoaded('cms')) {
-			$this->fieldArray = array_merge(
-				$this->fieldArray,
-				array('hidden', 'starttime', 'endtime', 'fe_group', 'module', 'extendToSubpages', 'is_siteroot', 'nav_hide')
-			);
+			$this->fieldArray = array_merge($this->fieldArray, array('hidden', 'starttime', 'endtime', 'fe_group', 'module', 'extendToSubpages', 'is_siteroot', 'nav_hide'));
 		}
 	}
 
@@ -96,8 +85,9 @@ class t3lib_browseTree extends t3lib_treeView {
 	 *
 	 * @param array $row The table row.
 	 * @return string
+	 * @todo Define visibility
 	 */
-	function getTitleAttrib($row) {
+	public function getTitleAttrib($row) {
 		return t3lib_BEfunc::titleAttribForPages($row, '1=1 ' . $this->clause, 0);
 	}
 
@@ -108,17 +98,17 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param array $row The row for the current element
 	 * @return string The processed icon input value.
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function wrapIcon($icon, $row) {
-			// Add title attribute to input icon tag
-		$theIcon = $this->addTagAttributes($icon, ($this->titleAttrib ? $this->titleAttrib . '="' . $this->getTitleAttrib($row) . '"' : ''));
-
-			// Wrap icon in click-menu link.
+	public function wrapIcon($icon, $row) {
+		// Add title attribute to input icon tag
+		$theIcon = $this->addTagAttributes($icon, $this->titleAttrib ? (($this->titleAttrib . '="') . $this->getTitleAttrib($row)) . '"' : '');
+		// Wrap icon in click-menu link.
 		if (!$this->ext_IconMode) {
 			$theIcon = $GLOBALS['TBE_TEMPLATE']->wrapClickMenuOnIcon($theIcon, $this->treeName, $this->getId($row), 0);
 		} elseif (!strcmp($this->ext_IconMode, 'titlelink')) {
-			$aOnClick = 'return jumpTo(\'' . $this->getJumpToParam($row) . '\',this,\'' . $this->domIdPrefix . $this->getId($row) . '\',' . $this->bank . ');';
-			$theIcon = '<a href="#" onclick="' . htmlspecialchars($aOnClick) . '">' . $theIcon . '</a>';
+			$aOnClick = (((((('return jumpTo(\'' . $this->getJumpToParam($row)) . '\',this,\'') . $this->domIdPrefix) . $this->getId($row)) . '\',') . $this->bank) . ');';
+			$theIcon = ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . $theIcon) . '</a>';
 		}
 		return $theIcon;
 	}
@@ -130,13 +120,13 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param array $row The input row array (where the key "title" is used for the title)
 	 * @param integer $titleLen Title length (30)
 	 * @return string The title.
+	 * @todo Define visibility
 	 */
-	function getTitleStr($row, $titleLen = 30) {
-			// Get the basic title from the parent implementation in t3lib_treeview
+	public function getTitleStr($row, $titleLen = 30) {
+		// Get the basic title from the parent implementation in t3lib_treeview
 		$title = parent::getTitleStr($row, $titleLen);
-		if (isset($row['is_siteroot']) && $row['is_siteroot'] != 0 && $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showDomainNameWithTitle')) {
-			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('domainName,sorting', 'sys_domain',
-					'pid=' . $GLOBALS['TYPO3_DB']->quoteStr($row['uid'] . t3lib_BEfunc::deleteClause('sys_domain') . t3lib_BEfunc::BEenableFields('sys_domain'), 'sys_domain'), '', 'sorting', 1);
+		if ((isset($row['is_siteroot']) && $row['is_siteroot'] != 0) && $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showDomainNameWithTitle')) {
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('domainName,sorting', 'sys_domain', 'pid=' . $GLOBALS['TYPO3_DB']->quoteStr((($row['uid'] . t3lib_BEfunc::deleteClause('sys_domain')) . t3lib_BEfunc::BEenableFields('sys_domain')), 'sys_domain'), '', 'sorting', 1);
 			if (is_array($rows) && count($rows) > 0) {
 				$title = sprintf('%s [%s]', $title, htmlspecialchars($rows[0]['domainName']));
 			}
@@ -151,15 +141,17 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @param array $row Record row with "php_tree_stop" field
 	 * @return string Modified string
 	 * @access private
+	 * @todo Define visibility
 	 */
-	function wrapStop($str, $row) {
+	public function wrapStop($str, $row) {
 		if ($row['php_tree_stop']) {
-			$str .= '<span class="typo3-red">
-								<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => $row['uid']))) . '" class="typo3-red">+</a>
+			$str .= ('<span class="typo3-red">
+								<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => $row['uid'])))) . '" class="typo3-red">+</a>
 							</span>';
 		}
 		return $str;
 	}
+
 }
 
 ?>

@@ -23,7 +23,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Displays 'SU' link with sprite icon to change current backend user to target (non-admin) backendUser
  *
@@ -42,14 +41,10 @@ class Tx_Beuser_ViewHelpers_SUViewHelper extends Tx_Fluid_Core_ViewHelper_Abstra
 		if ($backendUser->getIsAdministrator()) {
 			return '';
 		}
-
-		$title = $GLOBALS['LANG']->getLL('switchUserTo', TRUE) . ' ' . $backendUser->getUserName() . ' ' . $GLOBALS['LANG']->getLL('switchBackMode', TRUE);
-
-		return '<a href="' . t3lib_div::linkThisScript(array('SwitchUser' => $backendUser->getUid(), 'switchBackUser' => $emulate)) .
-			'" target="_top" title="' . htmlspecialchars($title) . '">' .
-			t3lib_iconWorks::getSpriteIcon('actions-system-backend-user-' . ($emulate ? 'emulate' : 'switch')) .
-			'</a>';
+		$title = ((($GLOBALS['LANG']->getLL('switchUserTo', TRUE) . ' ') . $backendUser->getUserName()) . ' ') . $GLOBALS['LANG']->getLL('switchBackMode', TRUE);
+		return ((((('<a href="' . t3lib_div::linkThisScript(array('SwitchUser' => $backendUser->getUid(), 'switchBackUser' => $emulate))) . '" target="_top" title="') . htmlspecialchars($title)) . '">') . t3lib_iconWorks::getSpriteIcon(('actions-system-backend-user-' . ($emulate ? 'emulate' : 'switch')))) . '</a>';
 	}
+
 }
 
 ?>

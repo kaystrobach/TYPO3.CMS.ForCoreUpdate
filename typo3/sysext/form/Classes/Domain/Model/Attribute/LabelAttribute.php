@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Attribute 'label'
  *
@@ -30,6 +29,7 @@
  * @subpackage form
  */
 class tx_form_Domain_Model_Attributes_Label extends tx_form_Domain_Model_Attributes_Abstract {
+
 	/**
 	 * Defines the label usage of the linked document.
 	 * Used with optgroup and option
@@ -44,8 +44,9 @@ class tx_form_Domain_Model_Attributes_Label extends tx_form_Domain_Model_Attribu
 	 */
 	public function getValue() {
 		$attribute = (string) $this->value;
-
 		return $attribute;
 	}
+
 }
+
 ?>

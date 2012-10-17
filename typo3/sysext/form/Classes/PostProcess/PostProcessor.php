@@ -21,7 +21,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * The post processor
  *
@@ -52,21 +51,17 @@ class tx_form_System_Postprocessor {
 	 */
 	public function process() {
 		$html = '';
-
 		if (is_array($this->typoScript)) {
 			$keys = $this->sortTypoScriptKeyList();
 			foreach ($keys as $key) {
 				if (!intval($key) || strpos($key, '.') !== FALSE) {
 					continue;
 				}
-
 				$className = FALSE;
 				$processorArguments = array();
-
 				if (isset($this->typoScript[$key . '.'])) {
 					$processorArguments = $this->typoScript[$key . '.'];
 				}
-
 				if (class_exists($this->typoScript[$key], TRUE)) {
 					$className = $this->typoScript[$key];
 				} else {
@@ -75,15 +70,14 @@ class tx_form_System_Postprocessor {
 						$className = $classNameExpanded;
 					}
 				}
-				if ($className !== FALSE ) {
+				if ($className !== FALSE) {
 					$processor = t3lib_div::makeInstance($className, $this->form, $processorArguments);
-					if($processor instanceof tx_form_System_Postprocessor_Interface) {
+					if ($processor instanceof tx_form_System_Postprocessor_Interface) {
 						$html .= $processor->process();
 					}
 				}
 			}
 		}
-
 		return $html;
 	}
 
@@ -96,5 +90,7 @@ class tx_form_System_Postprocessor {
 	public function sortTypoScriptKeyList() {
 		return t3lib_TStemplate::sortedKeyList($this->typoScript);
 	}
+
 }
+
 ?>
