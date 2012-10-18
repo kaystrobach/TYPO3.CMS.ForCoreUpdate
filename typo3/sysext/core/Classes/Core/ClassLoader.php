@@ -161,7 +161,15 @@ class ClassLoader {
 		}
 		if ($hasRealClassName && !class_exists($className, FALSE)) {
 			class_alias($realClassName, $className);
+		} else {
+			$alias = static::getAliasForClassName($className);
+			if ($alias !== $className) {
+				class_alias($realClassName, $alias);
+			}
 		}
+
+
+
 	}
 
 	/**

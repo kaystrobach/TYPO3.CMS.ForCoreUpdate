@@ -81,9 +81,24 @@ class CompatbilityClassLoaderPhpBelow50307 extends \TYPO3\CMS\Core\Core\ClassLoa
 			$phpCodeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 			if (!$phpCodeCache->has($cacheIdentifier)) {
 				$classCode = static::rewriteMethodTypeHintsFromClassPath($classPath);
-				$phpCodeCache->set($cacheIdentifier, $classCode, array(), 0);
+				if ($classCode === FALSE) {
+					GeneralUtility::requireOnce($classPath);
+					$phpCodeCache->set($cacheIdentifier, '', array(), 0);
+				} else {
+					$phpCodeCache->set($cacheIdentifier, $classCode, array(), 0);
+				}
 			}
-			$phpCodeCache->requireOnce($cacheIdentifier);
+//			$a=$phpCodeCache->get($cacheIdentifier);
+//			var_dump($a);
+			if ($phpCodeCache->get($cacheIdentifier) === '<?php
+
+#') {
+				GeneralUtility::requireOnce($classPath);
+
+			} else {
+				$phpCodeCache->requireOnce($cacheIdentifier);
+
+			}
 		}
 	}
 
@@ -124,17 +139,19 @@ class CompatbilityClassLoaderPhpBelow50307 extends \TYPO3\CMS\Core\Core\ClassLoa
 		if ($pcreBacktrackLimitOriginal < $fileLength) {
 			ini_set('pcre.backtrack_limit', $fileLength);
 		}
+		$replacementsDone = FALSE;
 		$fileContent = preg_replace_callback(
 			'/function\s+([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*\((.*?\$.*?)\)(\s*[{;])/im',
-			function($matches) use($classAliasMap) {
+			function($matches) use($classAliasMap,$replacementsDone) {
 			if (isset($matches[1]) && isset($matches[2])) {
 				list($functionName, $argumentList) = array_slice($matches, 1, 2);
 				$arguments = explode(',', $argumentList);
 				$arguments = array_map('trim', $arguments);
-				$arguments = preg_replace_callback('/([\\a-z0-9_]+\s+)?((\s*[&]*\s*\$[a-z0-9_]+)(\s*=\s*.+)?)/im', function($argumentMatches) use($classAliasMap) {
+				$arguments = preg_replace_callback('/([\\a-z0-9_]+\s+)?((\s*[&]*\s*\$[a-z0-9_]+)(\s*=\s*.+)?)/im', function($argumentMatches) use($classAliasMap,$replacementsDone) {
 					if (isset($argumentMatches[1]) && isset($argumentMatches[2])) {
 						$typeHint = strtolower(ltrim(trim($argumentMatches[1]), '\\'));
 						if (isset($classAliasMap[$typeHint])) {
+							$replacementsDone = TRUE;
 							return '\\' . $classAliasMap[$typeHint] . ' ' . $argumentMatches[2];
 						}
 					}
@@ -151,7 +168,11 @@ class CompatbilityClassLoaderPhpBelow50307 extends \TYPO3\CMS\Core\Core\ClassLoa
 		if ($pcreBacktrackLimitOriginal < $fileLength) {
 			ini_set('pcre.backtrack_limit', $pcreBacktrackLimitOriginal);
 		}
-		return $fileContent;
+		if ($replacementsDone) {
+			return $fileContent;
+		} else {
+			return FALSE;
+		}
 	}
 
 }
