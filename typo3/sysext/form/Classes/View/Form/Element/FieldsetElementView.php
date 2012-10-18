@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Form_Element_Fieldset extends tx_form_View_Form_Element_Container {
+class FieldsetElementView extends \TYPO3\CMS\Form\View\Form\Element\ContainerElementView {
 
 	/**
 	 * Default layout of this object
@@ -43,5 +45,6 @@ class tx_form_View_Form_Element_Fieldset extends tx_form_View_Form_Element_Conta
 	';
 
 }
+
 
 ?>

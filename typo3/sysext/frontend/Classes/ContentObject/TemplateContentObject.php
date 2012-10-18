@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Template extends tslib_content_Abstract {
+class TemplateContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, TEMPLATE
@@ -59,7 +61,7 @@ class tslib_content_Template extends tslib_content_Abstract {
 		}
 		// Fixing all relative paths found:
 		if ($conf['relPathPrefix']) {
-			$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
+			$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 			$content = $htmlParser->prefixResourcePath($conf['relPathPrefix'], $content, $conf['relPathPrefix.']);
 		}
 		if ($content) {
@@ -168,5 +170,6 @@ class tslib_content_Template extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

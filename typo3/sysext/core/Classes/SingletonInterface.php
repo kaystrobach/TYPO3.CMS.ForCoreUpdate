@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,8 +34,9 @@
  * @subpackage t3lib
  * @see t3lib_div::makeInstance()
  */
-interface t3lib_Singleton
+interface SingletonInterface
 {
 
 }
+
 ?>

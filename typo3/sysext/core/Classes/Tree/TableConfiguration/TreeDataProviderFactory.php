@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Tree\TableConfiguration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,13 +33,13 @@
  * @package TYPO3
  * @subpackage t3lib_tree
  */
-class t3lib_tree_Tca_DataProviderFactory {
+class TreeDataProviderFactory {
 
 	/**
 	 * Gets the data provider, depending on TCA configuration
 	 *
 	 * @param array $tcaConfiguration
-	 * @return t3lib_tree_Tca_DatabaseTreeDataProvider
+	 * @return \TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeDataProvider
 	 * @throws InvalidArgumentException
 	 */
 	static public function getDataProvider(array $tcaConfiguration, $table, $field, $currentValue) {
@@ -47,17 +49,17 @@ class t3lib_tree_Tca_DataProviderFactory {
 		}
 		if ($tcaConfiguration['internal_type'] == 'db') {
 			$unselectableUids = array();
-			/** @var $dataProvider t3lib_tree_Tca_DatabaseTreeDataProvider */
-			$dataProvider = t3lib_div::makeInstance('t3lib_tree_Tca_DatabaseTreeDataProvider');
+			/** @var $dataProvider \TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeDataProvider */
+			$dataProvider = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Tree\\TableConfiguration\\DatabaseTreeDataProvider');
 			if (isset($tcaConfiguration['foreign_table'])) {
 				$tableName = $tcaConfiguration['foreign_table'];
 				$dataProvider->setTableName($tableName);
 				if ($tableName == $table) {
 					$unselectableUids[] = $currentValue['uid'];
 				}
-				t3lib_div::loadTCA($tableName);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($tableName);
 			} else {
-				throw new InvalidArgumentException('TCA Tree configuration is invalid: "foreign_table" not set', 1288215888);
+				throw new \InvalidArgumentException('TCA Tree configuration is invalid: "foreign_table" not set', 1288215888);
 			}
 			if (isset($tcaConfiguration['foreign_label'])) {
 				$dataProvider->setLabelField($tcaConfiguration['foreign_label']);
@@ -83,27 +85,28 @@ class t3lib_tree_Tca_DataProviderFactory {
 					$dataProvider->setNonSelectableLevelList('');
 				}
 				if (isset($treeConfiguration['childrenField'])) {
-					$dataProvider->setLookupMode(t3lib_tree_tca_DatabaseTreeDataProvider::MODE_CHILDREN);
+					$dataProvider->setLookupMode(\t3lib_tree_tca_DatabaseTreeDataProvider::MODE_CHILDREN);
 					$dataProvider->setLookupField($treeConfiguration['childrenField']);
 				} elseif (isset($treeConfiguration['parentField'])) {
-					$dataProvider->setLookupMode(t3lib_tree_tca_DatabaseTreeDataProvider::MODE_PARENT);
+					$dataProvider->setLookupMode(\t3lib_tree_tca_DatabaseTreeDataProvider::MODE_PARENT);
 					$dataProvider->setLookupField($treeConfiguration['parentField']);
 				} else {
-					throw new InvalidArgumentException('TCA Tree configuration is invalid: neither "childrenField" nor "parentField" is set', 1288215889);
+					throw new \InvalidArgumentException('TCA Tree configuration is invalid: neither "childrenField" nor "parentField" is set', 1288215889);
 				}
 				$dataProvider->setItemUnselectableList($unselectableUids);
 			} else {
-				throw new InvalidArgumentException('TCA Tree configuration is invalid: "treeConfig" array is missing', 1288215890);
+				throw new \InvalidArgumentException('TCA Tree configuration is invalid: "treeConfig" array is missing', 1288215890);
 			}
 		} elseif ($tcaConfiguration['internal_type'] == 'file') {
 			// TODO Not implemented yet
-			throw new InvalidArgumentException('TCA Tree configuration is invalid: tree for "internal_type=file" not implemented yet', 1288215891);
+			throw new \InvalidArgumentException('TCA Tree configuration is invalid: tree for "internal_type=file" not implemented yet', 1288215891);
 		} else {
-			throw new InvalidArgumentException(('TCA Tree configuration is invalid: tree for "internal_type=' . $tcaConfiguration['internal_type']) . '" not implemented yet', 1288215892);
+			throw new \InvalidArgumentException(('TCA Tree configuration is invalid: tree for "internal_type=' . $tcaConfiguration['internal_type']) . '" not implemented yet', 1288215892);
 		}
 		return $dataProvider;
 	}
 
 }
+
 
 ?>

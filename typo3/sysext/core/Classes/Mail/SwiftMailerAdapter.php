@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Mail;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,10 +33,10 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
+class SwiftMailerAdapter implements \TYPO3\CMS\Core\Mail\MailerAdapterInterface {
 
 	/**
-	 * @var $mailer t3lib_mail_Mailer
+	 * @var $mailer \TYPO3\CMS\Core\Mail\Mailer
 	 */
 	protected $mailer;
 
@@ -60,9 +62,9 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 */
 	public function __construct() {
 		// create mailer object
-		$this->mailer = t3lib_div::makeInstance('t3lib_mail_Mailer');
+		$this->mailer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\Mailer');
 		// create message object
-		$this->message = Swift_Message::newInstance();
+		$this->message = \Swift_Message::newInstance();
 	}
 
 	/**
@@ -74,7 +76,7 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 * @param array $additionalHeaders Additional mail headers
 	 * @param array $additionalParameters Extra parameters for the mail() command
 	 * @param bool $fakeSending If set fake sending a mail
-	 * @throws t3lib_exception
+	 * @throws \TYPO3\CMS\Core\Exception
 	 * @return bool
 	 */
 	public function mail($to, $subject, $messageBody, $additionalHeaders = NULL, $additionalParameters = NULL, $fakeSending = FALSE) {
@@ -87,10 +89,10 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 		$toAddresses = $this->parseAddresses($to);
 		$this->message->setTo($toAddresses);
 		// handle additional headers
-		$headers = t3lib_div::trimExplode(LF, $additionalHeaders, TRUE);
+		$headers = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $additionalHeaders, TRUE);
 		$this->messageHeaders = $this->message->getHeaders();
 		foreach ($headers as $header) {
-			list($headerName, $headerValue) = t3lib_div::trimExplode(':', $header, FALSE, 2);
+			list($headerName, $headerValue) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $header, FALSE, 2);
 			$this->setHeader($headerName, $headerValue);
 		}
 		// handle additional parameters (force return path)
@@ -146,26 +148,26 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 			$header = $this->messageHeaders->get($headerName);
 			$headerType = $header->getFieldType();
 			switch ($headerType) {
-			case Swift_Mime_Header::TYPE_TEXT:
+			case \Swift_Mime_Header::TYPE_TEXT:
 				$header->setValue($headerValue);
 				break;
-			case Swift_Mime_Header::TYPE_PARAMETERIZED:
+			case \Swift_Mime_Header::TYPE_PARAMETERIZED:
 				$header->setValue(rtrim($headerValue, ';'));
 				break;
-			case Swift_Mime_Header::TYPE_MAILBOX:
+			case \Swift_Mime_Header::TYPE_MAILBOX:
 				$addressList = $this->parseAddresses($headerValue);
 				if (count($addressList) > 0) {
 					$header->setNameAddresses($addressList);
 				}
 				break;
-			case Swift_Mime_Header::TYPE_DATE:
+			case \Swift_Mime_Header::TYPE_DATE:
 				$header->setTimeStamp(strtotime($headerValue));
 				break;
-			case Swift_Mime_Header::TYPE_ID:
+			case \Swift_Mime_Header::TYPE_ID:
 				// remove '<' and '>' from ID headers
 				$header->setId(trim($headerValue, '<>'));
 				break;
-			case Swift_Mime_Header::TYPE_PATH:
+			case \Swift_Mime_Header::TYPE_PATH:
 				$header->setAddress($headerValue);
 				break;
 			}
@@ -298,8 +300,8 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	 * @return array Parsed list of addresses.
 	 */
 	protected function parseAddresses($rawAddresses = '') {
-		/** @var $addressParser t3lib_mail_Rfc822AddressesParser */
-		$addressParser = t3lib_div::makeInstance('t3lib_mail_Rfc822AddressesParser', $rawAddresses);
+		/** @var $addressParser \TYPO3\CMS\Core\Mail\Rfc822AddressesParser */
+		$addressParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\Rfc822AddressesParser', $rawAddresses);
 		$addresses = $addressParser->parseAddressList();
 		$addressList = array();
 		foreach ($addresses as $address) {
@@ -339,5 +341,6 @@ class t3lib_mail_SwiftMailerAdapter implements t3lib_mail_MailerAdapter {
 	}
 
 }
+
 
 ?>

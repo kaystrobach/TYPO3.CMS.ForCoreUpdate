@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Controller;
+
 /**
  * Script class for the Element Browser window.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class tx_rtehtmlarea_SC_select_image {
+class SelectImageController {
 
 	public $mode = 'rte';
 
@@ -24,7 +26,7 @@ class tx_rtehtmlarea_SC_select_image {
 		// Setting alternative browsing mounts (ONLY local to browse_links.php this script so they stay "read-only")
 		$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.folderTree.altElementBrowserMountPoints'));
 		if ($altMountPoints) {
-			$altMountPoints = t3lib_div::trimExplode(',', $altMountPoints);
+			$altMountPoints = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $altMountPoints);
 			foreach ($altMountPoints as $filePathRelativeToFileadmindir) {
 				$GLOBALS['BE_USER']->addFileMount('', $filePathRelativeToFileadmindir, $filePathRelativeToFileadmindir, 1, 'readonly');
 			}
@@ -32,9 +34,9 @@ class tx_rtehtmlarea_SC_select_image {
 		}
 		// Rendering type by user function
 		$browserRendered = FALSE;
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'] as $classRef) {
-				$browserRenderObj = t3lib_div::getUserObj($classRef);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser.php']['browserRendering'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser.php']['browserRendering'] as $classRef) {
+				$browserRenderObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
 				if ((is_object($browserRenderObj) && method_exists($browserRenderObj, 'isValid')) && method_exists($browserRenderObj, 'render')) {
 					if ($browserRenderObj->isValid($this->mode, $this)) {
 						$this->content .= $browserRenderObj->render($this->mode, $this);
@@ -46,7 +48,7 @@ class tx_rtehtmlarea_SC_select_image {
 		}
 		// If type was not rendered, use default rendering functions
 		if (!$browserRendered) {
-			$GLOBALS['SOBE']->browser = t3lib_div::makeInstance('tx_rtehtmlarea_select_image');
+			$GLOBALS['SOBE']->browser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rtehtmlarea\\SelectImage');
 			$GLOBALS['SOBE']->browser->init();
 			$modData = $GLOBALS['BE_USER']->getModuleData('select_image.php', 'ses');
 			list($modData, $store) = $GLOBALS['SOBE']->browser->processSessionData($modData);
@@ -66,5 +68,6 @@ class tx_rtehtmlarea_SC_select_image {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Mail;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_mail_MailerAdapter
+interface MailerAdapterInterface
 {
 	/**
 	 * Mail sending function
@@ -47,4 +49,5 @@ interface t3lib_mail_MailerAdapter
 	public function mail($to, $subject, $messageBody, $additionalHeaders = NULL, $additionalParameters = NULL, $fakeSending = FALSE);
 
 }
+
 ?>

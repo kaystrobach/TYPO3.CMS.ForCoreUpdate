@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class for grid wizard
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_wizard_backend_layout {
+class BackendLayoutWizardController {
 
 	// GET vars:
 	// Wizard parameters, coming from TCEforms linking to the wizard.
@@ -18,7 +20,7 @@ class SC_wizard_backend_layout {
 	/**
 	 * Document template object
 	 *
-	 * @var smallDoc
+	 * @var \TYPO3\CMS\Backend\Template\SmallDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -37,13 +39,13 @@ class SC_wizard_backend_layout {
 	 */
 	public function init() {
 		// Setting GET vars (used in frameset script):
-		$this->P = t3lib_div::_GP('P', 1);
+		$this->P = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P', 1);
 		$this->formName = $this->P['formName'];
 		$this->fieldName = $this->P['itemName'];
 		$this->md5ID = $this->P['md5ID'];
 		$uid = intval($this->P['uid']);
 		// Initialize document object:
-		$this->doc = t3lib_div::makeInstance('noDoc');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\StandardDocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$pageRenderer = $this->doc->getPageRenderer();
 		$pageRenderer->addJsFile(($GLOBALS['BACK_PATH'] . TYPO3_MOD_PATH) . 'res/grideditor.js');
@@ -78,7 +80,7 @@ class SC_wizard_backend_layout {
 			$rowCount = 1;
 		} else {
 			// load TS parser
-			$parser = t3lib_div::makeInstance('t3lib_TSparser');
+			$parser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\Parser\\TypoScriptParser');
 			$parser->parse($record[0][$this->P['field']]);
 			$data = $parser->setup['backend_layout.'];
 			$t3GridData = '[';
@@ -168,9 +170,9 @@ class SC_wizard_backend_layout {
 	 * @todo Define visibility
 	 */
 	public function main() {
-		$content .= ((('<a href="#" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', TRUE)) . '" onclick="storeData(t3Grid.export2LayoutRecord());return true;">') . t3lib_iconWorks::getSpriteIcon('actions-document-save')) . '</a>';
-		$content .= ((('<a href="#" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', TRUE)) . '" onclick="storeData(t3Grid.export2LayoutRecord());window.close();return true;">') . t3lib_iconWorks::getSpriteIcon('actions-document-save-close')) . '</a>';
-		$content .= ((('<a href="#" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)) . '" onclick="window.close();return true;">') . t3lib_iconWorks::getSpriteIcon('actions-document-close')) . '</a>';
+		$content .= ((('<a href="#" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', TRUE)) . '" onclick="storeData(t3Grid.export2LayoutRecord());return true;">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save')) . '</a>';
+		$content .= ((('<a href="#" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', TRUE)) . '" onclick="storeData(t3Grid.export2LayoutRecord());window.close();return true;">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save-close')) . '</a>';
+		$content .= ((('<a href="#" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)) . '" onclick="window.close();return true;">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close')) . '</a>';
 		$content .= $this->doc->spacer(10);
 		$content .= ((((((('
 		<table border="0" width="100%" height="100%" id="outer_container">
@@ -214,5 +216,6 @@ class SC_wizard_backend_layout {
 	}
 
 }
+
 
 ?>

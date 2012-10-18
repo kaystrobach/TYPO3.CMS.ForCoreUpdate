@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Hidden extends tx_form_Domain_Model_Element_Abstract {
+class HiddenElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -59,7 +61,7 @@ class tx_form_Domain_Model_Element_Hidden extends tx_form_Domain_Model_Element_A
 	 * filter the submitted data and add this to the right
 	 * datapart of the element
 	 *
-	 * @return tx_form_Domain_Model_Element_Hidden
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\HiddenElement
 	 * @see tx_form_Domain_Model_Element::checkFilterAndSetIncomingDataFromRequest()
 	 */
 	public function checkFilterAndSetIncomingDataFromRequest() {
@@ -72,5 +74,6 @@ class tx_form_Domain_Model_Element_Hidden extends tx_form_Domain_Model_Element_A
 	}
 
 }
+
 
 ?>

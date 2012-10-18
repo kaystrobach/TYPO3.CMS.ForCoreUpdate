@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_System_Validate_Abstract implements tx_form_System_Validate_Interface {
+abstract class AbstractValidator implements \TYPO3\CMS\Form\Validation\InterfaceValidator {
 
 	/**
 	 * The name of the field for the rule
@@ -67,21 +69,21 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 	/**
 	 * Localization handler object
 	 *
-	 * @var tx_form_System_Localization
+	 * @var \TYPO3\CMS\Form\Localization
 	 */
 	protected $localizationHandler;
 
 	/**
 	 * Request handler object
 	 *
-	 * @var tx_form_System_Request
+	 * @var \TYPO3\CMS\Form\Request
 	 */
 	protected $requestHandler;
 
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
@@ -92,9 +94,9 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 	 * @return void
 	 */
 	public function __construct($arguments) {
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
-		$this->requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
-		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->requestHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Request');
+		$this->localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
 		$this->setFieldName($arguments['element']);
 		$this->setMessage($arguments['message.'], $arguments['message']);
 		$this->setShowMessage($arguments['showMessage']);
@@ -253,5 +255,6 @@ abstract class tx_form_System_Validate_Abstract implements tx_form_System_Valida
 	}
 
 }
+
 
 ?>

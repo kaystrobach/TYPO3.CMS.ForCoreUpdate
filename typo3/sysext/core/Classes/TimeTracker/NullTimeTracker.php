@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\TimeTracker;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_TimeTrackNull {
+class NullTimeTracker {
 
 	/**
 	 * "Constructor"
@@ -138,5 +140,6 @@ class t3lib_TimeTrackNull {
 	}
 
 }
+
 
 ?>

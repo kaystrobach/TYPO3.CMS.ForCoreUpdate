@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Exception;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,9 +29,10 @@
  * @package TYPO3
  * @subpackage t3lib_file
  */
-class t3lib_file_exception_IllegalFileExtensionException extends t3lib_file_exception_AbstractFileException {
+class IllegalFileExtensionException extends \TYPO3\CMS\Core\Resource\Exception {
 
 
 }
+
 
 ?>

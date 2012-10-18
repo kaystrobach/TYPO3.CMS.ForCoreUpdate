@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Tests\Unit;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,7 +30,7 @@
  * @subpackage tslib
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  */
-class tslib_feTest extends tx_phpunit_testcase {
+class FrontendTest extends tx_phpunit_testcase {
 
 	/**
 	 * Enable backup of global and system variables
@@ -46,15 +48,15 @@ class tslib_feTest extends tx_phpunit_testcase {
 	protected $backupGlobalsBlacklist = array('TYPO3_DB');
 
 	/**
-	 * @var tslib_fe
+	 * @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
 	 */
 	private $fixture;
 
 	public function setUp() {
 		// This creates an instance of the class without calling the
 		// original constructor.
-		$className = uniqid('tslib_fe');
-		eval((((((((('class ' . $className) . ' extends tslib_fe {') . 'public function ') . $className) . '() {}') . 'public function roundTripCryptString($string) {') . 'return parent::roundTripCryptString($string);') . '}') . '}');
+		$className = uniqid('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController');
+		eval((((((((('class ' . $className) . ' extends TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController {') . 'public function ') . $className) . '() {}') . 'public function roundTripCryptString($string) {') . 'return parent::roundTripCryptString($string);') . '}') . '}');
 		$this->fixture = new $className();
 		$this->fixture->TYPO3_CONF_VARS = $GLOBALS['TYPO3_CONF_VARS'];
 		$this->fixture->TYPO3_CONF_VARS['SYS']['encryptionKey'] = '170928423746123078941623042360abceb12341234231';
@@ -92,7 +94,7 @@ class tslib_feTest extends tx_phpunit_testcase {
 	 * @return PHPUnit_Framework_MockObject_MockObject
 	 */
 	protected function setupTsfeMockForHeaderFooterReplacementCheck() {
-		$tsfe = $this->getMock('tslib_fe', array(
+		$tsfe = $this->getMock('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', array(
 			'INTincScript_process',
 			'INTincScript_includeLibs',
 			'INTincScript_loadJSCode',
@@ -102,7 +104,7 @@ class tslib_feTest extends tx_phpunit_testcase {
 		$tsfe->content = file_get_contents(__DIR__ . '/../fixtures/renderedPage.html');
 		$tsfe->config['INTincScript_ext']['divKey'] = '679b52796e75d474ccbbed486b6837ab';
 		$tsfe->config['INTincScript'] = array('INT_SCRIPT.679b52796e75d474ccbbed486b6837ab' => array());
-		$GLOBALS['TT'] = new t3lib_timeTrackNull();
+		$GLOBALS['TT'] = new \t3lib_timeTrackNull();
 		return $tsfe;
 	}
 
@@ -163,5 +165,6 @@ class tslib_feTest extends tx_phpunit_testcase {
 	}
 
 }
+
 
 ?>

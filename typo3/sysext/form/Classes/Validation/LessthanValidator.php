@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Lessthan extends tx_form_System_Validate_Abstract {
+class LessthanValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Maximum value
@@ -88,5 +90,6 @@ class tx_form_System_Validate_Lessthan extends tx_form_System_Validate_Abstract 
 	}
 
 }
+
 
 ?>

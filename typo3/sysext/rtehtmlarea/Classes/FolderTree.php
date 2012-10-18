@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea;
+
 /**
  * Base extension class which generates the folder tree.
  * Used directly by the RTE.
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class tx_rtehtmlarea_folderTree extends rteFolderTree {
+class FolderTree extends rteFolderTree {
 
 	/**
 	 * Wrapping the title in a link, if applicable.
@@ -17,7 +19,7 @@ class tx_rtehtmlarea_folderTree extends rteFolderTree {
 	 * @return 	string			Wrapping title string.
 	 * @todo Define visibility
 	 */
-	public function wrapTitle($title, t3lib_file_Folder $folderObject) {
+	public function wrapTitle($title, \TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		if ($this->ext_isLinkable($folderObject)) {
 			$aOnClick = ((((((((((((('return jumpToUrl(\'' . $this->thisScript) . '?act=') . $GLOBALS['SOBE']->browser->act) . '&mode=') . $GLOBALS['SOBE']->browser->mode) . '&editorNo=') . $GLOBALS['SOBE']->browser->editorNo) . '&contentTypo3Language=') . $GLOBALS['SOBE']->browser->contentTypo3Language) . '&contentTypo3Charset=') . $GLOBALS['SOBE']->browser->contentTypo3Charset) . '&expandFolder=') . rawurlencode($folderObject->getCombinedIdentifier())) . '\');';
 			return ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . $title) . '</a>';
@@ -44,5 +46,6 @@ class tx_rtehtmlarea_folderTree extends rteFolderTree {
 	}
 
 }
+
 
 ?>

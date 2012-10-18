@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Messaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib/message
  */
-abstract class t3lib_message_AbstractMessage {
+abstract class AbstractMessage {
 
 	const NOTICE = -2;
 	const INFO = -1;
@@ -115,7 +117,7 @@ abstract class t3lib_message_AbstractMessage {
 	 * @return void
 	 */
 	public function setSeverity($severity = self::OK) {
-		$this->severity = t3lib_utility_Math::forceIntegerInRange($severity, self::NOTICE, self::ERROR, self::OK);
+		$this->severity = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($severity, self::NOTICE, self::ERROR, self::OK);
 	}
 
 	/**
@@ -139,5 +141,6 @@ abstract class t3lib_message_AbstractMessage {
 	}
 
 }
+
 
 ?>

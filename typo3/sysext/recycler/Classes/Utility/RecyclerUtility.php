@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recycler\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package 	TYPO3
  * @subpackage 	tx_recycler
  */
-class tx_recycler_helper {
+class RecyclerUtility {
 
 	/************************************************************
 	 * USER ACCESS
@@ -49,14 +51,14 @@ class tx_recycler_helper {
 		// First, resetting flags.
 		$hasAccess = 0;
 		$calcPRec = $row;
-		t3lib_BEfunc::fixVersioningPid($table, $calcPRec);
+		\TYPO3\CMS\Backend\Utility\BackendUtility::fixVersioningPid($table, $calcPRec);
 		if (is_array($calcPRec)) {
 			if ($table == 'pages') {
 				// If pages:
 				$CALC_PERMS = $GLOBALS['BE_USER']->calcPerms($calcPRec);
 				$hasAccess = $CALC_PERMS & 2 ? 1 : 0;
 			} else {
-				$CALC_PERMS = $GLOBALS['BE_USER']->calcPerms(t3lib_BEfunc::getRecord('pages', $calcPRec['pid']));
+				$CALC_PERMS = $GLOBALS['BE_USER']->calcPerms(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $calcPRec['pid']));
 				// Fetching pid-record first.
 				$hasAccess = $CALC_PERMS & 16 ? 1 : 0;
 			}
@@ -91,16 +93,16 @@ class tx_recycler_helper {
 			if (is_resource($res)) {
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
-				t3lib_BEfunc::workspaceOL('pages', $row);
+				\TYPO3\CMS\Backend\Utility\BackendUtility::workspaceOL('pages', $row);
 				if (is_array($row)) {
-					t3lib_BEfunc::fixVersioningPid('pages', $row);
+					\TYPO3\CMS\Backend\Utility\BackendUtility::fixVersioningPid('pages', $row);
 					$uid = $row['pid'];
-					$output = ('/' . htmlspecialchars(t3lib_div::fixed_lgd_cs($row['title'], $titleLimit))) . $output;
+					$output = ('/' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($row['title'], $titleLimit))) . $output;
 					if ($row['deleted']) {
 						$output = ('<span class="deletedPath">' . $output) . '</span>';
 					}
 					if ($fullTitleLimit) {
-						$fullOutput = ('/' . htmlspecialchars(t3lib_div::fixed_lgd_cs($row['title'], $fullTitleLimit))) . $fullOutput;
+						$fullOutput = ('/' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($row['title'], $fullTitleLimit))) . $fullOutput;
 					}
 				} else {
 					break;
@@ -175,5 +177,6 @@ class tx_recycler_helper {
 	}
 
 }
+
 
 ?>

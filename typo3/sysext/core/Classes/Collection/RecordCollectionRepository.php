@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_collection_RecordCollectionRepository {
+class RecordCollectionRepository {
 
 	const TYPE_Static = 'static';
 	/**
@@ -59,7 +61,7 @@ class t3lib_collection_RecordCollectionRepository {
 	 */
 	public function findByUid($uid) {
 		$result = NULL;
-		$data = $this->getDatabase()->exec_SELECTgetSingleRow('*', $this->table, ('uid=' . intval($uid)) . t3lib_BEfunc::deleteClause($this->table));
+		$data = $this->getDatabase()->exec_SELECTgetSingleRow('*', $this->table, ('uid=' . intval($uid)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($this->table));
 		if ($data !== NULL) {
 			$result = $this->createDomainObject($data);
 		}
@@ -139,7 +141,7 @@ class t3lib_collection_RecordCollectionRepository {
 		} else {
 			$conditionsWhereClause = '1=1';
 		}
-		$data = $this->getDatabase()->exec_SELECTgetRows('*', $this->table, $conditionsWhereClause . t3lib_BEfunc::deleteClause($this->table));
+		$data = $this->getDatabase()->exec_SELECTgetRows('*', $this->table, $conditionsWhereClause . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($this->table));
 		if ($data !== NULL) {
 			$result = $this->createMultipleDomainObjects($data);
 		}
@@ -150,15 +152,15 @@ class t3lib_collection_RecordCollectionRepository {
 	 * Creates a record collection domain object.
 	 *
 	 * @param array $record Database record to be reconstituted
-	 * @return t3lib_collection_AbstractRecordCollection
+	 * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection
 	 */
 	protected function createDomainObject(array $record) {
 		switch ($record['type']) {
 		case self::TYPE_Static:
-			$collection = t3lib_collection_StaticRecordCollection::create($record);
+			$collection = \TYPO3\CMS\Core\Collection\StaticRecordCollection::create($record);
 			break;
 		default:
-			throw new RuntimeException('Unknown record collection type "' . $record['type'], 1328646798);
+			throw new \RuntimeException('Unknown record collection type "' . $record['type'], 1328646798);
 		}
 		return $collection;
 	}
@@ -180,12 +182,13 @@ class t3lib_collection_RecordCollectionRepository {
 	/**
 	 * Gets the database object.
 	 *
-	 * @return t3lib_DB
+	 * @return \TYPO3\CMS\Core\Database\DatabaseConnection
 	 */
 	protected function getDatabase() {
 		return $GLOBALS['TYPO3_DB'];
 	}
 
 }
+
 
 ?>

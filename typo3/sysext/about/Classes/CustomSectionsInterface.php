@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\About;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage about
  */
-interface tx_about_customSections
+interface CustomSectionsInterface
 {
 	/**
 	 * Adds custom sections to the about module
@@ -44,4 +46,5 @@ interface tx_about_customSections
 	public function addSection(array &$sections);
 
 }
+
 ?>

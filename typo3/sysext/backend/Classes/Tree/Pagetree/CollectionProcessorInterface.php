@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,16 +33,16 @@
  * @package 	TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_pagetree_interfaces_CollectionProcessor
+interface CollectionProcessorInterface
 {
 	/**
 	 * Post process the subelement collection of a specific node
 	 *
 	 * @abstract
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @param integer $mountPoint
 	 * @param integer $level
-	 * @param t3lib_tree_pagetree_NodeCollection $nodeCollection
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection $nodeCollection
 	 * @return void
 	 */
 	public function postProcessGetNodes($node, $mountPoint, $level, $nodeCollection);
@@ -49,10 +51,10 @@ interface t3lib_tree_pagetree_interfaces_CollectionProcessor
 	 * Post process the subelement collection of a specific node-filter combination
 	 *
 	 * @abstract
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @param string $searchFilter
 	 * @param integer $mountPoint
-	 * @param t3lib_tree_pagetree_NodeCollection $nodeCollection
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection $nodeCollection
 	 * @return void
 	 */
 	public function postProcessFilteredNodes($node, $searchFilter, $mountPoint, $nodeCollection);
@@ -62,10 +64,11 @@ interface t3lib_tree_pagetree_interfaces_CollectionProcessor
 	 *
 	 * @abstract
 	 * @param string $searchFilter
-	 * @param t3lib_tree_pagetree_NodeCollection $nodeCollection
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection $nodeCollection
 	 * @return void
 	 */
 	public function postProcessGetTreeMounts($searchFilter, $nodeCollection);
 
 }
+
 ?>

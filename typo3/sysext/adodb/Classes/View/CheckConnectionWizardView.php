@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Adodb\View;
+
 /**
  * Script Class checking the connection to an ADODB handled database
  *
@@ -6,19 +8,19 @@
  * @package TYPO3
  * @subpackage adodb
  */
-class tx_adodb_checkconnectionwizard {
+class CheckConnectionWizardView {
 
 	/**
 	 * @todo Define visibility
 	 */
 	public function main() {
 		$content = '<html><body>';
-		$conf = t3lib_div::_GP('P');
+		$conf = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
 		$conf['md5ID'];
 		if ($conf['table'] == 'tx_datasources_datasource') {
-			$dsRecord = t3lib_beFunc::getRecord($conf['table'], intval($conf['uid']));
+			$dsRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($conf['table'], intval($conf['uid']));
 			if (is_array($dsRecord)) {
-				$dsArr = t3lib_div::xml2array($dsRecord['configuration']);
+				$dsArr = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($dsRecord['configuration']);
 				$dsConf = $dsArr['data']['sDEF']['lDEF'];
 				$content .= ((('<p>Trying to connect with Host / DSN <strong>' . htmlspecialchars($dsConf['field_host']['vDEF'])) . '</strong> with user <strong>') . htmlspecialchars($dsConf['field_username']['vDEF'])) . '</strong> ... ';
 				$dbConn =& ADONewConnection($dsConf['field_dbtype']['vDEF']);
@@ -64,5 +66,6 @@ class tx_adodb_checkconnectionwizard {
 	}
 
 }
+
 
 ?>

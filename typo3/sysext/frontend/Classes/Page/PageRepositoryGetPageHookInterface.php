@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Page;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,17 +33,18 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_pageSelect_getPageHook
+interface PageRepositoryGetPageHookInterface
 {
 	/**
 	 * Modifies the DB params
 	 *
 	 * @param integer $uid The page ID
 	 * @param boolean $disableGroupAccessCheck If set, the check for group access is disabled. VERY rarely used
-	 * @param t3lib_pageSelect $parentObject Parent t3lib_pageSelect object
+	 * @param \TYPO3\CMS\Frontend\Page\PageRepository $parentObject Parent t3lib_pageSelect object
 	 * @return void
 	 */
-	public function getPage_preProcess(&$uid, &$disableGroupAccessCheck, t3lib_pageSelect $parentObject);
+	public function getPage_preProcess(&$uid, &$disableGroupAccessCheck, \TYPO3\CMS\Frontend\Page\PageRepository $parentObject);
 
 }
+
 ?>

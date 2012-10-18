@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Option extends tx_form_Domain_Model_Element_Abstract {
+class OptionElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -75,7 +77,7 @@ class tx_form_Domain_Model_Element_Option extends tx_form_Domain_Model_Element_A
 	 * Set the name of the parent object
 	 *
 	 * @param string $parentName Name of the parent
-	 * @return tx_form_Domain_Model_Element_Option The element object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\OptionElement The element object
 	 * @see tx_form_Domain_Model_Element::setParent()
 	 */
 	public function setParentName($parentName) {
@@ -90,7 +92,7 @@ class tx_form_Domain_Model_Element_Option extends tx_form_Domain_Model_Element_A
 	 * If there is submitted data for this field
 	 * it will change the selected attribute
 	 *
-	 * @return tx_form_Domain_Model_Element_Option
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\OptionElement
 	 * @see tx_form_Domain_Model_Element::checkFilterAndSetIncomingDataFromRequest()
 	 */
 	public function checkFilterAndSetIncomingDataFromRequest() {
@@ -118,5 +120,6 @@ class tx_form_Domain_Model_Element_Option extends tx_form_Domain_Model_Element_A
 	}
 
 }
+
 
 ?>

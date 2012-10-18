@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Page;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_frameset {
+class FramesetRenderer {
 
 	/**
 	 * Generates a frameset based on input configuration in a TypoScript array.
@@ -44,7 +46,7 @@ class tslib_frameset {
 	public function make($setup) {
 		$content = '';
 		if (is_array($setup)) {
-			$sKeyArray = t3lib_TStemplate::sortedKeyList($setup);
+			$sKeyArray = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($setup);
 			foreach ($sKeyArray as $theKey) {
 				$theValue = $setup[$theKey];
 				if (intval($theKey) && ($conf = $setup[$theKey . '.'])) {
@@ -57,7 +59,7 @@ class tslib_frameset {
 						$content .= (('<frame' . $this->frameParams($conf, $typeNum)) . ' />') . LF;
 						break;
 					case 'FRAMESET':
-						$frameset = t3lib_div::makeInstance('tslib_frameset');
+						$frameset = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\FramesetRenderer');
 						$content .= $frameset->make($conf) . LF;
 						break;
 					}
@@ -127,5 +129,6 @@ class tslib_frameset {
 	}
 
 }
+
 
 ?>

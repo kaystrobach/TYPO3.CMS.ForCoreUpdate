@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package 	TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_pagetree_interfaces_IndicatorProvider
+interface IndicatorProviderInterface
 {
 	/**
 	 * Returns the indicator html code
@@ -42,4 +44,5 @@ interface t3lib_tree_pagetree_interfaces_IndicatorProvider
 	public function getIndicator();
 
 }
+
 ?>

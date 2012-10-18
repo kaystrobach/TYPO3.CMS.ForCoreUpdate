@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Controller;
+
 /**
  * Class for displaying page information (records, page record properties)
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tx_cms
  */
-class tx_cms_webinfo_page extends t3lib_extobjbase {
+class PageInformationController extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 
 	/**
 	 * Returns the menu array
@@ -45,7 +47,7 @@ class tx_cms_webinfo_page extends t3lib_extobjbase {
 	 */
 	public function main() {
 		global $BACK_PATH, $LANG, $SOBE;
-		$dblist = t3lib_div::makeInstance('tx_cms_layout');
+		$dblist = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
 		$dblist->descrTable = '_MOD_' . $GLOBALS['MCONF']['name'];
 		$dblist->backPath = $BACK_PATH;
 		$dblist->thumbs = 0;
@@ -57,24 +59,25 @@ class tx_cms_webinfo_page extends t3lib_extobjbase {
 		// PAGES:
 		$this->pObj->MOD_SETTINGS['pages_levels'] = $this->pObj->MOD_SETTINGS['depth'];
 		// ONLY for the sake of dblist module which uses this value.
-		$h_func = t3lib_BEfunc::getFuncMenu($this->pObj->id, 'SET[depth]', $this->pObj->MOD_SETTINGS['depth'], $this->pObj->MOD_MENU['depth'], 'index.php');
-		$h_func .= t3lib_BEfunc::getFuncMenu($this->pObj->id, 'SET[pages]', $this->pObj->MOD_SETTINGS['pages'], $this->pObj->MOD_MENU['pages'], 'index.php');
+		$h_func = \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, 'SET[depth]', $this->pObj->MOD_SETTINGS['depth'], $this->pObj->MOD_MENU['depth'], 'index.php');
+		$h_func .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, 'SET[pages]', $this->pObj->MOD_SETTINGS['pages'], $this->pObj->MOD_MENU['pages'], 'index.php');
 		$dblist->start($this->pObj->id, 'pages', 0);
 		$dblist->generateList();
 		// CSH
 		$theOutput .= $this->pObj->doc->header($LANG->getLL('page_title'));
-		$theOutput .= $this->pObj->doc->section('', (t3lib_BEfunc::cshItem($dblist->descrTable, 'pagetree_overview', $GLOBALS['BACK_PATH'], '|<br />') . $h_func) . $dblist->HTMLcode, 0, 1);
+		$theOutput .= $this->pObj->doc->section('', (\TYPO3\CMS\Backend\Utility\BackendUtility::cshItem($dblist->descrTable, 'pagetree_overview', $GLOBALS['BACK_PATH'], '|<br />') . $h_func) . $dblist->HTMLcode, 0, 1);
 		// Additional footer content
 		$footerContentHook = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/web_info/class.tx_cms_webinfo.php']['drawFooterHook'];
 		if (is_array($footerContentHook)) {
 			foreach ($footerContentHook as $hook) {
 				$params = array();
-				$theOutput .= t3lib_div::callUserFunction($hook, $params, $this);
+				$theOutput .= \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hook, $params, $this);
 			}
 		}
 		return $theOutput;
 	}
 
 }
+
 
 ?>

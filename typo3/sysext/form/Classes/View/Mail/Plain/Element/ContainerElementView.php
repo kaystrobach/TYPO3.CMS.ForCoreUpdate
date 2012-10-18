@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Plain\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Plain_Element_Container extends tx_form_View_Mail_Plain_Element_Abstract {
+class ContainerElementView extends \TYPO3\CMS\Form\View\Mail\Plain\Element\AbstractElementView {
 
 	/**
 	 * @param array $children
@@ -37,7 +39,7 @@ class tx_form_View_Mail_Plain_Element_Container extends tx_form_View_Mail_Plain_
 	 */
 	protected function renderChildren(array $children, $spaces = 0) {
 		$content = '';
-		/** @var $child tx_form_Domain_Model_Element_Abstract */
+		/** @var $child \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement */
 		foreach ($children as $child) {
 			$content .= $this->renderChild($child, $spaces);
 		}
@@ -45,17 +47,17 @@ class tx_form_View_Mail_Plain_Element_Container extends tx_form_View_Mail_Plain_
 	}
 
 	/**
-	 * @param tx_form_Domain_Model_Element_Abstract $modelChild
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $modelChild
 	 * @param integer $spaces
 	 * @return string
 	 */
-	protected function renderChild(tx_form_Domain_Model_Element_Abstract $modelChild, $spaces) {
+	protected function renderChild(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $modelChild, $spaces) {
 		$content = '';
-		$class = tx_form_Common::getInstance()->getLastPartOfClassName($modelChild);
-		$className = 'tx_form_View_Mail_Plain_Element_' . ucfirst($class);
+		$class = \TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($modelChild);
+		$className = 'TYPO3\\CMS\\Form\\View\\Mail\\MailView_Plain_Element_' . ucfirst($class);
 		if (class_exists($className)) {
-			/** @var $childElement tx_form_View_Mail_Plain_Element_Abstract */
-			$childElement = t3lib_div::makeInstance($className, $modelChild, $spaces);
+			/** @var $childElement \TYPO3\CMS\Form\View\Mail\Plain\Element\AbstractElementView */
+			$childElement = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $modelChild, $spaces);
 			$elementContent = $childElement->render();
 			if ($elementContent != '') {
 				$content = $childElement->render() . chr(10);
@@ -65,5 +67,6 @@ class tx_form_View_Mail_Plain_Element_Container extends tx_form_View_Mail_Plain_
 	}
 
 }
+
 
 ?>

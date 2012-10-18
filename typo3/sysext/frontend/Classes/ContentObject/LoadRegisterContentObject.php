@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_LoadRegister extends tslib_content_Abstract {
+class LoadRegisterContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, LOAD_REGISTER
@@ -62,5 +64,6 @@ class tslib_content_LoadRegister extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Button extends tx_form_Domain_Model_Element_Abstract {
+class ButtonElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -72,8 +74,8 @@ class tx_form_Domain_Model_Element_Button extends tx_form_Domain_Model_Element_A
 	 * @see tx_form_Domain_Model_Element::setValue()
 	 */
 	public function setValue($value = '') {
-		/** @var $localizationHandler tx_form_System_Localization */
-		$localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
+		/** @var $localizationHandler \TYPO3\CMS\Form\Localization */
+		$localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
 		$oldValue = $this->getAttributeValue('value');
 		if (empty($oldValue)) {
 			if (!empty($value)) {
@@ -87,5 +89,6 @@ class tx_form_Domain_Model_Element_Button extends tx_form_Domain_Model_Element_A
 	}
 
 }
+
 
 ?>

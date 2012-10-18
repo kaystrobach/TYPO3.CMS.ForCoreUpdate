@@ -32,10 +32,10 @@
 if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI && basename(PATH_thisScript) == 'cli_dispatch.phpsh') {
 	$hasTask = TRUE;
 	// Create an instance of the scheduler object
-	/** @var $scheduler tx_scheduler */
-	$scheduler = t3lib_div::makeInstance('tx_scheduler');
-	/** @var t3lib_cli $cli */
-	$cli = t3lib_div::makeInstance('t3lib_cli');
+	/** @var $scheduler \TYPO3\CMS\Scheduler\Scheduler */
+	$scheduler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Scheduler');
+	/** @var \TYPO3\CMS\Cli\Controller\CommandLineController $cli */
+	$cli = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Cli\\Controller\\CommandLineController');
 	// If a specific id is given in arguments, then run that task. Otherwise run scheduled tasks.
 	if ($cli->cli_isArg('-i')) {
 		$taskId = intval($cli->cli_argValue('-i'));
@@ -50,7 +50,7 @@ if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI && basename(PATH_thisScript) == 'c
 			if ($scheduler->isValidTaskObject($task)) {
 				try {
 					$scheduler->executeTask($task);
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 
 				}
 				// Record the run in the system registry
@@ -63,20 +63,20 @@ if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI && basename(PATH_thisScript) == 'c
 			// Try getting the next task and execute it
 			// If there are no more tasks to execute, an exception is thrown by tx_scheduler::fetchTask()
 			try {
-				/** @var $task tx_scheduler_Task */
+				/** @var $task \TYPO3\CMS\Scheduler\Task */
 				$task = $scheduler->fetchTask();
 				$hasTask = TRUE;
 				try {
 					$scheduler->executeTask($task);
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					// We ignore any exception that may have been thrown during execution,
 					// as this is a background process.
 					// The exception message has been recorded to the database anyway
 					continue;
 				}
-			} catch (OutOfBoundsException $e) {
+			} catch (\OutOfBoundsException $e) {
 				$hasTask = FALSE;
-			} catch (UnexpectedValueException $e) {
+			} catch (\UnexpectedValueException $e) {
 				continue;
 			}
 		} while ($hasTask);

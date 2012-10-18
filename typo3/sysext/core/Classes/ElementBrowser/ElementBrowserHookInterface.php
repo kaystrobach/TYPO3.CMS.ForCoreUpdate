@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\ElementBrowser;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,12 +33,12 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_browseLinksHook
+interface ElementBrowserHookInterface
 {
 	/**
 	 * Initializes the hook object
 	 *
-	 * @param browse_links Parent browse_links object
+	 * @param \TYPO3\CMS\Recordlist\Browser\ElementBrowser Parent browse_links object
 	 * @param array Additional parameters
 	 * @return void
 	 */
@@ -77,4 +79,5 @@ interface t3lib_browseLinksHook
 	public function parseCurrentUrl($href, $siteUrl, $info);
 
 }
+
 ?>

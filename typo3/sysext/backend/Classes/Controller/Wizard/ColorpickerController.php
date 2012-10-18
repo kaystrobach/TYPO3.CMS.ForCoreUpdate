@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\Wizard;
+
 /**
  * Script Class for colorpicker wizard
  *
@@ -8,7 +10,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_wizard_colorpicker {
+class ColorpickerController {
 
 	// GET vars:
 	// Wizard parameters, coming from TCEforms linking to the wizard.
@@ -76,7 +78,7 @@ class SC_wizard_colorpicker {
 	/**
 	 * Document template object
 	 *
-	 * @var smallDoc
+	 * @var \TYPO3\CMS\Backend\Template\SmallDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -95,19 +97,19 @@ class SC_wizard_colorpicker {
 	 */
 	public function init() {
 		// Setting GET vars (used in frameset script):
-		$this->P = t3lib_div::_GP('P', 1);
+		$this->P = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P', 1);
 		// Setting GET vars (used in colorpicker script):
-		$this->colorValue = t3lib_div::_GP('colorValue');
-		$this->fieldChangeFunc = t3lib_div::_GP('fieldChangeFunc');
-		$this->fieldChangeFuncHash = t3lib_div::_GP('fieldChangeFuncHash');
-		$this->fieldName = t3lib_div::_GP('fieldName');
-		$this->formName = t3lib_div::_GP('formName');
-		$this->md5ID = t3lib_div::_GP('md5ID');
-		$this->exampleImg = t3lib_div::_GP('exampleImg');
+		$this->colorValue = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('colorValue');
+		$this->fieldChangeFunc = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('fieldChangeFunc');
+		$this->fieldChangeFuncHash = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('fieldChangeFuncHash');
+		$this->fieldName = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('fieldName');
+		$this->formName = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('formName');
+		$this->md5ID = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('md5ID');
+		$this->exampleImg = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('exampleImg');
 		// Resolving image (checking existence etc.)
 		$this->imageError = '';
 		if ($this->exampleImg) {
-			$this->pickerImage = t3lib_div::getFileAbsFileName($this->exampleImg, 1, 1);
+			$this->pickerImage = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->exampleImg, 1, 1);
 			if (!$this->pickerImage || !@is_file($this->pickerImage)) {
 				$this->imageError = ('ERROR: The image, "' . $this->exampleImg) . '", could not be found!';
 			}
@@ -123,7 +125,7 @@ class SC_wizard_colorpicker {
 			}
 		}
 		// Initialize document object:
-		$this->doc = t3lib_div::makeInstance('smallDoc');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\SmallDocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->JScode = $this->doc->wrapScriptTags(((((((((((((((((((('
 			function checkReference() {	//
@@ -167,7 +169,7 @@ class SC_wizard_colorpicker {
 	 */
 	public function main() {
 		// Show frameset by default:
-		if (!t3lib_div::_GP('showPicker')) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('showPicker')) {
 			$this->frameSet();
 		} else {
 			// Putting together the items into a form:
@@ -197,7 +199,7 @@ class SC_wizard_colorpicker {
 					<input type="hidden" name="exampleImg" value="') . htmlspecialchars($this->exampleImg)) . '" />
 				</form>';
 			// If the save/close button is clicked, then close:
-			if (t3lib_div::_GP('save_close')) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('save_close')) {
 				$content .= $this->doc->wrapScriptTags(('
 					setValue(\'' . $this->colorValue) . '\');
 					parent.close();
@@ -330,8 +332,8 @@ class SC_wizard_colorpicker {
 		// Handling color-picker image if any:
 		if (!$this->imageError) {
 			if ($this->pickerImage) {
-				if (t3lib_div::_POST('coords_x')) {
-					$this->colorValue = '#' . $this->getIndex(t3lib_stdgraphic::imageCreateFromFile($this->pickerImage), t3lib_div::_POST('coords_x'), t3lib_div::_POST('coords_y'));
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('coords_x')) {
+					$this->colorValue = '#' . $this->getIndex(\t3lib_stdgraphic::imageCreateFromFile($this->pickerImage), \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('coords_x'), \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('coords_y'));
 				}
 				$pickerFormImage = ((('
 				<p class="c-head">' . $GLOBALS['LANG']->getLL('colorpicker_fromImage', 1)) . '</p>
@@ -381,9 +383,10 @@ class SC_wizard_colorpicker {
 	 * @return boolean Whether the submitted field change functions are valid
 	 */
 	protected function areFieldChangeFunctionsValid() {
-		return ($this->fieldChangeFunc && $this->fieldChangeFuncHash) && $this->fieldChangeFuncHash === t3lib_div::hmac($this->fieldChangeFunc);
+		return ($this->fieldChangeFunc && $this->fieldChangeFuncHash) && $this->fieldChangeFuncHash === \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($this->fieldChangeFunc);
 	}
 
 }
+
 
 ?>

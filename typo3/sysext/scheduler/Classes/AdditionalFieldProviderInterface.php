@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,35 +30,36 @@
  * @package 		TYPO3
  * @subpackage 	tx_scheduler
  */
-interface tx_scheduler_AdditionalFieldProvider
+interface AdditionalFieldProviderInterface
 {
 	/**
 	 * Gets additional fields to render in the form to add/edit a task
 	 *
 	 * @param array $taskInfo Values of the fields from the add/edit task form
-	 * @param tx_scheduler_Task $task The task object being edited. Null when adding a task!
-	 * @param tx_scheduler_Module $schedulerModule Reference to the scheduler backend module
+	 * @param \TYPO3\CMS\Scheduler\Task $task The task object being edited. Null when adding a task!
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the scheduler backend module
 	 * @return array A two dimensional array, array('Identifier' => array('fieldId' => array('code' => '', 'label' => '', 'cshKey' => '', 'cshLabel' => ''))
 	 */
-	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $schedulerModule);
+	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule);
 
 	/**
 	 * Validates the additional fields' values
 	 *
 	 * @param array $submittedData An array containing the data submitted by the add/edit task form
-	 * @param tx_scheduler_Module $schedulerModule Reference to the scheduler backend module
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the scheduler backend module
 	 * @return boolean TRUE if validation was ok (or selected class is not relevant), FALSE otherwise
 	 */
-	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $schedulerModule);
+	public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule);
 
 	/**
 	 * Takes care of saving the additional fields' values in the task's object
 	 *
 	 * @param array $submittedData An array containing the data submitted by the add/edit task form
-	 * @param tx_scheduler_Task $task Reference to the scheduler backend module
+	 * @param \TYPO3\CMS\Scheduler\Task $task Reference to the scheduler backend module
 	 * @return void
 	 */
-	public function saveAdditionalFields(array $submittedData, tx_scheduler_Task $task);
+	public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task $task);
 
 }
+
 ?>

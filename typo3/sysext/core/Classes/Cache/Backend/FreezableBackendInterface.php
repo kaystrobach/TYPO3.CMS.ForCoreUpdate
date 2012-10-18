@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /*                                                                        *
  * This script belongs to the FLOW3 framework.                            *
  *                                                                        *
@@ -13,7 +15,7 @@
  *
  * @api
  */
-interface t3lib_cache_backend_FreezableBackend extends t3lib_cache_backend_Backend
+interface FreezableBackendInterface extends \TYPO3\CMS\Core\Cache\Backend\BackendInterface
 {
 	/**
 	 * Freezes this cache backend.
@@ -37,4 +39,5 @@ interface t3lib_cache_backend_FreezableBackend extends t3lib_cache_backend_Backe
 	public function isFrozen();
 
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Container extends tx_form_Domain_Model_Element_Abstract {
+class ContainerElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Child elements of this object
@@ -40,10 +42,10 @@ class tx_form_Domain_Model_Element_Container extends tx_form_Domain_Model_Elemen
 	/**
 	 * Add child object to this element
 	 *
-	 * @param tx_form_Domain_Model_Element_Abstract $element The child object
-	 * @return tx_form_Domain_Model_Element_Container
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $element The child object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\ContainerElement
 	 */
-	public function addElement(tx_form_Domain_Model_Element_Abstract $element) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $element) {
 		$this->elements[] = $element;
 		return $this;
 	}
@@ -58,5 +60,6 @@ class tx_form_Domain_Model_Element_Container extends tx_form_Domain_Model_Elemen
 	}
 
 }
+
 
 ?>

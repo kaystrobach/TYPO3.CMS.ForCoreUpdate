@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_cache {
+class Cache {
 
 	/**
 	 * @var 	boolean
@@ -44,12 +46,12 @@ class t3lib_cache {
 	static public function initializeCachingFramework() {
 		if (!self::isCachingFrameworkInitialized()) {
 			// New operator used on purpose, makeInstance() is not ready to be used so early in bootstrap
-			$GLOBALS['typo3CacheManager'] = new t3lib_cache_Manager();
-			t3lib_div::setSingletonInstance('t3lib_cache_Manager', $GLOBALS['typo3CacheManager']);
+			$GLOBALS['typo3CacheManager'] = new \TYPO3\CMS\Core\Cache\CacheManager();
+			\TYPO3\CMS\Core\Utility\GeneralUtility::setSingletonInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager', $GLOBALS['typo3CacheManager']);
 			$GLOBALS['typo3CacheManager']->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
 			// New operator used on purpose, makeInstance() is not ready to be used so early in bootstrap
-			$GLOBALS['typo3CacheFactory'] = new t3lib_cache_Factory('production', $GLOBALS['typo3CacheManager']);
-			t3lib_div::setSingletonInstance('t3lib_cache_Factory', $GLOBALS['typo3CacheFactory']);
+			$GLOBALS['typo3CacheFactory'] = new \TYPO3\CMS\Core\Cache\CacheFactory('production', $GLOBALS['typo3CacheManager']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::setSingletonInstance('TYPO3\\CMS\\Core\\Cache\\CacheFactory', $GLOBALS['typo3CacheFactory']);
 			self::$isCachingFrameworkInitialized = TRUE;
 		}
 	}
@@ -61,7 +63,7 @@ class t3lib_cache {
 	 * @return boolean True if caching framework is initialized
 	 */
 	static public function isCachingFrameworkInitialized() {
-		if ((((!self::$isCachingFrameworkInitialized && isset($GLOBALS['typo3CacheManager'])) && $GLOBALS['typo3CacheManager'] instanceof t3lib_cache_Manager) && isset($GLOBALS['typo3CacheFactory'])) && $GLOBALS['typo3CacheFactory'] instanceof t3lib_cache_Factory) {
+		if ((((!self::$isCachingFrameworkInitialized && isset($GLOBALS['typo3CacheManager'])) && $GLOBALS['typo3CacheManager'] instanceof \TYPO3\CMS\Core\Cache\CacheManager) && isset($GLOBALS['typo3CacheFactory'])) && $GLOBALS['typo3CacheFactory'] instanceof \TYPO3\CMS\Core\Cache\CacheFactory) {
 			self::$isCachingFrameworkInitialized = TRUE;
 		}
 		return self::$isCachingFrameworkInitialized;
@@ -87,5 +89,6 @@ class t3lib_cache {
 	}
 
 }
+
 
 ?>

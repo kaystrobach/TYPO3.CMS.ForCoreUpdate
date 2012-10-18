@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_indexedsearch
  */
-class tx_indexedsearch_lexer {
+class Lexer {
 
 	// Debugging options:
 	/**
@@ -54,7 +56,7 @@ class tx_indexedsearch_lexer {
 	/**
 	 * Charset class object
 	 *
-	 * @var t3lib_cs
+	 * @var \TYPO3\CMS\Core\Charset\CharsetConverter
 	 * @todo Define visibility
 	 */
 	public $csObj;
@@ -77,7 +79,7 @@ class tx_indexedsearch_lexer {
 	 * @todo Define visibility
 	 */
 	public function __construct() {
-		$this->csObj = t3lib_div::makeInstance('t3lib_cs');
+		$this->csObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 	}
 
 	/**
@@ -221,7 +223,7 @@ class tx_indexedsearch_lexer {
 			if ($len) {
 				if ($letter) {
 					// We are in a sequence of words
-					if ((!$cType || $cType_prev == 'cjk' && t3lib_div::inList('num,alpha', $cType)) || $cType == 'cjk' && t3lib_div::inList('num,alpha', $cType_prev)) {
+					if ((!$cType || $cType_prev == 'cjk' && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('num,alpha', $cType)) || $cType == 'cjk' && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('num,alpha', $cType_prev)) {
 						// Check if the non-letter char is NOT a print-join char because then it signifies the end of the word.
 						if (!in_array($cp, $this->lexerConf['printjoins'])) {
 							// If a printjoin start length has been record, set that back now so the length is right (filtering out multiple end chars)
@@ -321,5 +323,6 @@ class tx_indexedsearch_lexer {
 	}
 
 }
+
 
 ?>

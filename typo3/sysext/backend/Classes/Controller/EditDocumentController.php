@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class: Drawing the editing form for editing records in TYPO3.
  * Notice: It does NOT use tce_db.php to submit data to, rather it handles submissions itself
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_alt_doc {
+class EditDocumentController {
 
 	// Internal, static: GPvars:
 	// GPvar "edit": Is an array looking approx like [tablename][list-of-ids]=command, eg.
@@ -164,7 +166,7 @@ class SC_alt_doc {
 	/**
 	 * document template object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -298,7 +300,7 @@ class SC_alt_doc {
 	/**
 	 * instance of TCEforms class
 	 *
-	 * @var t3lib_TCEforms
+	 * @var \TYPO3\CMS\Backend\Form\FormEngine
 	 * @todo Define visibility
 	 */
 	public $tceforms;
@@ -323,20 +325,20 @@ class SC_alt_doc {
 	 * @todo Define visibility
 	 */
 	public function preInit() {
-		if (t3lib_div::_GP('justLocalized')) {
-			$this->localizationRedirect(t3lib_div::_GP('justLocalized'));
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('justLocalized')) {
+			$this->localizationRedirect(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('justLocalized'));
 		}
 		// Setting GPvars:
-		$this->editconf = t3lib_div::_GP('edit');
-		$this->defVals = t3lib_div::_GP('defVals');
-		$this->overrideVals = t3lib_div::_GP('overrideVals');
-		$this->columnsOnly = t3lib_div::_GP('columnsOnly');
-		$this->returnUrl = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
-		$this->closeDoc = t3lib_div::_GP('closeDoc');
-		$this->doSave = t3lib_div::_GP('doSave');
-		$this->returnEditConf = t3lib_div::_GP('returnEditConf');
-		$this->localizationMode = t3lib_div::_GP('localizationMode');
-		$this->uc = t3lib_div::_GP('uc');
+		$this->editconf = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('edit');
+		$this->defVals = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('defVals');
+		$this->overrideVals = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('overrideVals');
+		$this->columnsOnly = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('columnsOnly');
+		$this->returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
+		$this->closeDoc = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('closeDoc');
+		$this->doSave = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('doSave');
+		$this->returnEditConf = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnEditConf');
+		$this->localizationMode = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('localizationMode');
+		$this->uc = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('uc');
 		// Setting override values as default if defVals does not exist.
 		if (!is_array($this->defVals) && is_array($this->overrideVals)) {
 			$this->defVals = $this->overrideVals;
@@ -346,8 +348,8 @@ class SC_alt_doc {
 		// Fix $this->editconf if versioning applies to any of the records
 		$this->fixWSversioningInEditConf();
 		// Make R_URL (request url) based on input GETvars:
-		$this->R_URL_parts = parse_url(t3lib_div::getIndpEnv('REQUEST_URI'));
-		$this->R_URL_getvars = t3lib_div::_GET();
+		$this->R_URL_parts = parse_url(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'));
+		$this->R_URL_getvars = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET();
 		$this->R_URL_getvars['edit'] = $this->editconf;
 		// MAKE url for storing
 		$this->compileStoreDat();
@@ -388,17 +390,17 @@ class SC_alt_doc {
 	 */
 	public function processData() {
 		// GPvars specifically for processing:
-		$this->data = t3lib_div::_GP('data');
-		$this->cmd = t3lib_div::_GP('cmd');
-		$this->mirror = t3lib_div::_GP('mirror');
-		$this->cacheCmd = t3lib_div::_GP('cacheCmd');
-		$this->redirect = t3lib_div::_GP('redirect');
-		$this->returnNewPageId = t3lib_div::_GP('returnNewPageId');
-		$this->vC = t3lib_div::_GP('vC');
+		$this->data = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('data');
+		$this->cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
+		$this->mirror = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('mirror');
+		$this->cacheCmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cacheCmd');
+		$this->redirect = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect');
+		$this->returnNewPageId = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnNewPageId');
+		$this->vC = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('vC');
 		// See tce_db.php for relevate options here:
 		// Only options related to $this->data submission are included here.
-		/** @var $tce t3lib_TCEmain */
-		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+		/** @var $tce \TYPO3\CMS\Core\DataHandler\DataHandler */
+		$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 		$tce->stripslashes_values = 0;
 		if (isset($_POST['_translation_savedok_x'])) {
 			$tce->updateModeL10NdiffData = 'FORCE_FFUPD';
@@ -425,11 +427,11 @@ class SC_alt_doc {
 		}
 		// If pages are being edited, we set an instruction about updating the page tree after this operation.
 		if (isset($this->data['pages']) || $GLOBALS['BE_USER']->workspace != 0 && count($this->data)) {
-			t3lib_BEfunc::setUpdateSignal('updatePageTree');
+			\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updatePageTree');
 		}
 		// Checking referer / executing
-		$refInfo = parse_url(t3lib_div::getIndpEnv('HTTP_REFERER'));
-		$httpHost = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+		$refInfo = parse_url(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_REFERER'));
+		$httpHost = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 		if (($httpHost != $refInfo['host'] && $this->vC != $GLOBALS['BE_USER']->veriCode()) && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']) {
 			$tce->log('', 0, 0, 0, 1, 'Referer host \'%s\' and server host \'%s\' did not match and veriCode was not valid either!', 1, array($refInfo['host'], $httpHost));
 			debug('Error: Referer host did not match with server host.');
@@ -441,7 +443,7 @@ class SC_alt_doc {
 			// If there was saved any new items, load them:
 			if (count($tce->substNEWwithIDs_table)) {
 				// save the expanded/collapsed states for new inline records, if any
-				t3lib_TCEforms_inline::updateInlineView($this->uc, $tce);
+				\TYPO3\CMS\Backend\Form\Element\InlineElement::updateInlineView($this->uc, $tce);
 				$newEditConf = array();
 				foreach ($this->editconf as $tableName => $tableCmds) {
 					$keys = array_keys($tce->substNEWwithIDs_table, $tableName);
@@ -451,7 +453,7 @@ class SC_alt_doc {
 							// Check if the $editId isn't a child record of an IRRE action
 							if (!(is_array($tce->newRelatedIDs[$tableName]) && in_array($editId, $tce->newRelatedIDs[$tableName]))) {
 								// Translate new id to the workspace version:
-								if ($versionRec = t3lib_BEfunc::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, $tableName, $editId, 'uid')) {
+								if ($versionRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, $tableName, $editId, 'uid')) {
 									$editId = $versionRec['uid'];
 								}
 								$newEditConf[$tableName][$editId] = 'edit';
@@ -488,7 +490,7 @@ class SC_alt_doc {
 				// Finding the first id, getting the records pid+uid
 				reset($this->editconf[$nTable]);
 				$nUid = key($this->editconf[$nTable]);
-				$nRec = t3lib_BEfunc::getRecord($nTable, $nUid, 'pid,uid');
+				$nRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($nTable, $nUid, 'pid,uid');
 				// Setting a blank editconf array for a new record:
 				$this->editconf = array();
 				if ($this->getNewIconMode($nTable) == 'top') {
@@ -501,7 +503,7 @@ class SC_alt_doc {
 				// Re-compile the store* values since editconf changed...
 				$this->compileStoreDat();
 			}
-			$tce->printLogErrorMessages(isset($_POST['_saveandclosedok_x']) || isset($_POST['_translation_savedok_x']) ? $this->retUrl : ($this->R_URL_parts['path'] . '?') . t3lib_div::implodeArrayForUrl('', $this->R_URL_getvars));
+			$tce->printLogErrorMessages(isset($_POST['_saveandclosedok_x']) || isset($_POST['_translation_savedok_x']) ? $this->retUrl : ($this->R_URL_parts['path'] . '?') . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', $this->R_URL_getvars));
 		}
 		//  || count($tce->substNEWwithIDs)... If any new items has been save, the document is CLOSED
 		// because if not, we just get that element re-listed as new. And we don't want that!
@@ -518,17 +520,17 @@ class SC_alt_doc {
 	 */
 	public function init() {
 		// Setting more GPvars:
-		$this->popViewId = t3lib_div::_GP('popViewId');
-		$this->popViewId_addParams = t3lib_div::_GP('popViewId_addParams');
-		$this->viewUrl = t3lib_div::_GP('viewUrl');
-		$this->editRegularContentFromId = t3lib_div::_GP('editRegularContentFromId');
-		$this->recTitle = t3lib_div::_GP('recTitle');
-		$this->disHelp = t3lib_div::_GP('disHelp');
-		$this->noView = t3lib_div::_GP('noView');
+		$this->popViewId = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('popViewId');
+		$this->popViewId_addParams = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('popViewId_addParams');
+		$this->viewUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('viewUrl');
+		$this->editRegularContentFromId = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('editRegularContentFromId');
+		$this->recTitle = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('recTitle');
+		$this->disHelp = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('disHelp');
+		$this->noView = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('noView');
 		$this->perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
 		// Set other internal variables:
 		$this->R_URL_getvars['returnUrl'] = $this->retUrl;
-		$this->R_URI = ($this->R_URL_parts['path'] . '?') . t3lib_div::implodeArrayForUrl('', $this->R_URL_getvars);
+		$this->R_URI = ($this->R_URL_parts['path'] . '?') . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', $this->R_URL_getvars);
 		// MENU-ITEMS:
 		// If array, then it's a selector box menu
 		// If empty string it's just a variable, that'll be saved.
@@ -539,7 +541,7 @@ class SC_alt_doc {
 		// Setting virtual document name
 		$this->MCONF['name'] = 'xMOD_alt_doc.php';
 		// CLEANSE SETTINGS
-		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name']);
+		$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name']);
 		// Create an instance of the document template object
 		$this->doc = $GLOBALS['TBE_TEMPLATE'];
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
@@ -578,14 +580,14 @@ class SC_alt_doc {
 				if (
 					' . ($GLOBALS['BE_USER']->jsConfirmation(4) ? ('confirm(' . $GLOBALS['LANG']->JScharCode($GLOBALS['LANG']->getLL('deleteWarning'))) . ')' : '1==1')) . '
 				)	{
-					window.location.href = "tce_db.php?cmd["+table+"]["+id+"][delete]=1') . t3lib_BEfunc::getUrlToken('tceAction')) . '&redirect="+escape(url)+"&vC=') . $GLOBALS['BE_USER']->veriCode()) . '&prErr=1&uPT=1";
+					window.location.href = "tce_db.php?cmd["+table+"]["+id+"][delete]=1') . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction')) . '&redirect="+escape(url)+"&vC=') . $GLOBALS['BE_USER']->veriCode()) . '&prErr=1&uPT=1";
 				}
 				return false;
 			}
-		') . (isset($_POST['_savedokview_x']) && $this->popViewId ? ((('if (window.opener) { ' . t3lib_BEfunc::viewOnClick($this->popViewId, '', t3lib_BEfunc::BEgetRootLine($this->popViewId), '', $this->viewUrl, $this->popViewId_addParams, FALSE)) . ' } else { ') . t3lib_BEfunc::viewOnClick($this->popViewId, '', t3lib_BEfunc::BEgetRootLine($this->popViewId), '', $this->viewUrl, $this->popViewId_addParams)) . ' } ' : ''));
+		') . (isset($_POST['_savedokview_x']) && $this->popViewId ? ((('if (window.opener) { ' . \TYPO3\CMS\Backend\Utility\BackendUtility::viewOnClick($this->popViewId, '', \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($this->popViewId), '', $this->viewUrl, $this->popViewId_addParams, FALSE)) . ' } else { ') . \TYPO3\CMS\Backend\Utility\BackendUtility::viewOnClick($this->popViewId, '', \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($this->popViewId), '', $this->viewUrl, $this->popViewId_addParams)) . ' } ' : ''));
 		// Setting up the context sensitive menu:
 		$this->doc->getContextMenuCode();
-		$this->doc->bodyTagAdditions = ('onload="window.scrollTo(0,' . t3lib_utility_Math::forceIntegerInRange(t3lib_div::_GP('_scrollPosition'), 0, 10000)) . ');"';
+		$this->doc->bodyTagAdditions = ('onload="window.scrollTo(0,' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('_scrollPosition'), 0, 10000)) . ');"';
 	}
 
 	/**
@@ -598,10 +600,10 @@ class SC_alt_doc {
 		// Begin edit:
 		if (is_array($this->editconf)) {
 			// Initialize TCEforms (rendering the forms)
-			$this->tceforms = t3lib_div::makeInstance('t3lib_TCEforms');
+			$this->tceforms = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Form\\FormEngine');
 			$this->tceforms->initDefaultBEMode();
 			$this->tceforms->doSaveFieldName = 'doSave';
-			$this->tceforms->localizationMode = t3lib_div::inList('text,media', $this->localizationMode) ? $this->localizationMode : '';
+			$this->tceforms->localizationMode = \TYPO3\CMS\Core\Utility\GeneralUtility::inList('text,media', $this->localizationMode) ? $this->localizationMode : '';
 			// text,media is keywords defined in TYPO3 Core API..., see "l10n_cat"
 			$this->tceforms->returnUrl = $this->R_URI;
 			$this->tceforms->palettesCollapsed = !$this->MOD_SETTINGS['showPalettes'];
@@ -610,7 +612,7 @@ class SC_alt_doc {
 			$this->tceforms->enableTabMenu = TRUE;
 			// Clipboard is initialized:
 			// Start clipboard
-			$this->tceforms->clipObj = t3lib_div::makeInstance('t3lib_clipboard');
+			$this->tceforms->clipObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Clipboard\\Clipboard');
 			// Initialize - reads the clipboard content from the user session
 			$this->tceforms->clipObj->initializeClipboard();
 			// Setting external variables:
@@ -626,10 +628,10 @@ class SC_alt_doc {
 				if ((strcmp($this->docDat[1], $this->storeUrlMd5) || !isset($this->docHandler[$this->storeUrlMd5])) && !$this->dontStoreDocumentRef) {
 					$this->docHandler[$this->storeUrlMd5] = array($this->storeTitle, $this->storeArray, $this->storeUrl, $this->firstEl);
 					$GLOBALS['BE_USER']->pushModuleData('alt_doc.php', array($this->docHandler, $this->storeUrlMd5));
-					t3lib_BEfunc::setUpdateSignal('tx_opendocs::updateNumber', count($this->docHandler));
+					\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('TYPO3\\CMS\\Opendocs\\Controller\\OpendocsController::updateNumber', count($this->docHandler));
 				}
 				// Module configuration
-				$this->modTSconfig = $this->viewId ? t3lib_BEfunc::getModTSconfig($this->viewId, 'mod.xMOD_alt_doc') : array();
+				$this->modTSconfig = $this->viewId ? \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($this->viewId, 'mod.xMOD_alt_doc') : array();
 				$body .= $this->tceforms->printNeededJSFunctions_top();
 				$body .= $this->compileForm($editForm);
 				$body .= $this->tceforms->printNeededJSFunctions();
@@ -639,7 +641,7 @@ class SC_alt_doc {
 		}
 		// Access check...
 		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->viewId, $this->perms_clause);
+		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->viewId, $this->perms_clause);
 		// Setting up the buttons and markers for docheader
 		$docHeaderButtons = $this->getButtons();
 		$markers = array(
@@ -692,7 +694,7 @@ class SC_alt_doc {
 				foreach ($conf as $cKey => $cmd) {
 					if ($cmd == 'edit' || $cmd == 'new') {
 						// Get the ids:
-						$ids = t3lib_div::trimExplode(',', $cKey, 1);
+						$ids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $cKey, 1);
 						// Traverse the ids:
 						foreach ($ids as $theUid) {
 							// Checking if the user has permissions? (Only working as a precaution,
@@ -712,11 +714,11 @@ class SC_alt_doc {
 									// Find parent page on which the new record reside
 									// Less than zero - find parent page
 									if ($theUid < 0) {
-										$calcPRec = t3lib_BEfunc::getRecord($table, abs($theUid));
-										$calcPRec = t3lib_BEfunc::getRecord('pages', $calcPRec['pid']);
+										$calcPRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, abs($theUid));
+										$calcPRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $calcPRec['pid']);
 									} else {
 										// always a page
-										$calcPRec = t3lib_BEfunc::getRecord('pages', abs($theUid));
+										$calcPRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', abs($theUid));
 									}
 									// Now, calculate whether the user has access to creating new records on this position:
 									if (is_array($calcPRec)) {
@@ -736,8 +738,8 @@ class SC_alt_doc {
 								$this->dontStoreDocumentRef = 1;
 							} else {
 								// Edit:
-								$calcPRec = t3lib_BEfunc::getRecord($table, $theUid);
-								t3lib_BEfunc::fixVersioningPid($table, $calcPRec);
+								$calcPRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $theUid);
+								\TYPO3\CMS\Backend\Utility\BackendUtility::fixVersioningPid($table, $calcPRec);
 								if (is_array($calcPRec)) {
 									// If pages:
 									if ($table == 'pages') {
@@ -747,7 +749,7 @@ class SC_alt_doc {
 										$this->viewId = $calcPRec['uid'];
 									} else {
 										// Fetching pid-record first
-										$CALC_PERMS = $GLOBALS['BE_USER']->calcPerms(t3lib_BEfunc::getRecord('pages', $calcPRec['pid']));
+										$CALC_PERMS = $GLOBALS['BE_USER']->calcPerms(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $calcPRec['pid']));
 										$hasAccess = $CALC_PERMS & 16 ? 1 : 0;
 										$deleteAccess = $CALC_PERMS & 16 ? 1 : 0;
 										$this->viewId = $calcPRec['pid'];
@@ -773,14 +775,14 @@ class SC_alt_doc {
 										'cmd' => $cmd,
 										'hasAccess' => $hasAccess
 									);
-									$hasAccess = t3lib_div::callUserFunction($_funcRef, $_params, $this);
+									$hasAccess = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 								}
 							}
 							// AT THIS POINT we have checked the access status of the editing/creation of
 							// records and we can now proceed with creating the form elements:
 							if ($hasAccess) {
 								$prevPageID = is_object($trData) ? $trData->prevPageID : '';
-								$trData = t3lib_div::makeInstance('t3lib_transferData');
+								$trData = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Form\\DataPreprocessor');
 								$trData->addRawData = TRUE;
 								$trData->defVals = $this->defVals;
 								$trData->lockRecords = 1;
@@ -805,7 +807,7 @@ class SC_alt_doc {
 									// Setting visual path / title of form:
 									$this->generalPathOfForm = $this->tceforms->getRecordPath($table, $rec);
 									if (!$this->storeTitle) {
-										$this->storeTitle = $this->recTitle ? htmlspecialchars($this->recTitle) : t3lib_BEfunc::getRecordTitle($table, $rec, TRUE);
+										$this->storeTitle = $this->recTitle ? htmlspecialchars($this->recTitle) : \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($table, $rec, TRUE);
 									}
 									// Setting variables in TCEforms object:
 									$this->tceforms->hiddenFieldList = '';
@@ -833,9 +835,9 @@ class SC_alt_doc {
 										$this->newC++;
 									}
 									// Display "is-locked" message:
-									if ($lockInfo = t3lib_BEfunc::isRecordLocked($table, $rec['uid'])) {
-										$lockedMessage = t3lib_div::makeInstance('t3lib_FlashMessage', htmlspecialchars($lockInfo['msg']), '', t3lib_FlashMessage::WARNING);
-										t3lib_FlashMessageQueue::addMessage($lockedMessage);
+									if ($lockInfo = \TYPO3\CMS\Backend\Utility\BackendUtility::isRecordLocked($table, $rec['uid'])) {
+										$lockedMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', htmlspecialchars($lockInfo['msg']), '', \TYPO3\CMS\Core\Messaging\FlashMessage::WARNING);
+										\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($lockedMessage);
 									}
 									// Combine it all:
 									$editForm .= $panel;
@@ -877,51 +879,51 @@ class SC_alt_doc {
 		// The action of each button is decided by its name attribute. (See doProcessData())
 		if (!$this->errorC && !$GLOBALS['TCA'][$this->firstEl['table']]['ctrl']['readOnly']) {
 			// SAVE button:
-			$buttons['save'] = t3lib_iconWorks::getSpriteIcon('actions-document-save', array('html' => ('<input type="image" name="_savedok" class="c-inputButton" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', 1)) . '" />'));
+			$buttons['save'] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save', array('html' => ('<input type="image" name="_savedok" class="c-inputButton" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', 1)) . '" />'));
 			// SAVE / VIEW button:
-			if ((($this->viewId && !$this->noView) && t3lib_extMgm::isLoaded('cms')) && $this->getNewIconMode($this->firstEl['table'], 'saveDocView')) {
-				$buttons['save_view'] = t3lib_iconWorks::getSpriteIcon('actions-document-save-view', array('html' => ('<input type="image" class="c-inputButton" name="_savedokview" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDocShow', 1)) . '" />'));
+			if ((($this->viewId && !$this->noView) && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms')) && $this->getNewIconMode($this->firstEl['table'], 'saveDocView')) {
+				$buttons['save_view'] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save-view', array('html' => ('<input type="image" class="c-inputButton" name="_savedokview" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDocShow', 1)) . '" />'));
 			}
 			// SAVE / NEW button:
 			if (count($this->elementsData) == 1 && $this->getNewIconMode($this->firstEl['table'])) {
-				$buttons['save_new'] = t3lib_iconWorks::getSpriteIcon('actions-document-save-new', array('html' => ('<input type="image" class="c-inputButton" name="_savedoknew" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveNewDoc', 1)) . '" />'));
+				$buttons['save_new'] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save-new', array('html' => ('<input type="image" class="c-inputButton" name="_savedoknew" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveNewDoc', 1)) . '" />'));
 			}
 			// SAVE / CLOSE
-			$buttons['save_close'] = t3lib_iconWorks::getSpriteIcon('actions-document-save-close', array('html' => ('<input type="image" class="c-inputButton" name="_saveandclosedok" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', 1)) . '" />'));
+			$buttons['save_close'] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save-close', array('html' => ('<input type="image" class="c-inputButton" name="_saveandclosedok" src="clear.gif" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', 1)) . '" />'));
 			// FINISH TRANSLATION / SAVE / CLOSE
 			if ($GLOBALS['TYPO3_CONF_VARS']['BE']['explicitConfirmationOfTranslation']) {
-				$buttons['translation_save'] = ((('<input type="image" class="c-inputButton" name="_translation_savedok" src="' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/translationsavedok.gif', '', 1)) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.translationSaveDoc', 1)) . '" />';
-				$buttons['translation_saveclear'] = ((('<input type="image" class="c-inputButton" name="_translation_savedokclear" src="' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/translationsavedok_clear.gif', '', 1)) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.translationSaveDocClear', 1)) . '" />';
+				$buttons['translation_save'] = ((('<input type="image" class="c-inputButton" name="_translation_savedok" src="' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/translationsavedok.gif', '', 1)) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.translationSaveDoc', 1)) . '" />';
+				$buttons['translation_saveclear'] = ((('<input type="image" class="c-inputButton" name="_translation_savedokclear" src="' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/translationsavedok_clear.gif', '', 1)) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.translationSaveDocClear', 1)) . '" />';
 			}
 		}
 		// CLOSE button:
-		$buttons['close'] = ((('<a href="#" onclick="document.editform.closeDoc.value=1; document.editform.submit(); return false;" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-close')) . '</a>';
+		$buttons['close'] = ((('<a href="#" onclick="document.editform.closeDoc.value=1; document.editform.submit(); return false;" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close')) . '</a>';
 		// DELETE + UNDO buttons:
 		if ((!$this->errorC && !$GLOBALS['TCA'][$this->firstEl['table']]['ctrl']['readOnly']) && count($this->elementsData) == 1) {
-			if ($this->firstEl['cmd'] != 'new' && t3lib_utility_Math::canBeInterpretedAsInteger($this->firstEl['uid'])) {
+			if ($this->firstEl['cmd'] != 'new' && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->firstEl['uid'])) {
 				// Delete:
 				if (($this->firstEl['deleteAccess'] && !$GLOBALS['TCA'][$this->firstEl['table']]['ctrl']['readOnly']) && !$this->getNewIconMode($this->firstEl['table'], 'disableDelete')) {
 					$aOnClick = ((((('return deleteRecord(\'' . $this->firstEl['table']) . '\',\'') . $this->firstEl['uid']) . '\', unescape(\'') . rawurlencode($this->retUrl)) . '\'));';
-					$buttons['delete'] = ((((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '" title="') . $GLOBALS['LANG']->getLL('deleteItem', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-edit-delete')) . '</a>';
+					$buttons['delete'] = ((((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '" title="') . $GLOBALS['LANG']->getLL('deleteItem', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-delete')) . '</a>';
 				}
 				// Undo:
 				$undoRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('tstamp', 'sys_history', (('tablename=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->firstEl['table'], 'sys_history')) . ' AND recuid=') . intval($this->firstEl['uid']), '', 'tstamp DESC', '1');
 				if ($undoButtonR = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($undoRes)) {
 					$aOnClick = ((('window.location.href=\'show_rechis.php?element=' . rawurlencode((($this->firstEl['table'] . ':') . $this->firstEl['uid']))) . '&revert=ALL_FIELDS&sumUp=-1&returnUrl=') . rawurlencode($this->R_URI)) . '\'; return false;';
-					$buttons['undo'] = (((((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '"') . ' title="') . htmlspecialchars(sprintf($GLOBALS['LANG']->getLL('undoLastChange'), t3lib_BEfunc::calcAge(($GLOBALS['EXEC_TIME'] - $undoButtonR['tstamp']), $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.minutesHoursDaysYears'))))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-edit-undo')) . '</a>';
+					$buttons['undo'] = (((((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '"') . ' title="') . htmlspecialchars(sprintf($GLOBALS['LANG']->getLL('undoLastChange'), \TYPO3\CMS\Backend\Utility\BackendUtility::calcAge(($GLOBALS['EXEC_TIME'] - $undoButtonR['tstamp']), $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.minutesHoursDaysYears'))))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-undo')) . '</a>';
 				}
 				if ($this->getNewIconMode($this->firstEl['table'], 'showHistory')) {
 					$aOnClick = ((('window.location.href=\'show_rechis.php?element=' . rawurlencode((($this->firstEl['table'] . ':') . $this->firstEl['uid']))) . '&returnUrl=') . rawurlencode($this->R_URI)) . '\'; return false;';
-					$buttons['history'] = ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-history-open')) . '</a>';
+					$buttons['history'] = ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-history-open')) . '</a>';
 				}
 				// If only SOME fields are shown in the form, this will link the user to the FULL form:
 				if ($this->columnsOnly) {
-					$buttons['columns_only'] = ((((('<a href="' . htmlspecialchars(($this->R_URI . '&columnsOnly='))) . '" title="') . $GLOBALS['LANG']->getLL('editWholeRecord', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-open')) . '</a>';
+					$buttons['columns_only'] = ((((('<a href="' . htmlspecialchars(($this->R_URI . '&columnsOnly='))) . '" title="') . $GLOBALS['LANG']->getLL('editWholeRecord', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-open')) . '</a>';
 				}
 			}
 		}
 		// add the CSH icon
-		$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'TCEforms', $GLOBALS['BACK_PATH'], '', TRUE);
+		$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'TCEforms', $GLOBALS['BACK_PATH'], '', TRUE);
 		$buttons['shortcut'] = $this->shortCutLink();
 		$buttons['open_in_new_window'] = $this->openInNewWindowLink();
 		return $buttons;
@@ -952,8 +954,8 @@ class SC_alt_doc {
 	public function extraFormHeaders() {
 		$extraTemplate = '';
 		if (is_array($this->tceforms->extraFormHeaders)) {
-			$extraTemplate = t3lib_parsehtml::getSubpart($this->doc->moduleTemplate, '###DOCHEADER_EXTRAHEADER###');
-			$extraTemplate = t3lib_parsehtml::substituteMarker($extraTemplate, '###EXTRAHEADER###', implode(LF, $this->tceforms->extraFormHeaders));
+			$extraTemplate = \TYPO3\CMS\Core\Html\HtmlParser::getSubpart($this->doc->moduleTemplate, '###DOCHEADER_EXTRAHEADER###');
+			$extraTemplate = \TYPO3\CMS\Core\Html\HtmlParser::substituteMarker($extraTemplate, '###EXTRAHEADER###', implode(LF, $this->tceforms->extraFormHeaders));
 		}
 		return $extraTemplate;
 	}
@@ -983,7 +985,7 @@ class SC_alt_doc {
 			<input type="hidden" name="closeDoc" value="0" />
 			<input type="hidden" name="doSave" value="0" />
 			<input type="hidden" name="_serialNumber" value="' . md5(microtime())) . '" />
-			<input type="hidden" name="_scrollPosition" value="" />') . t3lib_TCEforms::getHiddenTokenField('editRecord');
+			<input type="hidden" name="_scrollPosition" value="" />') . \TYPO3\CMS\Backend\Form\FormEngine::getHiddenTokenField('editRecord');
 		return $formContent;
 	}
 
@@ -998,7 +1000,7 @@ class SC_alt_doc {
 			// Show palettes:
 			return ((('
 				<!-- Function menu (checkbox for showing all palettes): -->
-				<br />' . t3lib_BEfunc::getFuncCheck('', 'SET[showPalettes]', $this->MOD_SETTINGS['showPalettes'], 'alt_doc.php', (t3lib_div::implodeArrayForUrl('', array_merge($this->R_URL_getvars, array('SET' => ''))) . t3lib_BEfunc::getUrlToken('editRecord')), 'id="checkShowPalettes"')) . '<label for="checkShowPalettes">') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showPalettes', 1)) . '</label>';
+				<br />' . \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck('', 'SET[showPalettes]', $this->MOD_SETTINGS['showPalettes'], 'alt_doc.php', (\TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', array_merge($this->R_URL_getvars, array('SET' => ''))) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('editRecord')), 'id="checkShowPalettes"')) . '<label for="checkShowPalettes">') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showPalettes', 1)) . '</label>';
 		} else {
 			return '';
 		}
@@ -1027,8 +1029,8 @@ class SC_alt_doc {
 		if ($this->returnUrl == 'close.html') {
 			return '';
 		}
-		$aOnClick = ((('vHWin=window.open(\'' . t3lib_div::linkThisScript(array('returnUrl' => 'close.html'))) . '\',\'') . md5($this->R_URI)) . '\',\'width=670,height=500,status=0,menubar=0,scrollbars=1,resizable=1\');vHWin.focus();return false;';
-		return ((((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.openInNewWindow', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-window-open')) . '</a>';
+		$aOnClick = ((('vHWin=window.open(\'' . \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('returnUrl' => 'close.html'))) . '\',\'') . md5($this->R_URI)) . '\',\'width=670,height=500,status=0,menubar=0,scrollbars=1,resizable=1\');vHWin.focus();return false;';
+		return ((((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.openInNewWindow', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-window-open')) . '</a>';
 	}
 
 	/**
@@ -1070,7 +1072,7 @@ class SC_alt_doc {
 		// Table editable and activated for languages?
 		if ((($GLOBALS['BE_USER']->check('tables_modify', $table) && $languageField) && $transOrigPointerField) && !$GLOBALS['TCA'][$table]['ctrl']['transOrigPointerTable']) {
 			if (is_null($pid)) {
-				$row = t3lib_befunc::getRecord($table, $uid, 'pid');
+				$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $uid, 'pid');
 				$pid = $row['pid'];
 			}
 			// Get all avalibale languages for the page
@@ -1080,25 +1082,25 @@ class SC_alt_doc {
 				$rowsByLang = array();
 				$fetchFields = (('uid,' . $languageField) . ',') . $transOrigPointerField;
 				// Get record in current language
-				$rowCurrent = t3lib_befunc::getLiveVersionOfRecord($table, $uid, $fetchFields);
+				$rowCurrent = \TYPO3\CMS\Backend\Utility\BackendUtility::getLiveVersionOfRecord($table, $uid, $fetchFields);
 				if (!is_array($rowCurrent)) {
-					$rowCurrent = t3lib_befunc::getRecord($table, $uid, $fetchFields);
+					$rowCurrent = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $uid, $fetchFields);
 				}
 				$currentLanguage = $rowCurrent[$languageField];
 				// Disabled for records with [all] language!
 				if ($currentLanguage > -1) {
 					// Get record in default language if needed
 					if ($currentLanguage && $rowCurrent[$transOrigPointerField]) {
-						$rowsByLang[0] = t3lib_befunc::getLiveVersionOfRecord($table, $rowCurrent[$transOrigPointerField], $fetchFields);
+						$rowsByLang[0] = \TYPO3\CMS\Backend\Utility\BackendUtility::getLiveVersionOfRecord($table, $rowCurrent[$transOrigPointerField], $fetchFields);
 						if (!is_array($rowsByLang[0])) {
-							$rowsByLang[0] = t3lib_befunc::getRecord($table, $rowCurrent[$transOrigPointerField], $fetchFields);
+							$rowsByLang[0] = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $rowCurrent[$transOrigPointerField], $fetchFields);
 						}
 					} else {
 						$rowsByLang[$rowCurrent[$languageField]] = $rowCurrent;
 					}
 					if ($rowCurrent[$transOrigPointerField] || $currentLanguage === '0') {
 						// Get record in other languages to see what's already available
-						$translations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($fetchFields, $table, ((((((((('pid=' . intval($pid)) . ' AND ') . $languageField) . '>0') . ' AND ') . $transOrigPointerField) . '=') . intval($rowsByLang[0]['uid'])) . t3lib_BEfunc::deleteClause($table)) . t3lib_BEfunc::versioningPlaceholderClause($table));
+						$translations = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($fetchFields, $table, ((((((((('pid=' . intval($pid)) . ' AND ') . $languageField) . '>0') . ' AND ') . $transOrigPointerField) . '=') . intval($rowsByLang[0]['uid'])) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table)) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($table));
 						foreach ($translations as $row) {
 							$rowsByLang[$row[$languageField]] = $row;
 						}
@@ -1109,11 +1111,11 @@ class SC_alt_doc {
 							$newTranslation = isset($rowsByLang[$lang['uid']]) ? '' : (' [' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.new', 1)) . ']';
 							// Create url for creating a localized record
 							if ($newTranslation) {
-								$href = $this->doc->issueCommand((((('&cmd[' . $table) . '][') . $rowsByLang[0]['uid']) . '][localize]=') . $lang['uid'], (((($this->backPath . 'alt_doc.php?justLocalized=') . rawurlencode((((($table . ':') . $rowsByLang[0]['uid']) . ':') . $lang['uid']))) . '&returnUrl=') . rawurlencode($this->retUrl)) . t3lib_BEfunc::getUrlToken('editRecord'));
+								$href = $this->doc->issueCommand((((('&cmd[' . $table) . '][') . $rowsByLang[0]['uid']) . '][localize]=') . $lang['uid'], (((($this->backPath . 'alt_doc.php?justLocalized=') . rawurlencode((((($table . ':') . $rowsByLang[0]['uid']) . ':') . $lang['uid']))) . '&returnUrl=') . rawurlencode($this->retUrl)) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('editRecord'));
 							} else {
 								$href = $this->backPath . 'alt_doc.php?';
 								$href .= ((('&edit[' . $table) . '][') . $rowsByLang[$lang['uid']]['uid']) . ']=edit';
-								$href .= ('&returnUrl=' . rawurlencode($this->retUrl)) . t3lib_BEfunc::getUrlToken('editRecord');
+								$href .= ('&returnUrl=' . rawurlencode($this->retUrl)) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('editRecord');
 							}
 							$langSelItems[$lang['uid']] = ((((('
 								<option value="' . htmlspecialchars($href)) . '"') . ($currentLanguage == $lang['uid'] ? ' selected="selected"' : '')) . '>') . htmlspecialchars(($lang['title'] . $newTranslation))) . '</option>';
@@ -1142,13 +1144,13 @@ class SC_alt_doc {
 	public function localizationRedirect($justLocalized) {
 		list($table, $orig_uid, $language) = explode(':', $justLocalized);
 		if (($GLOBALS['TCA'][$table] && $GLOBALS['TCA'][$table]['ctrl']['languageField']) && $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) {
-			$localizedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', $table, ((((((($GLOBALS['TCA'][$table]['ctrl']['languageField'] . '=') . intval($language)) . ' AND ') . $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) . '=') . intval($orig_uid)) . t3lib_BEfunc::deleteClause($table)) . t3lib_BEfunc::versioningPlaceholderClause($table));
+			$localizedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', $table, ((((((($GLOBALS['TCA'][$table]['ctrl']['languageField'] . '=') . intval($language)) . ' AND ') . $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) . '=') . intval($orig_uid)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table)) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($table));
 			if (is_array($localizedRecord)) {
 				// Create parameters and finally run the classic page module for creating a new page translation
 				$params = ((('&edit[' . $table) . '][') . $localizedRecord['uid']) . ']=edit';
-				$returnUrl = '&returnUrl=' . rawurlencode(t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl')));
-				$location = ((($GLOBALS['BACK_PATH'] . 'alt_doc.php?') . $params) . $returnUrl) . t3lib_BEfunc::getUrlToken('editRecord');
-				t3lib_utility_Http::redirect($location);
+				$returnUrl = '&returnUrl=' . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl')));
+				$location = ((($GLOBALS['BACK_PATH'] . 'alt_doc.php?') . $params) . $returnUrl) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('editRecord');
+				\TYPO3\CMS\Core\Utility\HttpUtility::redirect($location);
 			}
 		}
 	}
@@ -1161,7 +1163,7 @@ class SC_alt_doc {
 	 * @todo Define visibility
 	 */
 	public function getLanguages($id) {
-		$modSharedTSconfig = t3lib_BEfunc::getModTSconfig($id, 'mod.SHARED');
+		$modSharedTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($id, 'mod.SHARED');
 		// Fallback non sprite-configuration
 		if (preg_match('/\\.gif$/', $modSharedTSconfig['properties']['defaultLanguageFlag'])) {
 			$modSharedTSconfig['properties']['defaultLanguageFlag'] = str_replace('.gif', '', $modSharedTSconfig['properties']['defaultLanguageFlag']);
@@ -1177,7 +1179,7 @@ class SC_alt_doc {
 		);
 		$exQ = $GLOBALS['BE_USER']->isAdmin() ? '' : ' AND sys_language.hidden=0';
 		if ($id) {
-			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('sys_language.*', 'pages_language_overlay,sys_language', (('pages_language_overlay.sys_language_uid=sys_language.uid AND pages_language_overlay.pid=' . intval($id)) . t3lib_BEfunc::deleteClause('pages_language_overlay')) . $exQ, 'pages_language_overlay.sys_language_uid,sys_language.uid,sys_language.pid,sys_language.tstamp,sys_language.hidden,sys_language.title,sys_language.static_lang_isocode,sys_language.flag', 'sys_language.title');
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('sys_language.*', 'pages_language_overlay,sys_language', (('pages_language_overlay.sys_language_uid=sys_language.uid AND pages_language_overlay.pid=' . intval($id)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('pages_language_overlay')) . $exQ, 'pages_language_overlay.sys_language_uid,sys_language.uid,sys_language.pid,sys_language.tstamp,sys_language.hidden,sys_language.title,sys_language.static_lang_isocode,sys_language.flag', 'sys_language.title');
 		} else {
 			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('sys_language.*', 'sys_language', 'sys_language.hidden=0', '', 'sys_language.title');
 		}
@@ -1212,7 +1214,7 @@ class SC_alt_doc {
 					foreach ($conf as $cKey => $cmd) {
 						if ($cmd == 'edit') {
 							// Traverse the ids:
-							$ids = t3lib_div::trimExplode(',', $cKey, 1);
+							$ids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $cKey, 1);
 							foreach ($ids as $idKey => $theUid) {
 								if (is_array($mapArray)) {
 									if ($mapArray[$table][$theUid]) {
@@ -1250,7 +1252,7 @@ class SC_alt_doc {
 	 */
 	public function getRecordForEdit($table, $theUid) {
 		// Fetch requested record:
-		$reqRecord = t3lib_BEfunc::getRecord($table, $theUid, 'uid,pid');
+		$reqRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $theUid, 'uid,pid');
 		if (is_array($reqRecord)) {
 			// If workspace is OFFLINE:
 			if ($GLOBALS['BE_USER']->workspace != 0) {
@@ -1263,7 +1265,7 @@ class SC_alt_doc {
 					} else {
 						// The input record was online and an offline version must be found or made:
 						// Look for version of this workspace:
-						$versionRec = t3lib_BEfunc::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, $table, $reqRecord['uid'], 'uid,pid,t3ver_oid');
+						$versionRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, $table, $reqRecord['uid'], 'uid,pid,t3ver_oid');
 						return is_array($versionRec) ? $versionRec : $reqRecord;
 					}
 				} else {
@@ -1287,8 +1289,8 @@ class SC_alt_doc {
 	 * @todo Define visibility
 	 */
 	public function editRegularContentFromId() {
-		if (t3lib_extMgm::isLoaded('cms')) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', ((('pid=' . intval($this->editRegularContentFromId)) . t3lib_BEfunc::deleteClause('tt_content')) . t3lib_BEfunc::versioningPlaceholderClause('tt_content')) . ' AND colPos=0 AND sys_language_uid=0', '', 'sorting');
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms')) {
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', ((('pid=' . intval($this->editRegularContentFromId)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('tt_content')) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause('tt_content')) . ' AND colPos=0 AND sys_language_uid=0', '', 'sorting');
 			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 				$ecUids = array();
 				while ($ecRec = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1308,8 +1310,8 @@ class SC_alt_doc {
 	 * @todo Define visibility
 	 */
 	public function compileStoreDat() {
-		$this->storeArray = t3lib_div::compileSelectedGetVarsFromArray('edit,defVals,overrideVals,columnsOnly,disHelp,noView,editRegularContentFromId', $this->R_URL_getvars);
-		$this->storeUrl = t3lib_div::implodeArrayForUrl('', $this->storeArray);
+		$this->storeArray = \TYPO3\CMS\Core\Utility\GeneralUtility::compileSelectedGetVarsFromArray('edit,defVals,overrideVals,columnsOnly,disHelp,noView,editRegularContentFromId', $this->R_URL_getvars);
+		$this->storeUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', $this->storeArray);
 		$this->storeUrlMd5 = md5($this->storeUrl);
 	}
 
@@ -1356,7 +1358,7 @@ class SC_alt_doc {
 			}
 			$GLOBALS['BE_USER']->pushModuleData('opendocs::recent', $recentDocs);
 			$GLOBALS['BE_USER']->pushModuleData('alt_doc.php', array($this->docHandler, $this->docDat[1]));
-			t3lib_BEfunc::setUpdateSignal('tx_opendocs::updateNumber', count($this->docHandler));
+			\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('TYPO3\\CMS\\Opendocs\\Controller\\OpendocsController::updateNumber', count($this->docHandler));
 		}
 		// If ->returnEditConf is set, then add the current content of editconf to the ->retUrl variable: (used by other scripts, like wizard_add, to know which records was created or so...)
 		if ($this->returnEditConf && $this->retUrl != 'dummy.php') {
@@ -1364,7 +1366,7 @@ class SC_alt_doc {
 		}
 		// If code is NOT set OR set to 1, then make a header location redirect to $this->retUrl
 		if (!$code || $code == 1) {
-			t3lib_utility_Http::redirect($this->retUrl);
+			\TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->retUrl);
 		} else {
 			$this->setDocument('', $this->retUrl);
 		}
@@ -1380,7 +1382,7 @@ class SC_alt_doc {
 	 * @todo Define visibility
 	 */
 	public function setDocument($currentDocFromHandlerMD5 = '', $retUrl = 'alt_doc_nodoc.php') {
-		if (!t3lib_extMgm::isLoaded('cms') && !strcmp($retUrl, 'alt_doc_nodoc.php')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms') && !strcmp($retUrl, 'alt_doc_nodoc.php')) {
 			return;
 		}
 		if ((!$this->modTSconfig['properties']['disableDocSelector'] && is_array($this->docHandler)) && count($this->docHandler)) {
@@ -1390,13 +1392,14 @@ class SC_alt_doc {
 				$setupArr = reset($this->docHandler);
 			}
 			if ($setupArr[2]) {
-				$sParts = parse_url(t3lib_div::getIndpEnv('REQUEST_URI'));
+				$sParts = parse_url(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'));
 				$retUrl = ((($sParts['path'] . '?') . $setupArr[2]) . '&returnUrl=') . rawurlencode($retUrl);
 			}
 		}
-		t3lib_utility_Http::redirect($retUrl);
+		\TYPO3\CMS\Core\Utility\HttpUtility::redirect($retUrl);
 	}
 
 }
+
 
 ?>

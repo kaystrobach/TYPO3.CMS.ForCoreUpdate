@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\TstemplateCeditor\Controller;
+
 /**
  * TypoScript Constant editor
  *
@@ -9,7 +11,7 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-class tx_tstemplateceditor extends t3lib_extobjbase {
+class TypoScriptTemplateConstantEditorModuleFunctionController extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 
 	/**
 	 * Initialize editor
@@ -22,19 +24,19 @@ class tx_tstemplateceditor extends t3lib_extobjbase {
 	public function initialize_editor($pageId, $template_uid = 0) {
 		// Initializes the module. Done in this function because we may need to re-initialize if data is submitted!
 		global $tmpl, $tplRow, $theConstants;
-		$tmpl = t3lib_div::makeInstance('t3lib_tsparser_ext');
+		$tmpl = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\ExtendedTemplateService');
 		// Defined global here!
 		$tmpl->tt_track = 0;
 		// Do not log time-performance information
 		$tmpl->init();
-		$tmpl->ext_localGfxPrefix = t3lib_extMgm::extPath('tstemplate_ceditor');
-		$tmpl->ext_localWebGfxPrefix = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('tstemplate_ceditor');
+		$tmpl->ext_localGfxPrefix = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('tstemplate_ceditor');
+		$tmpl->ext_localWebGfxPrefix = $GLOBALS['BACK_PATH'] . \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath('tstemplate_ceditor');
 		// Get the row of the first VISIBLE template of the page. whereclause like the frontend.
 		$tplRow = $tmpl->ext_getFirstTemplate($pageId, $template_uid);
 		// IF there was a template...
 		if (is_array($tplRow)) {
 			// Gets the rootLine
-			$sys_page = t3lib_div::makeInstance('t3lib_pageSelect');
+			$sys_page = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 			$rootLine = $sys_page->getRootLine($pageId);
 			// This generates the constants/config + hierarchy info for the template.
 			$tmpl->runThroughTemplates($rootLine, $template_uid);
@@ -80,7 +82,7 @@ class tx_tstemplateceditor extends t3lib_extobjbase {
 		$manyTemplatesMenu = $this->pObj->templateMenu();
 		$template_uid = 0;
 		if ($manyTemplatesMenu) {
-			$template_uid = $this->pObj->MOD_SETTINGS['templatesOnPage'];
+			$template_uid = $this->pObj->MOD_SETTINGS['TYPO3\\CMS\\Backend\\Template\\DocumentTemplatesOnPage'];
 		}
 		// BUGBUG: Should we check if the uset may at all read and write template-records???
 		// initialize
@@ -88,15 +90,15 @@ class tx_tstemplateceditor extends t3lib_extobjbase {
 		if ($existTemplate) {
 			$saveId = $tplRow['_ORIG_uid'] ? $tplRow['_ORIG_uid'] : $tplRow['uid'];
 			// Update template ?
-			if (t3lib_div::_POST('submit') || t3lib_utility_Math::canBeInterpretedAsInteger(t3lib_div::_POST('submit_x')) && t3lib_utility_Math::canBeInterpretedAsInteger(t3lib_div::_POST('submit_y'))) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('submit') || \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('submit_x')) && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('submit_y'))) {
 				$tmpl->changed = 0;
-				$tmpl->ext_procesInput(t3lib_div::_POST(), array(), $theConstants, $tplRow);
+				$tmpl->ext_procesInput(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST(), array(), $theConstants, $tplRow);
 				if ($tmpl->changed) {
 					// Set the data to be saved
 					$recData = array();
 					$recData['sys_template'][$saveId]['constants'] = implode($tmpl->raw, LF);
 					// Create new  tce-object
-					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+					$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 					$tce->stripslashes_values = 0;
 					$tce->start($recData, array());
 					$tce->process_datamap();
@@ -108,16 +110,16 @@ class tx_tstemplateceditor extends t3lib_extobjbase {
 			}
 			// Resetting the menu (start). I wonder if this in any way is a violation of the menu-system. Haven't checked. But need to do it here, because the menu is dependent on the categories available.
 			$this->pObj->MOD_MENU['constant_editor_cat'] = $tmpl->ext_getCategoryLabelArray();
-			$this->pObj->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->pObj->MOD_MENU, t3lib_div::_GP('SET'), $this->pObj->MCONF['name']);
+			$this->pObj->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->pObj->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->pObj->MCONF['name']);
 			// Resetting the menu (stop)
-			$content = (((t3lib_iconWorks::getSpriteIconForRecord('sys_template', $tplRow) . '<strong>') . $this->pObj->linkWrapTemplateTitle($tplRow['title'], 'constants')) . '</strong>') . htmlspecialchars((trim($tplRow['sitetitle']) ? (' (' . $tplRow['sitetitle']) . ')' : ''));
+			$content = (((\TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord('sys_template', $tplRow) . '<strong>') . $this->pObj->linkWrapTemplateTitle($tplRow['title'], 'constants')) . '</strong>') . htmlspecialchars((trim($tplRow['sitetitle']) ? (' (' . $tplRow['sitetitle']) . ')' : ''));
 			$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('editConstants', TRUE), $content, FALSE, TRUE);
 			if ($manyTemplatesMenu) {
 				$theOutput .= $this->pObj->doc->section('', $manyTemplatesMenu);
 			}
 			$theOutput .= $this->pObj->doc->spacer(10);
 			if (count($this->pObj->MOD_MENU['constant_editor_cat'])) {
-				$menu = t3lib_BEfunc::getFuncMenu($this->pObj->id, 'SET[constant_editor_cat]', $this->pObj->MOD_SETTINGS['constant_editor_cat'], $this->pObj->MOD_MENU['constant_editor_cat']);
+				$menu = \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, 'SET[constant_editor_cat]', $this->pObj->MOD_SETTINGS['constant_editor_cat'], $this->pObj->MOD_MENU['constant_editor_cat']);
 				$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('category', TRUE), ('<NOBR>' . $menu) . '</NOBR>', FALSE);
 			} else {
 				$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('noConstants', TRUE), $GLOBALS['LANG']->getLL('noConstantsDescription', TRUE), FALSE, FALSE, 1);
@@ -140,5 +142,6 @@ class tx_tstemplateceditor extends t3lib_extobjbase {
 	}
 
 }
+
 
 ?>

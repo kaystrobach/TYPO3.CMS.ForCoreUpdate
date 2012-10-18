@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject\Menu;
+
 /**
  * JavaScript/Selectorbox based menus
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_jsmenu extends tslib_menu {
+class JavaScriptMenuContentObject extends \TYPO3\CMS\Frontend\ContentObject\Menu\AbstractMenuContentObject {
 
 	/**
 	 * Dummy. Should do nothing, because we don't use the result-array here!
@@ -27,9 +29,9 @@ class tslib_jsmenu extends tslib_menu {
 	public function writeMenu() {
 		if ($this->id) {
 			// Making levels:
-			$levels = t3lib_utility_Math::forceIntegerInRange($this->mconf['levels'], 1, 5);
+			$levels = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['levels'], 1, 5);
 			$this->levels = $levels;
-			$uniqueParam = t3lib_div::shortMD5(microtime(), 5);
+			$uniqueParam = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(microtime(), 5);
 			$this->JSVarName = 'eid' . $uniqueParam;
 			$this->JSMenuName = $this->mconf['menuName'] ? $this->mconf['menuName'] : 'JSmenu' . $uniqueParam;
 			$JScode = ((((('
@@ -112,11 +114,11 @@ class tslib_jsmenu extends tslib_menu {
 			$MP_var = implode(',', $MP_array_sub);
 			$MP_params = $MP_var ? '&MP=' . rawurlencode($MP_var) : '';
 			// If item is a spacer, $spacer is set
-			$spacer = t3lib_div::inList($this->spacerIDList, $data['doktype']) ? 1 : 0;
+			$spacer = \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->spacerIDList, $data['doktype']) ? 1 : 0;
 			// If the spacer-function is not enabled, spacers will not enter the $menuArr
 			if ($this->mconf['SPC'] || !$spacer) {
 				// Page may not be 'not_in_menu' or 'Backend User Section' + not in banned uid's
-				if ((!t3lib_div::inList($this->doktypeExcludeList, $data['doktype']) && (!$data['nav_hide'] || $this->conf['includeNotInMenu'])) && !t3lib_div::inArray($banUidArray, $uid)) {
+				if ((!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->doktypeExcludeList, $data['doktype']) && (!$data['nav_hide'] || $this->conf['includeNotInMenu'])) && !\TYPO3\CMS\Core\Utility\GeneralUtility::inArray($banUidArray, $uid)) {
 					if ($count < $levels) {
 						$addLines = $this->generate_level($levels, $count + 1, $data['uid'], '', $MP_array_sub);
 					} else {
@@ -132,7 +134,7 @@ class tslib_jsmenu extends tslib_menu {
 						$url = $GLOBALS['TSFE']->baseUrlWrap($LD['totalURL']);
 						$target = $LD['target'];
 					}
-					$codeLines .= ((((((((((((((LF . $var) . $count) . '=') . $menuName) . '.add(') . $parent) . ',') . $prev) . ',0,') . t3lib_div::quoteJSvalue($title, TRUE)) . ',') . t3lib_div::quoteJSvalue($url, TRUE)) . ',') . t3lib_div::quoteJSvalue($target, TRUE)) . ');';
+					$codeLines .= ((((((((((((((LF . $var) . $count) . '=') . $menuName) . '.add(') . $parent) . ',') . $prev) . ',0,') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($title, TRUE)) . ',') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($url, TRUE)) . ',') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($target, TRUE)) . ');';
 					// If the active one should be chosen...
 					$active = $levelConf['showActive'] && $this->isActive($data['uid'], $MP_var);
 					// If the first item should be shown
@@ -156,11 +158,12 @@ class tslib_jsmenu extends tslib_menu {
 			$levelConf['firstLabel'] = $this->mconf['firstLabelGeneral'];
 		}
 		if ($levelConf['firstLabel'] && $codeLines) {
-			$codeLines .= (((((LF . $menuName) . '.defTopTitle[') . $count) . '] = ') . t3lib_div::quoteJSvalue($levelConf['firstLabel'], TRUE)) . ';';
+			$codeLines .= (((((LF . $menuName) . '.defTopTitle[') . $count) . '] = ') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($levelConf['firstLabel'], TRUE)) . ';';
 		}
 		return $codeLines;
 	}
 
 }
+
 
 ?>

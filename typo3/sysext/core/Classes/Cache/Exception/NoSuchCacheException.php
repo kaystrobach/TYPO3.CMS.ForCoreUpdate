@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Exception;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,9 +32,10 @@
  * @subpackage t3lib_cache
  * @api
  */
-class t3lib_cache_exception_NoSuchCache extends t3lib_cache_Exception {
+class NoSuchCacheException extends \TYPO3\CMS\Core\Cache\Exception {
 
 
 }
+
 
 ?>

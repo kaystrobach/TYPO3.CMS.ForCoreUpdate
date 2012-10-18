@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers\Format;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @see http://www.php.net/manual/en/function.json-encode.php
  */
-class Tx_Extensionmanager_ViewHelpers_Format_JsonEncodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class JsonEncodeViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Constructor
@@ -55,5 +57,6 @@ class Tx_Extensionmanager_ViewHelpers_Format_JsonEncodeViewHelper extends Tx_Flu
 	}
 
 }
+
 
 ?>

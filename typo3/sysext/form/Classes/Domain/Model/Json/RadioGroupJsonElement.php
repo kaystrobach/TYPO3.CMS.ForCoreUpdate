@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Json;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_JSON_Radiogroup extends tx_form_Domain_Model_JSON_Fieldset {
+class RadioGroupJsonElement extends \TYPO3\CMS\Form\Domain\Model\Json\FieldsetJsonElement {
 
 	/**
 	 * The ExtJS xtype of the element
@@ -88,7 +90,7 @@ class tx_form_Domain_Model_JSON_Radiogroup extends tx_form_Domain_Model_JSON_Fie
 	 */
 	protected function setOptions(array $parameters) {
 		if (is_array($parameters)) {
-			$keys = t3lib_TStemplate::sortedKeyList($parameters);
+			$keys = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($parameters);
 			foreach ($keys as $key) {
 				$class = $parameters[$key];
 				if (intval($key) && !strstr($key, '.')) {
@@ -122,5 +124,6 @@ class tx_form_Domain_Model_JSON_Radiogroup extends tx_form_Domain_Model_JSON_Fie
 	}
 
 }
+
 
 ?>

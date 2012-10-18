@@ -35,9 +35,9 @@ $LANG->includeLLFile('EXT:lang/locallang_wizards.xml');
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/BackendLayoutWizardController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/BackendLayoutWizardController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/BackendLayoutWizardController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_wizard_backend_layout');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\BackendLayoutWizardController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

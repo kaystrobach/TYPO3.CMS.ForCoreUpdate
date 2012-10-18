@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @scope singleton
  * @api
  */
-class t3lib_cache_Factory implements t3lib_Singleton {
+class CacheFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * The current FLOW3 context ("production", "development" etc.)
@@ -49,7 +51,7 @@ class t3lib_cache_Factory implements t3lib_Singleton {
 	/**
 	 * A reference to the cache manager
 	 *
-	 * @var t3lib_cache_Manager
+	 * @var \TYPO3\CMS\Core\Cache\CacheManager
 	 */
 	protected $cacheManager;
 
@@ -57,9 +59,9 @@ class t3lib_cache_Factory implements t3lib_Singleton {
 	 * Constructs this cache factory
 	 *
 	 * @param string $context The current FLOW3 context
-	 * @param t3lib_cache_Manager $cacheManager The cache manager
+	 * @param \TYPO3\CMS\Core\Cache\CacheManager $cacheManager The cache manager
 	 */
-	public function __construct($context, t3lib_cache_Manager $cacheManager) {
+	public function __construct($context, \TYPO3\CMS\Core\Cache\CacheManager $cacheManager) {
 		$this->context = $context;
 		$this->cacheManager = $cacheManager;
 		$this->cacheManager->injectCacheFactory($this);
@@ -73,25 +75,25 @@ class t3lib_cache_Factory implements t3lib_Singleton {
 	 * @param string $cacheObjectName Object name of the cache frontend
 	 * @param string $backendObjectName Object name of the cache backend
 	 * @param array $backendOptions (optional) Array of backend options
-	 * @return t3lib_cache_frontend_Frontend The created cache frontend
-	 * @throws t3lib_cache_exception_InvalidBackend if the cache backend is not valid
-	 * @throws t3lib_cache_exception_InvalidCache if the cache frontend is not valid
+	 * @return \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface The created cache frontend
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidBackendException if the cache backend is not valid
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidCacheException if the cache frontend is not valid
 	 * @api
 	 */
 	public function create($cacheIdentifier, $cacheObjectName, $backendObjectName, array $backendOptions = array()) {
 		// New operator used on purpose: This class is required early during
 		// bootstrap before makeInstance() is propely set up
 		$backend = new $backendObjectName($this->context, $backendOptions);
-		if (!$backend instanceof t3lib_cache_backend_Backend) {
-			throw new t3lib_cache_exception_InvalidBackend(('"' . $backendObjectName) . '" is not a valid cache backend object.', 1216304301);
+		if (!$backend instanceof \TYPO3\CMS\Core\Cache\Backend\BackendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidBackendException(('"' . $backendObjectName) . '" is not a valid cache backend object.', 1216304301);
 		}
 		if (is_callable(array($backend, 'initializeObject'))) {
 			$backend->initializeObject();
 		}
 		// New used on purpose, see comment above
 		$cache = new $cacheObjectName($cacheIdentifier, $backend);
-		if (!$cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new t3lib_cache_exception_InvalidCache(('"' . $cacheObjectName) . '" is not a valid cache frontend object.', 1216304300);
+		if (!$cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidCacheException(('"' . $cacheObjectName) . '" is not a valid cache frontend object.', 1216304300);
 		}
 		if (is_callable(array($cache, 'initializeObject'))) {
 			$cache->initializeObject();
@@ -101,5 +103,6 @@ class t3lib_cache_Factory implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

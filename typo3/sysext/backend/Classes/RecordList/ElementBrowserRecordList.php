@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\RecordList;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class TBE_browser_recordList extends localRecordList {
+class ElementBrowserRecordList extends \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList {
 
 	/**
 	 * @todo Define visibility
@@ -70,7 +72,7 @@ class TBE_browser_recordList extends localRecordList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
+		$this->thisScript = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME');
 	}
 
 	/**
@@ -83,7 +85,7 @@ class TBE_browser_recordList extends localRecordList {
 	 * @todo Define visibility
 	 */
 	public function listURL($altId = '', $table = -1, $exclList = '') {
-		return ((((((((($this->thisScript . '?id=') . (strcmp($altId, '') ? $altId : $this->id)) . '&table=') . rawurlencode(($table == -1 ? $this->table : $table))) . ($this->thumbs ? '&imagemode=' . $this->thumbs : '')) . ($this->searchString ? '&search_field=' . rawurlencode($this->searchString) : '')) . ($this->searchLevels ? '&search_levels=' . rawurlencode($this->searchLevels) : '')) . ((!$exclList || !t3lib_div::inList($exclList, 'sortField')) && $this->sortField ? '&sortField=' . rawurlencode($this->sortField) : '')) . ((!$exclList || !t3lib_div::inList($exclList, 'sortRev')) && $this->sortRev ? '&sortRev=' . rawurlencode($this->sortRev) : '')) . $this->ext_addP();
+		return ((((((((($this->thisScript . '?id=') . (strcmp($altId, '') ? $altId : $this->id)) . '&table=') . rawurlencode(($table == -1 ? $this->table : $table))) . ($this->thumbs ? '&imagemode=' . $this->thumbs : '')) . ($this->searchString ? '&search_field=' . rawurlencode($this->searchString) : '')) . ($this->searchLevels ? '&search_levels=' . rawurlencode($this->searchLevels) : '')) . ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'sortField')) && $this->sortField ? '&sortField=' . rawurlencode($this->sortField) : '')) . ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'sortRev')) && $this->sortRev ? '&sortRev=' . rawurlencode($this->sortRev) : '')) . $this->ext_addP();
 	}
 
 	/**
@@ -111,15 +113,15 @@ class TBE_browser_recordList extends localRecordList {
 		if (!$code) {
 			$code = ('<i>[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.no_title', 1)) . ']</i>';
 		} else {
-			$code = t3lib_BEfunc::getRecordTitlePrep($code, $this->fixedL);
+			$code = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitlePrep($code, $this->fixedL);
 		}
-		$title = t3lib_BEfunc::getRecordTitle($table, $row, FALSE, TRUE);
-		$ficon = t3lib_iconWorks::getIcon($table, $row);
-		$aOnClick = ((((((('return insertElement(\'' . $table) . '\', \'') . $row['uid']) . '\', \'db\', ') . t3lib_div::quoteJSvalue($title)) . ', \'\', \'\', \'') . $ficon) . '\');';
+		$title = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($table, $row, FALSE, TRUE);
+		$ficon = \TYPO3\CMS\Backend\Utility\IconUtility::getIcon($table, $row);
+		$aOnClick = ((((((('return insertElement(\'' . $table) . '\', \'') . $row['uid']) . '\', \'db\', ') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($title)) . ', \'\', \'\', \'') . $ficon) . '\');';
 		$ATag = ('<a href="#" onclick="' . $aOnClick) . '">';
 		$ATag_alt = substr($ATag, 0, -4) . ',\'\',1);">';
 		$ATag_e = '</a>';
-		return (((((((($ATag . '<img') . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/plusbullet2.gif', 'width="18" height="16"')) . ' title="') . $GLOBALS['LANG']->getLL('addToList', 1)) . '" alt="" />') . $ATag_e) . $ATag_alt) . $code) . $ATag_e;
+		return (((((((($ATag . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/plusbullet2.gif', 'width="18" height="16"')) . ' title="') . $GLOBALS['LANG']->getLL('addToList', 1)) . '" alt="" />') . $ATag_e) . $ATag_alt) . $code) . $ATag_e;
 	}
 
 	/**
@@ -141,7 +143,7 @@ class TBE_browser_recordList extends localRecordList {
 					$parameters = $filter['parameters'] ? $filter['parameters'] : array();
 					$parameters['values'] = array(($table . '_') . $row['uid']);
 					$parameters['tcaFieldConfig'] = $tcaFieldConfig;
-					$valueArray = t3lib_div::callUserFunction($filter['userFunc'], $parameters, $this);
+					$valueArray = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($filter['userFunc'], $parameters, $this);
 					if (count($valueArray) === 0) {
 						$returnValue = FALSE;
 					}
@@ -162,7 +164,7 @@ class TBE_browser_recordList extends localRecordList {
 		// Check validity of the input data and load TCA
 		if (isset($TCA[$tableName])) {
 			$this->relatingTable = $tableName;
-			t3lib_div::loadTCA($tableName);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($tableName);
 			if ($fieldName && isset($TCA[$tableName]['columns'][$fieldName])) {
 				$this->relatingField = $fieldName;
 			}
@@ -182,5 +184,6 @@ class TBE_browser_recordList extends localRecordList {
 	}
 
 }
+
 
 ?>

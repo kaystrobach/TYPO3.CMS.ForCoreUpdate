@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\File;
+
 /**
  * Script Class for the rename-file form.
  *
@@ -6,13 +8,13 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_file_rename {
+class RenameFileController {
 
 	// Internal, static:
 	/**
 	 * Document template object
 	 *
-	 * @var smallDoc
+	 * @var \TYPO3\CMS\Backend\Template\SmallDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -33,7 +35,7 @@ class SC_file_rename {
 	/**
 	 * The file or folder object that should be renamed
 	 *
-	 * @var t3lib_file_ResourceInterface $fileOrFolderObject
+	 * @var \TYPO3\CMS\Core\Resource\ResourceInterface $fileOrFolderObject
 	 */
 	protected $fileOrFolderObject;
 
@@ -58,33 +60,33 @@ class SC_file_rename {
 	 */
 	public function init() {
 		// Initialize GPvars:
-		$this->target = t3lib_div::_GP('target');
-		$this->returnUrl = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
+		$this->target = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('target');
+		$this->returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
 		// Cleaning and checking target
 		if ($this->target) {
-			$this->fileOrFolderObject = t3lib_file_Factory::getInstance()->retrieveFileOrFolderObject($this->target);
+			$this->fileOrFolderObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->target);
 		}
 		if (!$this->fileOrFolderObject) {
 			$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:paramError', TRUE);
 			$message = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:targetNoDir', TRUE);
-			throw new RuntimeException(($title . ': ') . $message, 1294586844);
+			throw new \RuntimeException(($title . ': ') . $message, 1294586844);
 		}
 		// If a folder should be renamed, AND the returnURL should go to the old directory name, the redirect is forced
 		// so the redirect will NOT end in a error message
 		// this case only happens if you select the folder itself in the foldertree and then use the clickmenu to
 		// rename the folder
-		if ($this->fileOrFolderObject instanceof t3lib_file_Folder) {
+		if ($this->fileOrFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$parsedUrl = parse_url($this->returnUrl);
-			$queryParts = t3lib_div::explodeUrl2Array(urldecode($parsedUrl['query']));
+			$queryParts = \TYPO3\CMS\Core\Utility\GeneralUtility::explodeUrl2Array(urldecode($parsedUrl['query']));
 			if ($queryParts['id'] === $this->fileOrFolderObject->getCombinedIdentifier()) {
 				$this->returnUrl = str_replace(urlencode($queryParts['id']), urlencode($this->fileOrFolderObject->getStorage()->getRootLevelFolder()->getCombinedIdentifier()), $this->returnUrl);
 			}
 		}
 		// Setting icon and title
-		$icon = t3lib_iconWorks::getSpriteIcon('apps-filetree-root');
+		$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-filetree-root');
 		$this->title = (($icon . htmlspecialchars($this->fileOrFolderObject->getStorage()->getName())) . ': ') . htmlspecialchars($this->fileOrFolderObject->getIdentifier());
 		// Setting template object
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->setModuleTemplate('templates/file_rename.html');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->JScode = $this->doc->wrapScriptTags('
@@ -107,7 +109,7 @@ class SC_file_rename {
 		$pageContent = $this->doc->header($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:file_rename.php.pagetitle'));
 		$pageContent .= $this->doc->spacer(5);
 		$pageContent .= $this->doc->divider(5);
-		if ($this->fileOrFolderObject instanceof t3lib_file_Folder) {
+		if ($this->fileOrFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$fileIdentifier = $this->fileOrFolderObject->getCombinedIdentifier();
 		} else {
 			$fileIdentifier = $this->fileOrFolderObject->getUid();
@@ -133,11 +135,11 @@ class SC_file_rename {
 		// Add the HTML as a section:
 		$pageContent .= $code;
 		$docHeaderButtons = array();
-		$docHeaderButtons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'file_rename', $GLOBALS['BACK_PATH']);
+		$docHeaderButtons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'file_rename', $GLOBALS['BACK_PATH']);
 		// Add the HTML as a section:
 		$markerArray = array(
 			'CSH' => $docHeaderButtons['csh'],
-			'FUNC_MENU' => t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
+			'FUNC_MENU' => \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
 			'CONTENT' => $pageContent,
 			'PATH' => $this->title
 		);
@@ -157,5 +159,6 @@ class SC_file_rename {
 	}
 
 }
+
 
 ?>

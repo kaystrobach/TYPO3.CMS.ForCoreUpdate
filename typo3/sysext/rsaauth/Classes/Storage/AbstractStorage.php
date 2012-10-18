@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Storage;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-abstract class tx_rsaauth_abstract_storage {
+abstract class AbstractStorage {
 
 	/**
 	 * Retrieves the key from the storage
@@ -45,5 +47,6 @@ abstract class tx_rsaauth_abstract_storage {
 	abstract public function put($key);
 
 }
+
 
 ?>

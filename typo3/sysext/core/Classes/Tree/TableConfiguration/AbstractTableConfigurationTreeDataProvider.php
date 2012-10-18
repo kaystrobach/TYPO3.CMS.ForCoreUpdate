@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Tree\TableConfiguration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib_tree
  */
-abstract class t3lib_tree_Tca_AbstractTcaTreeDataProvider extends t3lib_tree_AbstractDataProvider {
+abstract class AbstractTableConfigurationTreeDataProvider extends \TYPO3\CMS\Backend\Tree\AbstractTreeDataProvider {
 
 	/**
 	 * @var boolean
@@ -139,8 +141,8 @@ abstract class t3lib_tree_Tca_AbstractTcaTreeDataProvider extends t3lib_tree_Abs
 	 * @param t3lib_tree_AbstractNode $node
 	 * @return boolean
 	 */
-	protected function isExpanded(t3lib_tree_Node $node) {
-		return $this->getExpandAll() || t3lib_div::inList($this->expandedList, $node->getId());
+	protected function isExpanded(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
+		return $this->getExpandAll() || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->expandedList, $node->getId());
 	}
 
 	/**
@@ -248,5 +250,6 @@ abstract class t3lib_tree_Tca_AbstractTcaTreeDataProvider extends t3lib_tree_Abs
 	}
 
 }
+
 
 ?>

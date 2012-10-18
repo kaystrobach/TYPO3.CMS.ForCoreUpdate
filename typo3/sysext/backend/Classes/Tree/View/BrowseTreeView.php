@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\View;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_browseTree extends t3lib_treeView {
+class BrowseTreeView extends \TYPO3\CMS\Backend\Tree\View\AbstractTreeView {
 
 	/**
 	 * Initialize, setting what is necessary for browsing pages.
@@ -74,7 +76,7 @@ class t3lib_browseTree extends t3lib_treeView {
 			$this->MOUNTS = array_diff($this->MOUNTS, $hideList);
 		}
 		$this->fieldArray = array_merge($this->fieldArray, array('doktype', 'php_tree_stop', 't3ver_id', 't3ver_state', 't3ver_wsid', 't3ver_state', 't3ver_move_id'));
-		if (t3lib_extMgm::isLoaded('cms')) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms')) {
 			$this->fieldArray = array_merge($this->fieldArray, array('hidden', 'starttime', 'endtime', 'fe_group', 'module', 'extendToSubpages', 'is_siteroot', 'nav_hide'));
 		}
 	}
@@ -88,7 +90,7 @@ class t3lib_browseTree extends t3lib_treeView {
 	 * @todo Define visibility
 	 */
 	public function getTitleAttrib($row) {
-		return t3lib_BEfunc::titleAttribForPages($row, '1=1 ' . $this->clause, 0);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::titleAttribForPages($row, '1=1 ' . $this->clause, 0);
 	}
 
 	/**
@@ -126,7 +128,7 @@ class t3lib_browseTree extends t3lib_treeView {
 		// Get the basic title from the parent implementation in t3lib_treeview
 		$title = parent::getTitleStr($row, $titleLen);
 		if ((isset($row['is_siteroot']) && $row['is_siteroot'] != 0) && $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showDomainNameWithTitle')) {
-			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('domainName,sorting', 'sys_domain', 'pid=' . $GLOBALS['TYPO3_DB']->quoteStr((($row['uid'] . t3lib_BEfunc::deleteClause('sys_domain')) . t3lib_BEfunc::BEenableFields('sys_domain')), 'sys_domain'), '', 'sorting', 1);
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('domainName,sorting', 'sys_domain', 'pid=' . $GLOBALS['TYPO3_DB']->quoteStr((($row['uid'] . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_domain')) . \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields('sys_domain')), 'sys_domain'), '', 'sorting', 1);
 			if (is_array($rows) && count($rows) > 0) {
 				$title = sprintf('%s [%s]', $title, htmlspecialchars($rows[0]['domainName']));
 			}
@@ -146,12 +148,13 @@ class t3lib_browseTree extends t3lib_treeView {
 	public function wrapStop($str, $row) {
 		if ($row['php_tree_stop']) {
 			$str .= ('<span class="typo3-red">
-								<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => $row['uid'])))) . '" class="typo3-red">+</a>
+								<a href="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('setTempDBmount' => $row['uid'])))) . '" class="typo3-red">+</a>
 							</span>';
 		}
 		return $str;
 	}
 
 }
+
 
 ?>

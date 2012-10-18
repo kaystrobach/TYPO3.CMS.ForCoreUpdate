@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\About\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,17 +31,17 @@
  * @subpackage about
  * @author Felix Kopp <felix-source@phorax.com>
  */
-class Tx_About_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persistence_Repository {
+class ExtensionRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -49,13 +51,13 @@ class Tx_About_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persiste
 	 * @return Tx_Extbase_Persistence_ObjectStorage<Tx_About_Domain_Model_Extension>
 	 */
 	public function findAllLoaded() {
-		$loadedExtensions = $this->objectManager->get('Tx_Extbase_Persistence_ObjectStorage');
+		$loadedExtensions = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\ObjectStorage');
 		$loadedExtensionsArray = $GLOBALS['TYPO3_LOADED_EXT'];
 		foreach ($loadedExtensionsArray as $extensionKey => $extension) {
 			if (is_array($extension) && $extension['type'] != 'S') {
 				$emconfPath = (PATH_site . $extension['siteRelPath']) . 'ext_emconf.php';
 				include $emconfPath;
-				$extension = $this->objectManager->create('Tx_About_Domain_Model_Extension');
+				$extension = $this->objectManager->create('TYPO3\\CMS\\About\\Domain\\Model\\Extension');
 				$extension->setKey($extensionKey);
 				$extension->setTitle($EM_CONF['']['title']);
 				$extension->setAuthor($EM_CONF['']['author']);
@@ -67,5 +69,6 @@ class Tx_About_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persiste
 	}
 
 }
+
 
 ?>

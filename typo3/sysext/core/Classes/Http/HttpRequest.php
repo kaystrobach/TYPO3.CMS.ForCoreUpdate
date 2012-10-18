@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Http;
+
 /**
  * HTTP Request Utility class
  *
@@ -8,7 +10,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_http_Request extends HTTP_Request2 {
+class HttpRequest extends HTTP_Request2 {
 
 	/**
 	 * Default constructor - sets TYPO3 defaults
@@ -75,21 +77,22 @@ class t3lib_http_Request extends HTTP_Request2 {
 		$this->setConfig('store_body', FALSE);
 		// Check if we already attached an instance of download. If so, just reuse it.
 		foreach ($this->observers as $observer) {
-			if ($observer instanceof t3lib_http_observer_Download) {
-				/** @var t3lib_http_observer_Download $attached */
+			if ($observer instanceof \TYPO3\CMS\Core\Http\Observer\Download) {
+				/** @var \TYPO3\CMS\Core\Http\Observer\Download $attached */
 				$observer->setDirectory($directory);
 				$observer->setFilename($filename);
 				$isAttached = TRUE;
 			}
 		}
 		if (!$isAttached) {
-			/** @var t3lib_http_observer_Download $observer */
-			$observer = t3lib_div::makeInstance('t3lib_http_observer_Download', $directory, $filename);
+			/** @var \TYPO3\CMS\Core\Http\Observer\Download $observer */
+			$observer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Http\\Observer\\Download', $directory, $filename);
 			$this->attach($observer);
 		}
 		return $this->send();
 	}
 
 }
+
 
 ?>

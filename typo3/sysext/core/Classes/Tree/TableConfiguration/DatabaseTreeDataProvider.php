@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Tree\TableConfiguration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib_tree
  */
-class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTcaTreeDataProvider {
+class DatabaseTreeDataProvider extends \TYPO3\CMS\Core\Tree\TableConfiguration\AbstractTableConfigurationTreeDataProvider {
 
 	const MODE_CHILDREN = 1;
 	const MODE_PARENT = 2;
@@ -58,7 +60,7 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	/**
 	 * @var integer
 	 */
-	protected $lookupMode = t3lib_tree_tca_DatabaseTreeDataProvider::MODE_CHILDREN;
+	protected $lookupMode = \t3lib_tree_tca_DatabaseTreeDataProvider::MODE_CHILDREN;
 
 	/**
 	 * @var string
@@ -173,10 +175,10 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	/**
 	 * Gets the nodes
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @return t3lib_tree_NodeCollection
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNodeCollection
 	 */
-	public function getNodes(t3lib_tree_Node $node) {
+	public function getNodes(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
 
 	}
 
@@ -230,36 +232,36 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	/**
 	 * Builds a complete node including childs
 	 *
-	 * @param t3lib_tree_Node $basicNode
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $basicNode
 	 * @param NULL|t3lib_tree_tca_DatabaseNode $parent
 	 * @param integer $level
 	 * @return An object
 	 */
-	protected function buildRepresentationForNode(t3lib_tree_Node $basicNode, t3lib_tree_tca_DatabaseNode $parent = NULL, $level = 0) {
-		$node = t3lib_div::makeInstance('t3lib_tree_tca_DatabaseNode');
+	protected function buildRepresentationForNode(\TYPO3\CMS\Backend\Tree\TreeNode $basicNode, \t3lib_tree_tca_DatabaseNode $parent = NULL, $level = 0) {
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_tree_tca_DatabaseNode');
 		$row = array();
 		if ($basicNode->getId() == 0) {
 			$node->setSelected(FALSE);
 			$node->setExpanded(TRUE);
 			$node->setLabel($GLOBALS['LANG']->sL($GLOBALS['TCA'][$this->tableName]['ctrl']['title']));
 		} else {
-			$row = t3lib_BEfunc::getRecordWSOL($this->tableName, $basicNode->getId(), '*', '', FALSE);
+			$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL($this->tableName, $basicNode->getId(), '*', '', FALSE);
 			if ($this->getLabelField() !== '') {
 				$node->setLabel($row[$this->getLabelField()]);
 			} else {
 				$node->setLabel($basicNode->getId());
 			}
-			$node->setSelected(t3lib_div::inList($this->getSelectedList(), $basicNode->getId()));
+			$node->setSelected(\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->getSelectedList(), $basicNode->getId()));
 			$node->setExpanded($this->isExpanded($basicNode));
 		}
 		$node->setId($basicNode->getId());
-		$node->setSelectable(!t3lib_div::inList($this->getNonSelectableLevelList(), $level) && !in_array($basicNode->getId(), $this->getItemUnselectableList()));
+		$node->setSelectable(!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->getNonSelectableLevelList(), $level) && !in_array($basicNode->getId(), $this->getItemUnselectableList()));
 		$node->setSortValue($this->nodeSortValues[$basicNode->getId()]);
-		$node->setIcon(t3lib_iconWorks::mapRecordTypeToSpriteIconClass($this->tableName, $row));
+		$node->setIcon(\TYPO3\CMS\Backend\Utility\IconUtility::mapRecordTypeToSpriteIconClass($this->tableName, $row));
 		$node->setParentNode($parent);
 		if ($basicNode->hasChildNodes()) {
 			$node->setHasChildren(TRUE);
-			$childNodes = t3lib_div::makeInstance('t3lib_tree_SortedNodeCollection');
+			$childNodes = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\SortedTreeNodeCollection');
 			foreach ($basicNode->getChildNodes() as $child) {
 				$childNodes->append($this->buildRepresentationForNode($child, $node, $level + 1));
 			}
@@ -278,9 +280,9 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 		$this->nodeSortValues = array_flip($this->itemWhiteList);
 		$this->columnConfiguration = $GLOBALS['TCA'][$this->getTableName()]['columns'][$this->getLookupField()]['config'];
 		if (isset($this->columnConfiguration['foreign_table']) && $this->columnConfiguration['foreign_table'] != $this->getTableName()) {
-			throw new InvalidArgumentException('TCA Tree configuration is invalid: tree for different node-Tables is not implemented yet', 1290944650);
+			throw new \InvalidArgumentException('TCA Tree configuration is invalid: tree for different node-Tables is not implemented yet', 1290944650);
 		}
-		$this->treeData = t3lib_div::makeInstance('t3lib_tree_Node');
+		$this->treeData = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\TreeNode');
 		$this->treeData->setId($this->getRootUid());
 		$this->treeData->setParentNode(NULL);
 		$childNodes = $this->getChildrenOf($this->treeData, 0);
@@ -292,11 +294,11 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	/**
 	 * Gets node children
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @param integer $level
 	 * @return NULL|object
 	 */
-	protected function getChildrenOf(t3lib_tree_Node $node, $level) {
+	protected function getChildrenOf(\TYPO3\CMS\Backend\Tree\TreeNode $node, $level) {
 		$nodeData = NULL;
 		if ($node->getId() !== 0) {
 			$nodeData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->tableName, 'uid=' . $node->getId());
@@ -310,9 +312,9 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 		$storage = NULL;
 		$children = $this->getRelatedRecords($nodeData);
 		if (count($children)) {
-			$storage = t3lib_div::makeInstance('t3lib_tree_NodeCollection');
+			$storage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\TreeNodeCollection');
 			foreach ($children as $child) {
-				$node = t3lib_div::makeInstance('t3lib_tree_Node');
+				$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\TreeNode');
 				$node->setId($child);
 				if ($level <= $this->levelMaximum) {
 					$children = $this->getChildrenOf($node, $level + 1);
@@ -333,7 +335,7 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	 * @return array
 	 */
 	protected function getRelatedRecords(array $row) {
-		if ($this->getLookupMode() == t3lib_tree_tca_DatabaseTreeDataProvider::MODE_PARENT) {
+		if ($this->getLookupMode() == \t3lib_tree_tca_DatabaseTreeDataProvider::MODE_PARENT) {
 			$children = $this->getChildrenUidsFromParentRelation($row);
 		} else {
 			$children = $this->getChildrenUidsFromChildrenRelation($row);
@@ -361,7 +363,7 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 
 		case 'select':
 			if ($this->columnConfiguration['MM']) {
-				$dbGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				$dbGroup = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 				// Dummy field for setting "look from other site"
 				$this->columnConfiguration['MM_oppositeField'] = 'children';
 				$dbGroup->start($row[$this->getLookupField()], $this->getTableName(), $this->columnConfiguration['MM'], $uid, $this->getTableName(), $this->columnConfiguration);
@@ -393,7 +395,7 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 
 		case 'select':
 			if ($this->columnConfiguration['MM']) {
-				$dbGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				$dbGroup = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 				$dbGroup->start($value, $this->getTableName(), $this->columnConfiguration['MM'], $uid, $this->getTableName(), $this->columnConfiguration);
 				$relatedUids = $dbGroup->tableArray[$this->getTableName()];
 			} elseif ($this->columnConfiguration['foreign_field']) {
@@ -402,11 +404,11 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 					$relatedUids[] = $record['uid'];
 				}
 			} else {
-				$relatedUids = t3lib_div::intExplode(',', $value, TRUE);
+				$relatedUids = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value, TRUE);
 			}
 			break;
 		default:
-			$relatedUids = t3lib_div::intExplode(',', $value, TRUE);
+			$relatedUids = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value, TRUE);
 		}
 		return $relatedUids;
 	}
@@ -428,5 +430,6 @@ class t3lib_tree_Tca_DatabaseTreeDataProvider extends t3lib_tree_Tca_AbstractTca
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_typo3image extends tx_rtehtmlarea_api {
+class Typo3Image extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -87,5 +89,6 @@ class tx_rtehtmlarea_typo3image extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

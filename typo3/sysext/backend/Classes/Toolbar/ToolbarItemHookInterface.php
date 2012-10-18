@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Toolbar;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,14 +33,14 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface backend_toolbarItem
+interface ToolbarItemHookInterface
 {
 	/**
 	 * Constructor that receives a back reference to the backend
 	 *
-	 * @param TYPO3backend $backendReference TYPO3 backend object reference
+	 * @param \TYPO3\CMS\Backend\Controller\BackendController $backendReference TYPO3 backend object reference
 	 */
-	public function __construct(TYPO3backend &$backendReference = NULL);
+	public function __construct(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference = NULL);
 
 	/**
 	 * Checks whether the user has access to this toolbar item
@@ -62,4 +64,5 @@ interface backend_toolbarItem
 	public function getAdditionalAttributes();
 
 }
+
 ?>

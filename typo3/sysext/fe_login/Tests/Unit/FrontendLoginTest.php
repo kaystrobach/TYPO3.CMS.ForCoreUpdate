@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\FeLogin\Tests\Unit;
+
 /**
  * Testcase for URL validation in class tx_felogin_pi1
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tests/typo3/sysext/felogin
  */
-class tx_feloginTest extends tx_phpunit_testcase {
+class FrontendLoginTest extends tx_phpunit_testcase {
 
 	/**
 	 * @var 	array
@@ -45,20 +47,20 @@ class tx_feloginTest extends tx_phpunit_testcase {
 		// We need to subclass because the method we want to test is protected
 		$className = uniqid('FeLogin_');
 		eval(('
-			class ' . $className) . ' extends tx_felogin_pi1 {
+			class ' . $className) . ' extends TYPO3\\CMS\\FeLogin\\Controller\\FrontendLoginController {
 				public function validateRedirectUrl($url) {
 					return parent::validateRedirectUrl($url);
 				}
 			}
 		');
 		$this->txFelogin = new $className();
-		$this->txFelogin->cObj = $this->getMock('tslib_cObj');
+		$this->txFelogin->cObj = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$this->setUpTSFE();
 		$this->setUpFakeSitePathAndHost();
 	}
 
 	private function setUpTSFE() {
-		$GLOBALS['TSFE'] = $this->getMock('tslib_fe', array(), array(), '', FALSE);
+		$GLOBALS['TSFE'] = $this->getMock('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', array(), array(), '', FALSE);
 	}
 
 	private function setUpFakeSitePathAndHost() {
@@ -67,7 +69,7 @@ class tx_feloginTest extends tx_phpunit_testcase {
 	}
 
 	private function setUpDatabaseMock() {
-		$GLOBALS['TYPO3_DB'] = $this->getMock('t3lib_DB', array('exec_SELECTgetRows'));
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'));
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnCallback(array($this, 'getDomainRecordsCallback')));
 	}
 
@@ -104,14 +106,14 @@ class tx_feloginTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function typo3SitePathEqualsStubSitePath() {
-		$this->assertEquals(t3lib_div::getIndpEnv('TYPO3_SITE_PATH'), $this->testSitePath);
+		$this->assertEquals(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'), $this->testSitePath);
 	}
 
 	/**
 	 * @test
 	 */
 	public function typo3SiteUrlEqualsStubSiteUrl() {
-		$this->assertEquals(t3lib_div::getIndpEnv('TYPO3_SITE_URL'), ('http://' . $this->testHostName) . $this->testSitePath);
+		$this->assertEquals(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'), ('http://' . $this->testHostName) . $this->testSitePath);
 	}
 
 	/**
@@ -121,7 +123,7 @@ class tx_feloginTest extends tx_phpunit_testcase {
 		$this->testHostName = 'somenewhostname.com';
 		$this->testSitePath = '/somenewpath/';
 		$this->setUpFakeSitePathAndHost();
-		$this->assertEquals(t3lib_div::getIndpEnv('TYPO3_SITE_PATH'), $this->testSitePath);
+		$this->assertEquals(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'), $this->testSitePath);
 	}
 
 	/**
@@ -131,7 +133,7 @@ class tx_feloginTest extends tx_phpunit_testcase {
 		$this->testHostName = 'somenewhostname.com';
 		$this->testSitePath = '/somenewpath/';
 		$this->setUpFakeSitePathAndHost();
-		$this->assertEquals(t3lib_div::getIndpEnv('TYPO3_SITE_URL'), ('http://' . $this->testHostName) . $this->testSitePath);
+		$this->assertEquals(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'), ('http://' . $this->testHostName) . $this->testSitePath);
 	}
 
 	/**
@@ -261,5 +263,6 @@ class tx_feloginTest extends tx_phpunit_testcase {
 	}
 
 }
+
 
 ?>

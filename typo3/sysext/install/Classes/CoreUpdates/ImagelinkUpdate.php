@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  *
  * @author Christian Kuhn <lolli@schwarzbu.ch>
  */
-class tx_coreupdates_imagelink extends Tx_Install_Updates_Base {
+class ImagelinkUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Update Existing image links';
 
@@ -65,7 +67,7 @@ class tx_coreupdates_imagelink extends Tx_Install_Updates_Base {
 		if ($this->versionNumber >= 4005000) {
 			$affectedRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid, image_link', 'tt_content', 'image_link<>\'\' AND image_link LIKE \'%,%\' AND image_link NOT LIKE \'%\\n%\'');
 			foreach ($affectedRows as $row) {
-				$newImageLink = t3lib_div::trimExplode(',', $row['image_link']);
+				$newImageLink = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $row['image_link']);
 				$newImageLink = implode(LF, $newImageLink);
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid=' . $row['uid'], array('image_link' => $newImageLink));
 				$dbQueries[] = str_replace(LF, ' ', $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery);
@@ -79,5 +81,6 @@ class tx_coreupdates_imagelink extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

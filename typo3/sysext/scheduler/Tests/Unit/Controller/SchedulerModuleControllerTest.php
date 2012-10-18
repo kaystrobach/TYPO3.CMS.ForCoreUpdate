@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Tests\Unit\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,12 +30,12 @@
  * @subpackage tx_scheduler
  * @author Andy Grunwald <andreas.grunwald@wmdb.de>
  */
-class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
+class SchedulerModuleControllerTest extends tx_phpunit_testcase {
 
 	/**
 	 * Object to Test: tx_scheduler_Module
 	 *
-	 * @var tx_scheduler_Module
+	 * @var \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController
 	 */
 	protected $testObject;
 
@@ -43,7 +45,7 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 	 * @return void
 	 */
 	public function setUp() {
-		$this->testObject = new tx_scheduler_Module();
+		$this->testObject = new \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController();
 	}
 
 	/**
@@ -108,7 +110,7 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 		// With assertLessThan the tests could run 0 till 3 seconds ($delta = 4)
 		$delta = 4;
 		$this->assertLessThan($delta, $checkDateResult - $expectedTimestamp, ('assertLessThan fails with value "' . $strToTimeValue) . '"');
-		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_INT, $checkDateResult, ('assertType fails with value "' . $strToTimeValue) . '"');
+		$this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT, $checkDateResult, ('assertType fails with value "' . $strToTimeValue) . '"');
 	}
 
 	/**
@@ -198,5 +200,6 @@ class tx_scheduler_ModuleTest extends tx_phpunit_testcase {
 	}
 
 }
+
 
 ?>

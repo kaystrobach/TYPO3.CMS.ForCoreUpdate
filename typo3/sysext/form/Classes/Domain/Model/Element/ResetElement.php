@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Reset extends tx_form_Domain_Model_Element_Abstract {
+class ResetElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -72,7 +74,7 @@ class tx_form_Domain_Model_Element_Reset extends tx_form_Domain_Model_Element_Ab
 	 * @see tx_form_Domain_Model_Element::setValue()
 	 */
 	public function setValue($value = '') {
-		$localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
+		$localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
 		// value not set from typoscript
 		$oldValue = $this->getAttributeValue('value');
 		if (empty($oldValue)) {
@@ -87,5 +89,6 @@ class tx_form_Domain_Model_Element_Reset extends tx_form_Domain_Model_Element_Ab
 	}
 
 }
+
 
 ?>

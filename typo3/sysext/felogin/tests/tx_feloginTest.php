@@ -21,11 +21,11 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-require_once t3lib_extMgm::extPath('felogin', 'pi1/class.tx_felogin_pi1.php');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('felogin', 'pi1/class.tx_felogin_pi1.php');
 /*
  * @deprecated since 6.0, the classname tx_feloginTest and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/fe_login/Tests/Unit/FrontendLoginTest.php
  */
-require_once t3lib_extMgm::extPath('fe_login') . 'Tests/Unit/FrontendLoginTest.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('fe_login') . 'Tests/Unit/FrontendLoginTest.php';
 ?>

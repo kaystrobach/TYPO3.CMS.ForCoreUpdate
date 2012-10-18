@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_ViewHelpers_IsExtensionLoadedViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class IsExtensionLoadedViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Checks whether an extension is loaded.
@@ -39,9 +41,10 @@ class Tx_Belog_ViewHelpers_IsExtensionLoadedViewHelper extends Tx_Fluid_Core_Vie
 	 * @return boolean TRUE if extension is loaded, FALSE otherwise
 	 */
 	public function render($extensionKey) {
-		return t3lib_extMgm::isLoaded($extensionKey);
+		return \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($extensionKey);
 	}
 
 }
+
 
 ?>

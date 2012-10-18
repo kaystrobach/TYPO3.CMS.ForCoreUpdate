@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\SysAction;
+
 /**
  * Adds action links to the backend's toolbar
  *
@@ -6,12 +8,12 @@
  * @package TYPO3
  * @subpackage tx_sysaction
  */
-class tx_sysactionToolbarMenu implements backend_toolbarItem {
+class ActionToolbarMenu implements \TYPO3\CMS\Backend\Toolbar\ToolbarItemHookInterface {
 
 	/**
 	 * Reference back to the backend object
 	 *
-	 * @var TYPO3backend
+	 * @var \TYPO3\CMS\Backend\Controller\BackendController
 	 */
 	protected $backendReference;
 
@@ -23,17 +25,17 @@ class tx_sysactionToolbarMenu implements backend_toolbarItem {
 	/**
 	 * Constructor
 	 */
-	public function __construct(TYPO3backend &$backendReference = NULL) {
+	public function __construct(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
 	}
 
 	/**
 	 * sets the backend reference
 	 *
-	 * @param TYPO3backend $backendReference Backend object reference
+	 * @param \TYPO3\CMS\Backend\Controller\BackendController $backendReference Backend object reference
 	 * @return void
 	 */
-	public function setBackend(TYPO3backend &$backendReference) {
+	public function setBackend(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference) {
 		$this->backendReference = $backendReference;
 	}
 
@@ -50,7 +52,7 @@ class tx_sysactionToolbarMenu implements backend_toolbarItem {
 			$this->addJavascriptToBackend();
 			$this->addCssToBackend();
 			$title = $GLOBALS['LANG']->getLL('action_toolbaritem', TRUE);
-			$actionMenu[] = ('<a href="#" class="toolbar-item">' . t3lib_iconWorks::getSpriteIcon('apps-toolbar-menu-actions', array('title' => $title))) . '</a>';
+			$actionMenu[] = ('<a href="#" class="toolbar-item">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-toolbar-menu-actions', array('title' => $title))) . '</a>';
 			$actionMenu[] = '<ul class="toolbar-item-menu" style="display: none;">';
 			foreach ($actionEntries as $linkConf) {
 				$actionMenu[] = (((('<li><a href="' . htmlspecialchars($linkConf[1])) . '" target="content">') . $linkConf[2]) . htmlspecialchars($linkConf[0])) . '</a></li>';
@@ -85,8 +87,8 @@ class tx_sysactionToolbarMenu implements backend_toolbarItem {
 			while ($actionRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($queryResource)) {
 				$actions[] = array(
 					$actionRow['title'],
-					'mod.php?M=user_task&SET[mode]=tasks&SET[function]=sys_action.tx_sysaction_task&show=' . $actionRow['uid'],
-					t3lib_iconworks::getSpriteIconForRecord('sys_action', $actionRow)
+					'mod.php?M=user_task&SET[mode]=tasks&SET[function]=sys_action.TYPO3\\CMS\\SysAction\\ActionTask&show=' . $actionRow['uid'],
+					\t3lib_iconworks::getSpriteIconForRecord('sys_action', $actionRow)
 				);
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($queryResource);
@@ -109,7 +111,7 @@ class tx_sysactionToolbarMenu implements backend_toolbarItem {
 	 * @return void
 	 */
 	protected function addJavascriptToBackend() {
-		$this->backendReference->addJavascriptFile(t3lib_extMgm::extRelPath($this->EXTKEY) . 'toolbarmenu/tx_sysactions.js');
+		$this->backendReference->addJavascriptFile(\TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($this->EXTKEY) . 'toolbarmenu/tx_sysactions.js');
 	}
 
 	/**
@@ -118,7 +120,7 @@ class tx_sysactionToolbarMenu implements backend_toolbarItem {
 	 * @return void
 	 */
 	protected function addCssToBackend() {
-		$this->backendReference->addCssFile('sysaction', t3lib_extMgm::extRelPath($this->EXTKEY) . 'toolbarmenu/tx_sysactions.css');
+		$this->backendReference->addCssFile('sysaction', \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($this->EXTKEY) . 'toolbarmenu/tx_sysactions.css');
 	}
 
 	/**
@@ -132,5 +134,6 @@ class tx_sysactionToolbarMenu implements backend_toolbarItem {
 	}
 
 }
+
 
 ?>

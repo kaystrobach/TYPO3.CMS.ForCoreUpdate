@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Frontend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @subpackage t3lib_cache
  * @api
  */
-interface t3lib_cache_frontend_Frontend
+interface FrontendInterface
 {
 	/**
 	 * "Magic" tag for class-related entries
@@ -61,7 +63,7 @@ interface t3lib_cache_frontend_Frontend
 	/**
 	 * Returns the backend used by this cache
 	 *
-	 * @return t3lib_cache_backend_Backend The backend used by this cache
+	 * @return \TYPO3\CMS\Core\Cache\Backend\BackendInterface The backend used by this cache
 	 */
 	public function getBackend();
 
@@ -155,4 +157,5 @@ interface t3lib_cache_frontend_Frontend
 	public function isValidTag($tag);
 
 }
+
 ?>

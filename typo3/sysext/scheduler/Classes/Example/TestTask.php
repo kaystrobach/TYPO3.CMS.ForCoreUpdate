@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Example;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_scheduler
  */
-class tx_scheduler_TestTask extends tx_scheduler_Task {
+class TestTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * An email address to be used during the process
@@ -50,7 +52,7 @@ class tx_scheduler_TestTask extends tx_scheduler_Task {
 			// If an email address is defined, send a message to it
 			// NOTE: the TYPO3_DLOG constant is not used in this case, as this is a test task
 			// and debugging is its main purpose anyway
-			t3lib_div::devLog(('[tx_scheduler_TestTask]: Test email sent to "' . $this->email) . '"', 'scheduler', 0);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(('[TYPO3\\CMS\\Scheduler\\Example\\TestTask]: Test email sent to "' . $this->email) . '"', 'scheduler', 0);
 			// Get execution information
 			$exec = $this->getExecution();
 			// Get call method
@@ -59,7 +61,7 @@ class tx_scheduler_TestTask extends tx_scheduler_Task {
 				$site = '-';
 			} else {
 				$calledBy = 'TYPO3 backend';
-				$site = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+				$site = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL');
 			}
 			$start = $exec->getStart();
 			$end = $exec->getEnd();
@@ -70,7 +72,7 @@ class tx_scheduler_TestTask extends tx_scheduler_Task {
 			// Prepare mailer and send the mail
 			try {
 				/** @var $mailer t3lib_mail_message */
-				$mailer = t3lib_div::makeInstance('t3lib_mail_message');
+				$mailer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_mail_message');
 				$mailer->setFrom(array($this->email => 'SCHEDULER TEST-TASK'));
 				$mailer->setReplyTo(array($this->email => 'SCHEDULER TEST-TASK'));
 				$mailer->setSubject('SCHEDULER TEST-TASK');
@@ -78,12 +80,12 @@ class tx_scheduler_TestTask extends tx_scheduler_Task {
 				$mailer->setTo($this->email);
 				$mailsSend = $mailer->send();
 				$success = $mailsSend > 0;
-			} catch (Exception $e) {
-				throw new t3lib_exception($e->getMessage());
+			} catch (\Exception $e) {
+				throw new \TYPO3\CMS\Core\Exception($e->getMessage());
 			}
 		} else {
 			// No email defined, just log the task
-			t3lib_div::devLog('[tx_scheduler_TestTask]: No email address given', 'scheduler', 2);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('[TYPO3\\CMS\\Scheduler\\Example\\TestTask]: No email address given', 'scheduler', 2);
 		}
 		return $success;
 	}
@@ -98,5 +100,6 @@ class tx_scheduler_TestTask extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

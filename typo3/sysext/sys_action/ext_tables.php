@@ -23,12 +23,12 @@ if (TYPO3_MODE == 'BE') {
 				'default' => 'mimetypes-x-sys_action'
 			),
 			'type' => 'type',
-			'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY) . 'x-sys_action.png',
-			'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'tca.php'
+			'iconfile' => \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($_EXTKEY) . 'x-sys_action.png',
+			'dynamicConfigFile' => \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'tca.php'
 		)
 	);
-	$GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'][] = t3lib_extMgm::extPath('sys_action') . 'toolbarmenu/registerToolbarItem.php';
-	t3lib_extMgm::addLLrefForTCAdescr('sys_action', 'EXT:sys_action/locallang_csh_sysaction.xml');
+	$GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'][] = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('sys_action') . 'toolbarmenu/registerToolbarItem.php';
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addLLrefForTCAdescr('sys_action', 'EXT:sys_action/locallang_csh_sysaction.xml');
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['taskcenter']['sys_action']['tx_sysaction_task'] = array(
 		'title' => 'LLL:EXT:sys_action/locallang_tca.xml:sys_action',
 		'description' => 'LLL:EXT:sys_action/locallang_csh_sysaction.xml:.description',

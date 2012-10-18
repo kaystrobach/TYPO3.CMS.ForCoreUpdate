@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_NodeCollection extends ArrayObject {
+class TreeNodeCollection extends \ArrayObject {
 
 	/**
 	 * Constructor
@@ -64,7 +66,7 @@ class t3lib_tree_NodeCollection extends ArrayObject {
 	 * @return void
 	 * @noapi
 	 */
-	public function nodeCompare(t3lib_tree_Node $node, t3lib_tree_Node $otherNode) {
+	public function nodeCompare(\TYPO3\CMS\Backend\Tree\TreeNode $node, \TYPO3\CMS\Backend\Tree\TreeNode $otherNode) {
 		return $node->compareTo($otherNode);
 	}
 
@@ -82,12 +84,12 @@ class t3lib_tree_NodeCollection extends ArrayObject {
 	 *
 	 * @param string $serializedString
 	 * @return void
-	 * @throws t3lib_exception if the deserialized is not identical to the current class
+	 * @throws \TYPO3\CMS\Core\Exception if the deserialized is not identical to the current class
 	 */
 	public function unserialize($serializedString) {
 		$arrayRepresentation = unserialize($serializedString);
 		if ($arrayRepresentation['serializeClassName'] !== get_class($this)) {
-			throw new t3lib_exception('Deserialized object type is not identical!', 1294586647);
+			throw new \TYPO3\CMS\Core\Exception('Deserialized object type is not identical!', 1294586647);
 		}
 		$this->dataFromArray($arrayRepresentation);
 	}
@@ -118,11 +120,12 @@ class t3lib_tree_NodeCollection extends ArrayObject {
 	public function dataFromArray($data) {
 		unset($data['serializeClassName']);
 		foreach ($data as $index => $nodeArray) {
-			$node = t3lib_div::makeInstance($nodeArray['serializeClassName'], $nodeArray);
+			$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($nodeArray['serializeClassName'], $nodeArray);
 			$this->offsetSet($index, $node);
 		}
 	}
 
 }
+
 
 ?>

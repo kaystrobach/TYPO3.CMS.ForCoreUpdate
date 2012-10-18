@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Toolbar;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage backend
  */
-interface backend_cacheActionsHook
+interface ClearCacheActionsHookInterface
 {
 	/**
 	 * Modifies CacheMenuItems array
@@ -43,4 +45,5 @@ interface backend_cacheActionsHook
 	public function manipulateCacheActions(&$cacheActions, &$optionValues);
 
 }
+
 ?>

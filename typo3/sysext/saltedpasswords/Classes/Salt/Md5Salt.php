@@ -1,34 +1,35 @@
 <?php
+namespace TYPO3\CMS\Saltedpasswords\Salt;
+
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains class "tx_saltedpasswords_salts_md5"
  * that provides MD5 salted hashing.
  */
-
 /**
  * Class that implements MD5 salted hashing based on PHP's
  * crypt() function.
@@ -37,18 +38,17 @@
  * on most of the systems.
  *
  * @author Marcus Krause <marcus#exp2009@t3sec.info>
- *
  * @since 2009-09-06
  * @package TYPO3
  * @subpackage tx_saltedpasswords
  */
-class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts implements tx_saltedpasswords_salts {
+class Md5Salt extends \TYPO3\CMS\Saltedpasswords\Salt\AbstractSalt implements \TYPO3\CMS\Saltedpasswords\Salt\SaltInterface {
+
 	/**
 	 * Keeps a string for mapping an int to the corresponding
 	 * base 64 character.
 	 */
 	const ITOA64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
 	/**
 	 * Keeps length of a MD5 salt in bytes.
 	 *
@@ -78,15 +78,11 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 	 */
 	protected function applySettingsToSalt($salt) {
 		$saltWithSettings = $salt;
-
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
-			// Salt without setting
+		// Salt without setting
 		if (strlen($salt) == $reqLenBase64) {
-			$saltWithSettings = $this->getSetting() . $salt . $this->getSaltSuffix();
-
+			$saltWithSettings = ($this->getSetting() . $salt) . $this->getSaltSuffix();
 		}
-
 		return $saltWithSettings;
 	}
 
@@ -100,11 +96,9 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 	 */
 	public function checkPassword($plainPW, $saltedHashPW) {
 		$isCorrect = FALSE;
-
 		if ($this->isValidSalt($saltedHashPW)) {
-			$isCorrect = (crypt($plainPW, $saltedHashPW) == $saltedHashPW);
+			$isCorrect = crypt($plainPW, $saltedHashPW) == $saltedHashPW;
 		}
-
 		return $isCorrect;
 	}
 
@@ -112,16 +106,15 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 	 * Generates a random base 64-encoded salt prefixed and suffixed with settings for the hash.
 	 *
 	 * Proper use of salts may defeat a number of attacks, including:
-	 *  - The ability to try candidate passwords against multiple hashes at once.
-	 *  - The ability to use pre-hashed lists of candidate passwords.
-	 *  - The ability to determine whether two users have the same (or different)
-	 *    password without actually having to guess one of the passwords.
+	 * - The ability to try candidate passwords against multiple hashes at once.
+	 * - The ability to use pre-hashed lists of candidate passwords.
+	 * - The ability to determine whether two users have the same (or different)
+	 * password without actually having to guess one of the passwords.
 	 *
 	 * @return string A character string containing settings and a random salt
 	 */
 	protected function getGeneratedSalt() {
-		$randomBytes = t3lib_div::generateRandomBytes($this->getSaltLength());
-
+		$randomBytes = \TYPO3\CMS\Core\Utility\GeneralUtility::generateRandomBytes($this->getSaltLength());
 		return $this->base64Encode($randomBytes, $this->getSaltLength());
 	}
 
@@ -140,7 +133,6 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 			}
 			$saltedPW = crypt($password, $this->applySettingsToSalt($salt));
 		}
-
 		return $saltedPW;
 	}
 
@@ -212,12 +204,10 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 	 * @return boolean TRUE if it's valid salt, otherwise FALSE
 	 */
 	public function isValidSalt($salt) {
-		$isValid = $skip = FALSE;
-
+		$isValid = ($skip = FALSE);
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
 		if (strlen($salt) >= $reqLenBase64) {
-				// Salt with prefixed setting
+			// Salt with prefixed setting
 			if (!strncmp('$', $salt, 1)) {
 				if (!strncmp($this->getSetting(), $salt, strlen($this->getSetting()))) {
 					$isValid = TRUE;
@@ -226,15 +216,13 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 					$skip = TRUE;
 				}
 			}
-
-				// Checking base64 characters
-			if (!$skip && (strlen($salt) >= $reqLenBase64)) {
-				if (preg_match('/^[' . preg_quote($this->getItoa64(), '/') . ']{' . $reqLenBase64 . ',' . $reqLenBase64 . '}$/', substr($salt, 0, $reqLenBase64))) {
+			// Checking base64 characters
+			if (!$skip && strlen($salt) >= $reqLenBase64) {
+				if (preg_match(((((('/^[' . preg_quote($this->getItoa64(), '/')) . ']{') . $reqLenBase64) . ',') . $reqLenBase64) . '}$/', substr($salt, 0, $reqLenBase64))) {
 					$isValid = TRUE;
 				}
 			}
 		}
-
 		return $isValid;
 	}
 
@@ -246,13 +234,14 @@ class tx_saltedpasswords_salts_md5 extends tx_saltedpasswords_abstract_salts imp
 	 */
 	public function isValidSaltedPW($saltedPW) {
 		$isValid = FALSE;
-
-		$isValid = (!strncmp($this->getSetting(), $saltedPW, strlen($this->getSetting()))) ? TRUE : FALSE;
+		$isValid = !strncmp($this->getSetting(), $saltedPW, strlen($this->getSetting())) ? TRUE : FALSE;
 		if ($isValid) {
 			$isValid = $this->isValidSalt($saltedPW);
 		}
-
 		return $isValid;
 	}
+
 }
+
+
 ?>

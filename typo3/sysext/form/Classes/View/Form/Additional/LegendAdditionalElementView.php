@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Form\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Form_Additional_Legend extends tx_form_View_Form_Additional {
+class LegendAdditionalElementView extends \TYPO3\CMS\Form\View\Form\Additional\AdditionalElementView {
 
 	/**
 	 * Default layout of this object
@@ -44,5 +46,6 @@ class tx_form_View_Form_Additional_Legend extends tx_form_View_Form_Additional {
 	';
 
 }
+
 
 ?>

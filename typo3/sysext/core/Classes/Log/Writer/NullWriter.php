@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Writer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,19 +30,20 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_writer_Null extends t3lib_log_writer_Abstract {
+class NullWriter extends \TYPO3\CMS\Core\Log\Writer\AbstractWriter {
 
 	/**
 	 * Writes the log record
 	 *
-	 * @param t3lib_log_Record $record Log record
-	 * @return t3lib_log_writer_Writer $this
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record Log record
+	 * @return \TYPO3\CMS\Core\Log\Writer\Writer $this
 	 */
-	public function writeLog(t3lib_log_Record $record) {
+	public function writeLog(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		// do nothing
 		return $this;
 	}
 
 }
+
 
 ?>

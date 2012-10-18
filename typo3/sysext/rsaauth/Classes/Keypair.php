@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-final class tx_rsaauth_keypair {
+final class Keypair {
 
 	/**
 	 * RSA public exponent (3 or 0x10001)
@@ -110,5 +112,6 @@ final class tx_rsaauth_keypair {
 	}
 
 }
+
 
 ?>

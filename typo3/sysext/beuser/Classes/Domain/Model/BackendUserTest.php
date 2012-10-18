@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,15 +32,15 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_Domain_Model_BackendUserTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class BackendUserTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Beuser_Domain_Model_BackendUser
+	 * @var \TYPO3\CMS\Beuser\Domain\Model\BackendUser
 	 */
 	protected $fixture;
 
 	public function setUp() {
-		$this->fixture = new Tx_Beuser_Domain_Model_BackendUser();
+		$this->fixture = new \TYPO3\CMS\Beuser\Domain\Model\BackendUser();
 	}
 
 	public function tearDown() {
@@ -108,5 +110,6 @@ class Tx_Beuser_Domain_Model_BackendUserTest extends Tx_Extbase_Tests_Unit_BaseT
 	}
 
 }
+
 
 ?>

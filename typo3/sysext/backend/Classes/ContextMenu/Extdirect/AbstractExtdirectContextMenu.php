@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu\Extdirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -35,7 +37,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_contextmenu_extdirect_ContextMenu extends t3lib_contextmenu_AbstractContextMenu {
+abstract class AbstractExtdirectContextMenu extends \TYPO3\CMS\Backend\ContextMenu\AbstractContextMenu {
 
 	/**
 	 * Returns the actions for the given node information
@@ -52,11 +54,11 @@ abstract class t3lib_contextmenu_extdirect_ContextMenu extends t3lib_contextmenu
 	 */
 	public function getActionsForNodeArray($nodeData) {
 		if ($this->dataProvider === NULL) {
-			$dataProvider = t3lib_div::makeInstance('t3lib_contextmenu_AbstractDataProvider');
+			$dataProvider = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\ContextMenu\\AbstractContextMenuDataProvider');
 			$this->setDataProvider($dataProvider);
 		}
-		/** @var $node t3lib_tree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\TreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\TreeNode', (array) $nodeData);
 		$actions = $this->dataProvider->getActionsForNode($node);
 		return $actions;
 	}
@@ -65,13 +67,14 @@ abstract class t3lib_contextmenu_extdirect_ContextMenu extends t3lib_contextmenu
 	 * Unused for this implementation
 	 *
 	 * @see getActionsForNodeArray()
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @return array
 	 */
-	public function getActionsForNode(t3lib_tree_Node $node) {
+	public function getActionsForNode(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
 
 	}
 
 }
+
 
 ?>

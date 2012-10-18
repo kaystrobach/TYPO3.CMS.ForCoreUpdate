@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_fullsearch {
+class QueryView {
 
 	/**
 	 * @todo Define visibility
@@ -94,7 +96,7 @@ class t3lib_fullsearch {
 			$opt[] = ((((('<option value="' . $k) . '"') . (!strcmp($cur, $v) ? ' selected' : '')) . '>') . htmlspecialchars($v)) . '</option>';
 		}
 		// Actions:
-		if (t3lib_extMgm::isLoaded('sys_action') && $GLOBALS['BE_USER']->isAdmin()) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('sys_action') && $GLOBALS['BE_USER']->isAdmin()) {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_action', 'type=2', '', 'title');
 			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 				$opt[] = '<option value="0">__Save to Action:__</option>';
@@ -175,7 +177,7 @@ class t3lib_fullsearch {
 	 * @todo Define visibility
 	 */
 	public function saveQueryInAction($uid) {
-		if (t3lib_extMgm::isLoaded('sys_action')) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('sys_action')) {
 			$keyArr = explode(',', $this->storeList);
 			$saveArr = array();
 			foreach ($keyArr as $k) {
@@ -184,13 +186,13 @@ class t3lib_fullsearch {
 			$qOK = 0;
 			// Show query
 			if ($saveArr['queryTable']) {
-				/** @var t3lib_queryGenerator */
-				$qGen = t3lib_div::makeInstance('t3lib_queryGenerator');
+				/** @var \TYPO3\CMS\Core\Database\QueryGenerator */
+				$qGen = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
 				$qGen->init('queryConfig', $saveArr['queryTable']);
 				$qGen->makeSelectorTable($saveArr);
 				$qGen->enablePrefix = 1;
 				$qString = $qGen->getQuery($qGen->queryConfig);
-				$qCount = $GLOBALS['TYPO3_DB']->SELECTquery('count(*)', $qGen->table, $qString . t3lib_BEfunc::deleteClause($qGen->table));
+				$qCount = $GLOBALS['TYPO3_DB']->SELECTquery('count(*)', $qGen->table, $qString . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($qGen->table));
 				$qSelect = $qGen->getSelectQuery($qString);
 				$res = @$GLOBALS['TYPO3_DB']->sql_query($qCount);
 				if (!$GLOBALS['TYPO3_DB']->sql_error()) {
@@ -238,7 +240,7 @@ class t3lib_fullsearch {
 	public function procesStoreControl() {
 		$storeArray = $this->initStoreArray();
 		$storeQueryConfigs = unserialize($GLOBALS['SOBE']->MOD_SETTINGS['storeQueryConfigs']);
-		$storeControl = t3lib_div::_GP('storeControl');
+		$storeControl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('storeControl');
 		$storeIndex = intval($storeControl['STORE']);
 		$saveStoreArray = 0;
 		$writeArray = array();
@@ -248,9 +250,9 @@ class t3lib_fullsearch {
 				if ($storeIndex > 0) {
 					$writeArray = $this->loadStoreQueryConfigs($storeQueryConfigs, $storeIndex, $writeArray);
 					$saveStoreArray = 1;
-					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', sprintf($GLOBALS['LANG']->getLL('query_loaded'), htmlspecialchars($storeArray[$storeIndex])));
-				} elseif ($storeIndex < 0 && t3lib_extMgm::isLoaded('sys_action')) {
-					$actionRecord = t3lib_BEfunc::getRecord('sys_action', abs($storeIndex));
+					$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', sprintf($GLOBALS['LANG']->getLL('query_loaded'), htmlspecialchars($storeArray[$storeIndex])));
+				} elseif ($storeIndex < 0 && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('sys_action')) {
+					$actionRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('sys_action', abs($storeIndex));
 					if (is_array($actionRecord)) {
 						$dA = unserialize($actionRecord['t2_data']);
 						$dbSC = array();
@@ -259,16 +261,16 @@ class t3lib_fullsearch {
 						}
 						$writeArray = $this->loadStoreQueryConfigs($dbSC, '0', $writeArray);
 						$saveStoreArray = 1;
-						$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', sprintf($GLOBALS['LANG']->getLL('query_from_action_loaded'), htmlspecialchars($actionRecord['title'])));
+						$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', sprintf($GLOBALS['LANG']->getLL('query_from_action_loaded'), htmlspecialchars($actionRecord['title'])));
 					}
 				}
 			} elseif ($storeControl['SAVE']) {
 				if ($storeIndex < 0) {
 					$qOK = $this->saveQueryInAction(abs($storeIndex));
 					if ($qOK) {
-						$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->getLL('query_saved'));
+						$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $GLOBALS['LANG']->getLL('query_saved'));
 					} else {
-						$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->getLL('query_notsaved'), '', t3lib_FlashMessage::ERROR);
+						$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $GLOBALS['LANG']->getLL('query_notsaved'), '', \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 					}
 				} else {
 					if (trim($storeControl['title'])) {
@@ -281,12 +283,12 @@ class t3lib_fullsearch {
 						}
 						$storeQueryConfigs = $this->addToStoreQueryConfigs($storeQueryConfigs, $storeIndex);
 						$saveStoreArray = 1;
-						$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->getLL('query_saved'));
+						$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $GLOBALS['LANG']->getLL('query_saved'));
 					}
 				}
 			} elseif ($storeControl['REMOVE']) {
 				if ($storeIndex > 0) {
-					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', sprintf($GLOBALS['LANG']->getLL('query_removed'), htmlspecialchars($storeArray[$storeControl['STORE']])));
+					$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', sprintf($GLOBALS['LANG']->getLL('query_removed'), htmlspecialchars($storeArray[$storeControl['STORE']])));
 					// Removing
 					unset($storeArray[$storeControl['STORE']]);
 					$saveStoreArray = 1;
@@ -301,7 +303,7 @@ class t3lib_fullsearch {
 			unset($storeArray[0]);
 			$writeArray['storeArray'] = serialize($storeArray);
 			$writeArray['storeQueryConfigs'] = serialize($this->cleanStoreQueryConfigs($storeQueryConfigs, $storeArray));
-			$GLOBALS['SOBE']->MOD_SETTINGS = t3lib_BEfunc::getModuleData($GLOBALS['SOBE']->MOD_MENU, $writeArray, $GLOBALS['SOBE']->MCONF['name'], 'ses');
+			$GLOBALS['SOBE']->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($GLOBALS['SOBE']->MOD_MENU, $writeArray, $GLOBALS['SOBE']->MCONF['name'], 'ses');
 		}
 		return $msg;
 	}
@@ -326,7 +328,7 @@ class t3lib_fullsearch {
 			$output .= $GLOBALS['SOBE']->doc->spacer(20);
 		}
 		// Query Maker:
-		$qGen = t3lib_div::makeInstance('t3lib_queryGenerator');
+		$qGen = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
 		$qGen->init('queryConfig', $GLOBALS['SOBE']->MOD_SETTINGS['queryTable']);
 		if ($this->formName) {
 			$qGen->setFormName($this->formName);
@@ -342,7 +344,7 @@ class t3lib_fullsearch {
 				$qString = $qGen->getQuery($qGen->queryConfig);
 				switch ($mQ) {
 				case 'count':
-					$qExplain = $GLOBALS['TYPO3_DB']->SELECTquery('count(*)', $qGen->table, $qString . t3lib_BEfunc::deleteClause($qGen->table));
+					$qExplain = $GLOBALS['TYPO3_DB']->SELECTquery('count(*)', $qGen->table, $qString . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($qGen->table));
 					break;
 				default:
 					$qExplain = $qGen->getSelectQuery($qString);
@@ -394,7 +396,7 @@ class t3lib_fullsearch {
 			}
 			if (is_array($this->hookArray['beforeResultTable'])) {
 				foreach ($this->hookArray['beforeResultTable'] as $_funcRef) {
-					$out .= t3lib_div::callUserFunction($_funcRef, $GLOBALS['SOBE']->MOD_SETTINGS, $this);
+					$out .= \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $GLOBALS['SOBE']->MOD_SETTINGS, $this);
 				}
 			}
 			if (count($rowArr)) {
@@ -417,12 +419,12 @@ class t3lib_fullsearch {
 				$rowArr[] = $this->csvValues($row, ',', '"', $GLOBALS['TCA'][$table], $table);
 			}
 			if (count($rowArr)) {
-				$out .= ((('<textarea name="whatever" rows="20" wrap="off"' . $GLOBALS['SOBE']->doc->formWidthText($this->formW, '', 'off')) . ' class="fixed-font">') . t3lib_div::formatForTextarea(implode(LF, $rowArr))) . '</textarea>';
+				$out .= ((('<textarea name="whatever" rows="20" wrap="off"' . $GLOBALS['SOBE']->doc->formWidthText($this->formW, '', 'off')) . ' class="fixed-font">') . \TYPO3\CMS\Core\Utility\GeneralUtility::formatForTextarea(implode(LF, $rowArr))) . '</textarea>';
 				if (!$this->noDownloadB) {
 					$out .= ('<BR><input type="submit" name="download_file" value="Click to download file" onClick="window.location.href=\'' . $this->downloadScript) . '\';">';
 				}
 				// Downloads file:
-				if (t3lib_div::_GP('download_file')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('download_file')) {
 					$filename = ((('TYPO3_' . $table) . '_export_') . date('dmy-Hi')) . '.csv';
 					$mimeType = 'application/octet-stream';
 					header('Content-Type: ' . $mimeType);
@@ -441,7 +443,7 @@ class t3lib_fullsearch {
 
 		default:
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$out .= '<br />' . t3lib_utility_Debug::viewArray($row);
+				$out .= '<br />' . \TYPO3\CMS\Core\Utility\DebugUtility::viewArray($row);
 			}
 			$cPR['header'] = 'Explain SQL query';
 			$cPR['content'] = $out;
@@ -468,7 +470,7 @@ class t3lib_fullsearch {
 				$valueArray[$key] = $this->getProcessedValueExtra($table, $key, $val, $conf, ';');
 			}
 		}
-		return t3lib_div::csvValues($valueArray, $delim, $quote);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::csvValues($valueArray, $delim, $quote);
 	}
 
 	/**
@@ -497,7 +499,7 @@ class t3lib_fullsearch {
 		if ($swords) {
 			foreach ($GLOBALS['TCA'] as $table => $value) {
 				// Get fields list
-				t3lib_div::loadTCA($table);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 				$conf = $GLOBALS['TCA'][$table];
 				// Avoid querying tables with no columns
 				if (empty($conf['columns'])) {
@@ -507,7 +509,7 @@ class t3lib_fullsearch {
 				// Get query
 				$qp = $GLOBALS['TYPO3_DB']->searchQuery(array($swords), $list, $table);
 				// Count:
-				$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('*', $table, $qp . t3lib_BEfunc::deleteClause($table));
+				$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('*', $table, $qp . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table));
 				if ($count || $showAlways) {
 					// Output header:
 					$out .= ('<strong>TABLE:</strong> ' . $GLOBALS['LANG']->sL($conf['ctrl']['title'])) . '<BR>';
@@ -515,7 +517,7 @@ class t3lib_fullsearch {
 					// Show to limit
 					if ($count) {
 						$rowArr = array();
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,' . $conf['ctrl']['label'], $table, $qp . t3lib_BEfunc::deleteClause($table), '', '', $limit);
+						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,' . $conf['ctrl']['label'], $table, $qp . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table), '', '', $limit);
 						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 							$rowArr[] = $this->resultRowDisplay($row, $conf, $table);
 							$lrow = $row;
@@ -541,12 +543,12 @@ class t3lib_fullsearch {
 	 */
 	public function resultRowDisplay($row, $conf, $table) {
 		static $even = FALSE;
-		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 		$SET = $GLOBALS['SOBE']->MOD_SETTINGS;
 		$out = ('<tr class="bgColor' . ($even ? '6' : '4')) . '">';
 		$even = !$even;
 		foreach ($row as $fN => $fV) {
-			if (t3lib_div::inList($SET['queryFields'], $fN) || (!$SET['queryFields'] && $fN != 'pid') && $fN != 'deleted') {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($SET['queryFields'], $fN) || (!$SET['queryFields'] && $fN != 'pid') && $fN != 'deleted') {
 				if ($SET['search_result_labels']) {
 					$fVnew = $this->getProcessedValueExtra($table, $fN, $fV, $conf, '<br />');
 				} else {
@@ -558,27 +560,27 @@ class t3lib_fullsearch {
 		$params = ((('&edit[' . $table) . '][') . $row['uid']) . ']=edit';
 		$out .= '<td nowrap>';
 		if (!$row['deleted']) {
-			$out .= ((((((('<a href="#" onClick="top.launchView(\'' . $table) . '\',') . $row['uid']) . ',\'') . $GLOBALS['BACK_PATH']) . '\');return false;">') . t3lib_iconWorks::getSpriteIcon('status-dialog-information')) . '</a>';
-			$out .= ((('<a href="#" onClick="' . t3lib_BEfunc::editOnClick($params, $GLOBALS['BACK_PATH'], (t3lib_div::getIndpEnv('REQUEST_URI') . t3lib_div::implodeArrayForUrl('SET', (array) t3lib_div::_POST('SET'))))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-open')) . '</a>';
+			$out .= ((((((('<a href="#" onClick="top.launchView(\'' . $table) . '\',') . $row['uid']) . ',\'') . $GLOBALS['BACK_PATH']) . '\');return false;">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-dialog-information')) . '</a>';
+			$out .= ((('<a href="#" onClick="' . \TYPO3\CMS\Backend\Utility\BackendUtility::editOnClick($params, $GLOBALS['BACK_PATH'], (\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI') . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('SET', (array) \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('SET'))))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-open')) . '</a>';
 		} else {
-			$out .= (('<a href="' . t3lib_div::linkThisUrl(($GLOBALS['BACK_PATH'] . 'tce_db.php'), array(
+			$out .= (('<a href="' . \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisUrl(($GLOBALS['BACK_PATH'] . 'tce_db.php'), array(
 				(((('cmd[' . $table) . '][') . $row['uid']) . '][undelete]') => '1',
-				'redirect' => t3lib_div::linkThisScript(array())
-			))) . t3lib_BEfunc::getUrlToken('tceAction')) . '">';
-			$out .= t3lib_iconWorks::getSpriteIcon('actions-edit-restore', array('title' => 'undelete only')) . '</a>';
-			$out .= (('<a href="' . t3lib_div::linkThisUrl(($GLOBALS['BACK_PATH'] . 'tce_db.php'), array(
+				'redirect' => \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array())
+			))) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction')) . '">';
+			$out .= \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-restore', array('title' => 'undelete only')) . '</a>';
+			$out .= (('<a href="' . \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisUrl(($GLOBALS['BACK_PATH'] . 'tce_db.php'), array(
 				(((('cmd[' . $table) . '][') . $row['uid']) . '][undelete]') => '1',
-				'redirect' => t3lib_div::linkThisUrl('alt_doc.php', array(
+				'redirect' => \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisUrl('alt_doc.php', array(
 					(((('edit[' . $table) . '][') . $row['uid']) . ']') => 'edit',
-					'returnUrl' => t3lib_div::linkThisScript(array())
+					'returnUrl' => \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array())
 				))
-			))) . t3lib_BEfunc::getUrlToken('tceAction')) . '">';
-			$out .= t3lib_iconWorks::getSpriteIcon('actions-edit-restore-edit', array('title' => 'undelete and edit')) . '</a>';
+			))) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction')) . '">';
+			$out .= \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-restore-edit', array('title' => 'undelete and edit')) . '</a>';
 		}
 		$_params = array($table => $row);
 		if (is_array($this->hookArray['additionalButtons'])) {
 			foreach ($this->hookArray['additionalButtons'] as $_funcRef) {
-				$out .= t3lib_div::callUserFunction($_funcRef, $_params, $this);
+				$out .= \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 		$out .= '</td>
@@ -601,7 +603,7 @@ class t3lib_fullsearch {
 	public function getProcessedValueExtra($table, $fN, $fV, $conf, $splitString) {
 		// Analysing the fields in the table.
 		if (is_array($GLOBALS['TCA'][$table])) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			$fC = $GLOBALS['TCA'][$table]['columns'][$fN];
 			$fields = $fC['config'];
 			$fields['exclude'] = $fC['exclude'];
@@ -734,7 +736,7 @@ class t3lib_fullsearch {
 			$theList = '';
 		}
 		if ($id && $depth > 0) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', (((('pid=' . $id) . ' ') . t3lib_BEfunc::deleteClause('pages')) . ' AND ') . $perms_clause);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', (((('pid=' . $id) . ' ') . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('pages')) . ' AND ') . $perms_clause);
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				if ($begin <= 0) {
 					$theList .= ',' . $row['uid'];
@@ -773,7 +775,7 @@ class t3lib_fullsearch {
 			$d->close();
 			natcasesort($fileArray);
 			while (list(, $fileName) = each($fileArray)) {
-				if (t3lib_div::inList($fV, $fileName) || $fV == $fileName) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($fV, $fileName) || $fV == $fileName) {
 					if (!$out) {
 						$out = htmlspecialchars($fileName);
 					} else {
@@ -789,7 +791,7 @@ class t3lib_fullsearch {
 				} else {
 					$value = $val[0];
 				}
-				if (t3lib_div::inList($fV, $val[1]) || $fV == $val[1]) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($fV, $val[1]) || $fV == $val[1]) {
 					if (!$out) {
 						$out = htmlspecialchars($value);
 					} else {
@@ -820,7 +822,7 @@ class t3lib_fullsearch {
 					} else {
 						$value = $val[0];
 					}
-					if (t3lib_div::inList($fV, $value) || $fV == $value) {
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($fV, $value) || $fV == $value) {
 						if (!$out) {
 							$out = htmlspecialchars($value);
 						} else {
@@ -833,7 +835,7 @@ class t3lib_fullsearch {
 				$from_table_Arr = explode(',', $fieldSetup['allowed']);
 				$useTablePrefix = 1;
 				if (!$fieldSetup['prepend_tname']) {
-					$checkres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fN, $table, 'uid ' . t3lib_BEfunc::deleteClause($table), ($groupBy = ''), ($orderBy = ''), ($limit = ''));
+					$checkres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fN, $table, 'uid ' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table), ($groupBy = ''), ($orderBy = ''), ($limit = ''));
 					if ($checkres) {
 						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($checkres)) {
 							if (stristr($row[$fN], ',')) {
@@ -869,7 +871,7 @@ class t3lib_fullsearch {
 				}
 				$counter = 1;
 				if (is_array($GLOBALS['TCA'][$from_table])) {
-					t3lib_div::loadTCA($from_table);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($from_table);
 					$labelField = $GLOBALS['TCA'][$from_table]['ctrl']['label'];
 					$altLabelField = $GLOBALS['TCA'][$from_table]['ctrl']['label_alt'];
 					if ($GLOBALS['TCA'][$from_table]['columns'][$labelField]['config']['items']) {
@@ -905,12 +907,12 @@ class t3lib_fullsearch {
 							$webMountPageTree .= $webMountPageTreePrefix . $this->getTreeList($val, 999, ($begin = 0), $perms_clause);
 						}
 						if ($from_table == 'pages') {
-							$where_clause = (((('uid IN (' . $webMountPageTree) . ') ') . t3lib_BEfunc::deleteClause($from_table)) . ' AND ') . $perms_clause;
+							$where_clause = (((('uid IN (' . $webMountPageTree) . ') ') . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($from_table)) . ' AND ') . $perms_clause;
 						} else {
-							$where_clause = (('pid IN (' . $webMountPageTree) . ') ') . t3lib_BEfunc::deleteClause($from_table);
+							$where_clause = (('pid IN (' . $webMountPageTree) . ') ') . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($from_table);
 						}
 					} else {
-						$where_clause = 'uid' . t3lib_BEfunc::deleteClause($from_table);
+						$where_clause = 'uid' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($from_table);
 					}
 					$orderBy = 'uid';
 					if (!$this->tableArray[$from_table]) {
@@ -926,7 +928,7 @@ class t3lib_fullsearch {
 					foreach ($this->tableArray[$from_table] as $key => $val) {
 						$GLOBALS['SOBE']->MOD_SETTINGS['labels_noprefix'] = $GLOBALS['SOBE']->MOD_SETTINGS['labels_noprefix'] == 1 ? 'on' : $GLOBALS['SOBE']->MOD_SETTINGS['labels_noprefix'];
 						$prefixString = $GLOBALS['SOBE']->MOD_SETTINGS['labels_noprefix'] == 'on' ? '' : ((' [' . $tablePrefix) . $val['uid']) . '] ';
-						if (t3lib_div::inList($fV, $tablePrefix . $val['uid']) || $fV == $tablePrefix . $val['uid']) {
+						if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($fV, $tablePrefix . $val['uid']) || $fV == $tablePrefix . $val['uid']) {
 							if ($useSelectLabels) {
 								if (!$out) {
 									$out = htmlspecialchars($prefixString . $labelFieldSelect[$val[$labelField]]);
@@ -976,7 +978,7 @@ class t3lib_fullsearch {
 		$tableHeader[] = '<thead><tr class="bgColor5">';
 		// Iterate over given columns
 		foreach ($row as $fieldName => $fieldValue) {
-			if (t3lib_div::inList($SET['queryFields'], $fieldName) || (!$SET['queryFields'] && $fieldName != 'pid') && $fieldName != 'deleted') {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($SET['queryFields'], $fieldName) || (!$SET['queryFields'] && $fieldName != 'pid') && $fieldName != 'deleted') {
 				$THparams = strlen($fieldValue) < 50 ? ' style="white-space:nowrap;"' : '';
 				if ($GLOBALS['SOBE']->MOD_SETTINGS['search_result_labels']) {
 					$title = $GLOBALS['LANG']->sL($conf['columns'][$fieldName]['label'] ? $conf['columns'][$fieldName]['label'] : $fieldName, 1);
@@ -1006,7 +1008,7 @@ class t3lib_fullsearch {
 		$out = '';
 		$SET = $GLOBALS['SOBE']->MOD_SETTINGS;
 		foreach ($row as $fN => $fV) {
-			if (t3lib_div::inList($SET['queryFields'], $fN) || !$SET['queryFields'] && $fN != 'pid') {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($SET['queryFields'], $fN) || !$SET['queryFields'] && $fN != 'pid') {
 				if (!$out) {
 					if ($GLOBALS['SOBE']->MOD_SETTINGS['search_result_labels']) {
 						$out = $GLOBALS['LANG']->sL($conf['columns'][$fN]['label'] ? $conf['columns'][$fN]['label'] : $fN, 1);
@@ -1036,5 +1038,6 @@ class t3lib_fullsearch {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @author Karsten Dambekalns <karsten@typo3.org>
  * @api
  */
-class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBackend implements t3lib_cache_backend_PhpCapableBackend, t3lib_cache_backend_FreezableBackend, t3lib_cache_backend_TaggableBackend {
+class FileBackend extends \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend implements \TYPO3\CMS\Core\Cache\Backend\PhpCapableBackendInterface, \TYPO3\CMS\Core\Cache\Backend\FreezableBackendInterface, \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	const SEPARATOR = '^';
 	const EXPIRYTIME_FORMAT = 'YmdHis';
@@ -114,10 +116,10 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 * because the Environment class to get the path to a temporary directory
 	 * does not exist in v4.
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The cache frontend
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The cache frontend
 	 * @return void
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache) {
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		parent::setCache($cache);
 		if (file_exists($this->cacheDirectory . 'FrozenCache.data')) {
 			$this->frozen = TRUE;
@@ -139,7 +141,7 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 * @return void
 	 * @throws \RuntimeException
 	 * @throws \t3lib_cache_Exception_InvalidData if the directory does not exist or is not writable or exceeds the maximum allowed path length, or if no cache frontend has been set.
-	 * @throws \t3lib_cache_Exception if the directory does not exist or is not writable or exceeds the maximum allowed path length, or if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if the directory does not exist or is not writable or exceeds the maximum allowed path length, or if no cache frontend has been set.
 	 * @throws \InvalidArgumentException
 	 * @api
 	 */
@@ -162,7 +164,7 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 		$expiryTime = $lifetime === 0 ? 0 : $GLOBALS['EXEC_TIME'] + $lifetime;
 		$metaData = (str_pad($expiryTime, self::EXPIRYTIME_LENGTH) . implode(' ', $tags)) . str_pad(strlen($data), self::DATASIZE_DIGITS);
 		$result = file_put_contents($temporaryCacheEntryPathAndFilename, $data . $metaData);
-		t3lib_div::fixPermissions($temporaryCacheEntryPathAndFilename);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($temporaryCacheEntryPathAndFilename);
 		if ($result === FALSE) {
 			throw new \t3lib_cache_exception(('The temporary cache file "' . $temporaryCacheEntryPathAndFilename) . '" could not be written.', 1204026251);
 		}
@@ -259,7 +261,7 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 		$entryIdentifiers = array();
 		$now = $GLOBALS['EXEC_TIME'];
 		$cacheEntryFileExtensionLength = strlen($this->cacheEntryFileExtension);
-		for ($directoryIterator = t3lib_div::makeInstance('DirectoryIterator', $this->cacheDirectory); $directoryIterator->valid(); $directoryIterator->next()) {
+		for ($directoryIterator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('DirectoryIterator', $this->cacheDirectory); $directoryIterator->valid(); $directoryIterator->next()) {
 			if ($directoryIterator->isDot()) {
 				continue;
 			}
@@ -288,7 +290,7 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	 * @api
 	 */
 	public function flush() {
-		t3lib_div::rmdir($this->cacheDirectory, TRUE);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::rmdir($this->cacheDirectory, TRUE);
 		$this->createFinalCacheDirectory($this->cacheDirectory);
 		if ($this->frozen === TRUE) {
 			$this->frozen = FALSE;
@@ -397,5 +399,6 @@ class t3lib_cache_backend_FileBackend extends t3lib_cache_backend_SimpleFileBack
 	}
 
 }
+
 
 ?>

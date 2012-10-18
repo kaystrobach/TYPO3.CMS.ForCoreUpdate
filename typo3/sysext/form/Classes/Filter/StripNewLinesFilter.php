@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Stripnewlines implements tx_form_System_Filter_Interface {
+class StripNewLinesFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Strip newlines
@@ -42,5 +44,6 @@ class tx_form_System_Filter_Stripnewlines implements tx_form_System_Filter_Inter
 	}
 
 }
+
 
 ?>

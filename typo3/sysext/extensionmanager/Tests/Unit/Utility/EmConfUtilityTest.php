@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Tests\Unit\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -27,7 +29,7 @@
  * @package Extension Manager
  * @subpackage Tests
  */
-class Tx_Extensionmanager_Utility_EmConfTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class EmConfUtilityTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
 	 * Data Provider for construct em conf tests
@@ -78,11 +80,12 @@ class Tx_Extensionmanager_Utility_EmConfTest extends Tx_Extbase_Tests_Unit_BaseT
 	 * @return void
 	 */
 	public function constructEmConfAddsCommentBlock(array $extensionData) {
-		$fileHandlerMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_EmConf', array('includeEmConf'));
+		$fileHandlerMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Utility\\EmConfUtility', array('includeEmConf'));
 		$emConf = $fileHandlerMock->_call('constructEmConf', $extensionData);
 		$this->assertContains('Extension Manager/Repository config file for ext', $emConf);
 	}
 
 }
+
 
 ?>

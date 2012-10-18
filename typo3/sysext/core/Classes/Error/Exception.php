@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,9 +32,10 @@
  * @package TYPO3
  * @subpackage error
  */
-class t3lib_error_Exception extends t3lib_exception {
+class Exception extends \TYPO3\CMS\Core\Exception {
 
 
 }
+
 
 ?>

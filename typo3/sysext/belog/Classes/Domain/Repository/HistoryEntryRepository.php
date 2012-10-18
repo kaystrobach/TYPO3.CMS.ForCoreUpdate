@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Repository_HistoryEntryRepository extends Tx_Extbase_Persistence_Repository {
+class HistoryEntryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
 	 * Initializes the repository.
@@ -39,12 +41,13 @@ class Tx_Belog_Domain_Repository_HistoryEntryRepository extends Tx_Extbase_Persi
 	 * @return void
 	 */
 	public function initializeObject() {
-		/** @var $querySettings Tx_Extbase_Persistence_QuerySettingsInterface */
-		$querySettings = $this->objectManager->create('Tx_Extbase_Persistence_QuerySettingsInterface');
+		/** @var $querySettings \TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface */
+		$querySettings = $this->objectManager->create('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\QuerySettingsInterface');
 		$querySettings->setRespectStoragePage(FALSE);
 		$this->setDefaultQuerySettings($querySettings);
 	}
 
 }
+
 
 ?>

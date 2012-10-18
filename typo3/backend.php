@@ -31,9 +31,9 @@ $GLOBALS['LANG']->includeLLFile('EXT:lang/locallang_misc.xml');
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/BackendController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/BackendController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/BackendController.php';
 // Document generation
-$TYPO3backend = t3lib_div::makeInstance('TYPO3backend');
+$TYPO3backend = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\BackendController');
 // Include extensions which may add css, javascript or toolbar items
 if (is_array($GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'])) {
 	foreach ($GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'] as $additionalBackendItem) {
@@ -45,20 +45,20 @@ if (is_array($GLOBALS['TBE_MODULES']['_configuration'])) {
 	foreach ($GLOBALS['TBE_MODULES']['_configuration'] as $moduleConfig) {
 		if (is_array($moduleConfig['cssFiles'])) {
 			foreach ($moduleConfig['cssFiles'] as $cssFileName => $cssFile) {
-				$files = array(t3lib_div::getFileAbsFileName($cssFile));
-				$files = t3lib_div::removePrefixPathFromList($files, PATH_site);
+				$files = array(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($cssFile));
+				$files = \TYPO3\CMS\Core\Utility\GeneralUtility::removePrefixPathFromList($files, PATH_site);
 				$TYPO3backend->addCssFile($cssFileName, '../' . $files[0]);
 			}
 		}
 		if (is_array($moduleConfig['jsFiles'])) {
 			foreach ($moduleConfig['jsFiles'] as $jsFile) {
-				$files = array(t3lib_div::getFileAbsFileName($jsFile));
-				$files = t3lib_div::removePrefixPathFromList($files, PATH_site);
+				$files = array(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($jsFile));
+				$files = \TYPO3\CMS\Core\Utility\GeneralUtility::removePrefixPathFromList($files, PATH_site);
 				$TYPO3backend->addJavascriptFile('../' . $files[0]);
 			}
 		}
 	}
 }
 $TYPO3backend->render();
-Typo3_Bootstrap::getInstance()->shutdown();
+\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->shutdown();
 ?>

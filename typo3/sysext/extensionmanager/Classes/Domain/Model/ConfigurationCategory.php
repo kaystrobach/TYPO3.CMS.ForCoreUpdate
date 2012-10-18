@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package Extension Manager
  * @subpackage Model
  */
-class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_DomainObject_AbstractEntity {
+class ConfigurationCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string
@@ -51,11 +53,11 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 	 * Constructs this Category
 	 */
 	public function __construct() {
-		$this->subcategories = new Tx_Extbase_Persistence_ObjectStorage();
+		$this->subcategories = new \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage();
 	}
 
 	/**
-	 * @param \Tx_Extbase_Persistence_ObjectStorage $subcategories
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage $subcategories
 	 * @return void
 	 */
 	public function setSubcategories($subcategories) {
@@ -63,7 +65,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 	}
 
 	/**
-	 * @return \Tx_Extbase_Persistence_ObjectStorage
+	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage
 	 */
 	public function getSubcategories() {
 		return $this->subcategories;
@@ -72,10 +74,10 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 	/**
 	 * Adds a subcategories
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory $subcategory
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationSubcategory $subcategory
 	 * @return void
 	 */
-	public function addSubcategory(Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory $subcategory) {
+	public function addSubcategory(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationSubcategory $subcategory) {
 		$this->subcategories->attach($subcategory);
 	}
 
@@ -110,5 +112,6 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationCategory extends Tx_Extbase_
 	}
 
 }
+
 
 ?>

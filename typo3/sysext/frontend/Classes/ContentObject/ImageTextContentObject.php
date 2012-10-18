@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_ImageText extends tslib_content_Abstract {
+class ImageTextContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, IMAGE
@@ -48,13 +50,13 @@ class tslib_content_ImageText extends tslib_content_Abstract {
 		}
 		$imgList = isset($conf['imgList.']) ? trim($this->cObj->stdWrap($conf['imgList'], $conf['imgList.'])) : trim($conf['imgList']);
 		if ($imgList) {
-			$imgs = t3lib_div::trimExplode(',', $imgList);
+			$imgs = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $imgList);
 			$imgStart = isset($conf['imgStart.']) ? intval($this->cObj->stdWrap($conf['imgStart'], $conf['imgStart.'])) : intval($conf['imgStart']);
 			$imgCount = count($imgs) - $imgStart;
 			$imgMax = isset($conf['imgMax.']) ? intval($this->cObj->stdWrap($conf['imgMax'], $conf['imgMax.'])) : intval($conf['imgMax']);
 			if ($imgMax) {
 				// Reduces the number of images.
-				$imgCount = t3lib_utility_Math::forceIntegerInRange($imgCount, 0, $imgMax);
+				$imgCount = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($imgCount, 0, $imgMax);
 			}
 			$imgPath = isset($conf['imgPath.']) ? $this->cObj->stdWrap($conf['imgPath'], $conf['imgPath.']) : $conf['imgPath'];
 			// initialisation
@@ -166,7 +168,7 @@ class tslib_content_ImageText extends tslib_content_Abstract {
 			$equalHeight = isset($conf['equalH.']) ? intval($this->cObj->stdWrap($conf['equalH'], $conf['equalH.'])) : intval($conf['equalH']);
 			// Initiate gifbuilder object in order to get dimensions AND calculate the imageWidth's
 			if ($equalHeight) {
-				$gifCreator = t3lib_div::makeInstance('tslib_gifbuilder');
+				$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tslib_gifbuilder');
 				$gifCreator->init();
 				$relations = array();
 				$relations_cols = array();
@@ -481,5 +483,6 @@ class tslib_content_ImageText extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

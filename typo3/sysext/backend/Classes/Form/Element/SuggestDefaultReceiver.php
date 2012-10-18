@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @author Andreas Wolf <andreas.wolf@ikt-werk.de>
  * @author Benjamin Mack <benni@typo3.org>
  */
-class t3lib_TCEforms_Suggest_DefaultReceiver {
+class SuggestDefaultReceiver {
 
 	/**
 	 * The name of the table to query
@@ -110,11 +112,11 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 		$this->config = $config;
 		// get a list of all the pages that should be looked on
 		if (isset($config['pidList'])) {
-			$allowedPages = ($pageIds = t3lib_div::trimExplode(',', $config['pidList']));
+			$allowedPages = ($pageIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $config['pidList']));
 			$depth = intval($config['pidDepth']);
 			foreach ($pageIds as $pageId) {
 				if ($pageId > 0) {
-					$allowedPages = t3lib_div::array_merge_recursive_overrule($allowedPages, $this->getAllSubpagesOfPage($pageId, $depth));
+					$allowedPages = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($allowedPages, $this->getAllSubpagesOfPage($pageId, $depth));
 				}
 			}
 			$this->allowedPages = array_unique($allowedPages);
@@ -214,7 +216,7 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 			$likeCondition = ((' LIKE \'' . ($searchWholePhrase ? '%' : '')) . $GLOBALS['TYPO3_DB']->escapeStrForLike($searchString, $this->table)) . '%\'';
 			// Search in all fields given by label or label_alt
 			$selectFieldsList = ((($GLOBALS['TCA'][$this->table]['ctrl']['label'] . ',') . $GLOBALS['TCA'][$this->table]['ctrl']['label_alt']) . ',') . $this->config['additionalSearchFields'];
-			$selectFields = t3lib_div::trimExplode(',', $selectFieldsList, TRUE);
+			$selectFields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $selectFieldsList, TRUE);
 			$selectFields = array_unique($selectFields);
 			$selectParts = array();
 			foreach ($selectFields as $field) {
@@ -300,13 +302,13 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 		$retValue = TRUE;
 		$table = $this->mmForeignTable ? $this->mmForeignTable : $this->table;
 		if ($table == 'pages') {
-			if (!t3lib_BEfunc::readPageAccess($uid, $GLOBALS['BE_USER']->getPagePermsClause(1))) {
+			if (!\TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($uid, $GLOBALS['BE_USER']->getPagePermsClause(1))) {
 				$retValue = FALSE;
 			}
 		} elseif (isset($GLOBALS['TCA'][$table]['ctrl']['is_static']) && (bool) $GLOBALS['TCA'][$table]['ctrl']['is_static']) {
 			$retValue = TRUE;
 		} else {
-			if (!is_array(t3lib_BEfunc::readPageAccess($row['pid'], $GLOBALS['BE_USER']->getPagePermsClause(1)))) {
+			if (!is_array(\TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($row['pid'], $GLOBALS['BE_USER']->getPagePermsClause(1)))) {
 				$retValue = FALSE;
 			}
 		}
@@ -322,7 +324,7 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	protected function makeWorkspaceOverlay(&$row) {
 		// Check for workspace-versions
 		if ($GLOBALS['BE_USER']->workspace != 0 && $GLOBALS['TCA'][$this->table]['ctrl']['versioningWS'] == TRUE) {
-			t3lib_BEfunc::workspaceOL($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row);
+			\TYPO3\CMS\Backend\Utility\BackendUtility::workspaceOL($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row);
 		}
 	}
 
@@ -333,8 +335,8 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @return string The path to the icon
 	 */
 	protected function getIcon($row) {
-		$icon = t3lib_iconWorks::getIcon($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row);
-		return t3lib_iconWorks::skinImg('', $icon, '', 1);
+		$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getIcon($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row);
+		return \TYPO3\CMS\Backend\Utility\IconUtility::skinImg('', $icon, '', 1);
 	}
 
 	/**
@@ -350,12 +352,12 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	protected function getRecordPath(&$row, $uid) {
 		$titleLimit = max($this->config['maxPathTitleLength'], 0);
 		if (($this->mmForeignTable ? $this->mmForeignTable : $this->table) == 'pages') {
-			$path = t3lib_BEfunc::getRecordPath($uid, '', $titleLimit);
+			$path = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordPath($uid, '', $titleLimit);
 			// For pages we only want the first (n-1) parts of the path,
 			// because the n-th part is the page itself
 			$path = substr($path, 0, strrpos($path, '/', -2)) . '/';
 		} else {
-			$path = t3lib_BEfunc::getRecordPath($row['pid'], '', $titleLimit);
+			$path = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordPath($row['pid'], '', $titleLimit);
 		}
 		return $path;
 	}
@@ -367,7 +369,7 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 	 * @return string The label
 	 */
 	protected function getLabel($row) {
-		return t3lib_BEfunc::getRecordTitle($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row, TRUE);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($this->mmForeignTable ? $this->mmForeignTable : $this->table, $row, TRUE);
 	}
 
 	/**
@@ -388,11 +390,12 @@ class t3lib_TCEforms_Suggest_DefaultReceiver {
 				'row' => $row,
 				'entry' => &$entry
 			);
-			t3lib_div::callUserFunction($this->config['renderFunc'], $params, $this, '');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($this->config['renderFunc'], $params, $this, '');
 		}
 		return $entry;
 	}
 
 }
+
 
 ?>

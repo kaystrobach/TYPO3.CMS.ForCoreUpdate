@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,25 +33,25 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_contextmenu_AbstractContextMenu {
+abstract class AbstractContextMenu {
 
 	/**
 	 * Data Provider
 	 *
-	 * @var t3lib_contextmenu_AbstractDataProvider
+	 * @var \TYPO3\CMS\Backend\ContextMenu\AbstractContextMenuDataProvider
 	 */
 	protected $dataProvider = NULL;
 
 	/**
-	 * @param t3lib_contextmenu_AbstractDataProvider $dataProvider
+	 * @param \TYPO3\CMS\Backend\ContextMenu\AbstractContextMenuDataProvider $dataProvider
 	 * @return void
 	 */
-	public function setDataProvider(t3lib_contextmenu_AbstractDataProvider $dataProvider) {
+	public function setDataProvider(\TYPO3\CMS\Backend\ContextMenu\AbstractContextMenuDataProvider $dataProvider) {
 		$this->dataProvider = $dataProvider;
 	}
 
 	/**
-	 * @return t3lib_contextmenu_AbstractDataProvider
+	 * @return \TYPO3\CMS\Backend\ContextMenu\AbstractContextMenuDataProvider
 	 */
 	public function getDataProvider() {
 		return $this->dataProvider;
@@ -58,11 +60,12 @@ abstract class t3lib_contextmenu_AbstractContextMenu {
 	/**
 	 * Returns the actions for the given node information
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @return array
 	 */
-	abstract public function getActionsForNode(t3lib_tree_Node $node);
+	abstract public function getActionsForNode(\TYPO3\CMS\Backend\Tree\TreeNode $node);
 
 }
+
 
 ?>

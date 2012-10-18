@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_Abstract implements tx_form_System_Validate_Interface {
+class FileAllowedTypesValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator implements \TYPO3\CMS\Form\Validation\InterfaceValidator {
 
 	/**
 	 * The allowed types
@@ -74,7 +76,7 @@ class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_A
 	 */
 	public function setAllowedTypes($allowedTypes) {
 		$allowedTypes = strtolower($allowedTypes);
-		$this->allowedTypes = t3lib_div::trimExplode(', ', $allowedTypes);
+		$this->allowedTypes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(', ', $allowedTypes);
 		return $this;
 	}
 
@@ -91,5 +93,6 @@ class tx_form_System_Validate_Fileallowedtypes extends tx_form_System_Validate_A
 	}
 
 }
+
 
 ?>

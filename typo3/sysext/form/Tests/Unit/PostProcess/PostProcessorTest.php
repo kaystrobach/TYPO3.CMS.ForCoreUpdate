@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Tests\Unit\PostProcess;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class PostProcessorTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
 	 * @var PHPUnit_Framework_MockObject_MockObject
@@ -52,7 +54,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 	public $classNameWithoutInterface;
 
 	/**
-	 * @var tx_form_Domain_Model_Form
+	 * @var \TYPO3\CMS\Form\Domain\Model\Form
 	 */
 	public $form;
 
@@ -60,26 +62,26 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 	 * set up
 	 */
 	public function setUp() {
-		$this->form = new tx_form_Domain_Model_Form();
-		$this->postprocessor = $this->getMock('tx_form_System_Postprocessor', array('sortTypoScriptKeyList'), array(
+		$this->form = new \TYPO3\CMS\Form\Domain\Model\Form();
+		$this->postprocessor = $this->getMock('TYPO3\\CMS\\Form\\PostProcess\\PostProcessor', array('sortTypoScriptKeyList'), array(
 			$this->form,
 			array()
 		));
 		$this->classNameWithoutPrefix = uniqid('postprocess');
 		$this->classNameWithPrefix = uniqid('postprocess');
 		$this->classNameWithoutInterface = uniqid('postprocess');
-		eval(((((((('class ' . $this->classNameWithoutPrefix) . ' implements tx_form_System_Postprocessor_Interface {
+		eval(((((((('class ' . $this->classNameWithoutPrefix) . ' implements TYPO3\\CMS\\Form\\PostProcess\\PostProcessor_Interface {
 
-				public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
+				public function __construct(TYPO3\\CMS\\Form\\Domain\\Model\\Form $form, array $typoScript) {
 
 				}
 
 				public function process() {
 					return \'processedWithoutPrefix\';
 				}
-			}') . 'class tx_form_System_Postprocessor_') . $this->classNameWithPrefix) . ' implements tx_form_System_Postprocessor_Interface {
+			}') . 'class TYPO3\\CMS\\Form\\PostProcess\\PostProcessor_') . $this->classNameWithPrefix) . ' implements TYPO3\\CMS\\Form\\PostProcess\\PostProcessor_Interface {
 
-				public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
+				public function __construct(TYPO3\\CMS\\Form\\Domain\\Model\\Form $form, array $typoScript) {
 
 				}
 
@@ -88,7 +90,7 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 				}
 			}') . 'class ') . $this->classNameWithoutInterface) . '{
 
-				public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
+				public function __construct(TYPO3\\CMS\\Form\\Domain\\Model\\Form $form, array $typoScript) {
 
 				}
 
@@ -141,5 +143,6 @@ class tx_form_System_Postprocessor_PostprocessorTest extends Tx_Extbase_Tests_Un
 	}
 
 }
+
 
 ?>

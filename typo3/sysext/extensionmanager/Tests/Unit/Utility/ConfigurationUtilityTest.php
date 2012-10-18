@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Tests\Unit\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -27,7 +29,7 @@
  * @package Extension Manager
  * @subpackage Tests
  */
-class Tx_Extensionmanager_Utility_ConfigurationTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class ConfigurationUtilityTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
 	 * @param array $configuration
@@ -36,8 +38,8 @@ class Tx_Extensionmanager_Utility_ConfigurationTest extends Tx_Extbase_Tests_Uni
 	 * @test
 	 */
 	public function convertValuedToNestedConfiguration(array $configuration, array $expected) {
-		/** @var $fixture Tx_Extensionmanager_Utility_Configuration */
-		$fixture = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
+		/** @var $fixture \TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility */
+		$fixture = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Utility\\ConfigurationUtility');
 		$this->assertEquals($expected, $fixture->convertValuedToNestedConfiguration($configuration));
 	}
 
@@ -126,5 +128,6 @@ class Tx_Extensionmanager_Utility_ConfigurationTest extends Tx_Extbase_Tests_Uni
 	}
 
 }
+
 
 ?>

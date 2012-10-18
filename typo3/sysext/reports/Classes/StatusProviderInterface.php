@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage tx_reports
  */
-interface tx_reports_StatusProvider
+interface StatusProviderInterface
 {
 	/**
 	 * Returns the staus of an extension or (sub)system
@@ -41,4 +43,5 @@ interface tx_reports_StatusProvider
 	public function getStatus();
 
 }
+
 ?>

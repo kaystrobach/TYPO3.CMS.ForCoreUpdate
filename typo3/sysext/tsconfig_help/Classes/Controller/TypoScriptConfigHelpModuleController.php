@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\TsconfigHelp\Controller;
+
 /**
  * Module 'TypoScript Help' for the 'tsconfig_help' extension.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tx_tsconfighelp
  */
-class tx_tsconfighelp_module1 extends t3lib_SCbase {
+class TypoScriptConfigHelpModuleController extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 	/**
 	 * @todo Define visibility
@@ -53,7 +55,7 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 		// Access check!
 		$access = $GLOBALS['BE_USER']->check('modules', 'help_txtsconfighelpM1');
 		// Draw the header.
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/tsconfig_help.html');
 		if ($access || $GLOBALS['BE_USER']->user['admin']) {
@@ -77,7 +79,7 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 			// Render content:
 			$this->moduleContent();
 			$this->content .= $this->doc->spacer(10);
-			$markers['FUNC_MENU'] = t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
+			$markers['FUNC_MENU'] = \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
 		} else {
 			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
 			$markers['FUNC_MENU'] = '';
@@ -133,13 +135,13 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 			$content = ('<div align="left"><strong>' . $GLOBALS['LANG']->getLL('referenceExplanation')) . '</strong></div>';
 			$content .= ('<p>' . $GLOBALS['LANG']->getLL('referenceExplanationDetailed')) . '</p><br />';
 			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('displayReferences'), $content, 0, 1);
-			$this->content .= ((('<a href="#" onclick="vHWin=window.open(\'' . $GLOBALS['BACK_PATH']) . 'wizard_tsconfig.php?mode=tsref&amp;P[formName]=editForm\',\'popUp\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;" title="TSref reference">') . t3lib_iconWorks::getSpriteIcon('actions-system-typoscript-documentation-open')) . 'TSREF</a><br />';
-			$this->content .= ((('<a href="#" onclick="vHWin=window.open(\'' . $GLOBALS['BACK_PATH']) . 'wizard_tsconfig.php?mode=beuser&amp;P[formName]=editForm\',\'popUp\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;" title="TSref reference">') . t3lib_iconWorks::getSpriteIcon('actions-system-typoscript-documentation-open')) . 'USER TSCONFIG</a><br />';
-			$this->content .= ((('<a href="#" onclick="vHWin=window.open(\'' . $GLOBALS['BACK_PATH']) . 'wizard_tsconfig.php?mode=page&amp;P[formName]=editForm\',\'popUp\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;" title="TSref reference">') . t3lib_iconWorks::getSpriteIcon('actions-system-typoscript-documentation-open')) . 'PAGE TSCONFIG</a><br />';
+			$this->content .= ((('<a href="#" onclick="vHWin=window.open(\'' . $GLOBALS['BACK_PATH']) . 'wizard_tsconfig.php?mode=tsref&amp;P[formName]=editForm\',\'popUp\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;" title="TSref reference">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-typoscript-documentation-open')) . 'TSREF</a><br />';
+			$this->content .= ((('<a href="#" onclick="vHWin=window.open(\'' . $GLOBALS['BACK_PATH']) . 'wizard_tsconfig.php?mode=beuser&amp;P[formName]=editForm\',\'popUp\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;" title="TSref reference">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-typoscript-documentation-open')) . 'USER TSCONFIG</a><br />';
+			$this->content .= ((('<a href="#" onclick="vHWin=window.open(\'' . $GLOBALS['BACK_PATH']) . 'wizard_tsconfig.php?mode=page&amp;P[formName]=editForm\',\'popUp\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;" title="TSref reference">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-typoscript-documentation-open')) . 'PAGE TSCONFIG</a><br />';
 			break;
 		case 2:
 			if ($GLOBALS['BE_USER']->user['admin']) {
-				if (t3lib_div::_GP('_rebuild')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('_rebuild')) {
 					// remove all data from the database
 					$this->purgeSQLContents();
 					// get all loaded extension keys
@@ -148,9 +150,9 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 					// parse the extension names only (no need for all details from the TYPO3_LOADED_EXT table
 					foreach ($extArray as $extName => $dummy) {
 						// check that the extension is really loaded (which should always be the case)
-						if (t3lib_extMgm::isLoaded($extName)) {
+						if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($extName)) {
 							// extract the content.xml from the manual.sxw ZIP file
-							$manual = $this->getZIPFileContents(t3lib_extMgm::extPath($extName) . 'doc/manual.sxw', 'content.xml');
+							$manual = $this->getZIPFileContents(\TYPO3\CMS\Core\Extension\ExtensionManager::extPath($extName) . 'doc/manual.sxw', 'content.xml');
 							// check if the manual file actually exists and if the content.xml could be loaded
 							if ($manual != '') {
 								// if the manual file exists, proceed with the load into the SQL database
@@ -158,7 +160,7 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 								// run the extraction processing and import the data into SQL. Return the number of TS tables found in the open office document
 								$number = $this->loadExtensionManual($extName, $manual);
 								// print a status message with a link to the openoffice manual
-								$content .= (((((($number . ' ') . $GLOBALS['LANG']->getLL('sections')) . ' (<a href="') . t3lib_div::getIndpEnv('TYPO3_SITE_URL')) . TYPO3_mainDir) . t3lib_extMgm::extRelPath($extName)) . 'doc/manual.sxw">manual</a>)</p>';
+								$content .= (((((($number . ' ') . $GLOBALS['LANG']->getLL('sections')) . ' (<a href="') . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL')) . TYPO3_mainDir) . \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($extName)) . 'doc/manual.sxw">manual</a>)</p>';
 							}
 						} else {
 							// This should never happen!
@@ -216,11 +218,11 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 		if (file_exists($ZIPfile)) {
 			// Unzipping SXW file, getting filelist:
 			$tempPath = PATH_site . 'typo3temp/tx_tsconfighelp_ziptemp/';
-			t3lib_div::mkdir($tempPath);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($tempPath);
 			$this->unzip($ZIPfile, $tempPath);
-			$output = t3lib_div::getUrl($tempPath . $filename);
+			$output = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($tempPath . $filename);
 			$cmd = ('rm -r "' . $tempPath) . '"';
-			t3lib_utility_Command::exec($cmd);
+			\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd);
 			return $output;
 		}
 	}
@@ -237,11 +239,11 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 	public function unzip($file, $path) {
 		// We use the unzip class of the Extension Manager here
 		// TODO: move unzip class to core
-		if (!t3lib_extMgm::isLoaded('em')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('em')) {
 			// Em is not loaded, so include the unzip class
-			t3lib_div::requireOnce(PATH_typo3 . 'sysext/em/classes/tools/class.tx_em_tools_unzip.php');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::requireOnce(PATH_typo3 . 'sysext/em/classes/tools/class.tx_em_tools_unzip.php');
 		}
-		$unzip = t3lib_div::makeInstance('tx_em_Tools_Unzip', $file);
+		$unzip = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_em_Tools_Unzip', $file);
 		$ret = $unzip->extract(array('add_path' => $path));
 		return is_array($ret);
 	}
@@ -726,5 +728,6 @@ class tx_tsconfighelp_module1 extends t3lib_SCbase {
 	}
 
 }
+
 
 ?>

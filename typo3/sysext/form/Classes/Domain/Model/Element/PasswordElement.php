@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Password extends tx_form_Domain_Model_Element_Abstract {
+class PasswordElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -69,7 +71,7 @@ class tx_form_Domain_Model_Element_Password extends tx_form_Domain_Model_Element
 	 * filter the submitted data and add this to the right
 	 * datapart of the element
 	 *
-	 * @return tx_form_Domain_Model_Element_Password
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\PasswordElement
 	 * @see tx_form_Domain_Model_Element::checkFilterAndSetIncomingDataFromRequest()
 	 */
 	public function checkFilterAndSetIncomingDataFromRequest() {
@@ -82,5 +84,6 @@ class tx_form_Domain_Model_Element_Password extends tx_form_Domain_Model_Element
 	}
 
 }
+
 
 ?>

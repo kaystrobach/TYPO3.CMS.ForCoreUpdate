@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Filelist;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @subpackage core
  * @see class t3lib_browseTree
  */
-class filelistFolderTree extends t3lib_folderTree {
+class FileListFolderTree extends \TYPO3\CMS\Backend\Tree\View\FolderTreeView {
 
 	/**
 	 * @todo Define visibility
@@ -44,11 +46,11 @@ class filelistFolderTree extends t3lib_folderTree {
 	 * Wrapping icon in browse tree
 	 *
 	 * @param string $theFolderIcon Icon IMG code
-	 * @param t3lib_file_Folder $folderObject the folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject the folder object
 	 * @return string folder icon
 	 * @todo Define visibility
 	 */
-	public function wrapIcon($theFolderIcon, t3lib_file_Folder $folderObject) {
+	public function wrapIcon($theFolderIcon, \TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		$theFolderIcon = parent::wrapIcon($theFolderIcon, $folderObject);
 		// Wrap icon in a drag/drop span.
 		return ((('<span class="dragIcon" id="dragIconID_' . $this->getJumpToParam($folderObject)) . '">') . $theFolderIcon) . '</span>';
@@ -58,18 +60,19 @@ class filelistFolderTree extends t3lib_folderTree {
 	 * Wrapping $title in a-tags.
 	 *
 	 * @param string $title Title string
-	 * @param t3lib_file_Folder $folderObject Folder to work on
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject Folder to work on
 	 * @param integer $bank Bank pointer (which mount point number)
 	 * @return string
 	 * @access private
 	 * @todo Define visibility
 	 */
-	public function wrapTitle($title, t3lib_file_Folder $folderObject, $bank = 0) {
+	public function wrapTitle($title, \TYPO3\CMS\Core\Resource\Folder $folderObject, $bank = 0) {
 		$theFolderTitle = parent::wrapTitle($title, $folderObject, $bank);
 		// Wrap title in a drag/drop span.
 		return ((('<span class="dragTitle" id="dragTitleID_' . $this->getJumpToParam($folderObject)) . '">') . $theFolderTitle) . '</span>';
 	}
 
 }
+
 
 ?>

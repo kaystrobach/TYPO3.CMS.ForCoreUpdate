@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib_error
  */
-class t3lib_error_DebugExceptionHandler extends t3lib_error_AbstractExceptionHandler {
+class DebugExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHandler {
 
 	/**
 	 * Constructs this exception handler - registers itself as the default exception handler.
@@ -50,7 +52,7 @@ class t3lib_error_DebugExceptionHandler extends t3lib_error_AbstractExceptionHan
 	 * @return void
 	 * @author Robert Lemke <robert@typo3.org>
 	 */
-	public function echoExceptionWeb(Exception $exception) {
+	public function echoExceptionWeb(\Exception $exception) {
 		$this->sendStatusHeaders($exception);
 		$filePathAndName = $exception->getFile();
 		$exceptionCodeNumber = $exception->getCode() > 0 ? ('#' . $exception->getCode()) . ': ' : '';
@@ -64,7 +66,7 @@ class t3lib_error_DebugExceptionHandler extends t3lib_error_AbstractExceptionHan
      PUBLIC "-//W3C//DTD XHTML 1.1//EN"
      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">';
 		// Get the browser info
-		$browserInfo = t3lib_utility_Client::getBrowserInfo(t3lib_div::getIndpEnv('HTTP_USER_AGENT'));
+		$browserInfo = \TYPO3\CMS\Core\Utility\ClientUtility::getBrowserInfo(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_USER_AGENT'));
 		// Put the XML prologue before or after the doctype declaration according to browser
 		if ($browserInfo['browser'] === 'msie' && $browserInfo['version'] < 7) {
 			$headerStart = ($docType . LF) . $xmlPrologue;
@@ -124,7 +126,7 @@ class t3lib_error_DebugExceptionHandler extends t3lib_error_AbstractExceptionHan
 	 * @return void
 	 * @author Robert Lemke <robert@typo3.org>
 	 */
-	public function echoExceptionCLI(Exception $exception) {
+	public function echoExceptionCLI(\Exception $exception) {
 		$filePathAndName = $exception->getFile();
 		$exceptionCodeNumber = $exception->getCode() > 0 ? ('#' . $exception->getCode()) . ': ' : '';
 		$this->writeLogEntries($exception, self::CONTEXT_CLI);
@@ -213,5 +215,6 @@ Uncaught TYPO3 Exception ' . $exceptionCodeNumber) . $exception->getMessage()) .
 	}
 
 }
+
 
 ?>

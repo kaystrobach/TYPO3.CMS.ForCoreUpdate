@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_microdataschema extends tx_rtehtmlarea_api {
+class MicroDataSchema extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	// The key of the TYPO3 extension that is extending htmlArea RTE
 	protected $extensionKey = 'rtehtmlarea';
@@ -74,12 +76,12 @@ class tx_rtehtmlarea_microdataschema extends tx_rtehtmlarea_api {
 		if (is_array($this->thisConfig['schema.']) && is_array($this->thisConfig['schema.']['sources.'])) {
 			foreach ($this->thisConfig['schema.']['sources.'] as $source) {
 				$fileName = $this->htmlAreaRTE->getFullFileName($source);
-				$absolutePath = $fileName ? t3lib_div::resolveBackPath((PATH_site . ($this->htmlAreaRTE->is_FE() || $this->htmlAreaRTE->isFrontendEditActive() ? '' : TYPO3_mainDir)) . $fileName) : '';
+				$absolutePath = $fileName ? \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath((PATH_site . ($this->htmlAreaRTE->is_FE() || $this->htmlAreaRTE->isFrontendEditActive() ? '' : TYPO3_mainDir)) . $fileName) : '';
 				// Fallback to default schema file if configured file does not exists or is of zero size
 				if ((!$fileName || !file_exists($absolutePath)) || !filesize($absolutePath)) {
 					$fileName = $this->htmlAreaRTE->getFullFileName(('EXT:' . $this->ID) . '/extensions/MicrodataSchema/res/schemaOrgAll.rdf');
 				}
-				$rdf = t3lib_div::getUrl($fileName);
+				$rdf = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($fileName);
 				if ($rdf) {
 					$this->parseSchema($rdf, $schema);
 				}
@@ -129,7 +131,7 @@ class tx_rtehtmlarea_microdataschema extends tx_rtehtmlarea_api {
 		$types = array();
 		$properties = array();
 		// Load the document
-		$document = new DOMDocument();
+		$document = new \DOMDocument();
 		$document->loadXML($string);
 		if ($document) {
 			// Scan resource descriptions
@@ -216,5 +218,6 @@ class tx_rtehtmlarea_microdataschema extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

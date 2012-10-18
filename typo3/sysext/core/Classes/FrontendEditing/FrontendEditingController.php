@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FrontendEditing;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_frontendedit {
+class FrontendEditingController {
 
 	/**
 	 * GET/POST parameters for the FE editing.
@@ -56,7 +58,7 @@ class t3lib_frontendedit {
 	 * @return void
 	 */
 	public function initConfigOptions() {
-		$this->TSFE_EDIT = t3lib_div::_GP('TSFE_EDIT');
+		$this->TSFE_EDIT = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('TSFE_EDIT');
 		// Include classes for editing IF editing module in Admin Panel is open
 		if ($GLOBALS['BE_USER']->isFrontendEditingActive()) {
 			$GLOBALS['TSFE']->includeTCA();
@@ -105,7 +107,7 @@ class t3lib_frontendedit {
 		if ((($GLOBALS['TSFE']->displayEditIcons && $table) && $this->allowedToEdit($table, $dataArray, $conf, $checkEditAccessInternals)) && $this->allowedToEditLanguage($table, $dataArray)) {
 			$editClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/classes/class.frontendedit.php']['edit'];
 			if ($editClass) {
-				$edit = t3lib_div::getUserObj($editClass, FALSE);
+				$edit = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($editClass, FALSE);
 				if (is_object($edit)) {
 					$allowedActions = $this->getAllowedEditActions($table, $conf, $dataArray['pid']);
 					$content = $edit->editPanel($content, $conf, $currentRecord, $dataArray, $table, $allowedActions, $newUid, $this->getHiddenFields($dataArray));
@@ -130,7 +132,7 @@ class t3lib_frontendedit {
 	public function displayEditIcons($content, $params, array $conf = array(), $currentRecord = '', array $dataArray = array(), $addUrlParamStr = '') {
 		// Check incoming params:
 		list($currentRecordTable, $currentRecordUID) = explode(':', $currentRecord);
-		list($fieldList, $table) = array_reverse(t3lib_div::trimExplode(':', $params, 1));
+		list($fieldList, $table) = array_reverse(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $params, 1));
 		// Reverse the array because table is optional
 		if (!$table) {
 			$table = $currentRecordTable;
@@ -146,7 +148,7 @@ class t3lib_frontendedit {
 		if (((($GLOBALS['TSFE']->displayFieldEditIcons && $table) && $this->allowedToEdit($table, $dataArray, $conf)) && $fieldList) && $this->allowedToEditLanguage($table, $dataArray)) {
 			$editClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/classes/class.frontendedit.php']['edit'];
 			if ($editClass) {
-				$edit = t3lib_div::getUserObj($editClass);
+				$edit = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($editClass);
 				if (is_object($edit)) {
 					$content = $edit->editIcons($content, $params, $conf, $currentRecord, $dataArray, $addUrlParamStr, $table, $editUid, $fieldList);
 				}
@@ -219,7 +221,7 @@ class t3lib_frontendedit {
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tsfebeuserauth.php']['extEditAction'])) {
 				$_params = array();
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tsfebeuserauth.php']['extEditAction'] as $_funcRef) {
-					t3lib_div::callUserFunction($_funcRef, $_params, $this);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 			// Perform the requested editing command.
@@ -227,7 +229,7 @@ class t3lib_frontendedit {
 			if (is_callable(array($this, $cmdAction))) {
 				$this->{$cmdAction}($table, $uid);
 			} else {
-				throw new UnexpectedValueException(('The specified frontend edit command (' . $cmd) . ') is not valid.', 1225818120);
+				throw new \UnexpectedValueException(('The specified frontend edit command (' . $cmd) . ') is not valid.', 1225818120);
 			}
 		}
 	}
@@ -316,16 +318,16 @@ class t3lib_frontendedit {
 		$sortField = $GLOBALS['TCA'][$table]['ctrl']['sortby'];
 		if ($sortField) {
 			// Get self
-			$fields = array_unique(t3lib_div::trimExplode(',', ($GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'] . ',uid,pid,') . $sortField, TRUE));
+			$fields = array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', ($GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'] . ',uid,pid,') . $sortField, TRUE));
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(implode(',', $fields), $table, 'uid=' . $uid);
 			if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				// Record before or after
-				if ($GLOBALS['BE_USER']->adminPanel instanceof tslib_AdminPanel && $GLOBALS['BE_USER']->adminPanel->extGetFeAdminValue('preview')) {
+				if ($GLOBALS['BE_USER']->adminPanel instanceof \TYPO3\CMS\Frontend\View\AdminPanelView && $GLOBALS['BE_USER']->adminPanel->extGetFeAdminValue('preview')) {
 					$ignore = array('starttime' => 1, 'endtime' => 1, 'disabled' => 1, 'fe_group' => 1);
 				}
 				$copyAfterFieldsQuery = '';
 				if ($GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields']) {
-					$cAFields = t3lib_div::trimExplode(',', $GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'], TRUE);
+					$cAFields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['ctrl']['copyAfterDuplFields'], TRUE);
 					foreach ($cAFields as $fieldName) {
 						$copyAfterFieldsQuery .= (((' AND ' . $fieldName) . '="') . $row[$fieldName]) . '"';
 					}
@@ -481,13 +483,13 @@ class t3lib_frontendedit {
 				}
 			} else {
 				// 16 = permission to edit content on the page
-				if ($GLOBALS['BE_USER']->isAdmin() || $GLOBALS['BE_USER']->doesUserHaveAccess(t3lib_BEfunc::getRecord('pages', $dataArray['pid']), 16)) {
+				if ($GLOBALS['BE_USER']->isAdmin() || $GLOBALS['BE_USER']->doesUserHaveAccess(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $dataArray['pid']), 16)) {
 					$mayEdit = TRUE;
 				}
 			}
 			if (!$conf['onlyCurrentPid'] || $dataArray['pid'] == $GLOBALS['TSFE']->id) {
 				// Permissions:
-				$types = t3lib_div::trimExplode(',', t3lib_div::strtolower($conf['allow']), 1);
+				$types = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($conf['allow']), 1);
 				$allow = array_flip($types);
 				$perms = $GLOBALS['BE_USER']->calcPerms($GLOBALS['TSFE']->page);
 				if ($table == 'pages') {
@@ -515,12 +517,12 @@ class t3lib_frontendedit {
 	 */
 	protected function getAllowedEditActions($table, array $conf, $pid, $allow = '') {
 		if (!$allow) {
-			$types = t3lib_div::trimExplode(',', t3lib_div::strtolower($conf['allow']), TRUE);
+			$types = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($conf['allow']), TRUE);
 			$allow = array_flip($types);
 		}
 		if (!$conf['onlyCurrentPid'] || $pid == $GLOBALS['TSFE']->id) {
 			// Permissions
-			$types = t3lib_div::trimExplode(',', t3lib_div::strtolower($conf['allow']), TRUE);
+			$types = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($conf['allow']), TRUE);
 			$allow = array_flip($types);
 			$perms = $GLOBALS['BE_USER']->calcPerms($GLOBALS['TSFE']->page);
 			if ($table == 'pages') {
@@ -575,11 +577,12 @@ class t3lib_frontendedit {
 	 */
 	protected function initializeTceMain() {
 		if (!isset($this->tce)) {
-			$this->tce = t3lib_div::makeInstance('t3lib_TCEmain');
+			$this->tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 			$this->tce->stripslashes_values = 0;
 		}
 	}
 
 }
+
 
 ?>

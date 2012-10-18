@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-interface tx_form_System_Filter_Interface
+interface FilterInterface
 {
 	/**
 	 * Return filtered value
@@ -39,4 +41,5 @@ interface tx_form_System_Filter_Interface
 	public function filter($value);
 
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,17 +33,18 @@
  * @package TYPO3
  * @subpackage cms
  */
-interface tslib_content_fileLinkHook
+interface FileLinkHookInterface
 {
 	/**
 	 * Finds alternative previewImage for given File.
 	 *
-	 * @param t3lib_file_File $file
-	 * @return t3lib_file_File
+	 * @param \TYPO3\CMS\Core\Resource\File $file
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 * @abstract
 	 * @todo Define visibility
 	 */
-	public function getPreviewImage(t3lib_file_File $file);
+	public function getPreviewImage(\TYPO3\CMS\Core\Resource\File $file);
 
 }
+
 ?>

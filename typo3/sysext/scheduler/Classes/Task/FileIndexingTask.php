@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage media
  */
-class tx_scheduler_FileIndexing extends tx_scheduler_Task {
+class FileIndexingTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * @var string
@@ -85,10 +87,10 @@ class tx_scheduler_FileIndexing extends tx_scheduler_Task {
 	 */
 	public function execute() {
 		$successfullyExecuted = TRUE;
-		/** @var $fileFactory t3lib_file_Factory */
-		$fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
-		/** @var $indexerService t3lib_file_Service_IndexerService */
-		$indexerService = t3lib_div::makeInstance('t3lib_file_Service_IndexerService');
+		/** @var $fileFactory \TYPO3\CMS\Core\Resource\ResourceFactory */
+		$fileFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+		/** @var $indexerService \TYPO3\CMS\Core\Resource\Service\IndexerService */
+		$indexerService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService');
 		$indexerService->setFactory($fileFactory);
 		// run indexing of every storage
 		$storageRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_file_storage', 'deleted = 0');
@@ -101,5 +103,6 @@ class tx_scheduler_FileIndexing extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_tree_pagetree_Commands {
+final class Commands {
 
 	/**
 	 * @var boolean|null
@@ -61,10 +63,10 @@ final class t3lib_tree_pagetree_Commands {
 	/**
 	 * Visibly the page
 	 *
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @return void
 	 */
-	static public function visiblyNode(t3lib_tree_pagetree_Node $node) {
+	static public function visiblyNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node) {
 		$data['pages'][$node->getWorkspaceId()]['hidden'] = 0;
 		self::processTceCmdAndDataMap(array(), $data);
 	}
@@ -72,10 +74,10 @@ final class t3lib_tree_pagetree_Commands {
 	/**
 	 * Hide the page
 	 *
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @return void
 	 */
-	static public function disableNode(t3lib_tree_pagetree_Node $node) {
+	static public function disableNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node) {
 		$data['pages'][$node->getWorkspaceId()]['hidden'] = 1;
 		self::processTceCmdAndDataMap(array(), $data);
 	}
@@ -83,10 +85,10 @@ final class t3lib_tree_pagetree_Commands {
 	/**
 	 * Delete the page
 	 *
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @return void
 	 */
-	static public function deleteNode(t3lib_tree_pagetree_Node $node) {
+	static public function deleteNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node) {
 		$cmd['pages'][$node->getId()]['delete'] = 1;
 		self::processTceCmdAndDataMap($cmd);
 	}
@@ -94,11 +96,11 @@ final class t3lib_tree_pagetree_Commands {
 	/**
 	 * Restore the page
 	 *
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @param integer $targetId
 	 * @return void
 	 */
-	static public function restoreNode(t3lib_tree_pagetree_Node $node, $targetId) {
+	static public function restoreNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node, $targetId) {
 		$cmd['pages'][$node->getId()]['undelete'] = 1;
 		self::processTceCmdAndDataMap($cmd);
 		if ($node->getId() !== $targetId) {
@@ -109,11 +111,11 @@ final class t3lib_tree_pagetree_Commands {
 	/**
 	 * Updates the node label
 	 *
-	 * @param t3lib_tree_pagetree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
 	 * @param string $updatedLabel
 	 * @return void
 	 */
-	static public function updateNodeLabel(t3lib_tree_pagetree_Node $node, $updatedLabel) {
+	static public function updateNodeLabel(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node, $updatedLabel) {
 		$data['pages'][$node->getWorkspaceId()][$node->getTextSourceField()] = $updatedLabel;
 		self::processTceCmdAndDataMap(array(), $data);
 	}
@@ -123,11 +125,11 @@ final class t3lib_tree_pagetree_Commands {
 	 *
 	 * Node: Use a negative target id to specify a sibling target else the parent is used
 	 *
-	 * @param t3lib_tree_pagetree_Node $sourceNode
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $sourceNode
 	 * @param integer $targetId
 	 * @return integer
 	 */
-	static public function copyNode(t3lib_tree_pagetree_Node $sourceNode, $targetId) {
+	static public function copyNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $sourceNode, $targetId) {
 		$cmd['pages'][$sourceNode->getId()]['copy'] = $targetId;
 		$returnValue = self::processTceCmdAndDataMap($cmd);
 		return $returnValue['pages'][$sourceNode->getId()];
@@ -138,11 +140,11 @@ final class t3lib_tree_pagetree_Commands {
 	 *
 	 * Node: Use a negative target id to specify a sibling target else the parent is used
 	 *
-	 * @param t3lib_tree_pagetree_Node $sourceNode
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $sourceNode
 	 * @param integer $targetId
 	 * @return void
 	 */
-	static public function moveNode(t3lib_tree_pagetree_Node $sourceNode, $targetId) {
+	static public function moveNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $sourceNode, $targetId) {
 		$cmd['pages'][$sourceNode->getId()]['move'] = $targetId;
 		self::processTceCmdAndDataMap($cmd);
 	}
@@ -150,16 +152,16 @@ final class t3lib_tree_pagetree_Commands {
 	/**
 	 * Creates a page of the given doktype and returns the id of the created page
 	 *
-	 * @param t3lib_tree_pagetree_Node $parentNode
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $parentNode
 	 * @param integer $targetId
 	 * @param integer $pageType
 	 * @return integer
 	 */
-	static public function createNode(t3lib_tree_pagetree_Node $parentNode, $targetId, $pageType) {
+	static public function createNode(\TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $parentNode, $targetId, $pageType) {
 		$placeholder = 'NEW12345';
 		$pid = $parentNode->getWorkspaceId();
 		// Use page TsConfig as default page initialization
-		$pageTs = t3lib_BEfunc::getPagesTSconfig($pid);
+		$pageTs = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($pid);
 		if (array_key_exists('TCAdefaults.', $pageTs) && array_key_exists('pages.', $pageTs['TCAdefaults.'])) {
 			$data['pages'][$placeholder] = $pageTs['TCAdefaults.']['pages.'];
 		} else {
@@ -193,11 +195,11 @@ final class t3lib_tree_pagetree_Commands {
 	 * @throws RuntimeException if an error happened while the TCE processing
 	 */
 	static protected function processTceCmdAndDataMap(array $cmd, array $data = array()) {
-		/** @var $tce t3lib_TCEmain */
-		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+		/** @var $tce \TYPO3\CMS\Core\DataHandler\DataHandler */
+		$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 		$tce->stripslashes_values = 0;
 		$tce->start($data, $cmd);
-		$tce->copyTree = t3lib_utility_Math::forceIntegerInRange($GLOBALS['BE_USER']->uc['copyLevels'], 0, 100);
+		$tce->copyTree = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['BE_USER']->uc['copyLevels'], 0, 100);
 		if (count($cmd)) {
 			$tce->process_cmdmap();
 			$returnValues = $tce->copyMappingArray_merged;
@@ -207,7 +209,7 @@ final class t3lib_tree_pagetree_Commands {
 		}
 		// check errors
 		if (count($tce->errorLog)) {
-			throw new RuntimeException(implode(chr(10), $tce->errorLog), 1333754629);
+			throw new \RuntimeException(implode(chr(10), $tce->errorLog), 1333754629);
 		}
 		return $returnValues;
 	}
@@ -217,7 +219,7 @@ final class t3lib_tree_pagetree_Commands {
 	 *
 	 * @param integer $nodeId
 	 * @param boolean $unsetMovePointers
-	 * @return t3lib_tree_pagetree_Node
+	 * @return \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode
 	 */
 	static public function getNode($nodeId, $unsetMovePointers = TRUE) {
 		$record = self::getNodeRecord($nodeId, $unsetMovePointers);
@@ -240,7 +242,7 @@ final class t3lib_tree_pagetree_Commands {
 		if (self::$useNavTitle === NULL) {
 			self::$useNavTitle = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showNavTitle');
 		}
-		$rootline = array_reverse(t3lib_BEfunc::BEgetRootLine($uid));
+		$rootline = array_reverse(\TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($uid));
 		array_shift($rootline);
 		$path = array();
 		foreach ($rootline as $rootlineElement) {
@@ -262,7 +264,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @return array
 	 */
 	static public function getNodeRecord($nodeId, $unsetMovePointers = TRUE) {
-		$record = t3lib_BEfunc::getRecordWSOL('pages', $nodeId, '*', '', TRUE, $unsetMovePointers);
+		$record = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL('pages', $nodeId, '*', '', TRUE, $unsetMovePointers);
 		return $record;
 	}
 
@@ -273,7 +275,7 @@ final class t3lib_tree_pagetree_Commands {
 	 * @return string
 	 */
 	static public function getDomainName($uid) {
-		$whereClause = $GLOBALS['TYPO3_DB']->quoteStr((('pid=' . intval($uid)) . t3lib_BEfunc::deleteClause('sys_domain')) . t3lib_BEfunc::BEenableFields('sys_domain'), 'sys_domain');
+		$whereClause = $GLOBALS['TYPO3_DB']->quoteStr((('pid=' . intval($uid)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_domain')) . \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields('sys_domain'), 'sys_domain');
 		$domain = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('domainName', 'sys_domain', $whereClause, '', 'sorting');
 		return htmlspecialchars($domain['domainName']);
 	}
@@ -283,7 +285,7 @@ final class t3lib_tree_pagetree_Commands {
 	 *
 	 * @param array $record
 	 * @param integer $mountPoint
-	 * @return t3lib_tree_pagetree_Node
+	 * @return \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode
 	 */
 	static public function getNewNode($record, $mountPoint = 0) {
 		if (self::$titleLength === NULL) {
@@ -293,8 +295,8 @@ final class t3lib_tree_pagetree_Commands {
 			self::$backgroundColors = $GLOBALS['BE_USER']->getTSConfigProp('options.pageTree.backgroundColor');
 			self::$titleLength = intval($GLOBALS['BE_USER']->uc['titleLen']);
 		}
-		/** @var $subNode t3lib_tree_pagetree_Node */
-		$subNode = t3lib_div::makeInstance('t3lib_tree_pagetree_Node');
+		/** @var $subNode \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$subNode = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode');
 		$subNode->setRecord($record);
 		$subNode->setCls($record['_CSSCLASS']);
 		$subNode->setType('pages');
@@ -313,18 +315,18 @@ final class t3lib_tree_pagetree_Commands {
 		} else {
 			$visibleText = $text;
 		}
-		$visibleText = t3lib_div::fixed_lgd_cs($visibleText, self::$titleLength);
+		$visibleText = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($visibleText, self::$titleLength);
 		$suffix = '';
 		if (self::$addDomainName) {
 			$domain = self::getDomainName($record['uid']);
 			$suffix = $domain !== '' ? (' [' . $domain) . ']' : '';
 		}
-		$qtip = str_replace(' - ', '<br />', htmlspecialchars(t3lib_BEfunc::titleAttribForPages($record, '', FALSE)));
+		$qtip = str_replace(' - ', '<br />', htmlspecialchars(\TYPO3\CMS\Backend\Utility\BackendUtility::titleAttribForPages($record, '', FALSE)));
 		$prefix = '';
-		$lockInfo = t3lib_BEfunc::isRecordLocked('pages', $record['uid']);
+		$lockInfo = \TYPO3\CMS\Backend\Utility\BackendUtility::isRecordLocked('pages', $record['uid']);
 		if (is_array($lockInfo)) {
 			$qtip .= '<br />' . htmlspecialchars($lockInfo['msg']);
-			$prefix .= t3lib_iconWorks::getSpriteIcon('status-warning-in-use', array(
+			$prefix .= \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-warning-in-use', array(
 				'class' => 'typo3-pagetree-status'
 			));
 		}
@@ -333,7 +335,7 @@ final class t3lib_tree_pagetree_Commands {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks'])) {
 			$_params = array('pages', $record['uid']);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks'] as $_funcRef) {
-				$stat .= t3lib_div::callUserFunction($_funcRef, $_params, $this);
+				$stat .= \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 		$prefix .= htmlspecialchars(self::$addIdAsPrefix ? ('[' . $record['uid']) . '] ' : '');
@@ -341,9 +343,9 @@ final class t3lib_tree_pagetree_Commands {
 		$subNode->setText(htmlspecialchars($visibleText), $field, $prefix, htmlspecialchars($suffix) . $stat);
 		$subNode->setQTip($qtip);
 		if ($record['uid'] !== 0) {
-			$spriteIconCode = t3lib_iconWorks::getSpriteIconForRecord('pages', $record);
+			$spriteIconCode = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord('pages', $record);
 		} else {
-			$spriteIconCode = t3lib_iconWorks::getSpriteIcon('apps-pagetree-root');
+			$spriteIconCode = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-pagetree-root');
 		}
 		$subNode->setSpriteIconCode($spriteIconCode);
 		if (!$subNode->canCreateNewPages() || intval($record['t3ver_state']) === 2) {
@@ -356,5 +358,6 @@ final class t3lib_tree_pagetree_Commands {
 	}
 
 }
+
 
 ?>

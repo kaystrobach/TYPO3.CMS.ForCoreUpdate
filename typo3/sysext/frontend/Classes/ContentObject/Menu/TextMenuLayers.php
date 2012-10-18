@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject\Menu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_tmenu_layers extends tslib_tmenu {
+class TextMenuLayers extends \TYPO3\CMS\Frontend\ContentObject\Menu\TextMenuContentObject {
 
 	// FULL DUPLICATE FROM gmenu_layers BEGIN:
 	/**
@@ -161,7 +163,7 @@ class tslib_tmenu_layers extends tslib_tmenu {
 		$GLOBALS['TSFE']->applicationData['GMENU_LAYERS']['WMid'] = array();
 		// Save:
 		$this->WMonlyOnLoad = $this->mconf['displayActiveOnLoad'] && !$this->mconf['displayActiveOnLoad.']['onlyOnLoad'];
-		$this->WMbordersWithin = t3lib_div::intExplode(',', $this->mconf['bordersWithin'] . ',0,0,0,0,0');
+		$this->WMbordersWithin = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->mconf['bordersWithin'] . ',0,0,0,0,0');
 	}
 
 	/**
@@ -223,7 +225,7 @@ GLV_restoreMenu["' . $this->WMid) . '"] = "') . $this->WMactiveKey) . '";
 				// if the hide-timer is not set and we leave the main element, then the
 				// layer will be hidden unless we reach the layer before the timeout will
 				// happen and the menu hidden.
-				if (t3lib_utility_Math::forceIntegerInRange($this->mconf['hideMenuWhenNotOver'], 0, 600) && $this->mconf['hideMenuTimer']) {
+				if (\TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['hideMenuWhenNotOver'], 0, 600) && $this->mconf['hideMenuTimer']) {
 					$event .= ('GL_resetAll("' . $this->WMid) . '");';
 				}
 				$this->I['linkHREF']['onMouseout'] .= $event;
@@ -236,7 +238,7 @@ GLV_restoreMenu["' . $this->WMid) . '"] = "') . $this->WMactiveKey) . '";
 				$event = ('GL_resetAll("' . $this->WMid) . '");';
 				$this->I['linkHREF']['onMouseout'] .= $event;
 			}
-			$this->WMxyArray[] = (((((((((((('GLV_menuXY["' . $this->WMid) . '"]["Menu') . $this->WMid) . $key) . '"] = new Array(') . $this->WMx) . ',') . $this->WMy) . ',"itemID') . t3lib_div::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '","anchorID') . t3lib_div::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '");';
+			$this->WMxyArray[] = (((((((((((('GLV_menuXY["' . $this->WMid) . '"]["Menu') . $this->WMid) . $key) . '"] = new Array(') . $this->WMx) . ',') . $this->WMy) . ',"itemID') . \TYPO3\CMS\Core\Utility\GeneralUtility::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '","anchorID') . \TYPO3\CMS\Core\Utility\GeneralUtility::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '");';
 		}
 	}
 
@@ -282,7 +284,7 @@ GLV_restoreMenu["' . $this->WMid) . '"] = "') . $this->WMactiveKey) . '";
 	 */
 	public function extProc_beforeAllWrap($item, $key) {
 		if ($this->mconf['relativeToTriggerItem']) {
-			$item = ((((('<div id="anchorID' . t3lib_div::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '" style="position:absolute;visibility:hidden;"></div><div id="itemID') . t3lib_div::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '" style="width:100%; height:100%;">') . $item) . '</div>';
+			$item = ((((('<div id="anchorID' . \TYPO3\CMS\Core\Utility\GeneralUtility::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '" style="position:absolute;visibility:hidden;"></div><div id="itemID') . \TYPO3\CMS\Core\Utility\GeneralUtility::shortmd5((($this->I['uid'] . '-') . $this->WMid))) . '" style="width:100%; height:100%;">') . $item) . '</div>';
 		}
 		return $item;
 	}
@@ -399,7 +401,7 @@ if (!GLV_doReset["' . $mIdStr) . '"] && GLV_currentLayer["') . $mIdStr) . '"]!=n
 			$this->divLayers['iframe'] = ('<iframe id="Iframe' . $this->WMid) . '" scrolling="no" frameborder="0" style="position:absolute; top:0px; left:0px; background-color:transparent; layer-background-color:transparent; display:none;"></iframe>';
 		}
 		$GLOBALS['TSFE']->applicationData['GMENU_LAYERS']['WMid'] = array_merge($this->WMtempStore, $GLOBALS['TSFE']->applicationData['GMENU_LAYERS']['WMid']);
-		$GLOBALS['TSFE']->additionalHeaderData['gmenu_layer_shared'] = ('<script type="text/javascript" src="' . t3lib_extMgm::siteRelPath('statictemplates')) . 'media/scripts/jsfunc.layermenu.js"></script>';
+		$GLOBALS['TSFE']->additionalHeaderData['gmenu_layer_shared'] = ('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('statictemplates')) . 'media/scripts/jsfunc.layermenu.js"></script>';
 		$GLOBALS['TSFE']->JSCode .= (((((((((((((((((((((((((((((((((((((((((((((((('
 
 GLV_curLayerWidth["' . $this->WMid) . '"]=0;
@@ -407,7 +409,7 @@ GLV_curLayerHeight["') . $this->WMid) . '"]=0;
 GLV_curLayerX["') . $this->WMid) . '"]=0;
 GLV_curLayerY["') . $this->WMid) . '"]=0;
 GLV_menuOn["') . $this->WMid) . '"] = null;
-GLV_gap["') . $this->WMid) . '"]=') . t3lib_utility_Math::forceIntegerInRange($this->mconf['hideMenuWhenNotOver'], 0, 600)) . ';
+GLV_gap["') . $this->WMid) . '"]=') . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['hideMenuWhenNotOver'], 0, 600)) . ';
 GLV_currentLayer["') . $this->WMid) . '"] = null;
 GLV_currentROitem["') . $this->WMid) . '"] = null;
 GLV_hasBeenOver["') . $this->WMid) . '"]=0;
@@ -418,7 +420,7 @@ GLV_dontHideOnMouseUp["') . $this->WMid) . '"] = ') . ($this->mconf['dontHideOnM
 GLV_dontFollowMouse["') . $this->WMid) . '"] = ') . ($this->mconf['dontFollowMouse'] ? 1 : 0)) . ';
 GLV_date = new Date();
 GLV_timeout["') . $this->WMid) . '"] = GLV_date.getTime();
-GLV_timeoutRef["') . $this->WMid) . '"] = ') . t3lib_utility_Math::forceIntegerInRange($this->mconf['hideMenuTimer'], 0, 20000)) . ';
+GLV_timeoutRef["') . $this->WMid) . '"] = ') . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['hideMenuTimer'], 0, 20000)) . ';
 GLV_menuXY["') . $this->WMid) . '"] = new Array();
 ') . implode(LF, $this->WMxyArray)) . '
 ') . $this->WMrestoreVars;
@@ -513,5 +515,6 @@ GLV_timeout_count++;
 	}
 
 }
+
 
 ?>

@@ -38,11 +38,11 @@ if (!is_object($TSFE)) {
 }
 $TT->push('pagegen.php, initialize');
 // Initialization of some variables
-TSpagegen::pagegenInit();
+\TYPO3\CMS\Frontend\Page\PageGenerator::pagegenInit();
 // Global content object...
 $GLOBALS['TSFE']->newCObj();
 // LIBRARY INCLUSION, TypoScript
-$temp_incFiles = TSpagegen::getIncFiles();
+$temp_incFiles = \TYPO3\CMS\Frontend\Page\PageGenerator::getIncFiles();
 foreach ($temp_incFiles as $temp_file) {
 	include_once './' . $temp_file;
 }
@@ -51,7 +51,7 @@ $TT->pull();
 // If this is an array, it's a sign that this script is included in order to include certain INT-scripts
 if (!$GLOBALS['TSFE']->isINTincScript()) {
 	$TT->push('pagegen.php, render');
-	TSpagegen::renderContent();
+	\TYPO3\CMS\Frontend\Page\PageGenerator::renderContent();
 	$GLOBALS['TSFE']->setAbsRefPrefix();
 	$TT->pull();
 }

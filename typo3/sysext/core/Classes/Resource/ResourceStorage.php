@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -64,7 +66,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Storage {
+class ResourceStorage {
 
 	const SIGNAL_PreProcessConfiguration = 'preProcessConfiguration';
 	const SIGNAL_PostProcessConfiguration = 'postProcessConfiguration';
@@ -92,7 +94,7 @@ class t3lib_file_Storage {
 	/**
 	 * The storage driver instance belonging to this storage.
 	 *
-	 * @var t3lib_file_Driver_AbstractDriver
+	 * @var \TYPO3\CMS\Core\Resource\Driver\AbstractDriver
 	 */
 	protected $driver;
 
@@ -118,7 +120,7 @@ class t3lib_file_Storage {
 	protected $baseUri;
 
 	/**
-	 * @var t3lib_file_Service_FileProcessingService
+	 * @var \TYPO3\CMS\Core\Resource\Service\FileProcessingService
 	 */
 	protected $fileProcessingService;
 
@@ -146,7 +148,7 @@ class t3lib_file_Storage {
 	protected $capabilities;
 
 	/**
-	 * @var Tx_Extbase_SignalSlot_Dispatcher
+	 * @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
 	 */
 	protected $signalSlotDispatcher;
 
@@ -168,7 +170,7 @@ class t3lib_file_Storage {
 	 */
 	const DEFAULT_ProcessingFolder = '_processed_';
 	/**
-	 * @var t3lib_file_Folder
+	 * @var \TYPO3\CMS\Core\Resource\Folder
 	 */
 	protected $processingFolder;
 
@@ -189,17 +191,17 @@ class t3lib_file_Storage {
 	/**
 	 * Constructor for a storage object.
 	 *
-	 * @param t3lib_file_Driver_AbstractDriver $driver
+	 * @param \TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driver
 	 * @param array $storageRecord The storage record row from the database
 	 */
-	public function __construct(t3lib_file_Driver_AbstractDriver $driver, array $storageRecord) {
+	public function __construct(\TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driver, array $storageRecord) {
 		$this->storageRecord = $storageRecord;
-		$this->configuration = t3lib_file_Factory::getInstance()->convertFlexFormDataToConfigurationArray($storageRecord['configuration']);
+		$this->configuration = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->convertFlexFormDataToConfigurationArray($storageRecord['configuration']);
 		$this->driver = $driver;
 		$this->driver->setStorage($this);
 		try {
 			$this->driver->processConfiguration();
-		} catch (t3lib_file_exception_InvalidConfigurationException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\InvalidConfigurationException $e) {
 			// configuration error
 			// mark this storage as permanently unusable
 			$this->markAsPermanentlyOffline();
@@ -265,10 +267,10 @@ class t3lib_file_Storage {
 	/**
 	 * Sets the storage that belongs to this storage.
 	 *
-	 * @param t3lib_file_Driver_AbstractDriver $driver
-	 * @return t3lib_file_Storage
+	 * @param \TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driver
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
-	public function setDriver(t3lib_file_Driver_AbstractDriver $driver) {
+	public function setDriver(\TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driver) {
 		$this->driver = $driver;
 		return $this;
 	}
@@ -276,7 +278,7 @@ class t3lib_file_Storage {
 	/**
 	 * Returns the driver object belonging to this storage.
 	 *
-	 * @return t3lib_file_Driver_AbstractDriver
+	 * @return \TYPO3\CMS\Core\Resource\Driver\AbstractDriver
 	 */
 	protected function getDriver() {
 		return $this->driver;
@@ -288,7 +290,7 @@ class t3lib_file_Storage {
 	 * @param string $identifier
 	 */
 	public function getFolderByIdentifier($identifier) {
-		throw new BadMethodCallException('Function t3lib_file_Storage::getFolderByIdentifier() has been renamed to just getFolder(). Please fix the method call.', 1333754514);
+		throw new \BadMethodCallException('Function TYPO3\\CMS\\Core\\Resource\\ResourceStorage::getFolderByIdentifier() has been renamed to just getFolder(). Please fix the method call.', 1333754514);
 	}
 
 	/**
@@ -297,7 +299,7 @@ class t3lib_file_Storage {
 	 * @param string $identifier
 	 */
 	public function getFileByIdentifier($identifier) {
-		throw new BadMethodCallException('Function t3lib_file_Storage::getFileByIdentifier() has been renamed to just getFileInfoByIdentifier(). ' . 'Please fix the method call.', 1333754533);
+		throw new \BadMethodCallException('Function TYPO3\\CMS\\Core\\Resource\\ResourceStorage::getFileByIdentifier() has been renamed to just getFileInfoByIdentifier(). ' . 'Please fix the method call.', 1333754533);
 	}
 
 	/**
@@ -401,7 +403,7 @@ class t3lib_file_Storage {
 					$this->isOnline = TRUE;
 				} else {
 					// check if the storage is disabled temporary for now
-					$registryObject = t3lib_div::makeInstance('t3lib_Registry');
+					$registryObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 					$offlineUntil = $registryObject->get('core', ('sys_file_storage-' . $this->getUid()) . '-offline-until');
 					if ($offlineUntil && $offlineUntil > time()) {
 						$this->isOnline = FALSE;
@@ -438,7 +440,7 @@ class t3lib_file_Storage {
 	 * @return void
 	 */
 	public function markAsTemporaryOffline() {
-		$registryObject = t3lib_div::makeInstance('t3lib_Registry');
+		$registryObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$registryObject->set('core', ('sys_file_storage-' . $this->getUid()) . '-offline-until', time() + 60 * 5);
 		$this->storageRecord['is_online'] = 0;
 		$this->isOnline = FALSE;
@@ -460,7 +462,7 @@ class t3lib_file_Storage {
 		if ($this->driver->folderExists($folderIdentifier) === FALSE) {
 			// if there is an error, this is important and should be handled
 			// as otherwise the user would see the whole storage without any restrictions for the filemounts
-			throw new t3lib_file_exception_FolderDoesNotExistException(('Folder for file mount ' . $folderIdentifier) . ' does not exist.', 1334427099);
+			throw new \TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException(('Folder for file mount ' . $folderIdentifier) . ' does not exist.', 1334427099);
 		}
 		$folderObject = $this->driver->getFolder($folderIdentifier);
 		if (empty($additionalData)) {
@@ -557,10 +559,10 @@ class t3lib_file_Storage {
 	 * related UI elements should thus be shown (move icon, edit icon, etc.)
 	 *
 	 * @param string $action, can be read, write, delete
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return boolean
 	 */
-	public function checkFileActionPermission($action, t3lib_file_FileInterface $file) {
+	public function checkFileActionPermission($action, \TYPO3\CMS\Core\Resource\FileInterface $file) {
 		// Check 1: Does the user have permission to perform the action? e.g. "readFile"
 		if ($this->checkUserActionPermission($action, 'File') === FALSE) {
 			return FALSE;
@@ -603,10 +605,10 @@ class t3lib_file_Storage {
 	 * See the checkFileActionPermission() method above for the reasons.
 	 *
 	 * @param string $action
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	public function checkFolderActionPermission($action, t3lib_file_Folder $folder = NULL) {
+	public function checkFolderActionPermission($action, \TYPO3\CMS\Core\Resource\Folder $folder = NULL) {
 		// Check 1: Does the user have permission to perform the action? e.g. "writeFolder"
 		if ($this->checkUserActionPermission($action, 'Folder') === FALSE) {
 			return FALSE;
@@ -650,21 +652,21 @@ class t3lib_file_Storage {
 	 * @return boolean TRUE if extension/filename is allowed
 	 */
 	protected function checkFileExtensionPermission($fileName) {
-		$isAllowed = t3lib_div::verifyFilenameAgainstDenyPattern($fileName);
+		$isAllowed = \TYPO3\CMS\Core\Utility\GeneralUtility::verifyFilenameAgainstDenyPattern($fileName);
 		if ($isAllowed) {
-			$fileInfo = t3lib_div::split_fileref($fileName);
+			$fileInfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($fileName);
 			// Set up the permissions for the file extension
 			$fileExtensionPermissions = $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']['webspace'];
-			$fileExtensionPermissions['allow'] = t3lib_div::uniqueList(strtolower($fileExtensionPermissions['allow']));
-			$fileExtensionPermissions['deny'] = t3lib_div::uniqueList(strtolower($fileExtensionPermissions['deny']));
+			$fileExtensionPermissions['allow'] = \TYPO3\CMS\Core\Utility\GeneralUtility::uniqueList(strtolower($fileExtensionPermissions['allow']));
+			$fileExtensionPermissions['deny'] = \TYPO3\CMS\Core\Utility\GeneralUtility::uniqueList(strtolower($fileExtensionPermissions['deny']));
 			$fileExtension = strtolower($fileInfo['fileext']);
 			if ($fileExtension !== '') {
 				// If the extension is found amongst the allowed types, we return TRUE immediately
-				if ($fileExtensionPermissions['allow'] === '*' || t3lib_div::inList($fileExtensionPermissions['allow'], $fileExtension)) {
+				if ($fileExtensionPermissions['allow'] === '*' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($fileExtensionPermissions['allow'], $fileExtension)) {
 					return TRUE;
 				}
 				// If the extension is found amongst the denied types, we return FALSE immediately
-				if ($fileExtensionPermissions['deny'] === '*' || t3lib_div::inList($fileExtensionPermissions['deny'], $fileExtension)) {
+				if ($fileExtensionPermissions['deny'] === '*' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($fileExtensionPermissions['deny'], $fileExtension)) {
 					return FALSE;
 				}
 				// If no match we return TRUE
@@ -689,20 +691,20 @@ class t3lib_file_Storage {
 	 * Moves a file from the local filesystem to this storage.
 	 *
 	 * @param string $localFilePath The file on the server's hard disk to add.
-	 * @param t3lib_file_Folder $targetFolder The target path, without the fileName
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder The target path, without the fileName
 	 * @param string $fileName The fileName. If not set, the local file name is used.
 	 * @param string $conflictMode possible value are 'cancel', 'replace', 'changeName'
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
-	public function addFile($localFilePath, t3lib_file_Folder $targetFolder, $fileName = '', $conflictMode = 'changeName') {
+	public function addFile($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName = '', $conflictMode = 'changeName') {
 		// TODO check permissions (write on target, upload, ...)
 		if (!file_exists($localFilePath)) {
-			throw new InvalidArgumentException(('File "' . $localFilePath) . '" does not exist.', 1319552745);
+			throw new \InvalidArgumentException(('File "' . $localFilePath) . '" does not exist.', 1319552745);
 		}
 		$targetFolder = $targetFolder ? $targetFolder : $this->getDefaultFolder();
 		$fileName = $fileName ? $fileName : basename($localFilePath);
 		if ($conflictMode === 'cancel' && $this->driver->fileExistsInFolder($fileName, $targetFolder)) {
-			throw new t3lib_file_exception_ExistingTargetFileNameException((('File "' . $fileName) . '" already exists in folder ') . $targetFolder->getIdentifier(), 1322121068);
+			throw new \TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException((('File "' . $fileName) . '" already exists in folder ') . $targetFolder->getIdentifier(), 1322121068);
 		} elseif ($conflictMode === 'changeName') {
 			$fileName = $this->getUniqueName($targetFolder, $fileName);
 		}
@@ -714,11 +716,11 @@ class t3lib_file_Storage {
 	/**
 	 * Creates a (cryptographic) hash for a file.
 	 *
-	 * @param t3lib_file_FileInterface $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $fileObject
 	 * @param $hash
 	 * @return string
 	 */
-	public function hashFile(t3lib_file_FileInterface $fileObject, $hash) {
+	public function hashFile(\TYPO3\CMS\Core\Resource\FileInterface $fileObject, $hash) {
 		return $this->driver->hash($fileObject, $hash);
 	}
 
@@ -728,11 +730,11 @@ class t3lib_file_Storage {
 	 * WARNING: Access to the file may be restricted by further means, e.g.
 	 * some web-based authentication. You have to take care of this yourself.
 	 *
-	 * @param t3lib_file_ResourceInterface $resourceObject The file or folder object
+	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resourceObject The file or folder object
 	 * @param bool $relativeToCurrentScript Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
 	 * @return string
 	 */
-	public function getPublicUrl(t3lib_file_ResourceInterface $resourceObject, $relativeToCurrentScript = FALSE) {
+	public function getPublicUrl(\TYPO3\CMS\Core\Resource\ResourceInterface $resourceObject, $relativeToCurrentScript = FALSE) {
 		$publicUrl = NULL;
 		// Pre-process the public URL by an accordant slot
 		$this->emitPreGeneratePublicUrl($resourceObject, $relativeToCurrentScript, array('publicUrl' => &$publicUrl));
@@ -746,13 +748,13 @@ class t3lib_file_Storage {
 	/**
 	 * Returns a publicly accessible URL for a file.
 	 *
-	 * @param t3lib_file_FileInterface $fileObject The file object
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $fileObject The file object
 	 * @param string $context
 	 * @param array $configuration
-	 * @return t3lib_file_ProcessedFile
+	 * @return \TYPO3\CMS\Core\Resource\ProcessedFile
 	 */
-	public function processFile(t3lib_file_FileInterface $fileObject, $context, array $configuration) {
-		$processedFile = t3lib_file_Factory::getInstance()->getProcessedFileObject($fileObject, $context, $configuration);
+	public function processFile(\TYPO3\CMS\Core\Resource\FileInterface $fileObject, $context, array $configuration) {
+		$processedFile = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getProcessedFileObject($fileObject, $context, $configuration);
 		// set the storage of the processed file
 		$processedFile->setStorage($this);
 		// Pre-process the file by an accordant slot
@@ -771,11 +773,11 @@ class t3lib_file_Storage {
 	/**
 	 * Copies a file from the storage for local processing.
 	 *
-	 * @param t3lib_file_FileInterface $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $fileObject
 	 * @param bool $writable
 	 * @return string Path to local file (either original or copied to some temporary local location)
 	 */
-	public function getFileForLocalProcessing(t3lib_file_FileInterface $fileObject, $writable = TRUE) {
+	public function getFileForLocalProcessing(\TYPO3\CMS\Core\Resource\FileInterface $fileObject, $writable = TRUE) {
 		$filePath = $this->driver->getFileForLocalProcessing($fileObject, $writable);
 		// @todo: shouldn't this go in the driver? this function is called from the indexing service
 		// @todo: and recursively calls itself over and over again, this is left out for now with getModificationTime()
@@ -787,7 +789,7 @@ class t3lib_file_Storage {
 	 * Get file by identifier
 	 *
 	 * @param string $identifier
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
 	public function getFile($identifier) {
 		return $this->driver->getFile($identifier);
@@ -796,7 +798,7 @@ class t3lib_file_Storage {
 	/**
 	 * Get file by identifier
 	 *
-	 * @param t3lib_file_FileInterface $identifier
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $identifier
 	 * @return array
 	 */
 	public function getFileInfo($identifier) {
@@ -808,7 +810,7 @@ class t3lib_file_Storage {
 	 *
 	 * @deprecated To be removed before final release of FAL. Use combination of getFileInfoByIdentifier() with a file object as argument instead.
 	 * @param string $identifier
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
 	public function getFileInfoByIdentifier($identifier) {
 		return $this->driver->getFileInfoByIdentifier($identifier);
@@ -866,8 +868,8 @@ class t3lib_file_Storage {
 	public function getFileList($path, $start = 0, $numberOfItems = 0, $useFilters = TRUE, $loadIndexRecords = TRUE) {
 		$rows = array();
 		if ($loadIndexRecords) {
-			/** @var $repository t3lib_file_Repository_FileRepository */
-			$repository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+			/** @var $repository \TYPO3\CMS\Core\Resource\FileRepository */
+			$repository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 			$rows = $repository->getFileIndexRecordsForFolder($this->getFolder($path));
 		}
 		$filters = $useFilters == TRUE ? $this->fileAndFolderNameFilters : array();
@@ -891,23 +893,23 @@ class t3lib_file_Storage {
 	 * Checks if the queried file in the given folder exists.
 	 *
 	 * @param string $fileName
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	public function hasFileInFolder($fileName, t3lib_file_Folder $folder) {
+	public function hasFileInFolder($fileName, \TYPO3\CMS\Core\Resource\Folder $folder) {
 		return $this->driver->fileExistsInFolder($fileName, $folder);
 	}
 
 	/**
 	 * Get contents of a file object
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string
 	 */
 	public function getFileContents($file) {
 		// Check if $file is readable
 		if (!$this->checkFileActionPermission('read', $file)) {
-			throw new t3lib_file_exception_InsufficientFileReadPermissionsException(('Reading file "' . $file->getIdentifier()) . '" is not allowed.', 1330121089);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileReadPermissionsException(('Reading file "' . $file->getIdentifier()) . '" is not allowed.', 1330121089);
 		}
 		return $this->driver->getFileContents($file);
 	}
@@ -915,18 +917,18 @@ class t3lib_file_Storage {
 	/**
 	 * Set contents of a file object.
 	 *
-	 * @param t3lib_file_AbstractFile $file
+	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $file
 	 * @param string $contents
 	 * @return integer The number of bytes written to the file
 	 */
-	public function setFileContents(t3lib_file_AbstractFile $file, $contents) {
+	public function setFileContents(\TYPO3\CMS\Core\Resource\AbstractFile $file, $contents) {
 		// Check if user is allowed to update
 		if (!$this->checkUserActionPermission('update', 'File')) {
-			throw new t3lib_file_exception_InsufficientUserPermissionsException(('Updating file "' . $file->getIdentifier()) . '" not allowed for user.', 1330121117);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException(('Updating file "' . $file->getIdentifier()) . '" not allowed for user.', 1330121117);
 		}
 		// Check if $file is writable
 		if (!$this->checkFileActionPermission('write', $file)) {
-			throw new t3lib_file_exception_InsufficientFileWritePermissionsException(('Writing to file "' . $file->getIdentifier()) . '" is not allowed.', 1330121088);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileWritePermissionsException(('Writing to file "' . $file->getIdentifier()) . '" is not allowed.', 1330121088);
 		}
 		// Call driver method to update the file and update file properties afterwards
 		try {
@@ -934,7 +936,7 @@ class t3lib_file_Storage {
 			$fileInfo = $this->driver->getFileInfo($file);
 			$fileInfo['sha1'] = $this->driver->hash($file, 'sha1');
 			$file->updateProperties($fileInfo);
-		} catch (RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 			throw $e;
 		}
 		return $result;
@@ -946,12 +948,12 @@ class t3lib_file_Storage {
 	 * previously in t3lib_extFileFunc::func_newfile()
 	 *
 	 * @param string $fileName
-	 * @param t3lib_file_Folder $targetFolderObject
-	 * @return t3lib_file_FileInterface The file object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolderObject
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface The file object
 	 */
-	public function createFile($fileName, t3lib_file_Folder $targetFolderObject) {
+	public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $targetFolderObject) {
 		if (!$this->checkFolderActionPermission('add', $targetFolderObject)) {
-			throw new t3lib_file_exception_InsufficientFolderWritePermissionsException(('You are not allowed to create directories on this storage "' . $targetFolderObject->getIdentifier()) . '"', 1323059807);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException(('You are not allowed to create directories on this storage "' . $targetFolderObject->getIdentifier()) . '"', 1323059807);
 		}
 		return $this->driver->createFile($fileName, $targetFolderObject);
 	}
@@ -959,16 +961,16 @@ class t3lib_file_Storage {
 	/**
 	 * Previously in t3lib_extFileFunc::deleteFile()
 	 *
-	 * @param $fileObject t3lib_file_FileInterface
+	 * @param $fileObject \TYPO3\CMS\Core\Resource\FileInterface
 	 * @return bool TRUE if deletion succeeded
 	 */
 	public function deleteFile($fileObject) {
 		if (!$this->checkFileActionPermission('remove', $fileObject)) {
-			throw new t3lib_file_exception_InsufficientFileAccessPermissionsException(('You are not allowed to delete the file "' . $fileObject->getIdentifier()) . '\'', 1319550425);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException(('You are not allowed to delete the file "' . $fileObject->getIdentifier()) . '\'', 1319550425);
 		}
 		$result = $this->driver->deleteFile($fileObject);
 		if ($result === FALSE) {
-			throw new t3lib_file_exception_FileOperationErrorException(('Deleting the file "' . $fileObject->getIdentifier()) . '\' failed.', 1329831691);
+			throw new \TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException(('Deleting the file "' . $fileObject->getIdentifier()) . '\' failed.', 1329831691);
 		}
 		// Mark the file object as deleted
 		$fileObject->setDeleted();
@@ -984,9 +986,9 @@ class t3lib_file_Storage {
 	 * @param 	t3lib_file_Folder $targetFolder
 	 * @param 	string	$conflictMode	"overrideExistingFile", "renameNewFile", "cancel
 	 * @param 	string	$targetFileName	an optional destination fileName
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
-	public function copyFile(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
+	public function copyFile(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
 		$this->emitPreFileCopySignal($file, $targetFolder);
 		$this->checkFileCopyPermissions($file, $targetFolder, $targetFileName);
 		if ($targetFileName === NULL) {
@@ -994,7 +996,7 @@ class t3lib_file_Storage {
 		}
 		// File exists and we should abort, let's abort
 		if ($conflictMode === 'cancel' && $targetFolder->hasFile($targetFileName)) {
-			throw new t3lib_file_exception_ExistingTargetFileNameException('The target file already exists.', 1320291063);
+			throw new \TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException('The target file already exists.', 1320291063);
 		}
 		// File exists and we should find another name, let's find another one
 		if ($conflictMode === 'renameNewFile' && $targetFolder->hasFile($targetFileName)) {
@@ -1010,7 +1012,7 @@ class t3lib_file_Storage {
 				$tempPath = $file->getForLocalProcessing();
 				$newFileObject = $this->driver->addFile($tempPath, $targetFolder, $targetFileName);
 			}
-		} catch (t3lib_file_exception_AbstractFileOperationException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\AbstractFileOperationException $e) {
 			throw $e;
 		}
 		$this->emitPostFileCopySignal($file, $targetFolder);
@@ -1022,7 +1024,7 @@ class t3lib_file_Storage {
 	 * if not throw an exception
 	 *
 	 * @param string $localFilePath the temporary file name from $_FILES['file1']['tmp_name']
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $targetFileName the destination file name $_FILES['file1']['name']
 	 * @param int $uploadedFileSize
 	 * @return void
@@ -1030,24 +1032,24 @@ class t3lib_file_Storage {
 	protected function checkFileUploadPermissions($localFilePath, $targetFolder, $targetFileName, $uploadedFileSize) {
 		// Makes sure the user is allowed to upload
 		if (!$this->checkUserActionPermission('upload', 'File')) {
-			throw new t3lib_file_exception_InsufficientUserPermissionsException(('You are not allowed to upload files to this storage "' . $this->getUid()) . '"', 1322112430);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException(('You are not allowed to upload files to this storage "' . $this->getUid()) . '"', 1322112430);
 		}
 		// Makes sure this is an uploaded file
 		if (!is_uploaded_file($localFilePath)) {
-			throw new t3lib_file_exception_UploadException('The upload has failed, no uploaded file found!', 1322110455);
+			throw new \TYPO3\CMS\Core\Resource\Exception\UploadException('The upload has failed, no uploaded file found!', 1322110455);
 		}
 		// Max upload size (kb) for files.
-		$maxUploadFileSize = t3lib_div::getMaxUploadFileSize() * 1024;
+		$maxUploadFileSize = \TYPO3\CMS\Core\Utility\GeneralUtility::getMaxUploadFileSize() * 1024;
 		if ($uploadedFileSize >= $maxUploadFileSize) {
-			throw new t3lib_file_exception_UploadSizeException(('The uploaded file exceeds the size-limit of ' . $maxUploadFileSize) . ' bytes', 1322110041);
+			throw new \TYPO3\CMS\Core\Resource\Exception\UploadSizeException(('The uploaded file exceeds the size-limit of ' . $maxUploadFileSize) . ' bytes', 1322110041);
 		}
 		// Check if targetFolder is writable
 		if (!$this->checkFolderActionPermission('write', $targetFolder)) {
-			throw new t3lib_file_exception_InsufficientFolderWritePermissionsException(('You are not allowed to write to the target folder "' . $targetFolder->getIdentifier()) . '"', 1322120356);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException(('You are not allowed to write to the target folder "' . $targetFolder->getIdentifier()) . '"', 1322120356);
 		}
 		// Check for a valid file extension
 		if (!$this->checkFileExtensionPermission($targetFileName)) {
-			throw new t3lib_file_exception_IllegalFileExtensionException(('Extension of file name is not allowed in "' . $targetFileName) . '"!', 1322120271);
+			throw new \TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException(('Extension of file name is not allowed in "' . $targetFileName) . '"!', 1322120271);
 		}
 	}
 
@@ -1055,31 +1057,31 @@ class t3lib_file_Storage {
 	 * Check if a file has the permission to be copied on a File/Folder/Storage,
 	 * if not throw an exception
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $targetFileName
 	 * @return void
 	 */
-	protected function checkFileCopyPermissions(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder, $targetFileName) {
+	protected function checkFileCopyPermissions(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName) {
 		// Check if targetFolder is within this storage, this should never happen
 		if ($this->getUid() != $targetFolder->getStorage()->getUid()) {
-			throw new t3lib_file_exception_AbstractFileException(('The operation of the folder cannot be called by this storage "' . $this->getUid()) . '"', 1319550405);
+			throw new \TYPO3\CMS\Core\Resource\Exception(('The operation of the folder cannot be called by this storage "' . $this->getUid()) . '"', 1319550405);
 		}
 		// Check if user is allowed to copy
 		if (!$this->checkUserActionPermission('copy', 'File')) {
-			throw new t3lib_file_exception_InsufficientUserPermissionsException(('You are not allowed to copy files to this storage "' . $this->getUid()) . '"', 1319550415);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException(('You are not allowed to copy files to this storage "' . $this->getUid()) . '"', 1319550415);
 		}
 		// Check if $file is readable
 		if (!$this->checkFileActionPermission('read', $file)) {
-			throw new t3lib_file_exception_InsufficientFileReadPermissionsException(('You are not allowed to read the file "' . $file->getIdentifier()) . '\'', 1319550425);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileReadPermissionsException(('You are not allowed to read the file "' . $file->getIdentifier()) . '\'', 1319550425);
 		}
 		// Check if targetFolder is writable
 		if (!$this->checkFolderActionPermission('write', $targetFolder)) {
-			throw new t3lib_file_exception_InsufficientFolderWritePermissionsException(('You are not allowed to write to the target folder "' . $targetFolder->getIdentifier()) . '"', 1319550435);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException(('You are not allowed to write to the target folder "' . $targetFolder->getIdentifier()) . '"', 1319550435);
 		}
 		// Check for a valid file extension
 		if (!$this->checkFileExtensionPermission($targetFileName)) {
-			throw new t3lib_file_exception_IllegalFileExtensionException('You are not allowed to copy a file of that type.', 1319553317);
+			throw new \TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException('You are not allowed to copy a file of that type.', 1319553317);
 		}
 	}
 
@@ -1089,11 +1091,11 @@ class t3lib_file_Storage {
 	 *
 	 * previously in t3lib_extFileFunc::func_move()
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $conflictMode "overrideExistingFile", "renameNewFile", "cancel
 	 * @param string $targetFileName an optional destination fileName
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
 	public function moveFile($file, $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
 		$this->checkFileMovePermissions($file, $targetFolder);
@@ -1105,7 +1107,7 @@ class t3lib_file_Storage {
 			if ($conflictMode === 'renameNewFile') {
 				$targetFileName = $this->getUniqueName($targetFolder, $targetFileName);
 			} elseif ($conflictMode === 'cancel') {
-				throw new t3lib_file_exception_ExistingTargetFileNameException('The target file already exists', 1329850997);
+				throw new \TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException('The target file already exists', 1329850997);
 			}
 		}
 		$this->emitPreFileMoveSignal($file, $targetFolder);
@@ -1122,7 +1124,7 @@ class t3lib_file_Storage {
 				$sourceStorage->driver->deleteFileRaw($file->getIdentifier());
 				$this->updateFile($file, $newIdentifier, $this);
 			}
-		} catch (t3lib_exception $e) {
+		} catch (\TYPO3\CMS\Core\Exception $e) {
 			echo $e->getMessage();
 		}
 		$this->emitPostFileMoveSignal($file, $targetFolder);
@@ -1133,12 +1135,12 @@ class t3lib_file_Storage {
 	 * Updates the properties of a file object with some that are freshly
 	 * fetched from the driver.
 	 *
-	 * @param t3lib_file_AbstractFile $file
+	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $file
 	 * @param string $identifier The identifier of the file. If set, this will overwrite the file object's identifier (use e.g. after moving a file)
-	 * @param t3lib_file_Storage $storage
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storage
 	 * @return void
 	 */
-	protected function updateFile(t3lib_file_AbstractFile $file, $identifier = '', $storage = NULL) {
+	protected function updateFile(\TYPO3\CMS\Core\Resource\AbstractFile $file, $identifier = '', $storage = NULL) {
 		if ($identifier === '') {
 			$identifier = $file->getIdentifier();
 		}
@@ -1158,8 +1160,8 @@ class t3lib_file_Storage {
 			$newProperties['storage'] = $storage->getUid();
 		}
 		$file->updateProperties($newProperties);
-		/** @var $fileRepository t3lib_file_Repository_FileRepository */
-		$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+		/** @var $fileRepository \TYPO3\CMS\Core\Resource\FileRepository */
+		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$fileRepository->update($file);
 	}
 
@@ -1167,34 +1169,34 @@ class t3lib_file_Storage {
 	 * Checks for permissions to move a file.
 	 *
 	 * @throws RuntimeException
-	 * @throws t3lib_file_exception_InsufficientFileReadPermissionsException
-	 * @throws t3lib_file_exception_InsufficientFileWritePermissionsException
-	 * @throws t3lib_file_exception_InsufficientFolderAccessPermissionsException
-	 * @throws t3lib_file_exception_InsufficientUserPermissionsException
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFileReadPermissionsException
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFileWritePermissionsException
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @return void
 	 */
-	protected function checkFileMovePermissions(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder) {
+	protected function checkFileMovePermissions(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder) {
 		// Check if targetFolder is within this storage
 		if ($this->getUid() != $targetFolder->getStorage()->getUid()) {
-			throw new RuntimeException();
+			throw new \RuntimeException();
 		}
 		// Check if user is allowed to move
 		if (!$this->checkUserActionPermission('move', 'File')) {
-			throw new t3lib_file_exception_InsufficientUserPermissionsException(('You are not allowed to move files to storage "' . $this->getUid()) . '"', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException(('You are not allowed to move files to storage "' . $this->getUid()) . '"', 1319219349);
 		}
 		// Check if $file is readable
 		if (!$this->checkFileActionPermission('read', $file)) {
-			throw new t3lib_file_exception_InsufficientFileReadPermissionsException(('You are not allowed to read the file "' . $file->getIdentifier()) . '\'', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileReadPermissionsException(('You are not allowed to read the file "' . $file->getIdentifier()) . '\'', 1319219349);
 		}
 		// Check if $file is writable
 		if (!$this->checkFileActionPermission('write', $file)) {
-			throw new t3lib_file_exception_InsufficientFileWritePermissionsException(('You are not allowed to move the file "' . $file->getIdentifier()) . '\'', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileWritePermissionsException(('You are not allowed to move the file "' . $file->getIdentifier()) . '\'', 1319219349);
 		}
 		// Check if targetFolder is writable
 		if (!$this->checkFolderActionPermission('write', $targetFolder)) {
-			throw new t3lib_file_exception_InsufficientFolderAccessPermissionsException(('You are not allowed to write to the target folder "' . $targetFolder->getIdentifier()) . '"', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException(('You are not allowed to write to the target folder "' . $targetFolder->getIdentifier()) . '"', 1319219349);
 		}
 	}
 
@@ -1203,7 +1205,7 @@ class t3lib_file_Storage {
 	 *
 	 * @param 	t3lib_file_FileInterface	$file
 	 * @param 	string	$targetFileName
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
 	// TODO add $conflictMode setting
 	public function renameFile($file, $targetFileName) {
@@ -1213,25 +1215,25 @@ class t3lib_file_Storage {
 		}
 		// Check if user is allowed to rename
 		if (!$this->checkUserActionPermission('rename', 'File')) {
-			throw new t3lib_file_exception_InsufficientUserPermissionsException('You are not allowed to rename files."', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException('You are not allowed to rename files."', 1319219349);
 		}
 		// Check if $file is readable
 		if (!$this->checkFileActionPermission('read', $file)) {
-			throw new t3lib_file_exception_InsufficientFileReadPermissionsException(('You are not allowed to read the file "' . $file->getIdentifier()) . '\'', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileReadPermissionsException(('You are not allowed to read the file "' . $file->getIdentifier()) . '\'', 1319219349);
 		}
 		// Check if $file is writable
 		if (!$this->checkFileActionPermission('write', $file)) {
-			throw new t3lib_file_exception_InsufficientFileWritePermissionsException(('You are not allowed to rename the file "' . $file->getIdentifier()) . '\'', 1319219349);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileWritePermissionsException(('You are not allowed to rename the file "' . $file->getIdentifier()) . '\'', 1319219349);
 		}
 		// Call driver method to rename the file that also updates the file
 		// object properties
 		try {
 			$newIdentifier = $this->driver->renameFile($file, $targetFileName);
 			$this->updateFile($file, $newIdentifier);
-			/** @var $fileRepository t3lib_file_Repository_FileRepository */
-			$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+			/** @var $fileRepository \TYPO3\CMS\Core\Resource\FileRepository */
+			$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 			$fileRepository->update($file);
-		} catch (RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 
 		}
 		return $file;
@@ -1240,13 +1242,13 @@ class t3lib_file_Storage {
 	/**
 	 * Replaces a file with a local file (e.g. a freshly uploaded file)
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $localFilePath
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
-	public function replaceFile(t3lib_file_FileInterface $file, $localFilePath) {
+	public function replaceFile(\TYPO3\CMS\Core\Resource\FileInterface $file, $localFilePath) {
 		if (!file_exists($localFilePath)) {
-			throw new InvalidArgumentException(('File "' . $localFilePath) . '" does not exist.', 1325842622);
+			throw new \InvalidArgumentException(('File "' . $localFilePath) . '" does not exist.', 1325842622);
 		}
 		// TODO check permissions
 		$this->emitPreFileReplaceSignal($file, $localFilePath);
@@ -1259,12 +1261,12 @@ class t3lib_file_Storage {
 	 * Adds an uploaded file into the Storage. Previously in t3lib_extFileFunc::file_upload()
 	 *
 	 * @param array $uploadedFileData contains information about the uploaded file given by $_FILES['file1']
-	 * @param t3lib_file_Folder $targetFolder the target folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder the target folder
 	 * @param string $targetFileName the file name to be written
 	 * @param string $conflictMode possible value are 'cancel', 'replace'
-	 * @return t3lib_file_FileInterface The file object
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface The file object
 	 */
-	public function addUploadedFile(array $uploadedFileData, t3lib_file_Folder $targetFolder = NULL, $targetFileName = NULL, $conflictMode = 'cancel') {
+	public function addUploadedFile(array $uploadedFileData, \TYPO3\CMS\Core\Resource\Folder $targetFolder = NULL, $targetFileName = NULL, $conflictMode = 'cancel') {
 		$localFilePath = $uploadedFileData['tmp_name'];
 		if ($targetFolder === NULL) {
 			$targetFolder = $this->getDefaultFolder();
@@ -1284,10 +1286,10 @@ class t3lib_file_Storage {
 	/**
 	 * Returns an array with all file objects in a folder and its subfolders, with the file identifiers as keys.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return t3lib_file_File[]
 	 */
-	protected function getAllFileObjectsInFolder(t3lib_file_Folder $folder) {
+	protected function getAllFileObjectsInFolder(\TYPO3\CMS\Core\Resource\Folder $folder) {
 		$files = array();
 		$folderQueue = array($folder);
 		while (!empty($folderQueue)) {
@@ -1306,20 +1308,20 @@ class t3lib_file_Storage {
 	 * Moves a folder. If you want to move a folder from this storage to another
 	 * one, call this method on the target storage, otherwise you will get an exception.
 	 *
-	 * @param t3lib_file_Folder $folderToMove The folder to move.
-	 * @param t3lib_file_Folder $targetParentFolder The target parent folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove The folder to move.
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetParentFolder The target parent folder
 	 * @param string $newFolderName
 	 * @param string $conflictMode  How to handle conflicts; one of "overrideExistingFile", "renameNewFolder", "cancel
-	 * @throws t3lib_exception
+	 * @throws \TYPO3\CMS\Core\Exception
 	 * @throws InvalidArgumentException
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	// TODO add tests
-	public function moveFolder(t3lib_file_Folder $folderToMove, t3lib_file_Folder $targetParentFolder, $newFolderName = NULL, $conflictMode = 'renameNewFolder') {
+	public function moveFolder(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetParentFolder, $newFolderName = NULL, $conflictMode = 'renameNewFolder') {
 		$sourceStorage = $folderToMove->getStorage();
 		$returnObject = NULL;
 		if (!$targetParentFolder->getStorage() == $this) {
-			throw new InvalidArgumentException('Cannot move a folder into a folder that does not belong to this storage.', 1325777289);
+			throw new \InvalidArgumentException('Cannot move a folder into a folder that does not belong to this storage.', 1325777289);
 		}
 		$newFolderName = $newFolderName ? $newFolderName : $folderToMove->getName();
 		// TODO check if folder already exists in $targetParentFolder, handle this conflict then
@@ -1338,7 +1340,7 @@ class t3lib_file_Storage {
 				$fileObject->updateProperties(array('storage' => $this, 'identifier' => $newIdentifier));
 			}
 			$returnObject = $this->getFolder($fileMappings[$folderToMove->getIdentifier()]);
-		} catch (t3lib_exception $e) {
+		} catch (\TYPO3\CMS\Core\Exception $e) {
 			throw $e;
 		}
 		$this->emitPostFolderMoveSignal($folderToMove, $targetParentFolder, $newFolderName);
@@ -1348,28 +1350,28 @@ class t3lib_file_Storage {
 	/**
 	 * Moves the given folder from a different storage to the target folder in this storage.
 	 *
-	 * @param t3lib_file_Folder $folderToMove
-	 * @param t3lib_file_Folder $targetParentFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetParentFolder
 	 * @param string $newFolderName
 	 * @return array Mapping of old file identifiers to new ones
 	 */
-	protected function moveFolderBetweenStorages(t3lib_file_Folder $folderToMove, t3lib_file_Folder $targetParentFolder, $newFolderName = NULL) {
+	protected function moveFolderBetweenStorages(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetParentFolder, $newFolderName = NULL) {
 		// This is not implemented for now as moving files between storages might cause quite some headaches when
 		// something goes wrong. It is also not that common of a use case, so it does not hurt that much to leave it out
 		// for now.
-		throw new BadMethodCallException('Moving folders between storages is not implemented.');
+		throw new \BadMethodCallException('Moving folders between storages is not implemented.');
 	}
 
 	/**
 	 * Copy folder
 	 *
-	 * @param t3lib_file_Folder $folderToCopy The folder to copy
-	 * @param t3lib_file_Folder $targetParentFolder The target folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToCopy The folder to copy
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetParentFolder The target folder
 	 * @param string $newFolderName
 	 * @param string $conflictMode  "overrideExistingFolder", "renameNewFolder", "cancel
-	 * @return t3lib_file_Folder The new (copied) folder object
+	 * @return \TYPO3\CMS\Core\Resource\Folder The new (copied) folder object
 	 */
-	public function copyFolder(t3lib_file_Folder $folderToCopy, t3lib_file_Folder $targetParentFolder, $newFolderName = NULL, $conflictMode = 'renameNewFolder') {
+	public function copyFolder(\TYPO3\CMS\Core\Resource\Folder $folderToCopy, \TYPO3\CMS\Core\Resource\Folder $targetParentFolder, $newFolderName = NULL, $conflictMode = 'renameNewFolder') {
 		// TODO implement the $conflictMode handling
 		// TODO permission checks
 		$returnObject = NULL;
@@ -1385,7 +1387,7 @@ class t3lib_file_Storage {
 			} else {
 				$this->copyFolderBetweenStorages($folderToCopy, $targetParentFolder, $newFolderName);
 			}
-		} catch (t3lib_exception $e) {
+		} catch (\TYPO3\CMS\Core\Exception $e) {
 			echo $e->getMessage();
 		}
 		$this->emitPostFolderCopySignal($folderToCopy, $targetParentFolder, $newFolderName);
@@ -1395,30 +1397,30 @@ class t3lib_file_Storage {
 	/**
 	 * Moves files between storages
 	 *
-	 * @param t3lib_file_Folder $folderToMove
-	 * @param t3lib_file_Folder $targetParentFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetParentFolder
 	 * @param null $newFolderName
 	 * @return void
 	 */
-	protected function copyFolderBetweenStorages(t3lib_file_Folder $folderToMove, t3lib_file_Folder $targetParentFolder, $newFolderName = NULL) {
-		throw new RuntimeException('Not yet implemented!', 1330262731);
+	protected function copyFolderBetweenStorages(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetParentFolder, $newFolderName = NULL) {
+		throw new \RuntimeException('Not yet implemented!', 1330262731);
 	}
 
 	/**
 	 * Previously in t3lib_extFileFunc::folder_move()
 	 *
-	 * @param t3lib_file_Folder $folderObject
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject
 	 * @param string $newName
 	 * @throws Exception
 	 * @throws InvalidArgumentException
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function renameFolder($folderObject, $newName) {
 		// TODO unit tests
 		// TODO access checks
 		$returnObject = NULL;
 		if ($this->driver->folderExistsInFolder($newName, $folderObject)) {
-			throw new InvalidArgumentException((('The folder ' . $newName) . ' already exists in folder ') . $folderObject->getIdentifier(), 1325418870);
+			throw new \InvalidArgumentException((('The folder ' . $newName) . ' already exists in folder ') . $folderObject->getIdentifier(), 1325418870);
 		}
 		$this->emitPreFolderRenameSignal($folderObject, $newName);
 		$fileObjects = $this->getAllFileObjectsInFolder($folderObject);
@@ -1430,7 +1432,7 @@ class t3lib_file_Storage {
 				$fileObject->updateProperties(array('identifier' => $newIdentifier));
 			}
 			$returnObject = $this->getFolder($fileMappings[$folderObject->getIdentifier()]);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			throw $e;
 		}
 		$this->emitPostFolderRenameSignal($folderObject, $newName);
@@ -1440,18 +1442,18 @@ class t3lib_file_Storage {
 	/**
 	 * Previously in t3lib_extFileFunc::folder_delete()
 	 *
-	 * @param t3lib_file_Folder    $folderObject
+	 * @param \TYPO3\CMS\Core\Resource\Folder    $folderObject
 	 * @param bool $deleteRecursively
 	 * @throws RuntimeException
-	 * @throws t3lib_file_exception_InsufficientFileAccessPermissionsException
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException
 	 * @return bool
 	 */
 	public function deleteFolder($folderObject, $deleteRecursively = FALSE) {
 		if (!$this->checkFolderActionPermission('remove', $folderObject)) {
-			throw new t3lib_file_exception_InsufficientFileAccessPermissionsException(('You are not allowed to access the folder "' . $folderObject->getIdentifier()) . '\'', 1323423953);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException(('You are not allowed to access the folder "' . $folderObject->getIdentifier()) . '\'', 1323423953);
 		}
 		if ($this->driver->isFolderEmpty($folderObject) && !$deleteRecursively) {
-			throw new RuntimeException(('Could not delete folder "' . $folderObject->getIdentifier()) . '" because it is not empty.', 1325952534);
+			throw new \RuntimeException(('Could not delete folder "' . $folderObject->getIdentifier()) . '" because it is not empty.', 1325952534);
 		}
 		$this->emitPreFolderDeleteSignal($folderObject);
 		$result = $this->driver->deleteFolder($folderObject, $deleteRecursively);
@@ -1509,10 +1511,10 @@ class t3lib_file_Storage {
 	 * Checks if the given file exists in the given folder
 	 *
 	 * @param string $folderName
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	public function hasFolderInFolder($folderName, t3lib_file_Folder $folder) {
+	public function hasFolderInFolder($folderName, \TYPO3\CMS\Core\Resource\Folder $folder) {
 		return $this->driver->folderExistsInFolder($folderName, $folder);
 	}
 
@@ -1522,20 +1524,20 @@ class t3lib_file_Storage {
 	 * previously in t3lib_extFileFunc::func_newfolder()
 	 *
 	 * @param string $folderName The new folder name
-	 * @param t3lib_file_Folder $parentFolder (optional) the parent folder to create the new folder inside of. If not given, the root folder is used
-	 * @return t3lib_file_Folder The new folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder (optional) the parent folder to create the new folder inside of. If not given, the root folder is used
+	 * @return \TYPO3\CMS\Core\Resource\Folder The new folder object
 	 */
-	public function createFolder($folderName, t3lib_file_Folder $parentFolder = NULL) {
+	public function createFolder($folderName, \TYPO3\CMS\Core\Resource\Folder $parentFolder = NULL) {
 		if ($parentFolder === NULL) {
 			$parentFolder = $this->getRootLevelFolder();
 		}
 		if (!$this->driver->folderExists($parentFolder->getIdentifier())) {
-			throw new InvalidArgumentException(('Parent folder "' . $parentFolder->getIdentifier()) . '" does not exist.', 1325689164);
+			throw new \InvalidArgumentException(('Parent folder "' . $parentFolder->getIdentifier()) . '" does not exist.', 1325689164);
 		}
 		if (!$this->checkFolderActionPermission('add', $parentFolder)) {
-			throw new t3lib_file_exception_InsufficientFolderWritePermissionsException(('You are not allowed to create directories in the folder "' . $parentFolder->getIdentifier()) . '"', 1323059807);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException(('You are not allowed to create directories in the folder "' . $parentFolder->getIdentifier()) . '"', 1323059807);
 		}
-		$folderParts = t3lib_div::trimExplode('/', $folderName, TRUE);
+		$folderParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('/', $folderName, TRUE);
 		foreach ($folderParts as $folder) {
 			// TODO check if folder creation succeeded
 			if ($this->hasFolderInFolder($folder, $parentFolder)) {
@@ -1550,7 +1552,7 @@ class t3lib_file_Storage {
 	/**
 	 * Returns the default folder where new files are stored if no other folder is given.
 	 *
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getDefaultFolder() {
 		return $this->driver->getDefaultFolder();
@@ -1558,15 +1560,15 @@ class t3lib_file_Storage {
 
 	/**
 	 * @param string $identifier
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getFolder($identifier) {
 		if (!$this->driver->folderExists($identifier)) {
-			throw new t3lib_file_exception_FolderDoesNotExistException(('Folder ' . $identifier) . ' does not exist.', 1320575630);
+			throw new \TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException(('Folder ' . $identifier) . ' does not exist.', 1320575630);
 		}
 		$folderObject = $this->driver->getFolder($identifier);
 		if ($this->fileMounts && !$this->isWithinFileMountBoundaries($folderObject)) {
-			throw new t3lib_file_exception_NotInMountPointException(('Folder "' . $identifier) . '" is not within your mount points.', 1330120649);
+			throw new \TYPO3\CMS\Core\Resource\Exception\NotInMountPointException(('Folder "' . $identifier) . '" is not within your mount points.', 1330120649);
 		} else {
 			return $folderObject;
 		}
@@ -1576,7 +1578,7 @@ class t3lib_file_Storage {
 	 * Returns the folders on the root level of the storage
 	 * or the first mount point of this storage for this user
 	 *
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getRootLevelFolder() {
 		if (count($this->fileMounts)) {
@@ -1593,7 +1595,7 @@ class t3lib_file_Storage {
 	 * @return void
 	 */
 	protected function emitPreProcessConfigurationSignal() {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreProcessConfiguration, array($this));
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreProcessConfiguration, array($this));
 	}
 
 	/**
@@ -1602,126 +1604,126 @@ class t3lib_file_Storage {
 	 * @return void
 	 */
 	protected function emitPostProcessConfigurationSignal() {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostProcessConfiguration, array($this));
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostProcessConfiguration, array($this));
 	}
 
 	/**
 	 * Emits file pre-copy signal
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @return void
 	 */
-	protected function emitPreFileCopySignal(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreFileCopy, array($file, $targetFolder));
+	protected function emitPreFileCopySignal(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreFileCopy, array($file, $targetFolder));
 	}
 
 	/**
 	 * Emits the file post-copy signal
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @return void
 	 */
-	protected function emitPostFileCopySignal(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostFileCopy, array($file, $targetFolder));
+	protected function emitPostFileCopySignal(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostFileCopy, array($file, $targetFolder));
 	}
 
 	/**
 	 * Emits the file pre-move signal
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @return void
 	 */
-	protected function emitPreFileMoveSignal(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreFileMove, array($file, $targetFolder));
+	protected function emitPreFileMoveSignal(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreFileMove, array($file, $targetFolder));
 	}
 
 	/**
 	 * Emits the file post-move signal
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @return void
 	 */
-	protected function emitPostFileMoveSignal(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostFileMove, array($file, $targetFolder));
+	protected function emitPostFileMoveSignal(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostFileMove, array($file, $targetFolder));
 	}
 
 	/**
 	 * Emits the file pre-rename signal
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param $targetFolder
 	 * @return void
 	 */
-	protected function emitPreFileRenameSignal(t3lib_file_FileInterface $file, $targetFolder) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreFileRename, array($file, $targetFolder));
+	protected function emitPreFileRenameSignal(\TYPO3\CMS\Core\Resource\FileInterface $file, $targetFolder) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreFileRename, array($file, $targetFolder));
 	}
 
 	/**
 	 * Emits the file post-rename signal
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param $targetFolder
 	 * @return void
 	 */
-	protected function emitPostFileRenameSignal(t3lib_file_FileInterface $file, $targetFolder) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostFileRename, array($file, $targetFolder));
+	protected function emitPostFileRenameSignal(\TYPO3\CMS\Core\Resource\FileInterface $file, $targetFolder) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostFileRename, array($file, $targetFolder));
 	}
 
 	/**
 	 * Emits the file pre-replace signal
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param $localFilePath
 	 * @return void
 	 */
-	protected function emitPreFileReplaceSignal(t3lib_file_FileInterface $file, $localFilePath) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreFileReplace, array($file, $localFilePath));
+	protected function emitPreFileReplaceSignal(\TYPO3\CMS\Core\Resource\FileInterface $file, $localFilePath) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreFileReplace, array($file, $localFilePath));
 	}
 
 	/**
 	 * Emits the file post-replace signal
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param $localFilePath
 	 * @return void
 	 */
-	protected function emitPostFileReplaceSignal(t3lib_file_FileInterface $file, $localFilePath) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostFileReplace, array($file, $localFilePath));
+	protected function emitPostFileReplaceSignal(\TYPO3\CMS\Core\Resource\FileInterface $file, $localFilePath) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostFileReplace, array($file, $localFilePath));
 	}
 
 	/**
 	 * Emits the file pre-deletion signal
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return void
 	 */
-	protected function emitPreFileDeleteSignal(t3lib_file_FileInterface $file) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreFileDelete, array($file));
+	protected function emitPreFileDeleteSignal(\TYPO3\CMS\Core\Resource\FileInterface $file) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreFileDelete, array($file));
 	}
 
 	/**
 	 * Emits the file post-deletion signal
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return void
 	 */
-	protected function emitPostFileDeleteSignal(t3lib_file_FileInterface $file) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostFileDelete, array($file));
+	protected function emitPostFileDeleteSignal(\TYPO3\CMS\Core\Resource\FileInterface $file) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostFileDelete, array($file));
 	}
 
 	/**
 	 * Emits the folder pre-copy signal
 	 *
 	 * @param t3lib_File_Folder $folder
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param $newName
 	 * @return void
 	 */
-	protected function emitPreFolderCopySignal(t3lib_File_Folder $folder, t3lib_file_Folder $targetFolder, $newName) {
+	protected function emitPreFolderCopySignal(\t3lib_File_Folder $folder, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newName) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PreFolderCopy, array($folder, $targetFolder));
 	}
 
@@ -1729,11 +1731,11 @@ class t3lib_file_Storage {
 	 * Emits the folder post-copy signal
 	 *
 	 * @param t3lib_File_Folder $folder
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param $newName
 	 * @return void
 	 */
-	protected function emitPostFolderCopySignal(t3lib_File_Folder $folder, t3lib_file_Folder $targetFolder, $newName) {
+	protected function emitPostFolderCopySignal(\t3lib_File_Folder $folder, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newName) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PostFolderCopy, array($folder, $targetFolder));
 	}
 
@@ -1741,11 +1743,11 @@ class t3lib_file_Storage {
 	 * Emits the folder pre-move signal
 	 *
 	 * @param t3lib_File_Folder $folder
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param $newName
 	 * @return void
 	 */
-	protected function emitPreFolderMoveSignal(t3lib_File_Folder $folder, t3lib_file_Folder $targetFolder, $newName) {
+	protected function emitPreFolderMoveSignal(\t3lib_File_Folder $folder, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newName) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PreFolderMove, array($folder, $targetFolder));
 	}
 
@@ -1753,11 +1755,11 @@ class t3lib_file_Storage {
 	 * Emits the folder post-move signal
 	 *
 	 * @param t3lib_File_Folder $folder
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param $newName
 	 * @return void
 	 */
-	protected function emitPostFolderMoveSignal(t3lib_File_Folder $folder, t3lib_file_Folder $targetFolder, $newName) {
+	protected function emitPostFolderMoveSignal(\t3lib_File_Folder $folder, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newName) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PostFolderMove, array($folder, $targetFolder));
 	}
 
@@ -1768,7 +1770,7 @@ class t3lib_file_Storage {
 	 * @param $newName
 	 * @return void
 	 */
-	protected function emitPreFolderRenameSignal(t3lib_File_Folder $folder, $newName) {
+	protected function emitPreFolderRenameSignal(\t3lib_File_Folder $folder, $newName) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PreFolderRename, array($folder, $newName));
 	}
 
@@ -1779,7 +1781,7 @@ class t3lib_file_Storage {
 	 * @param $newName
 	 * @return void
 	 */
-	protected function emitPostFolderRenameSignal(t3lib_File_Folder $folder, $newName) {
+	protected function emitPostFolderRenameSignal(\t3lib_File_Folder $folder, $newName) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PostFolderRename, array($folder, $newName));
 	}
 
@@ -1789,7 +1791,7 @@ class t3lib_file_Storage {
 	 * @param t3lib_File_Folder $folder
 	 * @return void
 	 */
-	protected function emitPreFolderDeleteSignal(t3lib_File_Folder $folder) {
+	protected function emitPreFolderDeleteSignal(\t3lib_File_Folder $folder) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PreFolderDelete, array($folder));
 	}
 
@@ -1799,43 +1801,43 @@ class t3lib_file_Storage {
 	 * @param t3lib_File_Folder $folder
 	 * @return void
 	 */
-	protected function emitPostFolderDeleteSignal(t3lib_File_Folder $folder) {
+	protected function emitPostFolderDeleteSignal(\t3lib_File_Folder $folder) {
 		$this->getSignalSlotDispatcher()->dispatch('t3lib_File_Storage', self::SIGNAL_PostFolderDelete, array($folder));
 	}
 
 	/**
 	 * Emits file pre-processing signal.
 	 *
-	 * @param t3lib_file_ProcessedFile $processedFile
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\ProcessedFile $processedFile
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $context
 	 * @param array $configuration
 	 */
-	protected function emitPreFileProcess(t3lib_file_ProcessedFile $processedFile, t3lib_file_FileInterface $file, $context, array $configuration = array()) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreFileProcess, array($this, $this->driver, $processedFile, $file, $context, $configuration));
+	protected function emitPreFileProcess(\TYPO3\CMS\Core\Resource\ProcessedFile $processedFile, \TYPO3\CMS\Core\Resource\FileInterface $file, $context, array $configuration = array()) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreFileProcess, array($this, $this->driver, $processedFile, $file, $context, $configuration));
 	}
 
 	/**
 	 * Emits file post-processing signal.
 	 *
-	 * @param t3lib_file_ProcessedFile $processedFile
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\ProcessedFile $processedFile
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param $context
 	 * @param array $configuration
 	 */
-	protected function emitPostFileProcess(t3lib_file_ProcessedFile $processedFile, t3lib_file_FileInterface $file, $context, array $configuration = array()) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PostFileProcess, array($this, $this->driver, $processedFile, $file, $context, $configuration));
+	protected function emitPostFileProcess(\TYPO3\CMS\Core\Resource\ProcessedFile $processedFile, \TYPO3\CMS\Core\Resource\FileInterface $file, $context, array $configuration = array()) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PostFileProcess, array($this, $this->driver, $processedFile, $file, $context, $configuration));
 	}
 
 	/**
 	 * Emits file pre-processing signal when generating a public url for a file or folder.
 	 *
-	 * @param t3lib_file_ResourceInterface $resourceObject
+	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resourceObject
 	 * @param boolean $relativeToCurrentScript
 	 * @param array $urlData
 	 */
-	protected function emitPreGeneratePublicUrl(t3lib_file_ResourceInterface $resourceObject, $relativeToCurrentScript, array $urlData) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Storage', self::SIGNAL_PreGeneratePublicUrl, array($this, $this->driver, $resourceObject, $relativeToCurrentScript, $urlData));
+	protected function emitPreGeneratePublicUrl(\TYPO3\CMS\Core\Resource\ResourceInterface $resourceObject, $relativeToCurrentScript, array $urlData) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\ResourceStorage', self::SIGNAL_PreGeneratePublicUrl, array($this, $this->driver, $resourceObject, $relativeToCurrentScript, $urlData));
 	}
 
 	/**
@@ -1843,17 +1845,17 @@ class t3lib_file_Storage {
 	 * If $theFile exists in $theDest (directory) the file have numbers appended up to $this->maxNumber. Hereafter a unique string will be appended.
 	 * This function is used by fx. TCEmain when files are attached to records and needs to be uniquely named in the uploads/* folders
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @param 	string	$theFile	The input fileName to check
 	 * @param 	boolean	$dontCheckForUnique	If set the fileName is returned with the path prepended without checking whether it already existed!
 	 * @return 	string		A unique fileName inside $folder, based on $theFile.
 	 * @see t3lib_basicFileFunc::getUniqueName()
 	 */
 	// TODO check if this should be moved back to t3lib_file_Folder
-	protected function getUniqueName(t3lib_file_Folder $folder, $theFile, $dontCheckForUnique = FALSE) {
+	protected function getUniqueName(\TYPO3\CMS\Core\Resource\Folder $folder, $theFile, $dontCheckForUnique = FALSE) {
 		static $maxNumber = 99, $uniqueNamePrefix = '';
 		// Fetches info about path, name, extention of $theFile
-		$origFileInfo = t3lib_div::split_fileref($theFile);
+		$origFileInfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($theFile);
 		// Adds prefix
 		if ($uniqueNamePrefix) {
 			$origFileInfo['file'] = $uniqueNamePrefix . $origFileInfo['file'];
@@ -1888,17 +1890,17 @@ class t3lib_file_Storage {
 				return $theDestFile;
 			}
 		}
-		throw new RuntimeException(('Last possible name "' . $theDestFile) . '" is already taken.', 1325194291);
+		throw new \RuntimeException(('Last possible name "' . $theDestFile) . '" is already taken.', 1325194291);
 	}
 
 	/**
 	 * Get the SignalSlot dispatcher
 	 *
-	 * @return Tx_Extbase_SignalSlot_Dispatcher
+	 * @return \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
 	 */
 	protected function getSignalSlotDispatcher() {
 		if (!isset($this->signalSlotDispatcher)) {
-			$this->signalSlotDispatcher = $this->getObjectManager()->get('Tx_Extbase_SignalSlot_Dispatcher');
+			$this->signalSlotDispatcher = $this->getObjectManager()->get('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
 		}
 		return $this->signalSlotDispatcher;
 	}
@@ -1906,25 +1908,25 @@ class t3lib_file_Storage {
 	/**
 	 * Get the ObjectManager
 	 *
-	 * @return Tx_Extbase_Object_ObjectManager
+	 * @return \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected function getObjectManager() {
-		return t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 	}
 
 	/**
-	 * @return t3lib_file_Factory
+	 * @return \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected function getFileFactory() {
-		return t3lib_div::makeInstance('t3lib_file_Factory');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 	}
 
 	/**
-	 * @return t3lib_file_Service_FileProcessingService
+	 * @return \TYPO3\CMS\Core\Resource\Service\FileProcessingService
 	 */
 	protected function getFileProcessingService() {
 		if (!$this->fileProcessingService) {
-			$this->fileProcessingService = t3lib_div::makeInstance('t3lib_file_Service_FileProcessingService', $this, $this->driver);
+			$this->fileProcessingService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\Service\\FileProcessingService', $this, $this->driver);
 		}
 		return $this->fileProcessingService;
 	}
@@ -1934,7 +1936,7 @@ class t3lib_file_Storage {
 	 * be processed. does not check for access rights here
 	 *
 	 * @todo check if we need to implement "is writable" capability
-	 * @return t3lib_file_Folder the processing folder, can be empty as well, if the storage doesn't have a processing folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder the processing folder, can be empty as well, if the storage doesn't have a processing folder
 	 */
 	public function getProcessingFolder() {
 		if (!isset($this->processingFolder)) {
@@ -1961,5 +1963,6 @@ class t3lib_file_Storage {
 	}
 
 }
+
 
 ?>

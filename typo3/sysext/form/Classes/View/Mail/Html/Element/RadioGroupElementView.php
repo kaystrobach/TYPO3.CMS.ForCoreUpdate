@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html_Element_Radiogroup extends tx_form_View_Mail_Html_Element_Fieldset {
+class RadioGroupElementView extends \TYPO3\CMS\Form\View\Mail\Html\Element\FieldsetElementView {
 
 	/**
 	 * Default layout of this object
@@ -47,13 +49,14 @@ class tx_form_View_Mail_Html_Element_Radiogroup extends tx_form_View_Mail_Html_E
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Radiogroup $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\RadioGroupElement $model Model for this element
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Radiogroup $model) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\RadioGroupElement $model) {
 		parent::__construct($model);
 	}
 
 }
+
 
 ?>

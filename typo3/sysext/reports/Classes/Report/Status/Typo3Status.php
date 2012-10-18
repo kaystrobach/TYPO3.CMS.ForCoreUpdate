@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Report\Status;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage reports
  */
-class tx_reports_reports_status_Typo3Status implements tx_reports_StatusProvider {
+class Typo3Status implements \TYPO3\CMS\Reports\StatusProviderInterface {
 
 	/**
 	 * Returns the status for this report
@@ -47,31 +49,32 @@ class tx_reports_reports_status_Typo3Status implements tx_reports_StatusProvider
 	/**
 	 * Simply gets the current TYPO3 version.
 	 *
-	 * @return tx_reports_reports_status_Status
+	 * @return \TYPO3\CMS\Reports\Status
 	 */
 	protected function getTypo3VersionStatus() {
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', 'TYPO3', TYPO3_version, '', tx_reports_reports_status_Status::NOTICE);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', 'TYPO3', TYPO3_version, '', \TYPO3\CMS\Reports\Status::NOTICE);
 	}
 
 	/**
 	 * Check for usage of old way of implementing XCLASSes
 	 *
-	 * @return tx_reports_reports_status_Status
+	 * @return \TYPO3\CMS\Reports\Status
 	 */
 	protected function getOldXclassUsageStatus() {
 		$message = '';
 		$value = $GLOBALS['LANG']->getLL('status_none');
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		$xclasses = array_merge((array) $GLOBALS['TYPO3_CONF_VARS']['BE']['XCLASS'], (array) $GLOBALS['TYPO3_CONF_VARS']['FE']['XCLASS']);
 		$numberOfXclasses = count($xclasses);
 		if ($numberOfXclasses > 0) {
 			$value = sprintf($GLOBALS['LANG']->getLL('status_oldXclassUsageFound'), $numberOfXclasses);
 			$message = ('<ol><li>' . implode('</li><li>', $xclasses)) . '</li></ol>';
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_oldXclassUsage'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_oldXclassUsage'), $value, $message, $severity);
 	}
 
 }
+
 
 ?>

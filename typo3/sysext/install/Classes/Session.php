@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage tx_install
  */
-class tx_install_session {
+class Session {
 
 	/**
 	 * The path to our typo3temp (where we can write our sessions). Set in the
@@ -90,7 +92,7 @@ class tx_install_session {
 		session_set_save_handler(array($this, 'open'), array($this, 'close'), array($this, 'read'), array($this, 'write'), array($this, 'destroy'), array($this, 'gc'));
 		session_save_path($sessionSavePath);
 		session_name($this->cookieName);
-		ini_set('session.cookie_path', t3lib_div::getIndpEnv('TYPO3_SITE_PATH'));
+		ini_set('session.cookie_path', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'));
 		// Always call the garbage collector to clean up stale session files
 		ini_set('session.gc_probability', 100);
 		ini_set('session.gc_divisor', 100);
@@ -98,15 +100,15 @@ class tx_install_session {
 		if (version_compare(phpversion(), '5.2', '<')) {
 			ini_set('session.cookie_httponly', TRUE);
 		}
-		if (t3lib_utility_PhpOptions::isSessionAutoStartEnabled()) {
+		if (\TYPO3\CMS\Core\Utility\PhpOptionsUtility::isSessionAutoStartEnabled()) {
 			$sessionCreationError = 'Error: session.auto-start is enabled.<br />';
 			$sessionCreationError .= 'The PHP option session.auto-start is enabled. Disable this option in php.ini or .htaccess:<br />';
 			$sessionCreationError .= '<pre>php_value session.auto_start Off</pre>';
-			throw new RuntimeException($sessionCreationError, 1294587485);
+			throw new \RuntimeException($sessionCreationError, 1294587485);
 		} elseif (defined('SID')) {
 			$sessionCreationError = 'Session already started by session_start().<br />';
 			$sessionCreationError .= 'Make sure no installed extension is starting a session in its ext_localconf.php or ext_tables.php.';
-			throw new RuntimeException($sessionCreationError, 1294587486);
+			throw new \RuntimeException($sessionCreationError, 1294587486);
 		}
 		session_start();
 	}
@@ -115,7 +117,7 @@ class tx_install_session {
 	 * Returns the path where to store our session files
 	 */
 	private function getSessionSavePath() {
-		$sessionSavePath = sprintf($this->typo3tempPath . $this->sessionPath, t3lib_div::hmac('session:' . $GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword']));
+		$sessionSavePath = sprintf($this->typo3tempPath . $this->sessionPath, \TYPO3\CMS\Core\Utility\GeneralUtility::hmac('session:' . $GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword']));
 		$this->ensureSessionSavePathExists($sessionSavePath);
 		return $sessionSavePath;
 	}
@@ -130,17 +132,17 @@ class tx_install_session {
 	private function ensureSessionSavePathExists($sessionSavePath) {
 		if (!is_dir($sessionSavePath)) {
 			try {
-				t3lib_div::mkdir_deep($sessionSavePath);
-			} catch (RuntimeException $exception) {
-				throw new RuntimeException('Could not create session folder in typo3temp/. Make sure it is writeable!', 1294587484);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep($sessionSavePath);
+			} catch (\RuntimeException $exception) {
+				throw new \RuntimeException('Could not create session folder in typo3temp/. Make sure it is writeable!', 1294587484);
 			}
-			t3lib_div::writeFile($sessionSavePath . '/.htaccess', (('Order deny, allow' . '
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($sessionSavePath . '/.htaccess', (('Order deny, allow' . '
 ') . 'Deny from all') . '
 ');
 			$indexContent = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">';
 			$indexContent .= '<HTML><HEAD<TITLE></TITLE><META http-equiv=Refresh Content="0; Url=../../">';
 			$indexContent .= '</HEAD></HTML>';
-			t3lib_div::writeFile($sessionSavePath . '/index.html', $indexContent);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($sessionSavePath . '/index.html', $indexContent);
 		}
 	}
 
@@ -337,7 +339,7 @@ class tx_install_session {
 	 */
 	public function write($id, $sessionData) {
 		$sessionFile = $this->getSessionFile($id);
-		return t3lib_div::writeFile($sessionFile, $sessionData);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($sessionFile, $sessionData);
 	}
 
 	/**
@@ -389,5 +391,6 @@ class tx_install_session {
 	}
 
 }
+
 
 ?>

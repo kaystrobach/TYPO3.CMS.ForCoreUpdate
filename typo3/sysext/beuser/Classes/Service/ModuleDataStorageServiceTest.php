@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Service;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,15 +33,15 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_Service_ModuleDataStorageServiceTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class ModuleDataStorageServiceTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Beuser_Service_ModuleDataStorageService
+	 * @var \TYPO3\CMS\Beuser\Service\ModuleDataStorageService
 	 */
 	protected $fixture;
 
 	public function setUp() {
-		$this->fixture = $this->objectManager->get('Tx_Beuser_Service_ModuleDataStorageService');
+		$this->fixture = $this->objectManager->get('TYPO3\\CMS\\Beuser\\Service\\ModuleDataStorageService');
 	}
 
 	public function tearDown() {
@@ -51,11 +53,12 @@ class Tx_Beuser_Service_ModuleDataStorageServiceTest extends Tx_Extbase_Tests_Un
 	 */
 	public function loadModuleDataReturnsModuleDataObjectForEmptyModuleData() {
 		// Simulate empty module data
-		unset($GLOBALS['BE_USER']->uc['moduleData'][Tx_Beuser_Service_ModuleDataStorageService::KEY]);
+		unset($GLOBALS['BE_USER']->uc['moduleData'][\TYPO3\CMS\Beuser\Service\ModuleDataStorageService::KEY]);
 		$result = $this->fixture->loadModuleData();
-		$this->assertInstanceOf('Tx_Beuser_Domain_Model_ModuleData', $result);
+		$this->assertInstanceOf('TYPO3\\CMS\\Beuser\\Domain\\Model\\ModuleData', $result);
 	}
 
 }
+
 
 ?>

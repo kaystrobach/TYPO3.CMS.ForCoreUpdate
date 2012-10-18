@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_PdoHelper {
+class PdoHelper {
 
 	/**
 	 * Pumps the SQL into the database. Use for DDL only.
@@ -47,7 +49,7 @@ class t3lib_PdoHelper {
 	 * @return void
 	 * @author Karsten Dambekalns <karsten@typo3.org>
 	 */
-	static public function importSql(PDO $databaseHandle, $pdoDriver, $pathAndFilename) {
+	static public function importSql(\PDO $databaseHandle, $pdoDriver, $pathAndFilename) {
 		$sql = file($pathAndFilename, FILE_IGNORE_NEW_LINES & FILE_SKIP_EMPTY_LINES);
 		// Remove MySQL style key length delimiters (yuck!) if we are not setting up a MySQL db
 		if ($pdoDriver !== 'mysql') {
@@ -64,5 +66,6 @@ class t3lib_PdoHelper {
 	}
 
 }
+
 
 ?>

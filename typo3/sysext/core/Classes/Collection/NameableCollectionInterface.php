@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Nameable
+interface NameableCollectionInterface
 {
 	/**
 	 * Setter for the title
@@ -69,4 +71,5 @@ interface t3lib_collection_Nameable
 	public function getDescription();
 
 }
+
 ?>

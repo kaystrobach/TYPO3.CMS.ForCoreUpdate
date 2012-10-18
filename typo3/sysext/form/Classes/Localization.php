@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Localization implements t3lib_Singleton {
+class Localization implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * File reference to the local language file
@@ -62,5 +64,6 @@ class tx_form_System_Localization implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

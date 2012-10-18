@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_InstallationStateCssClassViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class InstallationStateCssClassViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Returns string meant to be used as css class
@@ -56,5 +58,6 @@ class Tx_Extensionmanager_ViewHelpers_InstallationStateCssClassViewHelper extend
 	}
 
 }
+
 
 ?>

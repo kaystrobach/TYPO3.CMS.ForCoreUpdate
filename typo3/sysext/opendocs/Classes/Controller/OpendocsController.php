@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Opendocs\Controller;
+
 /**
  * Adding a list of all open documents of a user to the backend.php
  *
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage opendocs
  */
-class tx_opendocs implements backend_toolbarItem {
+class OpendocsController implements \TYPO3\CMS\Backend\Toolbar\ToolbarItemHookInterface {
 
 	/**
 	 * reference back to the backend object
@@ -25,9 +27,9 @@ class tx_opendocs implements backend_toolbarItem {
 	/**
 	 * Constructor, loads the documents from the user control
 	 *
-	 * @param TYPO3backend TYPO3 backend object reference
+	 * @param \TYPO3\CMS\Backend\Controller\BackendController TYPO3 backend object reference
 	 */
-	public function __construct(TYPO3backend &$backendReference = NULL) {
+	public function __construct(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
 		$this->loadDocsFromUserSession();
 	}
@@ -66,7 +68,7 @@ class tx_opendocs implements backend_toolbarItem {
 		// Toolbar item icon
 		$opendocsMenu[] = '<a href="#" class="toolbar-item">';
 		$opendocsMenu[] = ('<input type="text" id="tx-opendocs-counter" disabled="disabled" value="' . $numDocs) . '" />';
-		$opendocsMenu[] = t3lib_iconWorks::getSpriteIcon('apps-toolbar-menu-opendocs', array('title' => $title)) . '</a>';
+		$opendocsMenu[] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-toolbar-menu-opendocs', array('title' => $title)) . '</a>';
 		// Toolbar item menu and initial content
 		$opendocsMenu[] = '<div class="toolbar-item-menu" style="display: none;">';
 		$opendocsMenu[] = $this->renderMenu();
@@ -117,13 +119,13 @@ class tx_opendocs implements backend_toolbarItem {
 	public function renderMenuEntry($document, $md5sum, $isRecentDoc = FALSE, $isFirstDoc = FALSE) {
 		$table = $document[3]['table'];
 		$uid = $document[3]['uid'];
-		$record = t3lib_BEfunc::getRecordWSOL($table, $uid);
+		$record = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL($table, $uid);
 		if (!is_array($record)) {
 			// Record seems to be deleted
 			return '';
 		}
-		$label = htmlspecialchars(strip_tags(t3lib_div::htmlspecialchars_decode($document[0])));
-		$icon = t3lib_iconWorks::getSpriteIconForRecord($table, $record);
+		$label = htmlspecialchars(strip_tags(\TYPO3\CMS\Core\Utility\GeneralUtility::htmlspecialchars_decode($document[0])));
+		$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord($table, $record);
 		$link = ($GLOBALS['BACK_PATH'] . 'alt_doc.php?') . $document[2];
 		$pageId = intval($document[3]['uid']);
 		if ($document[3]['table'] !== 'pages') {
@@ -136,7 +138,7 @@ class tx_opendocs implements backend_toolbarItem {
 		if (!$isRecentDoc) {
 			$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:rm.closeDoc', TRUE);
 			// Open document
-			$closeIcon = t3lib_iconWorks::getSpriteIcon('actions-document-close');
+			$closeIcon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close');
 			$entry = ((((((((((((('
 				<tr class="opendoc' . $firstRow) . '">
 					<td class="icon">') . $icon) . '</td>
@@ -169,7 +171,7 @@ class tx_opendocs implements backend_toolbarItem {
 	 * @return void
 	 */
 	protected function addJavascriptToBackend() {
-		$this->backendReference->addJavascriptFile(t3lib_extMgm::extRelPath($this->EXTKEY) . 'opendocs.js');
+		$this->backendReference->addJavascriptFile(\TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($this->EXTKEY) . 'opendocs.js');
 	}
 
 	/**
@@ -178,7 +180,7 @@ class tx_opendocs implements backend_toolbarItem {
 	 * @return void
 	 */
 	protected function addCssToBackend() {
-		$this->backendReference->addCssFile('opendocs', t3lib_extMgm::extRelPath($this->EXTKEY) . 'opendocs.css');
+		$this->backendReference->addCssFile('opendocs', \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($this->EXTKEY) . 'opendocs.css');
 	}
 
 	/*******************
@@ -207,11 +209,11 @@ class tx_opendocs implements backend_toolbarItem {
 	 * Closes a document in the session and
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return string List item HTML attibutes
 	 */
-	public function closeDocument($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
-		$md5sum = t3lib_div::_GP('md5sum');
+	public function closeDocument($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
+		$md5sum = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('md5sum');
 		if ($md5sum && isset($this->openDocs[$md5sum])) {
 			// Add the document to be closed to the recent documents
 			$this->recentDocs = array_merge(array($md5sum => $this->openDocs[$md5sum]), $this->recentDocs);
@@ -232,14 +234,15 @@ class tx_opendocs implements backend_toolbarItem {
 	 * Renders the menu so that it can be returned as response to an AJAX call
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return void
 	 */
-	public function renderAjax($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
+	public function renderAjax($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
 		$menuContent = $this->renderMenu();
 		$ajaxObj->addContent('opendocsMenu', $menuContent);
 	}
 
 }
+
 
 ?>

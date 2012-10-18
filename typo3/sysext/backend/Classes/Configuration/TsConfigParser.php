@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Configuration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_TSparser_TSconfig extends t3lib_TSparser {
+class TsConfigParser extends \TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser {
 
 	/**
 	 * @var 	array
@@ -54,7 +56,7 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 		$this->id = $id;
 		$this->rootLine = $rootLine;
 		$hash = md5(($type . ':') . $TStext);
-		$cachedContent = t3lib_BEfunc::getHash($hash, 0);
+		$cachedContent = \TYPO3\CMS\Backend\Utility\BackendUtility::getHash($hash, 0);
 		if ($cachedContent) {
 			$storedData = unserialize($cachedContent);
 			$storedMD5 = substr($cachedContent, -strlen($hash));
@@ -68,7 +70,7 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 				);
 			} else {
 				$shash = md5($checkMD5 . $hash);
-				$cachedSpec = t3lib_BEfunc::getHash($shash, 0);
+				$cachedSpec = \TYPO3\CMS\Backend\Utility\BackendUtility::getHash($shash, 0);
 				if ($cachedSpec) {
 					$storedData = unserialize($cachedSpec);
 					$res = array(
@@ -78,7 +80,7 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 				} else {
 					$storeData = $this->parseWithConditions($TStext);
 					$serData = serialize($storeData);
-					t3lib_BEfunc::storeHash($shash, $serData, $type . '_TSconfig');
+					\TYPO3\CMS\Backend\Utility\BackendUtility::storeHash($shash, $serData, $type . '_TSconfig');
 					$res = array(
 						'TSconfig' => $storeData['TSconfig'],
 						'cached' => 0
@@ -89,7 +91,7 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 			$storeData = $this->parseWithConditions($TStext);
 			$serData = serialize($storeData);
 			$md5 = md5($serData);
-			t3lib_BEfunc::storeHash($hash, $serData . $md5, $type . '_TSconfig');
+			\TYPO3\CMS\Backend\Utility\BackendUtility::storeHash($hash, $serData . $md5, $type . '_TSconfig');
 			$res = array(
 				'TSconfig' => $storeData['TSconfig'],
 				'cached' => 0
@@ -105,8 +107,8 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 	 * @return array Array containing the parsed TSConfig, the encountered sectiosn, the matched sections
 	 */
 	protected function parseWithConditions($TSconfig) {
-		/** @var $matchObj t3lib_matchCondition_backend */
-		$matchObj = t3lib_div::makeInstance('t3lib_matchCondition_backend');
+		/** @var $matchObj \TYPO3\CMS\Backend\Configuration\TypoScript\ConditionMatching\ConditionMatcher */
+		$matchObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Configuration\\TypoScript\\ConditionMatching\\ConditionMatcher');
 		$matchObj->setRootline($this->rootLine);
 		$matchObj->setPageId($this->id);
 		$this->parse($TSconfig, $matchObj);
@@ -126,8 +128,8 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 	 */
 	protected function matching(array $cc) {
 		if (is_array($cc['sections'])) {
-			/** @var $matchObj t3lib_matchCondition_backend */
-			$matchObj = t3lib_div::makeInstance('t3lib_matchCondition_backend');
+			/** @var $matchObj \TYPO3\CMS\Backend\Configuration\TypoScript\ConditionMatching\ConditionMatcher */
+			$matchObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Configuration\\TypoScript\\ConditionMatching\\ConditionMatcher');
 			$matchObj->setRootline($this->rootLine);
 			$matchObj->setPageId($this->id);
 			foreach ($cc['sections'] as $key => $pre) {
@@ -140,5 +142,6 @@ class t3lib_TSparser_TSconfig extends t3lib_TSparser {
 	}
 
 }
+
 
 ?>

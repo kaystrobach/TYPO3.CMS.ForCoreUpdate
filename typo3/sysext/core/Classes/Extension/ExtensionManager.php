@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_extMgm {
+class ExtensionManager {
 
 	static protected $extensionKeyMap;
 
@@ -66,7 +68,7 @@ class t3lib_extMgm {
 	static public function isLoaded($key, $exitOnError = FALSE) {
 		$isLoaded = in_array($key, static::getLoadedExtensionListArray());
 		if ($exitOnError && !$isLoaded) {
-			throw new BadFunctionCallException(('TYPO3 Fatal Error: Extension "' . $key) . '" is not loaded!', 1270853910);
+			throw new \BadFunctionCallException(('TYPO3 Fatal Error: Extension "' . $key) . '" is not loaded!', 1270853910);
 		}
 		return $isLoaded;
 	}
@@ -84,13 +86,13 @@ class t3lib_extMgm {
 	static public function extPath($key, $script = '') {
 		if (isset($GLOBALS['TYPO3_LOADED_EXT'])) {
 			if (!isset($GLOBALS['TYPO3_LOADED_EXT'][$key])) {
-				throw new BadFunctionCallException(('TYPO3 Fatal Error: Extension key "' . $key) . '" is NOT loaded!', 1270853878);
+				throw new \BadFunctionCallException(('TYPO3 Fatal Error: Extension key "' . $key) . '" is NOT loaded!', 1270853878);
 			}
 			$extensionPath = PATH_site . $GLOBALS['TYPO3_LOADED_EXT'][$key]['siteRelPath'];
 		} else {
 			$loadedExtensions = array_flip(static::getLoadedExtensionListArray());
 			if (!isset($loadedExtensions[$key])) {
-				throw new BadFunctionCallException(('TYPO3 Fatal Error: Extension key "' . $key) . '" is NOT loaded!', 1294430950);
+				throw new \BadFunctionCallException(('TYPO3 Fatal Error: Extension key "' . $key) . '" is NOT loaded!', 1294430950);
 			}
 			if (@is_dir((((PATH_typo3conf . 'ext/') . $key) . '/'))) {
 				$extensionPath = ((PATH_typo3conf . 'ext/') . $key) . '/';
@@ -99,7 +101,7 @@ class t3lib_extMgm {
 			} elseif (@is_dir((((PATH_typo3 . 'sysext/') . $key) . '/'))) {
 				$extensionPath = ((PATH_typo3 . 'sysext/') . $key) . '/';
 			} else {
-				throw new BadFunctionCallException(('TYPO3 Fatal Error: Extension "' . $key) . '" NOT found!', 1294430951);
+				throw new \BadFunctionCallException(('TYPO3 Fatal Error: Extension "' . $key) . '" NOT found!', 1294430951);
 			}
 		}
 		return $extensionPath . $script;
@@ -115,7 +117,7 @@ class t3lib_extMgm {
 	 */
 	static public function extRelPath($key) {
 		if (!isset($GLOBALS['TYPO3_LOADED_EXT'][$key])) {
-			throw new BadFunctionCallException(('TYPO3 Fatal Error: Extension key "' . $key) . '" is NOT loaded!', 1270853879);
+			throw new \BadFunctionCallException(('TYPO3 Fatal Error: Extension key "' . $key) . '" is NOT loaded!', 1270853879);
 		}
 		return $GLOBALS['TYPO3_LOADED_EXT'][$key]['typo3RelPath'];
 	}
@@ -185,7 +187,7 @@ class t3lib_extMgm {
 	 */
 	static public function getExtensionVersion($key) {
 		if (!is_string($key) || empty($key)) {
-			throw new InvalidArgumentException('Extension key must be a non-empty string.', 1294586096);
+			throw new \InvalidArgumentException('Extension key must be a non-empty string.', 1294586096);
 		}
 		if (!static::isLoaded($key)) {
 			return '';
@@ -221,7 +223,7 @@ class t3lib_extMgm {
 	 * @return void
 	 */
 	static public function addTCAcolumns($table, $columnArray, $addTofeInterface = 0) {
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		if ((is_array($columnArray) && is_array($GLOBALS['TCA'][$table])) && is_array($GLOBALS['TCA'][$table]['columns'])) {
 			// Candidate for t3lib_div::array_merge() if integer-keys will some day make trouble...
 			$GLOBALS['TCA'][$table]['columns'] = array_merge($GLOBALS['TCA'][$table]['columns'], $columnArray);
@@ -246,15 +248,15 @@ class t3lib_extMgm {
 	 * @return void
 	 */
 	static public function addToAllTCAtypes($table, $str, $specificTypesList = '', $position = '') {
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		$str = trim($str);
 		$palettesChanged = array();
 		if (($str && is_array($GLOBALS['TCA'][$table])) && is_array($GLOBALS['TCA'][$table]['types'])) {
 			foreach ($GLOBALS['TCA'][$table]['types'] as $type => &$typeDetails) {
-				if ($specificTypesList === '' || t3lib_div::inList($specificTypesList, $type)) {
+				if ($specificTypesList === '' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($specificTypesList, $type)) {
 					$fieldExists = FALSE;
 					if ($position != '' && is_array($GLOBALS['TCA'][$table]['palettes'])) {
-						$positionArray = t3lib_div::trimExplode(':', $position);
+						$positionArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $position);
 						if ($positionArray[0] == 'replace') {
 							foreach ($GLOBALS['TCA'][$table]['palettes'] as $palette => $paletteDetails) {
 								if (preg_match(('/\\b' . $palette) . '\\b/', $typeDetails['showitem']) > 0 && preg_match(('/\\b' . $positionArray[1]) . '\\b/', $paletteDetails['showitem']) > 0) {
@@ -311,7 +313,7 @@ class t3lib_extMgm {
 	static public function addFieldsToAllPalettesOfField($table, $field, $addFields, $insertionPosition = '') {
 		$generatedPalette = '';
 		$processedPalettes = array();
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		if (isset($GLOBALS['TCA'][$table]['columns'][$field])) {
 			$types =& $GLOBALS['TCA'][$table]['types'];
 			if (is_array($types)) {
@@ -353,7 +355,7 @@ class t3lib_extMgm {
 	 * @return void
 	 */
 	static public function addFieldsToPalette($table, $palette, $addFields, $insertionPosition = '') {
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		if (isset($GLOBALS['TCA'][$table])) {
 			$paletteData =& $GLOBALS['TCA'][$table]['palettes'][$palette];
 			// If palette already exists, merge the data:
@@ -395,29 +397,29 @@ class t3lib_extMgm {
 	 */
 	static public function addTcaSelectItem($table, $field, array $item, $relativeToField = '', $relativePosition = '') {
 		if (!is_string($table)) {
-			throw new InvalidArgumentException(('Given table is of type "' . gettype($table)) . '" but a string is expected.', 1303236963);
+			throw new \InvalidArgumentException(('Given table is of type "' . gettype($table)) . '" but a string is expected.', 1303236963);
 		}
 		if (!is_string($field)) {
-			throw new InvalidArgumentException(('Given field is of type "' . gettype($field)) . '" but a string is expected.', 1303236964);
+			throw new \InvalidArgumentException(('Given field is of type "' . gettype($field)) . '" but a string is expected.', 1303236964);
 		}
 		if (!is_string($relativeToField)) {
-			throw new InvalidArgumentException(('Given relative field is of type "' . gettype($relativeToField)) . '" but a string is expected.', 1303236965);
+			throw new \InvalidArgumentException(('Given relative field is of type "' . gettype($relativeToField)) . '" but a string is expected.', 1303236965);
 		}
 		if (!is_string($relativePosition)) {
-			throw new InvalidArgumentException(('Given relative position is of type "' . gettype($relativePosition)) . '" but a string is expected.', 1303236966);
+			throw new \InvalidArgumentException(('Given relative position is of type "' . gettype($relativePosition)) . '" but a string is expected.', 1303236966);
 		}
 		if ((($relativePosition !== '' && $relativePosition !== 'before') && $relativePosition !== 'after') && $relativePosition !== 'replace') {
-			throw new InvalidArgumentException('Relative position must be either empty or one of "before", "after", "replace".', 1303236967);
+			throw new \InvalidArgumentException('Relative position must be either empty or one of "before", "after", "replace".', 1303236967);
 		}
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		if (!is_array($GLOBALS['TCA'][$table]['columns'][$field]['config']['items'])) {
-			throw new RuntimeException('Given select field item list was not found.', 1303237468);
+			throw new \RuntimeException('Given select field item list was not found.', 1303237468);
 		}
 		// Make sure item keys are integers
 		$GLOBALS['TCA'][$table]['columns'][$field]['config']['items'] = array_values($GLOBALS['TCA'][$table]['columns'][$field]['config']['items']);
 		if (strlen($relativePosition) > 0) {
 			// Insert at specified position
-			$matchedPosition = t3lib_utility_Array::filterByValueRecursive($relativeToField, $GLOBALS['TCA'][$table]['columns'][$field]['config']['items']);
+			$matchedPosition = \TYPO3\CMS\Core\Utility\ArrayUtility::filterByValueRecursive($relativeToField, $GLOBALS['TCA'][$table]['columns'][$field]['config']['items']);
 			if (count($matchedPosition) > 0) {
 				$relativeItemKey = key($matchedPosition);
 				if ($relativePosition === 'replace') {
@@ -470,7 +472,7 @@ class t3lib_extMgm {
 			),
 			'filter' => array(
 				array(
-					'userFunc' => 't3lib_file_Utility_FileExtensionFilter->filterInlineChildren',
+					'userFunc' => 'TYPO3\\CMS\\Core\\Resource\\Filter\\FileExtensionFilter->filterInlineChildren',
 					'parameters' => array(
 						'allowedFileExtensions' => $allowedFileExtensions,
 						'disallowedFileExtensions' => $disallowedFileExtensions
@@ -490,7 +492,7 @@ class t3lib_extMgm {
 				)
 			)
 		);
-		return t3lib_div::array_merge_recursive_overrule($fileFieldTCAConfig, $customSettingOverride);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($fileFieldTCAConfig, $customSettingOverride);
 	}
 
 	/**
@@ -523,7 +525,7 @@ class t3lib_extMgm {
 			if ($insertionPosition === '') {
 				$list .= ($list ? ', ' : '') . $insertionList;
 			} else {
-				$positions = t3lib_div::trimExplode(',', $insertionPosition, TRUE);
+				$positions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $insertionPosition, TRUE);
 				$items = self::explodeItemList($list);
 				$isInserted = FALSE;
 				// Iterate through all fields an check whether it's possible to inserte there:
@@ -642,9 +644,9 @@ class t3lib_extMgm {
 	 */
 	static protected function explodeItemList($itemList) {
 		$items = array();
-		$itemParts = t3lib_div::trimExplode(',', $itemList, TRUE);
+		$itemParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $itemList, TRUE);
 		foreach ($itemParts as $itemPart) {
-			$itemDetails = t3lib_div::trimExplode(';', $itemPart, FALSE, 5);
+			$itemDetails = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(';', $itemPart, FALSE, 5);
 			$key = $itemDetails[0];
 			if (strstr($key, '--')) {
 				// If $key is a separator (--div--) or palette (--palette--) then it will be appended by a unique number. This must be removed again when using this value!
@@ -716,9 +718,9 @@ class t3lib_extMgm {
 	 */
 	static public function addExtJSModule($extensionName, $mainModuleName, $subModuleName = '', $position = '', array $moduleConfiguration = array()) {
 		if (empty($extensionName)) {
-			throw new InvalidArgumentException('The extension name must not be empty', 1325938973);
+			throw new \InvalidArgumentException('The extension name must not be empty', 1325938973);
 		}
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 		$extensionName = str_replace(' ', '', ucwords(str_replace('_', ' ', $extensionName)));
 		$defaultModuleConfiguration = array(
 			'access' => 'admin',
@@ -730,7 +732,7 @@ class t3lib_extMgm {
 		if ($mainModuleName === 'web') {
 			$defaultModuleConfiguration['navigationComponentId'] = 'typo3-pagetree';
 		}
-		$moduleConfiguration = t3lib_div::array_merge_recursive_overrule($defaultModuleConfiguration, $moduleConfiguration);
+		$moduleConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($defaultModuleConfiguration, $moduleConfiguration);
 		if (strlen($subModuleName) > 0) {
 			$moduleSignature = ($mainModuleName . '_') . $subModuleName;
 		} else {
@@ -739,7 +741,7 @@ class t3lib_extMgm {
 		$moduleConfiguration['name'] = $moduleSignature;
 		$moduleConfiguration['script'] = 'extjspaneldummy.html';
 		$moduleConfiguration['extensionName'] = $extensionName;
-		$moduleConfiguration['configureModuleFunction'] = array('t3lib_extMgm', 'configureModule');
+		$moduleConfiguration['configureModuleFunction'] = array('TYPO3\\CMS\\Core\\Extension\\ExtensionManager', 'configureModule');
 		$GLOBALS['TBE_MODULES']['_configuration'][$moduleSignature] = $moduleConfiguration;
 		self::addModule($mainModuleName, $subModuleName, $position);
 	}
@@ -793,8 +795,8 @@ class t3lib_extMgm {
 		if (isset($GLOBALS['TBE_MODULES'][$main]) && $sub) {
 			// If there is already a main module by this name:
 			// Adding the submodule to the correct position:
-			list($place, $modRef) = t3lib_div::trimExplode(':', $position, 1);
-			$mods = t3lib_div::trimExplode(',', $GLOBALS['TBE_MODULES'][$main], 1);
+			list($place, $modRef) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $position, 1);
+			$mods = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TBE_MODULES'][$main], 1);
 			if (!in_array($sub, $mods)) {
 				switch (strtolower($place)) {
 				case 'after':
@@ -1019,14 +1021,14 @@ class t3lib_extMgm {
 			if ($GLOBALS['T3_SERVICES'][$serviceType][$serviceKey]['available'] && $GLOBALS['T3_SERVICES'][$serviceType][$serviceKey]['os'] != '') {
 				// TYPO3_OS is not yet defined
 				$os_type = stristr(PHP_OS, 'win') && !stristr(PHP_OS, 'darwin') ? 'WIN' : 'UNIX';
-				$os = t3lib_div::trimExplode(',', strtoupper($GLOBALS['T3_SERVICES'][$serviceType][$serviceKey]['os']));
+				$os = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', strtoupper($GLOBALS['T3_SERVICES'][$serviceType][$serviceKey]['os']));
 				if (!in_array($os_type, $os)) {
 					self::deactivateService($serviceType, $serviceKey);
 				}
 			}
 			// Convert subtype list to array for quicker access
 			$GLOBALS['T3_SERVICES'][$serviceType][$serviceKey]['serviceSubTypes'] = array();
-			$serviceSubTypes = t3lib_div::trimExplode(',', $info['subtype']);
+			$serviceSubTypes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $info['subtype']);
 			foreach ($serviceSubTypes as $subtype) {
 				$GLOBALS['T3_SERVICES'][$serviceType][$serviceKey]['serviceSubTypes'][$subtype] = $subtype;
 			}
@@ -1047,7 +1049,7 @@ class t3lib_extMgm {
 		$priority = 0;
 		$quality = 0;
 		if (!is_array($excludeServiceKeys)) {
-			$excludeServiceKeys = t3lib_div::trimExplode(',', $excludeServiceKeys, 1);
+			$excludeServiceKeys = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $excludeServiceKeys, 1);
 		}
 		if (is_array($GLOBALS['T3_SERVICES'][$serviceType])) {
 			foreach ($GLOBALS['T3_SERVICES'][$serviceType] as $key => $info) {
@@ -1088,7 +1090,7 @@ class t3lib_extMgm {
 	 *
 	 * @param string $serviceKey Service key
 	 * @return array Service info array if a service was found
-	 * @throws t3lib_exception
+	 * @throws \TYPO3\CMS\Core\Exception
 	 */
 	static public function findServiceByKey($serviceKey) {
 		if (is_array($GLOBALS['T3_SERVICES'])) {
@@ -1105,7 +1107,7 @@ class t3lib_extMgm {
 				}
 			}
 		}
-		throw new t3lib_exception('Service not found for key: ' . $serviceKey, 1319217244);
+		throw new \TYPO3\CMS\Core\Exception('Service not found for key: ' . $serviceKey, 1319217244);
 	}
 
 	/**
@@ -1119,10 +1121,10 @@ class t3lib_extMgm {
 	static public function isServiceAvailable($serviceType, $serviceKey, $serviceDetails) {
 		// If the service depends on external programs - check if they exists
 		if (trim($serviceDetails['exec'])) {
-			$executables = t3lib_div::trimExplode(',', $serviceDetails['exec'], 1);
+			$executables = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $serviceDetails['exec'], 1);
 			foreach ($executables as $executable) {
 				// If at least one executable file is not available, exit early returning FALSE
-				if (!t3lib_exec::checkCommand($executable)) {
+				if (!\TYPO3\CMS\Core\Utility\CommandUtility::checkCommand($executable)) {
 					self::deactivateService($serviceType, $serviceKey);
 					return FALSE;
 				}
@@ -1166,7 +1168,7 @@ class t3lib_extMgm {
 		if ($_EXTKEY && !$itemArray[2]) {
 			$itemArray[2] = self::extRelPath($_EXTKEY) . $GLOBALS['TYPO3_LOADED_EXT'][$_EXTKEY]['ext_icon'];
 		}
-		t3lib_div::loadTCA('tt_content');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 		if (is_array($GLOBALS['TCA']['tt_content']['columns']) && is_array($GLOBALS['TCA']['tt_content']['columns'][$type]['config']['items'])) {
 			foreach ($GLOBALS['TCA']['tt_content']['columns'][$type]['config']['items'] as $k => $v) {
 				if (!strcmp($v[1], $itemArray[1])) {
@@ -1189,7 +1191,7 @@ class t3lib_extMgm {
 	 * @see addPlugin()
 	 */
 	static public function addPiFlexFormValue($piKeyToMatch, $value, $CTypeToMatch = 'list') {
-		t3lib_div::loadTCA('tt_content');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 		if (is_array($GLOBALS['TCA']['tt_content']['columns']) && is_array($GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds'])) {
 			$GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds'][($piKeyToMatch . ',') . $CTypeToMatch] = $value;
 		}
@@ -1206,7 +1208,7 @@ class t3lib_extMgm {
 	 * @return void
 	 */
 	static public function addToInsertRecords($table, $content_table = 'tt_content', $content_field = 'records') {
-		t3lib_div::loadTCA($content_table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($content_table);
 		if (is_array($GLOBALS['TCA'][$content_table]['columns']) && isset($GLOBALS['TCA'][$content_table]['columns'][$content_field]['config']['allowed'])) {
 			$GLOBALS['TCA'][$content_table]['columns'][$content_field]['config']['allowed'] .= ',' . $table;
 		}
@@ -1297,7 +1299,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @see addTypoScript()
 	 */
 	static public function addStaticFile($extKey, $path, $title) {
-		t3lib_div::loadTCA('sys_template');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('sys_template');
 		if (($extKey && $path) && is_array($GLOBALS['TCA']['sys_template']['columns'])) {
 			$value = str_replace(',', '', (('EXT:' . $extKey) . '/') . $path);
 			$itemArray = array(trim((($title . ' (') . $extKey) . ')'), $value);
@@ -1389,7 +1391,7 @@ tt_content.') . $key) . $prefix) . ' {
 	static public function loadTypo3LoadedExtensionInformation($allowCaching = TRUE) {
 		if ($allowCaching) {
 			$cacheIdentifier = self::getTypo3LoadedExtensionInformationCacheIdentifier();
-			/** @var $codeCache t3lib_cache_frontend_PhpFrontend */
+			/** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 			$codeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 			if ($codeCache->has($cacheIdentifier)) {
 				$typo3LoadedExtensionArray = $codeCache->requireOnce($cacheIdentifier);
@@ -1514,7 +1516,7 @@ tt_content.') . $key) . $prefix) . ' {
 	static public function loadExtLocalconf($allowCaching = TRUE) {
 		if ($allowCaching) {
 			$cacheIdentifier = self::getExtLocalconfCacheIdentifier();
-			/** @var $codeCache t3lib_cache_frontend_PhpFrontend */
+			/** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 			$codeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 			if ($codeCache->has($cacheIdentifier)) {
 				$codeCache->requireOnce($cacheIdentifier);
@@ -1581,7 +1583,7 @@ tt_content.') . $key) . $prefix) . ' {
 			$phpCodeToCache[] = '$_EXTCONF = $GLOBALS[\'TYPO3_CONF_VARS\'][\'EXT\'][\'extConf\'][$_EXTKEY];';
 			$phpCodeToCache[] = '';
 			// Add ext_localconf.php content of extension
-			$phpCodeToCache[] = trim(t3lib_div::getUrl($extensionDetails['ext_localconf.php']));
+			$phpCodeToCache[] = trim(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($extensionDetails['ext_localconf.php']));
 			$phpCodeToCache[] = '';
 			$phpCodeToCache[] = '';
 		}
@@ -1616,7 +1618,7 @@ tt_content.') . $key) . $prefix) . ' {
 		if ($allowCaching && !self::$extTablesWasReadFromCacheOnce) {
 			self::$extTablesWasReadFromCacheOnce = TRUE;
 			$cacheIdentifier = self::getExtTablesCacheIdentifier();
-			/** @var $codeCache t3lib_cache_frontend_PhpFrontend */
+			/** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 			$codeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 			if ($codeCache->has($cacheIdentifier)) {
 				$codeCache->requireOnce($cacheIdentifier);
@@ -1683,7 +1685,7 @@ tt_content.') . $key) . $prefix) . ' {
 			$phpCodeToCache[] = '$_EXTCONF = $GLOBALS[\'TYPO3_CONF_VARS\'][\'EXT\'][\'extConf\'][$_EXTKEY];';
 			$phpCodeToCache[] = '';
 			// Add ext_tables.php content of extension
-			$phpCodeToCache[] = trim(t3lib_div::getUrl($extensionDetails['ext_tables.php']));
+			$phpCodeToCache[] = trim(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($extensionDetails['ext_tables.php']));
 			$phpCodeToCache[] = '';
 			$phpCodeToCache[] = '';
 		}
@@ -1713,7 +1715,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed in two versions
 	 */
 	static public function typo3_loadExtensions() {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return self::loadTypo3LoadedExtensionInformation(TRUE);
 	}
 
@@ -1727,7 +1729,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed in two versions
 	 */
 	static public function _makeIncludeHeader($key, $file) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return '';
 	}
 
@@ -1740,7 +1742,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed in two versions
 	 */
 	static public function isCacheFilesAvailable($cacheFilePrefix) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return FALSE;
 	}
 
@@ -1755,7 +1757,7 @@ tt_content.') . $key) . $prefix) . ' {
 		if (!@is_writable(PATH_typo3conf)) {
 			$result = FALSE;
 		}
-		if (!@is_writable((PATH_site . t3lib_Configuration::LOCALCONF_FILE)) && !@is_writable((PATH_site . t3lib_Configuration::LOCAL_CONFIGURATION_FILE))) {
+		if (!@is_writable((PATH_site . \TYPO3\CMS\Core\Configuration\ConfigurationManager::LOCALCONF_FILE)) && !@is_writable((PATH_site . \TYPO3\CMS\Core\Configuration\ConfigurationManager::LOCAL_CONFIGURATION_FILE))) {
 			$result = FALSE;
 		}
 		return $result;
@@ -1771,7 +1773,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed in two versions
 	 */
 	static public function cannotCacheFilesWritable($cacheFilePrefix) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return '';
 	}
 
@@ -1786,7 +1788,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed in versions
 	 */
 	static public function currentCacheFiles($cacheFilePrefix = NULL) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return array();
 	}
 
@@ -1801,7 +1803,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed in two versions
 	 */
 	static public function writeCacheFiles($extensions, $cacheFilePrefix) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return array();
 	}
 
@@ -1821,7 +1823,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @return void
 	 */
 	static public function removeCacheFiles() {
-		/** @var $codeCache t3lib_cache_frontend_PhpFrontend */
+		/** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 		$codeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 		$codeCache->flush();
 	}
@@ -1835,7 +1837,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed two versions later
 	 */
 	static public function getExtensionCacheBehaviour($usePlainValue = FALSE) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return 1;
 	}
 
@@ -1846,7 +1848,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed two versions later
 	 */
 	static public function getCacheFilePrefix() {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 	}
 
 	/**
@@ -1856,7 +1858,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed two versions later
 	 */
 	static public function getEnabledExtensionList() {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return implode(',', self::getLoadedExtensionListArray());
 	}
 
@@ -1867,7 +1869,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed two versions later
 	 */
 	static public function getRequiredExtensionList() {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return implode(',', self::getRequiredExtensionListArray());
 	}
 
@@ -1878,7 +1880,7 @@ tt_content.') . $key) . $prefix) . ' {
 	 * @deprecated since 6.0, will be removed two versions later
 	 */
 	static public function getIgnoredExtensionList() {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return '';
 	}
 
@@ -1893,7 +1895,7 @@ tt_content.') . $key) . $prefix) . ' {
 			$loadedExtensions = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extListArray'];
 		} else {
 			// Fallback handling if extlist is still a string and not an array
-			$loadedExtensions = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList']);
+			$loadedExtensions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['extList']);
 		}
 		// Add required extensions
 		$loadedExtensions = array_merge(static::getRequiredExtensionListArray(), $loadedExtensions);
@@ -1913,9 +1915,9 @@ tt_content.') . $key) . $prefix) . ' {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['requiredExt'])) {
 			$requiredExtensions = $GLOBALS['TYPO3_CONF_VARS']['EXT']['requiredExt'];
 		} else {
-			$requiredExtensions = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['requiredExt']);
+			$requiredExtensions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXT']['requiredExt']);
 		}
-		$requiredExtensions = array_merge(t3lib_div::trimExplode(',', REQUIRED_EXTENSIONS), $requiredExtensions);
+		$requiredExtensions = array_merge(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', REQUIRED_EXTENSIONS), $requiredExtensions);
 		$requiredExtensions = array_unique($requiredExtensions);
 		return $requiredExtensions;
 	}
@@ -1932,9 +1934,9 @@ tt_content.') . $key) . $prefix) . ' {
 	 */
 	static public function loadExtension($extensionKey) {
 		if (static::isLoaded($extensionKey)) {
-			throw new RuntimeException('Extension already loaded', 1342345486);
+			throw new \RuntimeException('Extension already loaded', 1342345486);
 		}
-		$extList = t3lib_Configuration::getLocalConfigurationValueByPath('EXT/extListArray');
+		$extList = \TYPO3\CMS\Core\Configuration\ConfigurationManager::getLocalConfigurationValueByPath('EXT/extListArray');
 		$extList[] = $extensionKey;
 		static::writeNewExtensionList($extList);
 	}
@@ -1951,12 +1953,12 @@ tt_content.') . $key) . $prefix) . ' {
 	 */
 	static public function unloadExtension($extensionKey) {
 		if (!static::isLoaded($extensionKey)) {
-			throw new RuntimeException('Extension not loaded', 1342345487);
+			throw new \RuntimeException('Extension not loaded', 1342345487);
 		}
 		if (in_array($extensionKey, static::getRequiredExtensionListArray())) {
-			throw new RuntimeException('Can not unload required extension', 1342348167);
+			throw new \RuntimeException('Can not unload required extension', 1342348167);
 		}
-		$extList = t3lib_Configuration::getLocalConfigurationValueByPath('EXT/extListArray');
+		$extList = \TYPO3\CMS\Core\Configuration\ConfigurationManager::getLocalConfigurationValueByPath('EXT/extListArray');
 		$extList = array_diff($extList, array($extensionKey));
 		static::writeNewExtensionList($extList);
 	}
@@ -1971,10 +1973,10 @@ tt_content.') . $key) . $prefix) . ' {
 	 */
 	static public function writeNewExtensionList(array $newExtensionList) {
 		$extensionList = array_unique($newExtensionList);
-		t3lib_Configuration::setLocalConfigurationValueByPath('EXT/extListArray', $extensionList);
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('EXT/extListArray', $extensionList);
 		// @deprecated: extList as string is deprecated, the handling will be removed with 6.2
 		// For now, this value is still set for better backwards compatibility
-		t3lib_Configuration::setLocalConfigurationValueByPath('EXT/extList', implode(',', $extensionList));
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('EXT/extList', implode(',', $extensionList));
 		static::removeCacheFiles();
 	}
 
@@ -1990,12 +1992,12 @@ tt_content.') . $key) . $prefix) . ' {
 	 */
 	static public function makeCategorizable($extensionKey, $tableName, $fieldName = 'categories', array $options = array()) {
 		// Load TCA first
-		t3lib_div::loadTCA($tableName);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($tableName);
 		// Update the category registry
-		$result = t3lib_category_Registry::getInstance()->add($extensionKey, $tableName, $fieldName);
+		$result = \TYPO3\CMS\Core\Category\CategoryRegistry::getInstance()->add($extensionKey, $tableName, $fieldName);
 		if ($result === FALSE) {
 			$message = 't3lib_categoryRegistry: no category registered for table "%s". Double check if there is a TCA configured';
-			t3lib_div::devLog(sprintf($message, $tableName), 'Core', 2);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(sprintf($message, $tableName), 'Core', 2);
 		}
 		// Makes sure to add more TCA to an existing structure
 		if (isset($GLOBALS['TCA'][$tableName]['columns'])) {
@@ -2043,7 +2045,7 @@ tt_content.') . $key) . $prefix) . ' {
 				)
 			);
 			if (!empty($options['fieldConfiguration'])) {
-				$fieldConfiguration = t3lib_div::array_merge_recursive_overrule($fieldConfiguration, $options['fieldConfiguration']);
+				$fieldConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($fieldConfiguration, $options['fieldConfiguration']);
 			}
 			$columns = array(
 				$fieldName => array(
@@ -2072,5 +2074,6 @@ tt_content.') . $key) . $prefix) . ' {
 	}
 
 }
+
 
 ?>

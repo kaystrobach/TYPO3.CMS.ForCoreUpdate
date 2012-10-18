@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Example;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @subpackage tx_indexedsearch
  * @author 	Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-class tx_indexedsearch_crawlerhook {
+class CrawlerHook {
 
 	/**
 	 * Function is called when an indexing session starts according to the time intervals set for the indexing configuration.
@@ -97,7 +99,7 @@ class tx_indexedsearch_crawlerhook {
 				// Prepare the GET variables array that must be added to the page URL in order to view result:
 				parse_str('&itemID=' . rawurlencode($item['ID']), $GETparams);
 				// Prepare indexer (make instance, initialize it, set special features for indexing parameterized content - probably none of this should be changed by you) [DON'T CHANGE]:
-				$indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+				$indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_indexedsearch_indexer');
 				$indexerObj->backend_initIndexer($cfgRec['pid'], 0, $sys_language_uid, '', $rl, $GETparams, FALSE);
 				$indexerObj->backend_setFreeIndexUid($cfgRec['uid'], $cfgRec['set_id']);
 				$indexerObj->forceIndexing = TRUE;
@@ -114,7 +116,7 @@ class tx_indexedsearch_crawlerhook {
 			// Set up language uid, if any:
 			$sys_language_uid = 0;
 			// Prepare indexer (make instance, initialize it, set special features for indexing parameterized content - probably none of this should be changed by you) [DON'T CHANGE]:
-			$indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+			$indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_indexedsearch_indexer');
 			$indexerObj->backend_initIndexer($cfgRec['pid'], 0, $sys_language_uid, '', $rl);
 			$indexerObj->backend_setFreeIndexUid($cfgRec['uid'], $cfgRec['set_id']);
 			$indexerObj->hash['phash'] = -1;
@@ -127,7 +129,7 @@ class tx_indexedsearch_crawlerhook {
 			// Load indexer if not yet.
 			$pObj->loadIndexerClass();
 			// Index external URL:
-			$indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+			$indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_indexedsearch_indexer');
 			$indexerObj->backend_initIndexer($cfgRec['pid'], 0, $sys_language_uid, '', $rl);
 			$indexerObj->backend_setFreeIndexUid($cfgRec['uid'], $cfgRec['set_id']);
 			$indexerObj->hash['phash'] = -1;
@@ -145,5 +147,6 @@ class tx_indexedsearch_crawlerhook {
 	}
 
 }
+
 
 ?>

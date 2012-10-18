@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @author Steffen Kamper <info@sk-typo3.de>
  * @version
  */
-class tx_coreupdates_imagecols extends Tx_Install_Updates_Base {
+class ImagecolsUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Update Existing Text with Image Content Elements';
 
@@ -78,5 +80,6 @@ class tx_coreupdates_imagecols extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

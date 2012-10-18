@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,15 +30,15 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Checkboxgroup extends tx_form_Domain_Model_Element_Fieldset {
+class CheckboxGroupElement extends \TYPO3\CMS\Form\Domain\Model\Element\FieldsetElement {
 
 	/**
 	 * Add child object to this element
 	 *
-	 * @param tx_form_Domain_Model_Element_Abstract $element The child object
-	 * @return tx_form_Domain_Model_Element_Checkboxgroup
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $element The child object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\CheckboxGroupElement
 	 */
-	public function addElement(tx_form_Domain_Model_Element_Abstract $element) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $element) {
 		if ($element->acceptsParentName()) {
 			$element->setName($this->getName());
 			$element->attributes->setValue('name', $this->getName());
@@ -47,5 +49,6 @@ class tx_form_Domain_Model_Element_Checkboxgroup extends tx_form_Domain_Model_El
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Sebastian Kurfürst <sebastian@garbage-group.de
  */
-class tx_coreupdates_compatversion extends Tx_Install_Updates_Base {
+class CompatVersionUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Version Compatibility';
 
@@ -152,8 +154,8 @@ class tx_coreupdates_compatversion extends Tx_Install_Updates_Base {
 				return 1;
 			} else {
 				$performUpdate = 1;
-				$oldVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger($TYPO3_CONF_VARS['SYS']['compat_version']);
-				$currentVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_branch);
+				$oldVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($TYPO3_CONF_VARS['SYS']['compat_version']);
+				$currentVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch);
 				foreach ($TYPO3_CONF_VARS['SC_OPTIONS']['ext/install']['compat_version'] as $internalName => $details) {
 					if ($details['version'] > $oldVersion && $details['version'] <= $currentVersion) {
 						if (!$this->userInput['compatVersion'][$internalName]) {
@@ -183,7 +185,7 @@ class tx_coreupdates_compatversion extends Tx_Install_Updates_Base {
 			$customMessages .= 'If you want to see what you need to do to use the new features, run the update wizard again!';
 		}
 		$version = $this->userInput['version'] ? $this->userInput['version'] : TYPO3_branch;
-		t3lib_Configuration::setLocalConfigurationValueByPath('SYS/compat_version', $version);
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('SYS/compat_version', $version);
 		$customMessages .= ('<br />The compatibility version has been set to ' . $version) . '.';
 		return 1;
 	}
@@ -217,8 +219,8 @@ class tx_coreupdates_compatversion extends Tx_Install_Updates_Base {
 	 */
 	public function showChangesNeeded($inputPrefix = '') {
 		global $TYPO3_CONF_VARS;
-		$oldVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger($TYPO3_CONF_VARS['SYS']['compat_version']);
-		$currentVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_branch);
+		$oldVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($TYPO3_CONF_VARS['SYS']['compat_version']);
+		$currentVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch);
 		$tableContents = '';
 		if (is_array($TYPO3_CONF_VARS['SC_OPTIONS']['ext/install']['compat_version'])) {
 			$updateWizardBoxes = '';
@@ -250,5 +252,6 @@ class tx_coreupdates_compatversion extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

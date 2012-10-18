@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,15 +32,15 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class DemandTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Beuser_Domain_Model_Demand
+	 * @var \TYPO3\CMS\Beuser\Domain\Model\Demand
 	 */
 	protected $fixture;
 
 	public function setUp() {
-		$this->fixture = new Tx_Beuser_Domain_Model_Demand();
+		$this->fixture = new \TYPO3\CMS\Beuser\Domain\Model\Demand();
 	}
 
 	public function tearDown() {
@@ -49,7 +51,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setUserTypeAllExpectedValueForInt() {
-		$userType = Tx_Beuser_Domain_Model_Demand::ALL;
+		$userType = \TYPO3\CMS\Beuser\Domain\Model\Demand::ALL;
 		$this->fixture->setUserType($userType);
 		$this->assertSame($this->fixture->getUserType(), $userType);
 	}
@@ -58,7 +60,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setUserTypeAdminOnlyExpectedValueForInt() {
-		$userType = Tx_Beuser_Domain_Model_Demand::USERTYPE_ADMINONLY;
+		$userType = \TYPO3\CMS\Beuser\Domain\Model\Demand::USERTYPE_ADMINONLY;
 		$this->fixture->setUserType($userType);
 		$this->assertSame($this->fixture->getUserType(), $userType);
 	}
@@ -67,7 +69,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setUserTypeUserOnlyExpectedValueForInt() {
-		$userType = Tx_Beuser_Domain_Model_Demand::USERTYPE_USERONLY;
+		$userType = \TYPO3\CMS\Beuser\Domain\Model\Demand::USERTYPE_USERONLY;
 		$this->fixture->setUserType($userType);
 		$this->assertSame($this->fixture->getUserType(), $userType);
 	}
@@ -76,7 +78,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setStatusAllExpectedValueForInt() {
-		$status = Tx_Beuser_Domain_Model_Demand::ALL;
+		$status = \TYPO3\CMS\Beuser\Domain\Model\Demand::ALL;
 		$this->fixture->setStatus($status);
 		$this->assertSame($this->fixture->getStatus(), $status);
 	}
@@ -85,7 +87,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setStatusActiveExpectedValueForInt() {
-		$status = Tx_Beuser_Domain_Model_Demand::STATUS_ACTIVE;
+		$status = \TYPO3\CMS\Beuser\Domain\Model\Demand::STATUS_ACTIVE;
 		$this->fixture->setStatus($status);
 		$this->assertSame($this->fixture->getStatus(), $status);
 	}
@@ -94,7 +96,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setStatusInactiveExpectedValueForInt() {
-		$status = Tx_Beuser_Domain_Model_Demand::STATUS_INACTIVE;
+		$status = \TYPO3\CMS\Beuser\Domain\Model\Demand::STATUS_INACTIVE;
 		$this->fixture->setStatus($status);
 		$this->assertSame($this->fixture->getStatus(), $status);
 	}
@@ -103,7 +105,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setLoginAllExpectedValueForInt() {
-		$login = Tx_Beuser_Domain_Model_Demand::ALL;
+		$login = \TYPO3\CMS\Beuser\Domain\Model\Demand::ALL;
 		$this->fixture->setLogins($login);
 		$this->assertSame($this->fixture->getLogins(), $login);
 	}
@@ -112,7 +114,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setLoginNoneExpectedValueForInt() {
-		$login = Tx_Beuser_Domain_Model_Demand::LOGIN_NONE;
+		$login = \TYPO3\CMS\Beuser\Domain\Model\Demand::LOGIN_NONE;
 		$this->fixture->setLogins($login);
 		$this->assertSame($this->fixture->getLogins(), $login);
 	}
@@ -121,7 +123,7 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	 * @test
 	 */
 	public function setLoginxSameExpectedValueForInt() {
-		$login = Tx_Beuser_Domain_Model_Demand::LOGIN_SOME;
+		$login = \TYPO3\CMS\Beuser\Domain\Model\Demand::LOGIN_SOME;
 		$this->fixture->setLogins($login);
 		$this->assertSame($this->fixture->getLogins(), $login);
 	}
@@ -143,5 +145,6 @@ class Tx_Beuser_Domain_Model_DemandTest extends Tx_Extbase_Tests_Unit_BaseTestCa
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,82 +33,82 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
+class InstallUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	public $objectManager;
 
 	/**
-	 * @var t3lib_install_Sql
+	 * @var \TYPO3\CMS\Install\Sql\SchemaMigrator
 	 */
 	public $installToolSqlParser;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Dependency
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\DependencyUtility
 	 */
 	protected $dependencyUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_FileHandling
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility
 	 */
 	protected $filehandlingUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_List
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\ListUtility
 	 */
 	protected $listUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Database
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\DatabaseUtility
 	 */
 	protected $databaseUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository
 	 */
 	public $extensionRepository;
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility
 	 * @return void
 	 */
-	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+	public function injectListUtility(\TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility) {
 		$this->listUtility = $listUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_FileHandling $filehandlingUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility $filehandlingUtility
 	 * @return void
 	 */
-	public function injectFilehandlingUtility(Tx_Extensionmanager_Utility_FileHandling $filehandlingUtility) {
+	public function injectFilehandlingUtility(\TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility $filehandlingUtility) {
 		$this->filehandlingUtility = $filehandlingUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Dependency $dependencyUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\DependencyUtility $dependencyUtility
 	 * @return void
 	 */
-	public function injectDependencyUtility(Tx_Extensionmanager_Utility_Dependency $dependencyUtility) {
+	public function injectDependencyUtility(\TYPO3\CMS\Extensionmanager\Utility\DependencyUtility $dependencyUtility) {
 		$this->dependencyUtility = $dependencyUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Database $databaseUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\DatabaseUtility $databaseUtility
 	 * @return void
 	 */
-	public function injectDatabaseUtility(Tx_Extensionmanager_Utility_Database $databaseUtility) {
+	public function injectDatabaseUtility(\TYPO3\CMS\Extensionmanager\Utility\DatabaseUtility $databaseUtility) {
 		$this->databaseUtility = $databaseUtility;
 	}
 
 	/**
 	 * Inject emConfUtility
 	 *
-	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository
 	 * @return void
 	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+	public function injectExtensionRepository(\TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
 
@@ -114,23 +116,23 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * __construct
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $installToolSqlParser t3lib_install_Sql */
-		$this->installToolSqlParser = $this->objectManager->get('t3lib_install_Sql');
-		$this->dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		/** @var $installToolSqlParser \TYPO3\CMS\Install\Sql\SchemaMigrator */
+		$this->installToolSqlParser = $this->objectManager->get('TYPO3\\CMS\\Install\\Sql\\SchemaMigrator');
+		$this->dependencyUtility = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Utility\\DependencyUtility');
 	}
 
 	/**
 	 * Helper function to uninstall an extension
 	 *
 	 * @param string $extensionKey
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	public function uninstall($extensionKey) {
 		$dependentExtensions = $this->dependencyUtility->findInstalledExtensionsThatDependOnMe($extensionKey);
 		if (is_array($dependentExtensions) && count($dependentExtensions) > 0) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(((('Cannot deactivate extension ' . $extensionKey) . ' - The extension(s) ') . implode(',', $dependentExtensions)) . ' depend on it', 1342554622);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(((('Cannot deactivate extension ' . $extensionKey) . ' - The extension(s) ') . implode(',', $dependentExtensions)) . ' depend on it', 1342554622);
 		} else {
 			$this->unloadExtension($extensionKey);
 		}
@@ -143,7 +145,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	protected function unloadExtension($extensionKey) {
-		t3lib_extMgm::unloadExtension($extensionKey);
+		\TYPO3\CMS\Core\Extension\ExtensionManager::unloadExtension($extensionKey);
 	}
 
 	/**
@@ -151,7 +153,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * also processes db updates and clears the cache if the extension asks for it
 	 *
 	 * @param string $extensionKey
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	public function install($extensionKey) {
@@ -172,7 +174,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	protected function loadExtension($extensionKey) {
-		t3lib_extMgm::loadExtension($extensionKey);
+		\TYPO3\CMS\Core\Extension\ExtensionManager::loadExtension($extensionKey);
 	}
 
 	/**
@@ -181,14 +183,14 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @param string $extensionKey
 	 * @internal
 	 * @return mixed
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 */
 	public function enrichExtensionWithDetails($extensionKey) {
 		$availableExtensions = $this->listUtility->getAvailableExtensions();
 		if (isset($availableExtensions[$extensionKey])) {
 			$extension = $availableExtensions[$extensionKey];
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(('Extension ' . $extensionKey) . ' is not available', 1342864081);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(('Extension ' . $extensionKey) . ' is not available', 1342864081);
 		}
 		$availableAndInstalledExtensions = $this->listUtility->enrichExtensionsWithEmConfAndTerInformation(array($extensionKey => $extension));
 		return $availableAndInstalledExtensions[$extensionKey];
@@ -204,13 +206,13 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	public function processDatabaseUpdates($extension) {
 		$extTablesSqlFile = (PATH_site . $extension['siteRelPath']) . '/ext_tables.sql';
 		if (file_exists($extTablesSqlFile)) {
-			$extTablesSqlContent = t3lib_div::getUrl($extTablesSqlFile);
-			$extTablesSqlContent .= t3lib_cache::getDatabaseTableDefinitions();
+			$extTablesSqlContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($extTablesSqlFile);
+			$extTablesSqlContent .= \TYPO3\CMS\Core\Cache\Cache::getDatabaseTableDefinitions();
 			$this->updateDbWithExtTablesSql($extTablesSqlContent);
 		}
 		$extTablesStaticSqlFile = (PATH_site . $extension['siteRelPath']) . '/ext_tables_static+adt.sql';
 		if (file_exists($extTablesStaticSqlFile)) {
-			$extTablesStaticSqlContent = t3lib_div::getUrl($extTablesStaticSqlFile);
+			$extTablesStaticSqlContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($extTablesStaticSqlFile);
 			$this->importStaticSql($extTablesStaticSqlContent);
 		}
 	}
@@ -222,7 +224,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return t3lib_install
 	 */
 	protected function getT3libInstallInstance() {
-		return t3lib_div::makeInstance('t3lib_install');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_install');
 	}
 
 	/**
@@ -231,12 +233,12 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function reloadCaches() {
-		t3lib_extMgm::removeCacheFiles();
+		\TYPO3\CMS\Core\Extension\ExtensionManager::removeCacheFiles();
 		// Set new extlist / extlistArray for extension load changes at runtime
-		$localConfiguration = t3lib_Configuration::getLocalConfiguration();
+		$localConfiguration = \TYPO3\CMS\Core\Configuration\ConfigurationManager::getLocalConfiguration();
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extList'] = $localConfiguration['EXT']['extList'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extListArray'] = $localConfiguration['EXT']['extListArray'];
-		Typo3_Bootstrap::getInstance()->populateTypo3LoadedExtGlobal(FALSE)->loadAdditionalConfigurationFromExtensions(FALSE);
+		\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->populateTypo3LoadedExtGlobal(FALSE)->loadAdditionalConfigurationFromExtensions(FALSE);
 	}
 
 	/**
@@ -246,8 +248,8 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	protected function saveDefaultConfiguration($extensionKey) {
-		/** @var $configUtility Tx_Extensionmanager_Utility_Configuration */
-		$configUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Configuration');
+		/** @var $configUtility \TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility */
+		$configUtility = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Utility\\ConfigurationUtility');
 		$configUtility->saveDefaultConfiguration($extensionKey);
 	}
 
@@ -306,15 +308,15 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $newConfiguration) {
-		t3lib_Configuration::setLocalConfigurationValueByPath('EXT/extConf/' . $extensionKey, serialize($newConfiguration));
-		t3lib_extMgm::removeCacheFiles();
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('EXT/extConf/' . $extensionKey, serialize($newConfiguration));
+		\TYPO3\CMS\Core\Extension\ExtensionManager::removeCacheFiles();
 	}
 
 	/**
 	 * Remove an extension (delete the directory)
 	 *
 	 * @param string $extension
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	public function removeExtension($extension) {
@@ -322,7 +324,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 		if ($this->filehandlingUtility->isValidExtensionPath($absolutePath)) {
 			$this->filehandlingUtility->removeDirectory($absolutePath);
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('No valid extension path given.', 1342875724);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('No valid extension path given.', 1342875724);
 		}
 	}
 
@@ -349,7 +351,7 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	protected function getSqlDataDumpForFile($sqlFile) {
 		$sqlData = '';
 		if (file_exists($sqlFile)) {
-			$sqlContent = t3lib_div::getUrl($sqlFile);
+			$sqlContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($sqlFile);
 			$fieldDefinitions = $this->installToolSqlParser->getFieldDefinitions_fileContent($sqlContent);
 			$sqlData = $this->databaseUtility->dumpStaticTables($fieldDefinitions);
 		}
@@ -360,15 +362,15 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	 * Checks if an update for an extension is available
 	 *
 	 * @internal
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extensionData
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extensionData
 	 * @return boolean
 	 */
-	public function isUpdateAvailable(Tx_Extensionmanager_Domain_Model_Extension $extensionData) {
+	public function isUpdateAvailable(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extensionData) {
 		// Only check for update for TER extensions
 		$version = $extensionData->getIntegerVersion();
-		/** @var $highestTerVersionExtension Tx_Extensionmanager_Domain_Model_Extension */
+		/** @var $highestTerVersionExtension \TYPO3\CMS\Extensionmanager\Domain\Model\Extension */
 		$highestTerVersionExtension = $this->extensionRepository->findHighestAvailableVersion($extensionData->getExtensionKey());
-		if ($highestTerVersionExtension instanceof Tx_Extensionmanager_Domain_Model_Extension) {
+		if ($highestTerVersionExtension instanceof \TYPO3\CMS\Extensionmanager\Domain\Model\Extension) {
 			$highestVersion = $highestTerVersionExtension->getIntegerVersion();
 			if ($highestVersion > $version) {
 				return TRUE;
@@ -378,5 +380,6 @@ class Tx_Extensionmanager_Utility_Install implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

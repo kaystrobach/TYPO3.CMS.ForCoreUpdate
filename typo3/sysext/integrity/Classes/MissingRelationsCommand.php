@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_missing_relations extends tx_lowlevel_cleaner_core {
+class MissingRelationsCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * @todo Define visibility
@@ -115,7 +117,7 @@ Reports missing relations';
 				$idx = ($rec['ref_table'] . ':') . $rec['ref_uid'];
 				// Get referenced record:
 				if (!isset($tempExists[$idx])) {
-					$tempExists[$idx] = t3lib_BEfunc::getRecordRaw($rec['ref_table'], 'uid=' . intval($rec['ref_uid']), 'uid,pid' . ($GLOBALS['TCA'][$rec['ref_table']]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$rec['ref_table']]['ctrl']['delete'] : ''));
+					$tempExists[$idx] = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw($rec['ref_table'], 'uid=' . intval($rec['ref_uid']), 'uid,pid' . ($GLOBALS['TCA'][$rec['ref_table']]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$rec['ref_table']]['ctrl']['delete'] : ''));
 				}
 				// Compile info string for location of reference:
 				$infoString = $this->infoStr($rec);
@@ -161,10 +163,10 @@ Reports missing relations';
 					if ($bypass = $this->cli_noExecutionCheck($recReference)) {
 						echo $bypass;
 					} else {
-						$sysRefObj = t3lib_div::makeInstance('t3lib_refindex');
+						$sysRefObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 						$error = $sysRefObj->setReferenceValue($hash, NULL);
 						if ($error) {
-							echo ('		t3lib_refindex::setReferenceValue(): ' . $error) . LF;
+							echo ('		TYPO3\\CMS\\Core\\Database\\ReferenceIndex::setReferenceValue(): ' . $error) . LF;
 						} else {
 							echo 'DONE';
 						}
@@ -176,5 +178,6 @@ Reports missing relations';
 	}
 
 }
+
 
 ?>

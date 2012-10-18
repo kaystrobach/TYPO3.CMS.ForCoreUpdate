@@ -1,29 +1,30 @@
 <?php
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2010-2011 Christian Kuhn <lolli@schwarzbu.ch>
-*		Marcus Krause <marcus#exp2010@t3sec.info>
-*
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+namespace TYPO3\CMS\Saltedpasswords\Task;
 
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2010-2011 Christian Kuhn <lolli@schwarzbu.ch>
+ *		Marcus Krause <marcus#exp2010@t3sec.info>
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Update plaintext and hashed passwords of existing users to salted passwords.
  *
@@ -32,7 +33,8 @@
  * @package TYPO3
  * @subpackage saltedpasswords
  */
-class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
+class BulkUpdateTask extends \TYPO3\CMS\Scheduler\Task {
+
 	/**
 	 * @var boolean Whether or not the task is allowed to deactivate itself after processing all existing user records.
 	 */
@@ -58,10 +60,9 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	 */
 	public function __construct() {
 		parent::__construct();
-
 		$this->userRecordPointer = array(
 			'FE' => 0,
-			'BE' => 0,
+			'BE' => 0
 		);
 	}
 
@@ -72,11 +73,10 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	 */
 	public function execute() {
 		$processedAllRecords = TRUE;
-
-			// For frontend and backend
+		// For frontend and backend
 		foreach ($this->userRecordPointer as $mode => $pointer) {
-				// If saltedpasswords is active for frontend / backend
-			if (tx_saltedpasswords_div::isUsageEnabled($mode)) {
+			// If saltedpasswords is active for frontend / backend
+			if (\TYPO3\CMS\Saltedpasswords\Utility\SaltedPasswordsUtility::isUsageEnabled($mode)) {
 				$usersToUpdate = $this->findUsersToUpdate($mode);
 				$numberOfRows = count($usersToUpdate);
 				if ($numberOfRows > 0) {
@@ -86,22 +86,19 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 				}
 			}
 		}
-
 		if ($processedAllRecords) {
-				// Reset the user record pointer
+			// Reset the user record pointer
 			$this->userRecordPointer = array(
 				'FE' => 0,
-				'BE' => 0,
+				'BE' => 0
 			);
-				// Determine if task should disable itself
+			// Determine if task should disable itself
 			if ($this->canDeactivateSelf) {
 				$this->deactivateSelf();
 			}
 		}
-
-			// Use save() of parent class tx_scheduler_Task to persist changed task variables
+		// Use save() of parent class tx_scheduler_Task to persist changed task variables
 		$this->save();
-
 		return TRUE;
 	}
 
@@ -111,16 +108,7 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	 * @return string Additional information
 	 */
 	public function getAdditionalInformation() {
-		$information =
-			$GLOBALS['LANG']->sL(
-				'LLL:EXT:saltedpasswords/locallang.xml:ext.saltedpasswords.tasks.bulkupdate.label.additionalinformation.deactivateself'
-			) .
-			$this->getCanDeactivateSelf() . '; ' .
-			$GLOBALS['LANG']->sL(
-				'LLL:EXT:saltedpasswords/locallang.xml:ext.saltedpasswords.tasks.bulkupdate.label.additionalinformation.numberofrecords'
-			) .
-			$this->getNumberOfRecords();
-
+		$information = ((($GLOBALS['LANG']->sL('LLL:EXT:saltedpasswords/locallang.xml:ext.saltedpasswords.tasks.bulkupdate.label.additionalinformation.deactivateself') . $this->getCanDeactivateSelf()) . '; ') . $GLOBALS['LANG']->sL('LLL:EXT:saltedpasswords/locallang.xml:ext.saltedpasswords.tasks.bulkupdate.label.additionalinformation.numberofrecords')) . $this->getNumberOfRecords();
 		return $information;
 	}
 
@@ -131,16 +119,7 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	 * @return array Rows with uid and password
 	 */
 	protected function findUsersToUpdate($mode) {
-		$usersToUpdate = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			'uid, password',
-			strtolower($mode) . '_users',
-				// Retrieve and update all records (also disabled/deleted) for security reasons
-			'1 = 1',
-			'',
-			'uid ASC',
-			$this->userRecordPointer[$mode] . ', ' . $this->numberOfRecords
-		);
-
+		$usersToUpdate = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid, password', strtolower($mode) . '_users', '1 = 1', '', 'uid ASC', ($this->userRecordPointer[$mode] . ', ') . $this->numberOfRecords);
 		return $usersToUpdate;
 	}
 
@@ -154,14 +133,12 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	protected function convertPasswords($mode, array $users) {
 		$updateUsers = array();
 		foreach ($users as $user) {
-				// If a password is already a salted hash it must not be updated
+			// If a password is already a salted hash it must not be updated
 			if ($this->isSaltedHash($user['password'])) {
 				continue;
 			}
-
 			$updateUsers[] = $user;
 		}
-
 		if (count($updateUsers) > 0) {
 			$this->updatePasswords($mode, $updateUsers);
 		}
@@ -175,35 +152,28 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	 * @return void
 	 */
 	protected function updatePasswords($mode, array $users) {
-		/** @var $saltedpasswordsInstance tx_saltedpasswords_salts */
-		$saltedpasswordsInstance = tx_saltedpasswords_salts_factory::getSaltingInstance(NULL, $mode);
-
+		/** @var $saltedpasswordsInstance \TYPO3\CMS\Saltedpasswords\Salt\SaltInterface */
+		$saltedpasswordsInstance = \TYPO3\CMS\Saltedpasswords\Salt\SaltFactory::getSaltingInstance(NULL, $mode);
 		foreach ($users as $user) {
 			$newPassword = $saltedpasswordsInstance->getHashedPassword($user['password']);
-
-				// If a given password is a md5 hash (usually default be_users without saltedpasswords activated),
-				// result of getHashedPassword() is a salted hashed md5 hash.
-				// We prefix those with 'M', saltedpasswords will then update this password
-				// to a usual salted hash upon first login of the user.
+			// If a given password is a md5 hash (usually default be_users without saltedpasswords activated),
+			// result of getHashedPassword() is a salted hashed md5 hash.
+			// We prefix those with 'M', saltedpasswords will then update this password
+			// to a usual salted hash upon first login of the user.
 			if ($this->isMd5Password($user['password'])) {
 				$newPassword = 'M' . $newPassword;
 			}
-
-				// Persist updated password
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				strtolower($mode) . '_users',
-				'uid = ' . $user['uid'],
-				array(
-					'password' => $newPassword
-				)
-			);
+			// Persist updated password
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(strtolower($mode) . '_users', 'uid = ' . $user['uid'], array(
+				'password' => $newPassword
+			));
 		}
 	}
 
 	/**
 	 * Passwords prefixed with M or C might be salted passwords:
-	 *	M means: originally a md5 hash before it was salted (eg. default be_users).
-	 *	C means: originally a cleartext password with lower hash looping count generated by t3sec_saltedpw.
+	 * M means: originally a md5 hash before it was salted (eg. default be_users).
+	 * C means: originally a cleartext password with lower hash looping count generated by t3sec_saltedpw.
 	 * Both M and C will be updated to usual salted hashes on first login of user.
 	 *
 	 * If a password does not start with M or C determine if a password is already a usual salted hash.
@@ -213,16 +183,14 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	 */
 	protected function isSaltedHash($password) {
 		$isSaltedHash = FALSE;
-		if (strlen($password) > 2 && (t3lib_div::isFirstPartOfStr($password, 'C$') || t3lib_div::isFirstPartOfStr($password, 'M$'))) {
-				// Cut off M or C and test if we have a salted hash
-			$isSaltedHash = tx_saltedpasswords_salts_factory::determineSaltingHashingMethod(substr($password, 1));
+		if (strlen($password) > 2 && (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($password, 'C$') || \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($password, 'M$'))) {
+			// Cut off M or C and test if we have a salted hash
+			$isSaltedHash = \TYPO3\CMS\Saltedpasswords\Salt\SaltFactory::determineSaltingHashingMethod(substr($password, 1));
 		}
-
-			// Test if given password is a already a usual salted hash
+		// Test if given password is a already a usual salted hash
 		if (!$isSaltedHash) {
-			$isSaltedHash = tx_saltedpasswords_salts_factory::determineSaltingHashingMethod($password);
+			$isSaltedHash = \TYPO3\CMS\Saltedpasswords\Salt\SaltFactory::determineSaltingHashingMethod($password);
 		}
-
 		return $isSaltedHash;
 	}
 
@@ -294,6 +262,8 @@ class tx_saltedpasswords_Tasks_BulkUpdate extends tx_scheduler_Task {
 	public function getNumberOfRecords() {
 		return $this->numberOfRecords;
 	}
+
 }
+
 
 ?>

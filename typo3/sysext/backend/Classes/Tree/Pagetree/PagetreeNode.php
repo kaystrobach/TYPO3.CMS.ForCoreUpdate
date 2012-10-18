@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
+class PagetreeNode extends \TYPO3\CMS\Backend\Tree\ExtDirectNode {
 
 	/**
 	 * Cached access rights to save some performance
@@ -364,5 +366,6 @@ class t3lib_tree_pagetree_Node extends t3lib_tree_extdirect_Node {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Messaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib/message
  */
-abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_AbstractMessage {
+abstract class AbstractStandaloneMessage extends \TYPO3\CMS\Core\Messaging\AbstractMessage {
 
 	/**
 	 * Path to the HTML template file, relative to PATH_site
@@ -62,7 +64,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	 * @param string $title Title
 	 * @param integer $severity Severity, see class constants of t3lib_message_AbstractMessage
 	 */
-	public function __construct($message = '', $title = '', $severity = t3lib_message_AbstractMessage::ERROR) {
+	public function __construct($message = '', $title = '', $severity = \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR) {
 		if (!empty($message)) {
 			$this->setMessage($message);
 		}
@@ -98,7 +100,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 			'###CSS_CLASS###' => $classes[$this->severity],
 			'###TITLE###' => $this->title,
 			'###MESSAGE###' => $this->message,
-			'###BASEURL###' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
+			'###BASEURL###' => \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'),
 			'###TYPO3_mainDir###' => TYPO3_mainDir,
 			'###TYPO3_copyright_year###' => TYPO3_copyright_year
 		);
@@ -112,7 +114,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	 */
 	public function getHtmlTemplate() {
 		if (!$this->htmlTemplate) {
-			throw new RuntimeException('No HTML template file has been defined, yet', 1314390127);
+			throw new \RuntimeException('No HTML template file has been defined, yet', 1314390127);
 		}
 		return $this->htmlTemplate;
 	}
@@ -126,7 +128,7 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	public function setHtmlTemplate($htmlTemplate) {
 		$this->htmlTemplate = PATH_site . $htmlTemplate;
 		if (!file_exists($this->htmlTemplate)) {
-			throw new RuntimeException(('Template file "' . $this->htmlTemplate) . '" not found', 1312830504);
+			throw new \RuntimeException(('Template file "' . $this->htmlTemplate) . '" not found', 1312830504);
 		}
 	}
 
@@ -137,8 +139,8 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	 */
 	public function render() {
 		$markers = array_merge($this->getDefaultMarkers(), $this->markers);
-		$content = t3lib_div::getUrl($this->htmlTemplate);
-		$content = t3lib_parseHtml::substituteMarkerArray($content, $markers, '', FALSE, TRUE);
+		$content = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($this->htmlTemplate);
+		$content = \t3lib_parseHtml::substituteMarkerArray($content, $markers, '', FALSE, TRUE);
 		return $content;
 	}
 
@@ -153,5 +155,6 @@ abstract class t3lib_message_AbstractStandaloneMessage extends t3lib_message_Abs
 	}
 
 }
+
 
 ?>

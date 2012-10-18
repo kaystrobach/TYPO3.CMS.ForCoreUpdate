@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_Domain_Model_Attributes_Abstract {
+abstract class AbstractAttribute {
 
 	/**
 	 * The value of the attribute
@@ -47,7 +49,7 @@ abstract class tx_form_Domain_Model_Attributes_Abstract {
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
@@ -58,7 +60,7 @@ abstract class tx_form_Domain_Model_Attributes_Abstract {
 	 * @return void
 	 */
 	public function __construct($value, $elementId) {
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$this->setValue($value);
 		$this->elementId = (int) $elementId;
 	}
@@ -84,5 +86,6 @@ abstract class tx_form_Domain_Model_Attributes_Abstract {
 	abstract public function getValue();
 
 }
+
 
 ?>

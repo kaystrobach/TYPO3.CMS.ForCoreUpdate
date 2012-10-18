@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Driver;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,12 +34,12 @@
  * @package 	TYPO3
  * @subpackage 	t3lib
  */
-abstract class t3lib_file_Driver_AbstractDriver {
+abstract class AbstractDriver {
 
 	/**
 	 * The mount object this driver instance belongs to
 	 *
-	 * @var t3lib_file_Storage
+	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected $storage;
 
@@ -53,14 +55,14 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	/**
 	 * The storage folder that forms the root of this FS tree
 	 *
-	 * @var t3lib_file_Folder
+	 * @var \TYPO3\CMS\Core\Resource\Folder
 	 */
 	protected $rootLevelFolder;
 
 	/**
 	 * The default folder new files should be put into.
 	 *
-	 * @var t3lib_file_Folder
+	 * @var \TYPO3\CMS\Core\Resource\Folder
 	 */
 	protected $defaultLevelFolder;
 
@@ -122,10 +124,10 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Sets the storage object that works with this driver
 	 *
-	 * @param t3lib_file_Storage $storage
-	 * @return t3lib_file_Driver_AbstractDriver
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storage
+	 * @return \TYPO3\CMS\Core\Resource\Driver\AbstractDriver
 	 */
-	public function setStorage(t3lib_file_Storage $storage) {
+	public function setStorage(\TYPO3\CMS\Core\Resource\ResourceStorage $storage) {
 		$this->storage = $storage;
 		return $this;
 	}
@@ -210,22 +212,22 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns a temporary path for a given file, including the file extension.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string
 	 */
-	protected function getTemporaryPathForFile(t3lib_file_FileInterface $file) {
-		return (t3lib_div::tempnam('fal-tempfile-') . '.') . $file->getExtension();
+	protected function getTemporaryPathForFile(\TYPO3\CMS\Core\Resource\FileInterface $file) {
+		return (\TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('fal-tempfile-') . '.') . $file->getExtension();
 	}
 
 	/**
 	 * Returns the public URL to a file.
 	 *
 	 * @abstract
-	 * @param t3lib_file_ResourceInterface $resource
+	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
 	 * @param bool  $relativeToCurrentScript    Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
 	 * @return string
 	 */
-	abstract public function getPublicUrl(t3lib_file_ResourceInterface $resource, $relativeToCurrentScript = FALSE);
+	abstract public function getPublicUrl(\TYPO3\CMS\Core\Resource\ResourceInterface $resource, $relativeToCurrentScript = FALSE);
 
 	/**
 	 * Returns a list of all hashing algorithms this Storage supports.
@@ -240,21 +242,21 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Creates a (cryptographic) hash for a file.
 	 *
 	 * @abstract
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $hashAlgorithm The hash algorithm to use
 	 * @return string
 	 */
-	abstract public function hash(t3lib_file_FileInterface $file, $hashAlgorithm);
+	abstract public function hash(\TYPO3\CMS\Core\Resource\FileInterface $file, $hashAlgorithm);
 
 	/**
 	 * Creates a new file and returns the matching file object for it.
 	 *
 	 * @abstract
 	 * @param string $fileName
-	 * @param t3lib_file_Folder $parentFolder
-	 * @return t3lib_file_File
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
-	abstract public function createFile($fileName, t3lib_file_Folder $parentFolder);
+	abstract public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $parentFolder);
 
 	/**
 	 * Returns the contents of a file. Beware that this requires to load the
@@ -262,20 +264,20 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * external location. So this might be an expensive operation (both in terms
 	 * of processing resources and money) for large files.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string The file contents
 	 */
-	abstract public function getFileContents(t3lib_file_FileInterface $file);
+	abstract public function getFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file);
 
 	/**
 	 * Sets the contents of a file to the specified value.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $contents
 	 * @return integer The number of bytes written to the file
 	 * @throws RuntimeException if the operation failed
 	 */
-	abstract public function setFileContents(t3lib_file_FileInterface $file, $contents);
+	abstract public function setFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file, $contents);
 
 	/**
 	 * Adds a file from the local server hard disk to a given path in TYPO3s virtual file system.
@@ -283,12 +285,12 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * This assumes that the local file exists, so no further check is done here!
 	 *
 	 * @param string $localFilePath
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $fileName The name to add the file under
-	 * @param t3lib_file_AbstractFile $updateFileObject Optional file object to update (instead of creating a new object). With this parameter, this function can be used to "populate" a dummy file object with a real file underneath.
-	 * @return t3lib_file_FileInterface
+	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $updateFileObject Optional file object to update (instead of creating a new object). With this parameter, this function can be used to "populate" a dummy file object with a real file underneath.
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
-	abstract public function addFile($localFilePath, t3lib_file_Folder $targetFolder, $fileName, t3lib_file_AbstractFile $updateFileObject = NULL);
+	abstract public function addFile($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName, \TYPO3\CMS\Core\Resource\AbstractFile $updateFileObject = NULL);
 
 	/**
 	 * Checks if a resource exists - does not care for the type (file or folder).
@@ -312,61 +314,61 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 *
 	 * @abstract
 	 * @param string $fileName
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	abstract public function fileExistsInFolder($fileName, t3lib_file_Folder $folder);
+	abstract public function fileExistsInFolder($fileName, \TYPO3\CMS\Core\Resource\Folder $folder);
 
 	/**
 	 * Returns a (local copy of) a file for processing it. When changing the
 	 * file, you have to take care of replacing the current version yourself!
 	 *
 	 * @abstract
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param bool $writable Set this to FALSE if you only need the file for read operations. This might speed up things, e.g. by using a cached local version. Never modify the file if you have set this flag!
 	 * @return string The path to the file on the local disk
 	 */
 	// TODO decide if this should return a file handle object
-	abstract public function getFileForLocalProcessing(t3lib_file_FileInterface $file, $writable = TRUE);
+	abstract public function getFileForLocalProcessing(\TYPO3\CMS\Core\Resource\FileInterface $file, $writable = TRUE);
 
 	/**
 	 * Returns the permissions of a file as an array (keys r, w) of boolean flags
 	 *
 	 * @abstract
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return array
 	 */
-	abstract public function getFilePermissions(t3lib_file_FileInterface $file);
+	abstract public function getFilePermissions(\TYPO3\CMS\Core\Resource\FileInterface $file);
 
 	/**
 	 * Returns the permissions of a folder as an array (keys r, w) of boolean flags
 	 *
 	 * @abstract
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return array
 	 */
-	abstract public function getFolderPermissions(t3lib_file_Folder $folder);
+	abstract public function getFolderPermissions(\TYPO3\CMS\Core\Resource\Folder $folder);
 
 	/**
 	 * Renames a file
 	 *
 	 * @abstract
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $newName
 	 * @return string The new identifier of the file if the operation succeeds
 	 * @throws RuntimeException if renaming the file failed
 	 */
-	abstract public function renameFile(t3lib_file_FileInterface $file, $newName);
+	abstract public function renameFile(\TYPO3\CMS\Core\Resource\FileInterface $file, $newName);
 
 	/**
 	 * Replaces the contents (and file-specific metadata) of a file object with a local file.
 	 *
 	 * @abstract
-	 * @param t3lib_file_AbstractFile $file
+	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $file
 	 * @param string $localFilePath
 	 * @return boolean
 	 */
-	abstract public function replaceFile(t3lib_file_AbstractFile $file, $localFilePath);
+	abstract public function replaceFile(\TYPO3\CMS\Core\Resource\AbstractFile $file, $localFilePath);
 
 	/**
 	 * Returns information about a file for a given file identifier.
@@ -379,10 +381,10 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns information about a file for a given file object.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return array
 	 */
-	public function getFileInfo(t3lib_file_FileInterface $file) {
+	public function getFileInfo(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		return $this->getFileInfoByIdentifier($file->getIdentifier());
 	}
 
@@ -390,12 +392,12 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Returns a file object by its identifier.
 	 *
 	 * @param string $identifier
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
 	public function getFile($identifier) {
 		$fileObject = NULL;
 		if (!$this->fileExists($identifier)) {
-			throw new t3lib_file_exception_FileDoesNotExistException();
+			throw new \TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException();
 		}
 		$fileInfo = $this->getFileInfoByIdentifier($identifier);
 		$fileObject = $this->getFileObject($fileInfo);
@@ -406,10 +408,10 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Creates a file object from a given file data array
 	 *
 	 * @param array $fileData
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	protected function getFileObject(array $fileData) {
-		$fileObject = t3lib_file_Factory::getInstance()->createFileObject($fileData);
+		$fileObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->createFileObject($fileData);
 		return $fileObject;
 	}
 
@@ -417,11 +419,11 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Returns a folder by its identifier.
 	 *
 	 * @param string $identifier
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getFolder($identifier) {
 		$name = $this->getNameFromIdentifier($identifier);
-		return t3lib_file_Factory::getInstance()->createFolderObject($this->storage, $identifier, $name);
+		return \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->createFolderObject($this->storage, $identifier, $name);
 	}
 
 	/**
@@ -429,10 +431,10 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * on the identifiers because non-hierarchical storages might fail otherwise.
 	 *
 	 * @param $name
-	 * @param t3lib_file_Folder $parentFolder
-	 * @return t3lib_file_Folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
-	abstract public function getFolderInFolder($name, t3lib_file_Folder $parentFolder);
+	abstract public function getFolderInFolder($name, \TYPO3\CMS\Core\Resource\Folder $parentFolder);
 
 	/**
 	 * Applies a set of filter methods to a file name to find out if it should be used or not. This is e.g. used by
@@ -454,7 +456,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 				if ($result === -1) {
 					return FALSE;
 				} elseif ($result === FALSE) {
-					throw new RuntimeException((('Could not apply file/folder name filter ' . $filter[0]) . '::') . $filter[1]);
+					throw new \RuntimeException((('Could not apply file/folder name filter ' . $filter[0]) . '::') . $filter[1]);
 				}
 			}
 		}
@@ -480,54 +482,54 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Copies a file to a temporary path and returns that path.
 	 *
 	 * @abstract
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string The temporary path
 	 */
-	abstract public function copyFileToTemporaryPath(t3lib_file_FileInterface $file);
+	abstract public function copyFileToTemporaryPath(\TYPO3\CMS\Core\Resource\FileInterface $file);
 
 	/**
 	 * Moves a file *within* the current storage.
 	 * Note that this is only about an intra-storage move action, where a file is just
 	 * moved to another folder in the same storage.
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $fileName
 	 * @return string The new identifier of the file
 	 */
-	abstract public function moveFileWithinStorage(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder, $fileName);
+	abstract public function moveFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName);
 
 	/**
 	 * Copies a file *within* the current storage.
 	 * Note that this is only about an intra-storage copy action, where a file is just
 	 * copied to another folder in the same storage.
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $fileName
-	 * @return t3lib_file_FileInterface The new (copied) file object.
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface The new (copied) file object.
 	 */
-	abstract public function copyFileWithinStorage(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder, $fileName);
+	abstract public function copyFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName);
 
 	/**
 	 * Folder equivalent to moveFileWithinStorage().
 	 *
-	 * @param t3lib_file_Folder $folderToMove
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $newFolderName
 	 * @return array A map of old to new file identifiers
 	 */
-	abstract public function moveFolderWithinStorage(t3lib_file_Folder $folderToMove, t3lib_file_Folder $targetFolder, $newFolderName);
+	abstract public function moveFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFolderName);
 
 	/**
 	 * Folder equivalent to copyFileWithinStorage().
 	 *
-	 * @param t3lib_file_Folder $folderToMove
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $newFileName
 	 * @return boolean
 	 */
-	abstract public function copyFolderWithinStorage(t3lib_file_Folder $folderToMove, t3lib_file_Folder $targetFolder, $newFileName);
+	abstract public function copyFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFileName);
 
 	/**
 	 * Removes a file from this storage. This does not check if the file is
@@ -535,31 +537,31 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * this has to be taken care of in the upper layers (e.g. the Storage)!
 	 *
 	 * @abstract
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return boolean TRUE if deleting the file succeeded
 	 */
-	abstract public function deleteFile(t3lib_file_FileInterface $file);
+	abstract public function deleteFile(\TYPO3\CMS\Core\Resource\FileInterface $file);
 
 	/**
 	 * Removes a folder from this storage.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @param boolean $deleteRecursively
 	 * @return boolean
 	 */
-	abstract public function deleteFolder(t3lib_file_Folder $folder, $deleteRecursively = FALSE);
+	abstract public function deleteFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $deleteRecursively = FALSE);
 
 	/**
 	 * Adds a file at the specified location. This should only be used internally.
 	 *
 	 * @abstract
 	 * @param string $localFilePath
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $targetFileName
 	 * @return string The new identifier of the file
 	 */
 	// TODO check if this is still necessary if we move more logic to the storage
-	abstract public function addFileRaw($localFilePath, t3lib_file_Folder $targetFolder, $targetFileName);
+	abstract public function addFileRaw($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName);
 
 	/**
 	 * Deletes a file without access and usage checks.
@@ -582,7 +584,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Returns the root level folder of the storage.
 	 *
 	 * @abstract
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	abstract public function getRootLevelFolder();
 
@@ -590,7 +592,7 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Returns the default folder new files should be put into.
 	 *
 	 * @abstract
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	abstract public function getDefaultFolder();
 
@@ -598,10 +600,10 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * Creates a folder.
 	 *
 	 * @param string $newFolderName
-	 * @param t3lib_file_Folder $parentFolder
-	 * @return t3lib_file_Folder The new (created) folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
+	 * @return \TYPO3\CMS\Core\Resource\Folder The new (created) folder object
 	 */
-	abstract public function createFolder($newFolderName, t3lib_file_Folder $parentFolder);
+	abstract public function createFolder($newFolderName, \TYPO3\CMS\Core\Resource\Folder $parentFolder);
 
 	/**
 	 * Returns a list of all folders in a given path
@@ -630,20 +632,20 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 *
 	 * @abstract
 	 * @param string $folderName
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	abstract public function folderExistsInFolder($folderName, t3lib_file_Folder $folder);
+	abstract public function folderExistsInFolder($folderName, \TYPO3\CMS\Core\Resource\Folder $folder);
 
 	/**
 	 * Renames a folder in this storage.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @param string $newName The target path (including the file name!)
 	 * @return array A map of old to new file identifiers
 	 * @throws RuntimeException if renaming the folder failed
 	 */
-	abstract public function renameFolder(t3lib_file_Folder $folder, $newName);
+	abstract public function renameFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $newName);
 
 	/**
 	 * Checks if a given object or identifier is within a container, e.g. if
@@ -651,20 +653,21 @@ abstract class t3lib_file_Driver_AbstractDriver {
 	 * This can e.g. be used to check for webmounts.
 	 *
 	 * @abstract
-	 * @param t3lib_file_Folder $container
+	 * @param \TYPO3\CMS\Core\Resource\Folder $container
 	 * @param mixed $content An object or an identifier to check
 	 * @return boolean TRUE if $content is within $container
 	 */
-	abstract public function isWithin(t3lib_file_Folder $container, $content);
+	abstract public function isWithin(\TYPO3\CMS\Core\Resource\Folder $container, $content);
 
 	/**
 	 * Checks if a folder contains files and (if supported) other folders.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean TRUE if there are no files and folders within $folder
 	 */
-	abstract public function isFolderEmpty(t3lib_file_Folder $folder);
+	abstract public function isFolderEmpty(\TYPO3\CMS\Core\Resource\Folder $folder);
 
 }
+
 
 ?>

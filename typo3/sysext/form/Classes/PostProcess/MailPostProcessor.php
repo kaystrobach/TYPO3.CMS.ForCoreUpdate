@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\PostProcess;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,10 +30,10 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_Interface {
+class MailPostProcessor implements \TYPO3\CMS\Form\PostProcess\PostProcessorInterface {
 
 	/**
-	 * @var tx_form_Domain_Model_Form
+	 * @var \TYPO3\CMS\Form\Domain\Model\Form
 	 */
 	protected $form;
 
@@ -41,12 +43,12 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	protected $typoScript;
 
 	/**
-	 * @var t3lib_mail_Message
+	 * @var \TYPO3\CMS\Core\Mail\MailMessage
 	 */
 	protected $mailMessage;
 
 	/**
-	 * @var tx_form_System_Request
+	 * @var \TYPO3\CMS\Form\Request
 	 */
 	protected $requestHandler;
 
@@ -58,14 +60,14 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Form $form Form domain model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Form $form Form domain model
 	 * @param array $typoScript Post processor TypoScript settings
 	 */
-	public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Form $form, array $typoScript) {
 		$this->form = $form;
 		$this->typoScript = $typoScript;
-		$this->mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
-		$this->requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
+		$this->mailMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+		$this->requestHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Request');
 	}
 
 	/**
@@ -103,7 +105,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 		} elseif ($this->requestHandler->has($this->typoScript['subjectField'])) {
 			$subject = $this->requestHandler->get($this->typoScript['subjectField']);
 		} else {
-			$subject = 'Formmail on ' . t3lib_div::getIndpEnv('HTTP_HOST');
+			$subject = 'Formmail on ' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_HOST');
 		}
 		$subject = $this->sanitizeHeaderString($subject);
 		$this->mailMessage->setSubject($subject);
@@ -125,8 +127,8 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 		} else {
 			$fromEmail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
 		}
-		if (!t3lib_div::validEmail($fromEmail)) {
-			$fromEmail = t3lib_utility_Mail::getSystemFromAddress();
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($fromEmail)) {
+			$fromEmail = \TYPO3\CMS\Core\Utility\MailUtility::getSystemFromAddress();
 		}
 		$fromName = '';
 		if ($this->typoScript['senderName']) {
@@ -152,7 +154,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function setTo() {
-		if ($this->typoScript['recipientEmail'] && t3lib_div::validEmail($this->typoScript['recipientEmail'])) {
+		if ($this->typoScript['recipientEmail'] && \TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($this->typoScript['recipientEmail'])) {
 			$this->mailMessage->setTo($this->typoScript['recipientEmail']);
 		}
 	}
@@ -165,7 +167,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function setCc() {
-		if ($this->typoScript['ccEmail'] && t3lib_div::validEmail($this->typoScript['ccEmail'])) {
+		if ($this->typoScript['ccEmail'] && \TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($this->typoScript['ccEmail'])) {
 			$this->mailMessage->AddCc(trim($this->typoScript['ccEmail']));
 		}
 	}
@@ -181,7 +183,7 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	protected function setPriority() {
 		$priority = 3;
 		if ($this->typoScript['priority']) {
-			$priority = t3lib_utility_Math::forceIntegerInRange($this->typoScript['priority'], 1, 5);
+			$priority = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->typoScript['priority'], 1, 5);
 		}
 		$this->mailMessage->setPriority($priority);
 	}
@@ -229,8 +231,8 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function setHtmlContent() {
-		/** @var $view tx_form_View_Mail_Html */
-		$view = t3lib_div::makeInstance('tx_form_View_Mail_Html', $this->form, $this->typoScript);
+		/** @var $view \TYPO3\CMS\Form\View\Mail\Html\HtmlView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Mail\\Html\\HtmlView', $this->form, $this->typoScript);
 		$htmlContent = $view->get();
 		$this->mailMessage->setBody($htmlContent, 'text/html');
 	}
@@ -243,8 +245,8 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function setPlainContent() {
-		/** @var $view tx_form_View_Mail_Plain */
-		$view = t3lib_div::makeInstance('tx_form_View_Mail_Plain', $this->form);
+		/** @var $view \TYPO3\CMS\Form\View\Mail\Plain\PlainView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Mail\\MailView_Plain', $this->form);
 		$plainContent = $view->render();
 		$this->mailMessage->addPart($plainContent, 'text/plain');
 	}
@@ -267,8 +269,8 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return string HTML message from the mail view
 	 */
 	protected function render() {
-		/** @var $view tx_form_View_Mail */
-		$view = t3lib_div::makeInstance('tx_form_View_Mail', $this->mailMessage, $this->typoScript);
+		/** @var $view \TYPO3\CMS\Form\View\Mail\MailView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Mail\\MailView', $this->mailMessage, $this->typoScript);
 		return $view->render();
 	}
 
@@ -307,18 +309,18 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	 * @return void
 	 */
 	protected function addAttachmentsFromElements($elements, $submittedValues) {
-		/** @var $element tx_form_Domain_Model_Element_Abstract */
+		/** @var $element \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement */
 		foreach ($elements as $element) {
-			if (is_a($element, 'tx_form_Domain_Model_Element_Container')) {
+			if (is_a($element, 'TYPO3\\CMS\\Form\\Domain\\Model\\Element\\ContainerElement')) {
 				$this->addAttachmentsFromElements($element->getElements(), $submittedValues);
 				continue;
 			}
-			if (is_a($element, 'tx_form_Domain_Model_Element_Fileupload')) {
+			if (is_a($element, 'TYPO3\\CMS\\Form\\Domain\\Model\\Element\\FileuploadElement')) {
 				$elementName = $element->getName();
 				if (is_array($submittedValues[$elementName]) && isset($submittedValues[$elementName]['tempFilename'])) {
 					$filename = $submittedValues[$elementName]['tempFilename'];
-					if (is_file($filename) && t3lib_div::isAllowedAbsPath($filename)) {
-						$this->mailMessage->attach(Swift_Attachment::fromPath($filename)->setFilename($submittedValues[$elementName]['originalFilename']));
+					if (is_file($filename) && \TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($filename)) {
+						$this->mailMessage->attach(\Swift_Attachment::fromPath($filename)->setFilename($submittedValues[$elementName]['originalFilename']));
 					}
 				}
 			}
@@ -326,5 +328,6 @@ class tx_form_System_Postprocessor_Mail implements tx_form_System_Postprocessor_
 	}
 
 }
+
 
 ?>

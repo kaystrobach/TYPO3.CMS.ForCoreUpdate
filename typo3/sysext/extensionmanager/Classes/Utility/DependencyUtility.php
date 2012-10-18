@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,30 +33,30 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
+class DependencyUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository
 	 */
 	protected $extensionRepository;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_List
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\ListUtility
 	 */
 	protected $listUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_EmConf
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\EmConfUtility
 	 */
 	protected $emConfUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Service_Management
+	 * @var \TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService
 	 */
 	protected $managementService;
 
@@ -69,42 +71,42 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	protected $errors = array();
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository
 	 * @return void
 	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+	public function injectExtensionRepository(\TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility
 	 * @return void
 	 */
-	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+	public function injectListUtility(\TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility) {
 		$this->listUtility = $listUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_EmConf $emConfUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\EmConfUtility $emConfUtility
 	 * @return void
 	 */
-	public function injectEmConfUtility(Tx_Extensionmanager_Utility_EmConf $emConfUtility) {
+	public function injectEmConfUtility(\TYPO3\CMS\Extensionmanager\Utility\EmConfUtility $emConfUtility) {
 		$this->emConfUtility = $emConfUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Service_Management $managementService
+	 * @param \TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService $managementService
 	 * @return void
 	 */
-	public function injectManagementService(Tx_Extensionmanager_Service_Management $managementService) {
+	public function injectManagementService(\TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService $managementService) {
 		$this->managementService = $managementService;
 	}
 
@@ -119,7 +121,7 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return void
 	 */
 	public function buildExtensionDependenciesTree($extension) {
@@ -133,13 +135,13 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 */
 	public function convertDependenciesToObjects($dependencies) {
 		$unserializedDependencies = unserialize($dependencies);
-		$dependenciesObject = new SplObjectStorage();
+		$dependenciesObject = new \SplObjectStorage();
 		foreach ($unserializedDependencies as $dependencyType => $dependencyValues) {
 			foreach ($dependencyValues as $dependency => $versions) {
 				if ($dependencyType && $dependency) {
-					list($highest, $lowest) = t3lib_utility_VersionNumber::convertVersionsStringToVersionNumbers($versions);
-					/** @var $dependencyObject Tx_Extensionmanager_Domain_Model_Dependency */
-					$dependencyObject = $this->objectManager->create('Tx_Extensionmanager_Domain_Model_Dependency');
+					list($highest, $lowest) = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionsStringToVersionNumbers($versions);
+					/** @var $dependencyObject \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency */
+					$dependencyObject = $this->objectManager->create('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Dependency');
 					$dependencyObject->setType($dependencyType);
 					$dependencyObject->setIdentifier($dependency);
 					$dependencyObject->setLowestVersion($lowest);
@@ -158,15 +160,15 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * @param SplObjectStorage $dependencies
 	 * @return boolean
 	 */
-	protected function checkDependencies(SplObjectStorage $dependencies) {
+	protected function checkDependencies(\SplObjectStorage $dependencies) {
 		$dependenciesToResolve = FALSE;
 		foreach ($dependencies as $dependency) {
 			$identifier = strtolower($dependency->getIdentifier());
-			if (in_array($identifier, Tx_Extensionmanager_Domain_Model_Dependency::$specialDependencies)) {
+			if (in_array($identifier, \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency::$specialDependencies)) {
 				$methodname = ('check' . ucfirst($identifier)) . 'Dependency';
 				try {
 					$this->{$methodname}($dependency);
-				} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
+				} catch (\TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException $e) {
 					$this->errors[] = array(
 						'identifier' => $identifier,
 						'message' => $e->getMessage()
@@ -184,21 +186,21 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	/**
 	 * Returns true if current TYPO3 version fulfills extension requirements
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 */
-	protected function checkTypo3Dependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function checkTypo3Dependency(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$lowerCaseIdentifier = strtolower($dependency->getIdentifier());
 		if ($lowerCaseIdentifier === 'typo3') {
-			if (!($dependency->getLowestVersion() === '') && version_compare(t3lib_utility_VersionNumber::getNumericTypo3Version(), $dependency->getLowestVersion()) === -1) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Your TYPO3 version is lower than necessary. You need at least TYPO3 version ' . $dependency->getLowestVersion());
+			if (!($dependency->getLowestVersion() === '') && version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getNumericTypo3Version(), $dependency->getLowestVersion()) === -1) {
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Your TYPO3 version is lower than necessary. You need at least TYPO3 version ' . $dependency->getLowestVersion());
 			}
-			if (!($dependency->getHighestVersion() === '') && version_compare($dependency->getHighestVersion(), t3lib_utility_VersionNumber::getNumericTypo3Version()) === -1) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager((('Your TYPO3 version is higher than allowed. You can use TYPO3 versions ' . $dependency->getLowestVersion()) . ' - ') . $dependency->getHighestVersion());
+			if (!($dependency->getHighestVersion() === '') && version_compare($dependency->getHighestVersion(), \TYPO3\CMS\Core\Utility\VersionNumberUtility::getNumericTypo3Version()) === -1) {
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException((('Your TYPO3 version is higher than allowed. You can use TYPO3 versions ' . $dependency->getLowestVersion()) . ' - ') . $dependency->getHighestVersion());
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(('checkTypo3Dependency can only check TYPO3 dependencies. Found dependency with identifier "' . $dependency->getIdentifier()) . '"');
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(('checkTypo3Dependency can only check TYPO3 dependencies. Found dependency with identifier "' . $dependency->getIdentifier()) . '"');
 		}
 		return TRUE;
 	}
@@ -206,21 +208,21 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	/**
 	 * Returns true if current php version fulfills extension requirements
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 */
-	protected function checkPhpDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function checkPhpDependency(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$lowerCaseIdentifier = strtolower($dependency->getIdentifier());
 		if ($lowerCaseIdentifier === 'php') {
 			if (!($dependency->getLowestVersion() === '') && version_compare(PHP_VERSION, $dependency->getLowestVersion()) === -1) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Your PHP version is lower than necessary. You need at least PHP version ' . $dependency->getLowestVersion());
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Your PHP version is lower than necessary. You need at least PHP version ' . $dependency->getLowestVersion());
 			}
 			if (!($dependency->getHighestVersion() === '') && version_compare($dependency->getHighestVersion(), PHP_VERSION) === -1) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager((('Your PHP version is higher than allowed. You can use PHP versions ' . $dependency->getLowestVersion()) . ' - ') . $dependency->getHighestVersion());
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException((('Your PHP version is higher than allowed. You can use PHP versions ' . $dependency->getLowestVersion()) . ' - ') . $dependency->getHighestVersion());
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(('checkPhpDependency can only check PHP dependencies. Found dependency with identifier "' . $dependency->getIdentifier()) . '"');
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(('checkPhpDependency can only check PHP dependencies. Found dependency with identifier "' . $dependency->getIdentifier()) . '"');
 		}
 		return TRUE;
 	}
@@ -233,10 +235,10 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * - remote (TER) extension in matching version? - mark for download
 	 *
 	 * @todo handle exceptions / markForUpload
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
 	 */
-	protected function checkExtensionDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function checkExtensionDependency(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$extensionKey = $dependency->getIdentifier();
 		$extensionIsLoaded = $this->isDependentExtensionLoaded($extensionKey);
 		if ($extensionIsLoaded === TRUE) {
@@ -268,30 +270,30 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 *
 	 * @todo unit tests
 	 * @param string $extensionKey
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
-	protected function getExtensionFromTer($extensionKey, Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function getExtensionFromTer($extensionKey, \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$isExtensionDownloadableFromTer = $this->isExtensionDownloadableFromTer($extensionKey);
 		if ($isExtensionDownloadableFromTer === TRUE) {
 			$isDownloadableVersionCompatible = $this->isDownloadableVersionCompatible($dependency);
 			if ($isDownloadableVersionCompatible === TRUE) {
 				$latestCompatibleExtensionByIntegerVersionDependency = $this->getLatestCompatibleExtensionByIntegerVersionDependency($dependency);
-				if ($latestCompatibleExtensionByIntegerVersionDependency instanceof Tx_Extensionmanager_Domain_Model_Extension) {
+				if ($latestCompatibleExtensionByIntegerVersionDependency instanceof \TYPO3\CMS\Extensionmanager\Domain\Model\Extension) {
 					if ($this->isDependentExtensionLoaded($extensionKey)) {
 						$this->managementService->markExtensionForUpdate($latestCompatibleExtensionByIntegerVersionDependency);
 					} else {
 						$this->managementService->markExtensionForDownload($latestCompatibleExtensionByIntegerVersionDependency);
 					}
 				} else {
-					throw new Tx_Extensionmanager_Exception_ExtensionManager('Something went wrong.');
+					throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Something went wrong.');
 				}
 			} else {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('No compatible version found for extension ' . $extensionKey);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('No compatible version found for extension ' . $extensionKey);
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(('The extension ' . $extensionKey) . ' is not available from TER.');
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(('The extension ' . $extensionKey) . ' is not available from TER.');
 		}
 	}
 
@@ -300,24 +302,24 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * @return bool
 	 */
 	protected function isDependentExtensionLoaded($extensionKey) {
-		return t3lib_extMgm::isLoaded($extensionKey);
+		return \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($extensionKey);
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
 	 */
-	protected function isLoadedVersionCompatible(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
-		$extensionVersion = t3lib_extMgm::getExtensionVersion($dependency->getIdentifier());
+	protected function isLoadedVersionCompatible(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
+		$extensionVersion = \TYPO3\CMS\Core\Extension\ExtensionManager::getExtensionVersion($dependency->getIdentifier());
 		return $this->isVersionCompatible($extensionVersion, $dependency);
 	}
 
 	/**
 	 * @param string $version
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
 	 */
-	protected function isVersionCompatible($version, Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function isVersionCompatible($version, \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		if (!($dependency->getLowestVersion() === '') && version_compare($version, $dependency->getLowestVersion()) === -1) {
 			return FALSE;
 		}
@@ -342,10 +344,10 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	/**
 	 * Checks whether the available version is compatible
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
 	 */
-	protected function isAvailableVersionCompatible(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function isAvailableVersionCompatible(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$this->setAvailableExtensions();
 		$extensionData = $this->emConfUtility->includeEmConf($this->availableExtensions[$dependency->getIdentifier()]);
 		return $this->isVersionCompatible($extensionData['version'], $dependency);
@@ -364,10 +366,10 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	/**
 	 * Checks whether a compatible version of the extension exists in TER
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return boolean
 	 */
-	protected function isDownloadableVersionCompatible(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function isDownloadableVersionCompatible(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$versions = $this->getLowestAndHighestIntegerVersions($dependency);
 		return count($this->extensionRepository->countByVersionRangeAndExtensionKey($dependency->getIdentifier(), $versions['lowestIntegerVersion'], $versions['highestIntegerVersion'])) > 0;
 	}
@@ -376,10 +378,10 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	 * Get the latest compatible version of an extension that
 	 * fulfills the given dependency from TER
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
-	 * @return Tx_Extensionmanager_Domain_Model_Extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
+	 * @return \TYPO3\CMS\Extensionmanager\Domain\Model\Extension
 	 */
-	protected function getLatestCompatibleExtensionByIntegerVersionDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function getLatestCompatibleExtensionByIntegerVersionDependency(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$versions = $this->getLowestAndHighestIntegerVersions($dependency);
 		$compatibleDataSets = $this->extensionRepository->findByVersionRangeAndExtensionKeyOrderedByVersion($dependency->getIdentifier(), $versions['lowestIntegerVersion'], $versions['highestIntegerVersion']);
 		return $compatibleDataSets->getFirst();
@@ -388,14 +390,14 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	/**
 	 * Return array of lowest and highest version of dependency as integer
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return array
 	 */
-	protected function getLowestAndHighestIntegerVersions(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	protected function getLowestAndHighestIntegerVersions(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$lowestVersion = $dependency->getLowestVersion();
-		$lowestVersionInteger = $lowestVersion ? t3lib_utility_VersionNumber::convertVersionNumberToInteger($lowestVersion) : 0;
+		$lowestVersionInteger = $lowestVersion ? \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($lowestVersion) : 0;
 		$highestVersion = $dependency->getHighestVersion();
-		$highestVersionInteger = $highestVersion ? t3lib_utility_VersionNumber::convertVersionNumberToInteger($highestVersion) : 0;
+		$highestVersionInteger = $highestVersion ? \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($highestVersion) : 0;
 		return array(
 			'lowestIntegerVersion' => $lowestVersionInteger,
 			'highestIntegerVersion' => $highestVersionInteger
@@ -418,5 +420,6 @@ class Tx_Extensionmanager_Utility_Dependency implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

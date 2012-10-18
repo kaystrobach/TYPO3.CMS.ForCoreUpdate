@@ -21,11 +21,11 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-require_once t3lib_extMgm::extPath('indexed_search', 'class.indexer.php');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('indexed_search', 'class.indexer.php');
 /*
  * @deprecated since 6.0, the classname tx_indexedsearch_indexerTest and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/indexed_search/Tests/Unit/IndexerTest.php
  */
-require_once t3lib_extMgm::extPath('indexed_search') . 'Tests/Unit/IndexerTest.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('indexed_search') . 'Tests/Unit/IndexerTest.php';
 ?>

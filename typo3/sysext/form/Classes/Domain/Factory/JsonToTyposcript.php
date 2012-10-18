@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Factory;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Factory_JsonToTyposcript {
+class JsonToTypoScript {
 
 	/**
 	 * Internal counter for the elements
@@ -576,5 +578,6 @@ class tx_form_Domain_Factory_JsonToTyposcript {
 	}
 
 }
+
 
 ?>

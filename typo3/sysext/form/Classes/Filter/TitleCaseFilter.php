@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Titlecase implements tx_form_System_Filter_Interface {
+class TitleCaseFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Convert alphabetic characters to title case
@@ -41,5 +43,6 @@ class tx_form_System_Filter_Titlecase implements tx_form_System_Filter_Interface
 	}
 
 }
+
 
 ?>

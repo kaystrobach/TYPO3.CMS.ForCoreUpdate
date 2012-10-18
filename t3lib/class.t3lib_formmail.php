@@ -67,7 +67,7 @@ class t3lib_formmail {
 	protected $encoding = 'quoted-printable';
 
 	/**
-	 * @var t3lib_mail_Message
+	 * @var \TYPO3\CMS\Core\Mail\MailMessage
 	 */
 	protected $mailMessage;
 
@@ -104,7 +104,7 @@ class t3lib_formmail {
 	 * @todo Define visibility
 	 */
 	public function start($valueList, $base64 = FALSE) {
-		$this->mailMessage = t3lib_div::makeInstance('t3lib_mail_Message');
+		$this->mailMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
 		if ($GLOBALS['TSFE']->config['config']['formMailCharset']) {
 			// Respect formMailCharset if it was set
 			$this->characterSet = $GLOBALS['TSFE']->csConvObj->parse_charset($GLOBALS['TSFE']->config['config']['formMailCharset']);
@@ -120,7 +120,7 @@ class t3lib_formmail {
 		}
 		if (isset($valueList['recipient'])) {
 			// Convert form data from renderCharset to mail charset
-			$this->subject = $valueList['subject'] ? $valueList['subject'] : 'Formmail on ' . t3lib_div::getIndpEnv('HTTP_HOST');
+			$this->subject = $valueList['subject'] ? $valueList['subject'] : 'Formmail on ' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_HOST');
 			$this->subject = $this->sanitizeHeaderString($this->subject);
 			$this->fromName = $valueList['from_name'] ? $valueList['from_name'] : ($valueList['name'] ? $valueList['name'] : '');
 			$this->fromName = $this->sanitizeHeaderString($this->fromName);
@@ -129,20 +129,20 @@ class t3lib_formmail {
 			$this->organisation = $valueList['organisation'] ? $valueList['organisation'] : '';
 			$this->organisation = $this->sanitizeHeaderString($this->organisation);
 			$this->fromAddress = $valueList['from_email'] ? $valueList['from_email'] : ($valueList['email'] ? $valueList['email'] : '');
-			if (!t3lib_div::validEmail($this->fromAddress)) {
-				$this->fromAddress = t3lib_utility_Mail::getSystemFromAddress();
-				$this->fromName = t3lib_utility_Mail::getSystemFromName();
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($this->fromAddress)) {
+				$this->fromAddress = \TYPO3\CMS\Core\Utility\MailUtility::getSystemFromAddress();
+				$this->fromName = \TYPO3\CMS\Core\Utility\MailUtility::getSystemFromName();
 			}
 			$this->replyToAddress = $valueList['replyto_email'] ? $valueList['replyto_email'] : $this->fromAddress;
-			$this->priority = $valueList['priority'] ? t3lib_utility_Math::forceIntegerInRange($valueList['priority'], 1, 5) : 3;
+			$this->priority = $valueList['priority'] ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($valueList['priority'], 1, 5) : 3;
 			// Auto responder
 			$this->autoRespondMessage = trim($valueList['auto_respond_msg']) && $this->fromAddress ? trim($valueList['auto_respond_msg']) : '';
 			if ($this->autoRespondMessage !== '') {
 				// Check if the value of the auto responder message has been modified with evil intentions
 				$autoRespondChecksum = $valueList['auto_respond_checksum'];
-				$correctHmacChecksum = t3lib_div::hmac($this->autoRespondMessage);
+				$correctHmacChecksum = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($this->autoRespondMessage);
 				if ($autoRespondChecksum !== $correctHmacChecksum) {
-					t3lib_div::sysLog('Possible misuse of t3lib_formmail auto respond method. Subject: ' . $valueList['subject'], 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Possible misuse of t3lib_formmail auto respond method. Subject: ' . $valueList['subject'], 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 					return;
 				} else {
 					$this->autoRespondMessage = $this->sanitizeHeaderString($this->autoRespondMessage);
@@ -153,7 +153,7 @@ class t3lib_formmail {
 			// Runs through $V and generates the mail
 			if (is_array($valueList)) {
 				foreach ($valueList as $key => $val) {
-					if (!t3lib_div::inList($this->reserved_names, $key)) {
+					if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->reserved_names, $key)) {
 						$space = strlen($val) > 60 ? LF : '';
 						$val = is_array($val) ? implode($val, LF) : $val;
 						// Convert form data from renderCharset to mail charset (HTML may use entities)
@@ -178,12 +178,12 @@ class t3lib_formmail {
 					continue;
 				}
 				if (!is_uploaded_file($_FILES[$variableName]['tmp_name'])) {
-					t3lib_div::sysLog(((('Possible abuse of t3lib_formmail: temporary file "' . $_FILES[$variableName]['tmp_name']) . '" ("') . $_FILES[$variableName]['name']) . '") was not an uploaded file.', 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(((('Possible abuse of t3lib_formmail: temporary file "' . $_FILES[$variableName]['tmp_name']) . '" ("') . $_FILES[$variableName]['name']) . '") was not an uploaded file.', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 				}
 				if ($_FILES[$variableName]['tmp_name']['error'] !== UPLOAD_ERR_OK) {
-					t3lib_div::sysLog((((('Error in uploaded file in t3lib_formmail: temporary file "' . $_FILES[$variableName]['tmp_name']) . '" ("') . $_FILES[$variableName]['name']) . '") Error code: ') . $_FILES[$variableName]['tmp_name']['error'], 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog((((('Error in uploaded file in t3lib_formmail: temporary file "' . $_FILES[$variableName]['tmp_name']) . '" ("') . $_FILES[$variableName]['name']) . '") Error code: ') . $_FILES[$variableName]['tmp_name']['error'], 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 				}
-				$theFile = t3lib_div::upload_to_tempfile($_FILES[$variableName]['tmp_name']);
+				$theFile = \TYPO3\CMS\Core\Utility\GeneralUtility::upload_to_tempfile($_FILES[$variableName]['tmp_name']);
 				$theName = $_FILES[$variableName]['name'];
 				if ($theFile && file_exists($theFile)) {
 					if (filesize($theFile) < $GLOBALS['TYPO3_CONF_VARS']['FE']['formmailMaxAttachmentSize']) {
@@ -206,9 +206,9 @@ class t3lib_formmail {
 			// is not worth the trouble
 			// Log dirty header lines
 			if ($this->dirtyHeaders) {
-				t3lib_div::sysLog('Possible misuse of t3lib_formmail: see TYPO3 devLog', 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Possible misuse of t3lib_formmail: see TYPO3 devLog', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 				if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['enable_DLOG']) {
-					t3lib_div::devLog('t3lib_formmail: ' . t3lib_div::arrayToLogString($this->dirtyHeaders, '', 200), 'Core', 3);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('t3lib_formmail: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($this->dirtyHeaders, '', 200), 'Core', 3);
 				}
 			}
 		}
@@ -241,8 +241,8 @@ class t3lib_formmail {
 	 * @return array Parsed list of addresses.
 	 */
 	protected function parseAddresses($rawAddresses = '') {
-		/** @var $addressParser t3lib_mail_Rfc822AddressesParser */
-		$addressParser = t3lib_div::makeInstance('t3lib_mail_Rfc822AddressesParser', $rawAddresses);
+		/** @var $addressParser \TYPO3\CMS\Core\Mail\Rfc822AddressesParser */
+		$addressParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\Rfc822AddressesParser', $rawAddresses);
 		$addresses = $addressParser->parseAddressList();
 		$addressList = array();
 		foreach ($addresses as $address) {
@@ -274,8 +274,8 @@ class t3lib_formmail {
 			$theParts[0] = str_replace('###SUBJECT###', $this->subject, $theParts[0]);
 			$theParts[1] = str_replace('/', LF, $theParts[1]);
 			$theParts[1] = str_replace('###MESSAGE###', $this->plainContent, $theParts[1]);
-			/** @var $autoRespondMail t3lib_mail_Message */
-			$autoRespondMail = t3lib_div::makeInstance('t3lib_mail_Message');
+			/** @var $autoRespondMail \TYPO3\CMS\Core\Mail\MailMessage */
+			$autoRespondMail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
 			$autoRespondMail->setTo($this->fromAddress)->setSubject($theParts[0])->setFrom($this->recipient)->setBody($theParts[1]);
 			$autoRespondMail->send();
 		}
@@ -287,8 +287,8 @@ class t3lib_formmail {
 	 */
 	public function __destruct() {
 		foreach ($this->temporaryFiles as $file) {
-			if (t3lib_div::isAllowedAbsPath($file) && t3lib_div::isFirstPartOfStr($file, PATH_site . 'typo3temp/upload_temp_')) {
-				t3lib_div::unlink_tempfile($file);
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($file) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($file, PATH_site . 'typo3temp/upload_temp_')) {
+				\TYPO3\CMS\Core\Utility\GeneralUtility::unlink_tempfile($file);
 			}
 		}
 	}

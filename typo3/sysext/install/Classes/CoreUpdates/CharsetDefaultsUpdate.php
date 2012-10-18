@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +29,7 @@
 /**
  * Displays warnings and information about the database character set
  */
-class tx_coreupdates_charsetDefaults extends Tx_Install_Updates_Base {
+class CharsetDefaultsUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Database Character Set';
 
@@ -62,13 +64,13 @@ class tx_coreupdates_charsetDefaults extends Tx_Install_Updates_Base {
 	public function performUpdate(array &$dbQueries, &$customMessages) {
 		// Update "setDBinit" setting
 		$result1 = FALSE;
-		if (t3lib_Configuration::getLocalConfigurationValueByPath('SYS/setDBinit') === '-1') {
-			$result1 = t3lib_Configuration::setLocalConfigurationValueByPath('SYS/setDBinit', '');
+		if (\TYPO3\CMS\Core\Configuration\ConfigurationManager::getLocalConfigurationValueByPath('SYS/setDBinit') === '-1') {
+			$result1 = \TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('SYS/setDBinit', '');
 		}
 		// Update the "forceCharset" setting
 		$result2 = FALSE;
-		if (t3lib_Configuration::getLocalConfigurationValueByPath('BE/forceCharset') !== '') {
-			$result2 = t3lib_Configuration::setLocalConfigurationValueByPath('BE/forceCharset', '');
+		if (\TYPO3\CMS\Core\Configuration\ConfigurationManager::getLocalConfigurationValueByPath('BE/forceCharset') !== '') {
+			$result2 = \TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('BE/forceCharset', '');
 		}
 		if ($result1 && $result2) {
 			$customMessages[] = 'The configuration was successfully updated.';
@@ -79,5 +81,6 @@ class tx_coreupdates_charsetDefaults extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

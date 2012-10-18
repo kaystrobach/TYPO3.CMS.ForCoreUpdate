@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\CronCommand;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage scheduler
  */
-class tx_scheduler_CronCmd_Normalize {
+class NormalizeCommand {
 
 	/**
 	 * Main API method: Get the cron command and normalize it.
@@ -112,7 +114,7 @@ class tx_scheduler_CronCmd_Normalize {
 	static protected function splitFields($cronCommand) {
 		$fields = explode(' ', $cronCommand);
 		if (count($fields) !== 5) {
-			throw new InvalidArgumentException('Unable to split given cron command to five fields.', 1291227373);
+			throw new \InvalidArgumentException('Unable to split given cron command to five fields.', 1291227373);
 		}
 		return $fields;
 	}
@@ -188,23 +190,23 @@ class tx_scheduler_CronCmd_Normalize {
 				} elseif (strcmp(intval($listElement), $listElement) === 0) {
 					$fieldArray[] = $listElement;
 				} else {
-					throw new InvalidArgumentException('Unable to normalize integer field.', 1291429389);
+					throw new \InvalidArgumentException('Unable to normalize integer field.', 1291429389);
 				}
 			}
 			$fieldValues = implode(',', $fieldArray);
 		}
 		if (strlen($fieldValues) === 0) {
-			throw new InvalidArgumentException('Unable to convert integer field to list of values: Result list empty.', 1291422012);
+			throw new \InvalidArgumentException('Unable to convert integer field to list of values: Result list empty.', 1291422012);
 		}
 		if ((string) $fieldValues !== '*') {
 			$fieldList = explode(',', $fieldValues);
 			sort($fieldList);
 			$fieldList = array_unique($fieldList);
 			if (current($fieldList) < $lowerBound) {
-				throw new InvalidArgumentException('Lowest element in list is smaller than allowed.', 1291470084);
+				throw new \InvalidArgumentException('Lowest element in list is smaller than allowed.', 1291470084);
 			}
 			if (end($fieldList) > $upperBound) {
-				throw new InvalidArgumentException('An element in the list is higher than allowed.', 1291470170);
+				throw new \InvalidArgumentException('An element in the list is higher than allowed.', 1291470170);
 			}
 			$fieldValues = implode(',', $fieldList);
 		}
@@ -220,13 +222,13 @@ class tx_scheduler_CronCmd_Normalize {
 	 */
 	static protected function convertRangeToListOfValues($range) {
 		if (strlen($range) === 0) {
-			throw new InvalidArgumentException('Unable to convert range to list of values with empty string.', 1291234985);
+			throw new \InvalidArgumentException('Unable to convert range to list of values with empty string.', 1291234985);
 		}
 		$rangeArray = explode('-', $range);
 		// Sanitize fields and cast to integer
 		foreach ($rangeArray as $fieldNumber => $fieldValue) {
 			if (strcmp(intval($fieldValue), $fieldValue) !== 0) {
-				throw new InvalidArgumentException('Unable to convert value to integer.', 1291237668);
+				throw new \InvalidArgumentException('Unable to convert value to integer.', 1291237668);
 			}
 			$rangeArray[$fieldNumber] = (int) $fieldValue;
 		}
@@ -237,7 +239,7 @@ class tx_scheduler_CronCmd_Normalize {
 			$left = $rangeArray[0];
 			$right = $rangeArray[1];
 			if ($left > $right) {
-				throw new InvalidArgumentException('Unable to convert range to list: Left integer must not be greather than right integer.', 1291237145);
+				throw new \InvalidArgumentException('Unable to convert range to list: Left integer must not be greather than right integer.', 1291237145);
 			}
 			$resultListArray = array();
 			for ($i = $left; $i <= $right; $i++) {
@@ -245,7 +247,7 @@ class tx_scheduler_CronCmd_Normalize {
 			}
 			$resultList = implode(',', $resultListArray);
 		} else {
-			throw new InvalidArgumentException('Unable to convert range to list of values.', 1291234985);
+			throw new \InvalidArgumentException('Unable to convert range to list of values.', 1291234985);
 		}
 		return (string) $resultList;
 	}
@@ -262,22 +264,22 @@ class tx_scheduler_CronCmd_Normalize {
 	 */
 	static protected function reduceListOfValuesByStepValue($stepExpression) {
 		if (strlen($stepExpression) === 0) {
-			throw new InvalidArgumentException('Unable to convert step values.', 1291234985);
+			throw new \InvalidArgumentException('Unable to convert step values.', 1291234985);
 		}
 		$stepValuesAndStepArray = explode('/', $stepExpression);
 		if (count($stepValuesAndStepArray) < 1 || count($stepValuesAndStepArray) > 2) {
-			throw new InvalidArgumentException('Unable to convert step values: Multiple slashes found.', 1291242168);
+			throw new \InvalidArgumentException('Unable to convert step values: Multiple slashes found.', 1291242168);
 		}
 		$left = $stepValuesAndStepArray[0];
 		$right = $stepValuesAndStepArray[1];
 		if (strlen($stepValuesAndStepArray[0]) === 0) {
-			throw new InvalidArgumentException('Unable to convert step values: Left part of / is empty.', 1291414955);
+			throw new \InvalidArgumentException('Unable to convert step values: Left part of / is empty.', 1291414955);
 		}
 		if (strlen($stepValuesAndStepArray[1]) === 0) {
-			throw new InvalidArgumentException('Unable to convert step values: Right part of / is empty.', 1291414956);
+			throw new \InvalidArgumentException('Unable to convert step values: Right part of / is empty.', 1291414956);
 		}
 		if (strcmp(intval($right), $right) !== 0) {
-			throw new InvalidArgumentException('Unable to convert step values: Right part must be a single integer.', 1291414957);
+			throw new \InvalidArgumentException('Unable to convert step values: Right part must be a single integer.', 1291414957);
 		}
 		$right = (int) $right;
 		$leftArray = explode(',', $left);
@@ -285,7 +287,7 @@ class tx_scheduler_CronCmd_Normalize {
 		$currentStep = $right;
 		foreach ($leftArray as $leftValue) {
 			if (strcmp(intval($leftValue), $leftValue) !== 0) {
-				throw new InvalidArgumentException('Unable to convert step values: Left part must be a single integer or comma separated list of integers.', 1291414958);
+				throw new \InvalidArgumentException('Unable to convert step values: Left part must be a single integer or comma separated list of integers.', 1291414958);
 			}
 			if ($currentStep === 0) {
 				$currentStep = $right;
@@ -296,7 +298,7 @@ class tx_scheduler_CronCmd_Normalize {
 			$currentStep--;
 		}
 		if (count($validValues) === 0) {
-			throw new InvalidArgumentException('Unable to convert step values: Result value list is empty.', 1291414958);
+			throw new \InvalidArgumentException('Unable to convert step values: Result value list is empty.', 1291414958);
 		}
 		return implode(',', $validValues);
 	}
@@ -325,7 +327,7 @@ class tx_scheduler_CronCmd_Normalize {
 		$timestamp = strtotime(('2010-' . $month) . '-01');
 		// timestamp must be >= 2010-01-01 and <= 2010-12-01
 		if ((!$timestamp || $timestamp < strtotime('2010-01-01')) || $timestamp > strtotime('2010-12-01')) {
-			throw new InvalidArgumentException('Unable to convert given month name.', 1291083486);
+			throw new \InvalidArgumentException('Unable to convert given month name.', 1291083486);
 		}
 		return (int) date('n', $timestamp);
 	}
@@ -351,7 +353,7 @@ class tx_scheduler_CronCmd_Normalize {
 			// Convert string representation like 'sun' to integer
 			$timestamp = strtotime('next ' . $weekday, mktime(0, 0, 0, 1, 1, 2010));
 			if ((!$timestamp || $timestamp < strtotime('2010-01-01')) || $timestamp > strtotime('2010-01-08')) {
-				throw new InvalidArgumentException('Unable to convert given weekday name.', 1291163589);
+				throw new \InvalidArgumentException('Unable to convert given weekday name.', 1291163589);
 			}
 			$normalizedWeekday = (int) date('N', $timestamp);
 		}
@@ -359,5 +361,6 @@ class tx_scheduler_CronCmd_Normalize {
 	}
 
 }
+
 
 ?>

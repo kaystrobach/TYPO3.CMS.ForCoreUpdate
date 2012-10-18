@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Benjamin Mack <benni@typo3.org>
  * @author Steffen Kamper <info@sk-typo3.de>
  */
-class tx_coreupdates_installnewsysexts extends Tx_Install_Updates_Base {
+class InstallNewSysextsUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Install New System Extensions';
 
@@ -55,7 +57,7 @@ class tx_coreupdates_installnewsysexts extends Tx_Install_Updates_Base {
 			<ul>
 		';
 		foreach ($this->newSystemExtensions as $_EXTKEY) {
-			if (!t3lib_extMgm::isLoaded($_EXTKEY)) {
+			if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($_EXTKEY)) {
 				$EM_CONF = FALSE;
 				// extension may not been loaded at this point, so we can't use an API function from t3lib_extmgm
 				require ((PATH_site . 'typo3/sysext/') . $_EXTKEY) . '/ext_emconf.php';
@@ -100,7 +102,7 @@ class tx_coreupdates_installnewsysexts extends Tx_Install_Updates_Base {
 				<ol>
 		';
 		foreach ($this->newSystemExtensions as $_EXTKEY) {
-			if (!t3lib_extMgm::isLoaded($_EXTKEY)) {
+			if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($_EXTKEY)) {
 				$EM_CONF = FALSE;
 				// extension may not been loaded at this point, so we can't use an API function from t3lib_extmgm
 				require ((PATH_site . 'typo3/sysext/') . $_EXTKEY) . '/ext_emconf.php';
@@ -138,5 +140,6 @@ class tx_coreupdates_installnewsysexts extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

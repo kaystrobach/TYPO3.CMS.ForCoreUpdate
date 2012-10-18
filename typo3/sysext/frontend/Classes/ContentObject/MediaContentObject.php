@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Media extends tslib_content_Abstract {
+class MediaContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, MEDIA
@@ -45,7 +47,7 @@ class tslib_content_Media extends tslib_content_Abstract {
 		$flexParams = isset($conf['flexParams.']) ? $this->cObj->stdWrap($conf['flexParams'], $conf['flexParams.']) : $conf['flexParams'];
 		if (substr($flexParams, 0, 1) === '<') {
 			// It is a content element rather a TS object
-			$flexParams = t3lib_div::xml2array($flexParams, 'T3');
+			$flexParams = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($flexParams, 'T3');
 			foreach ($flexParams['data'] as $sheetData) {
 				$this->cObj->readFlexformIntoConf($sheetData['lDEF'], $conf['parameter.'], TRUE);
 			}
@@ -111,9 +113,9 @@ class tslib_content_Media extends tslib_content_Abstract {
 			$renderType = 'swf';
 			$handler = array_keys($conf['fileExtHandler.']);
 			if ($conf['type'] === 'video') {
-				$fileinfo = t3lib_div::split_fileref($conf['file']);
+				$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($conf['file']);
 			} else {
-				$fileinfo = t3lib_div::split_fileref($conf['audioFallback']);
+				$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($conf['audioFallback']);
 			}
 			if (in_array($fileinfo['fileext'], $handler)) {
 				$renderType = strtolower($conf['fileExtHandler.'][$fileinfo['fileext']]);
@@ -132,13 +134,13 @@ class tslib_content_Media extends tslib_content_Abstract {
 						// Custom parameter entry
 						$rawTS = $val['mmParamCustomEntry'];
 						// Read and merge
-						$tmp = t3lib_div::trimExplode(LF, $rawTS);
+						$tmp = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $rawTS);
 						if (count($tmp)) {
 							foreach ($tmp as $tsLine) {
 								if (substr($tsLine, 0, 1) != '#' && ($pos = strpos($tsLine, '.'))) {
 									$parts[0] = substr($tsLine, 0, $pos);
 									$parts[1] = substr($tsLine, $pos + 1);
-									$valueParts = t3lib_div::trimExplode('=', $parts[1], TRUE);
+									$valueParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('=', $parts[1], TRUE);
 									switch (strtolower($parts[0])) {
 									case 'flashvars':
 										$conf['flashvars.'][$valueParts[0]] = $valueParts[1];
@@ -173,14 +175,14 @@ class tslib_content_Media extends tslib_content_Abstract {
 			$renderType = 'swf';
 		}
 		if (($renderType !== 'qt' && $renderType !== 'embed') && $conf['type'] == 'video') {
-			if (isset($conf['file']) && (strpos($conf['file'], '.swf') !== FALSE || strpos($conf['file'], '://') !== FALSE && strpos(t3lib_div::getUrl($conf['file'], 2), 'application/x-shockwave-flash') !== FALSE)) {
+			if (isset($conf['file']) && (strpos($conf['file'], '.swf') !== FALSE || strpos($conf['file'], '://') !== FALSE && strpos(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($conf['file'], 2), 'application/x-shockwave-flash') !== FALSE)) {
 				$conf = array_merge((array) $conf['mimeConf.']['swfobject.'], $conf);
 				$conf[$conf['type'] . '.']['player'] = strpos($conf['file'], '://') === FALSE ? 'http://' . $conf['file'] : $conf['file'];
 				$conf['installUrl'] = 'null';
 				$conf['forcePlayer'] = 0;
 				$renderType = 'swf';
 			} elseif (isset($conf['file']) && strpos($conf['file'], '://') !== FALSE) {
-				$mediaWizard = tslib_mediaWizardManager::getValidMediaWizardProvider($conf['file']);
+				$mediaWizard = \TYPO3\CMS\Frontend\MediaWizard\MediaWizardProviderManager::getValidMediaWizardProvider($conf['file']);
 				if ($mediaWizard !== NULL) {
 					$conf['installUrl'] = 'null';
 					$conf['forcePlayer'] = 0;
@@ -226,7 +228,7 @@ class tslib_content_Media extends tslib_content_Abstract {
 		default:
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['customMediaRender'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['customMediaRender'] as $classRef) {
-					$hookObj = t3lib_div::getUserObj($classRef);
+					$hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
 					$conf['file'] = $videoFallback;
 					$conf['mode'] = is_file(PATH_site . $videoFallback) ? 'file' : 'url';
 					if (method_exists($hookObj, 'customMediaRender')) {
@@ -249,8 +251,8 @@ class tslib_content_Media extends tslib_content_Abstract {
 	 */
 	protected function retrieveMediaUrl($file) {
 		$returnValue = NULL;
-		/** @var $mediaWizard tslib_mediaWizardProvider */
-		$mediaWizard = tslib_mediaWizardManager::getValidMediaWizardProvider($file);
+		/** @var $mediaWizard \TYPO3\CMS\Frontend\MediaWizard\MediaWizardProviderInterface */
+		$mediaWizard = \TYPO3\CMS\Frontend\MediaWizard\MediaWizardProviderManager::getValidMediaWizardProvider($file);
 		// Get the path relative to the page currently outputted
 		if (is_file(PATH_site . $file)) {
 			$returnValue = $GLOBALS['TSFE']->tmpl->getFileName($file);
@@ -258,7 +260,7 @@ class tslib_content_Media extends tslib_content_Abstract {
 			$returnValue = $this->cObj->typoLink_URL(array(
 				'parameter' => $mediaWizard->rewriteUrl($file)
 			));
-		} elseif (t3lib_div::isValidUrl($file)) {
+		} elseif (\TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($file)) {
 			$returnValue = $file;
 		}
 		return $returnValue;
@@ -289,5 +291,6 @@ class tslib_content_Media extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

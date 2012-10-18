@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization\Parser;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
+class LocallangXmlParser extends \TYPO3\CMS\Core\Localization\Parser\AbstractXmlParser {
 
 	/**
 	 * Associative array of "filename => parsed data" pairs.
@@ -55,15 +57,15 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 		// Parse source
 		$parsedSource = $this->parseXmlFile();
 		// Parse target
-		$localizedTargetPath = t3lib_div::getFileAbsFileName(t3lib_div::llXmlAutoFileName($this->sourcePath, $this->languageKey));
+		$localizedTargetPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(\TYPO3\CMS\Core\Utility\GeneralUtility::llXmlAutoFileName($this->sourcePath, $this->languageKey));
 		$targetPath = $this->languageKey !== 'default' && @is_file($localizedTargetPath) ? $localizedTargetPath : $this->sourcePath;
 		try {
 			$parsedTarget = $this->getParsedTargetData($targetPath);
-		} catch (t3lib_l10n_exception_InvalidXmlFile $e) {
+		} catch (\TYPO3\CMS\Core\Localization\Exception\InvalidXmlFileException $e) {
 			$parsedTarget = $this->getParsedTargetData($this->sourcePath);
 		}
 		$LOCAL_LANG = array();
-		$LOCAL_LANG[$languageKey] = t3lib_div::array_merge_recursive_overrule($parsedSource, $parsedTarget);
+		$LOCAL_LANG[$languageKey] = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($parsedSource, $parsedTarget);
 		return $LOCAL_LANG;
 	}
 
@@ -74,12 +76,12 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 	 * @param string $element Target or Source
 	 * @return array
 	 */
-	protected function doParsingFromRootForElement(SimpleXMLElement $root, $element) {
+	protected function doParsingFromRootForElement(\SimpleXMLElement $root, $element) {
 		$bodyOfFileTag = $root->data->languageKey;
 		// Check if the source llxml file contains localized records
 		$localizedBodyOfFileTag = $root->data->xpath(('languageKey[@index=\'' . $this->languageKey) . '\']');
 		$parsedData = $this->getParsedDataForElement($bodyOfFileTag, $element);
-		if (($element === 'target' && isset($localizedBodyOfFileTag[0])) && $localizedBodyOfFileTag[0] instanceof SimpleXMLElement) {
+		if (($element === 'target' && isset($localizedBodyOfFileTag[0])) && $localizedBodyOfFileTag[0] instanceof \SimpleXMLElement) {
 			$parsedDataTarget = $this->getParsedDataForElement($localizedBodyOfFileTag[0], $element);
 			$mergedData = array_merge($parsedData, $parsedDataTarget);
 			if ($this->languageKey === 'default') {
@@ -98,14 +100,14 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 	 * @param string $element
 	 * @return array
 	 */
-	protected function getParsedDataForElement(SimpleXMLElement $bodyOfFileTag, $element) {
+	protected function getParsedDataForElement(\SimpleXMLElement $bodyOfFileTag, $element) {
 		$parsedData = array();
 		if (count($bodyOfFileTag->children()) == 0) {
 			// Check for externally-referenced resource:
 			// <languageKey index="fr">EXT:yourext/path/to/localized/locallang.xml</languageKey>
 			$reference = sprintf('%s', $bodyOfFileTag);
 			if (substr($reference, -4) === '.xml') {
-				return $this->getParsedTargetData(t3lib_div::getFileAbsFileName($reference));
+				return $this->getParsedTargetData(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($reference));
 			}
 		}
 		foreach ($bodyOfFileTag->children() as $translationElement) {
@@ -125,7 +127,7 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 	 * @param \SimpleXMLElement $root A root node
 	 * @return array An array representing parsed XLIFF
 	 */
-	protected function doParsingFromRoot(SimpleXMLElement $root) {
+	protected function doParsingFromRoot(\SimpleXMLElement $root) {
 		return $this->doParsingFromRootForElement($root, 'source');
 	}
 
@@ -135,7 +137,7 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 	 * @param \SimpleXMLElement $root A root node
 	 * @return array An array representing parsed XLIFF
 	 */
-	protected function doParsingTargetFromRoot(SimpleXMLElement $root) {
+	protected function doParsingTargetFromRoot(\SimpleXMLElement $root) {
 		return $this->doParsingFromRootForElement($root, 'target');
 	}
 
@@ -159,7 +161,7 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 	 *
 	 * @param string $targetPath Path of the target file
 	 * @return array
-	 * @throws t3lib_l10n_exception_InvalidXmlFile
+	 * @throws \TYPO3\CMS\Core\Localization\Exception\InvalidXmlFileException
 	 */
 	protected function parseXmlTargetFile($targetPath) {
 		$rootXmlNode = FALSE;
@@ -167,11 +169,12 @@ class t3lib_l10n_parser_Llxml extends t3lib_l10n_parser_AbstractXml {
 			$rootXmlNode = simplexml_load_file($targetPath, 'SimpleXmlElement', \LIBXML_NOWARNING);
 		}
 		if (!isset($rootXmlNode) || $rootXmlNode === FALSE) {
-			throw new t3lib_l10n_exception_InvalidXmlFile(('The path provided does not point to existing and accessible well-formed XML file (' . $targetPath) . ').', 1278155987);
+			throw new \TYPO3\CMS\Core\Localization\Exception\InvalidXmlFileException(('The path provided does not point to existing and accessible well-formed XML file (' . $targetPath) . ').', 1278155987);
 		}
 		return $this->doParsingTargetFromRoot($rootXmlNode);
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -45,7 +47,7 @@
  * @package TYPO3
  * @subpackage t3lib_cache
  */
-class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_TaggableBackend {
+class WincacheBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * A prefix to seperate stored data from other data possible stored in the wincache
@@ -58,11 +60,11 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 * Constructs this backend
 	 *
 	 * @param mixed $options Configuration options - unused here
-	 * @throws \t3lib_cache_Exception If wincache PHP extension is not loaded
+	 * @throws \TYPO3\CMS\Core\Cache\Exception If wincache PHP extension is not loaded
 	 */
 	public function __construct($options = array()) {
 		if (!extension_loaded('wincache')) {
-			throw new \t3lib_cache_Exception('The PHP extension "wincache" must be installed and loaded in order to use the wincache backend.', 1343331520);
+			throw new \TYPO3\CMS\Core\Cache\Exception('The PHP extension "wincache" must be installed and loaded in order to use the wincache backend.', 1343331520);
 		}
 		parent::__construct($options);
 	}
@@ -75,16 +77,16 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 * @param array $tags Tags to associate with this cache entry
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited liftime.
 	 * @return void
-	 * @throws \t3lib_cache_Exception if no cache frontend has been set
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if no cache frontend has been set
 	 * @throws \InvalidArgumentException if the identifier is not valid
-	 * @throws \t3lib_cache_exception_InvalidData if $data is not a string
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if $data is not a string
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1343331521);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('No cache frontend has been set yet via setCache().', 1343331521);
 		}
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1343331522);
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidDataException(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1343331522);
 		}
 		$tags[] = '%WCBE%' . $this->cache->getIdentifier();
 		$expiration = $lifetime !== NULL ? $lifetime : $this->defaultLifetime;
@@ -93,7 +95,7 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 			$this->removeIdentifierFromAllTags($entryIdentifier);
 			$this->addIdentifierToTags($entryIdentifier, $tags);
 		} else {
-			throw new t3lib_cache_Exception('Could not set value.', 1343331523);
+			throw new \TYPO3\CMS\Core\Cache\Exception('Could not set value.', 1343331523);
 		}
 	}
 
@@ -170,8 +172,8 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	 * @return void
 	 */
 	public function flush() {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new t3lib_cache_Exception('Yet no cache frontend has been set via setCache().', 1343331524);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('Yet no cache frontend has been set via setCache().', 1343331524);
 		}
 		$this->flushByTag('%WCBE%' . $this->cache->getIdentifier());
 	}
@@ -265,5 +267,6 @@ class t3lib_cache_backend_WincacheBackend extends t3lib_cache_backend_AbstractBa
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class, creating object of t3lib_TCEmain and sending the posted data to the object.
  * Used by many smaller forms/links in TYPO3, including the QuickEdit module.
@@ -9,7 +11,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_tce_db {
+class SimpleDataHandlerController {
 
 	// Internal, static: GPvar
 	// Array. Accepts options to be set in TCE object. Currently it supports "reverseOrder" (boolean).
@@ -88,7 +90,7 @@ class SC_tce_db {
 	/**
 	 * TYPO3 Core Engine
 	 *
-	 * @var t3lib_TCEmain
+	 * @var \TYPO3\CMS\Core\DataHandler\DataHandler
 	 * @todo Define visibility
 	 */
 	public $tce;
@@ -101,20 +103,20 @@ class SC_tce_db {
 	 */
 	public function init() {
 		// GPvars:
-		$this->flags = t3lib_div::_GP('flags');
-		$this->data = t3lib_div::_GP('data');
-		$this->cmd = t3lib_div::_GP('cmd');
-		$this->mirror = t3lib_div::_GP('mirror');
-		$this->cacheCmd = t3lib_div::_GP('cacheCmd');
-		$this->redirect = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('redirect'));
-		$this->prErr = t3lib_div::_GP('prErr');
-		$this->_disableRTE = t3lib_div::_GP('_disableRTE');
-		$this->CB = t3lib_div::_GP('CB');
-		$this->vC = t3lib_div::_GP('vC');
-		$this->uPT = t3lib_div::_GP('uPT');
-		$this->generalComment = t3lib_div::_GP('generalComment');
+		$this->flags = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('flags');
+		$this->data = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('data');
+		$this->cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
+		$this->mirror = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('mirror');
+		$this->cacheCmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cacheCmd');
+		$this->redirect = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect'));
+		$this->prErr = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('prErr');
+		$this->_disableRTE = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('_disableRTE');
+		$this->CB = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('CB');
+		$this->vC = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('vC');
+		$this->uPT = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('uPT');
+		$this->generalComment = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('generalComment');
 		// Creating TCEmain object
-		$this->tce = t3lib_div::makeInstance('t3lib_TCEmain');
+		$this->tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 		$this->tce->stripslashes_values = 0;
 		$this->tce->generalComment = $this->generalComment;
 		// Configuring based on user prefs.
@@ -124,7 +126,7 @@ class SC_tce_db {
 		}
 		if ($GLOBALS['BE_USER']->uc['copyLevels']) {
 			// Set to number of page-levels to copy.
-			$this->tce->copyTree = t3lib_utility_Math::forceIntegerInRange($GLOBALS['BE_USER']->uc['copyLevels'], 0, 100);
+			$this->tce->copyTree = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['BE_USER']->uc['copyLevels'], 0, 100);
 		}
 		if ($GLOBALS['BE_USER']->uc['neverHideAtCopy']) {
 			$this->tce->neverHideAtCopy = 1;
@@ -147,7 +149,7 @@ class SC_tce_db {
 	 */
 	public function initClipboard() {
 		if (is_array($this->CB)) {
-			$clipObj = t3lib_div::makeInstance('t3lib_clipboard');
+			$clipObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Clipboard\\Clipboard');
 			$clipObj->initializeClipboard();
 			if ($this->CB['paste']) {
 				$clipObj->setCurrentPad($this->CB['pad']);
@@ -173,8 +175,8 @@ class SC_tce_db {
 			$this->tce->setMirror($this->mirror);
 		}
 		// Checking referer / executing
-		$refInfo = parse_url(t3lib_div::getIndpEnv('HTTP_REFERER'));
-		$httpHost = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+		$refInfo = parse_url(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_REFERER'));
+		$httpHost = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 		if (($httpHost != $refInfo['host'] && $this->vC != $GLOBALS['BE_USER']->veriCode()) && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']) {
 			$this->tce->log('', 0, 0, 0, 1, 'Referer host "%s" and server host "%s" did not match and veriCode was not valid either!', 1, array($refInfo['host'], $httpHost));
 		} else {
@@ -187,7 +189,7 @@ class SC_tce_db {
 			$this->tce->clear_cacheCmd($this->cacheCmd);
 			// Update page tree?
 			if ($this->uPT && (isset($this->data['pages']) || isset($this->cmd['pages']))) {
-				t3lib_BEfunc::setUpdateSignal('updatePageTree');
+				\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updatePageTree');
 			}
 		}
 	}
@@ -205,10 +207,11 @@ class SC_tce_db {
 			$this->tce->printLogErrorMessages($this->redirect);
 		}
 		if ($this->redirect && !$this->tce->debug) {
-			t3lib_utility_Http::redirect($this->redirect);
+			\TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->redirect);
 		}
 	}
 
 }
+
 
 ?>

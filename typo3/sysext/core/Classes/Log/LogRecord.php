@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log;
+
 /***************************************************************
  * Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_Record implements ArrayAccess {
+class LogRecord implements ArrayAccess {
 
 	/**
 	 * Unique ID of the request
@@ -58,7 +60,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 *
 	 * @var integer
 	 */
-	protected $level = t3lib_log_Level::INFO;
+	protected $level = \TYPO3\CMS\Core\Log\LogLevel::INFO;
 
 	/**
 	 * Log message one-liner
@@ -108,14 +110,14 @@ class t3lib_log_Record implements ArrayAccess {
 	 * @param array $data Additional data
 	 */
 	public function __construct($component = '', $level, $message, array $data = array()) {
-		$this->setRequestId(Typo3_Bootstrap::getInstance()->getRequestId())->setCreated(microtime(TRUE))->setComponent($component)->setLevel($level)->setMessage($message)->setData($data);
+		$this->setRequestId(\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->getRequestId())->setCreated(microtime(TRUE))->setComponent($component)->setLevel($level)->setMessage($message)->setData($data);
 	}
 
 	/**
 	 * Sets the affected component
 	 *
 	 * @param string $component Component key
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 */
 	public function setComponent($component) {
 		$this->component = $component;
@@ -135,7 +137,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 * Sets the the creation time
 	 *
 	 * @param float $created Creation time as float
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 */
 	public function setCreated($created) {
 		$this->created = $created;
@@ -155,12 +157,12 @@ class t3lib_log_Record implements ArrayAccess {
 	 * Sets the severity level
 	 *
 	 * @param integer $level Severity level
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 * @throws RangeException if the given log level is invalid
 	 * @see t3lib_log_Level
 	 */
 	public function setLevel($level) {
-		t3lib_log_Level::validateLevel($level);
+		\TYPO3\CMS\Core\Log\LogLevel::validateLevel($level);
 		$this->level = $level;
 		return $this;
 	}
@@ -179,7 +181,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 * Sets log data array
 	 *
 	 * @param array $data
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 */
 	public function setData($data) {
 		$this->data = $data;
@@ -200,7 +202,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 * and overwrites previously data using the same array keys.
 	 *
 	 * @param array $data
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 */
 	public function addData(array $data) {
 		$this->data = array_merge($this->data, $data);
@@ -211,7 +213,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 * Sets the log message
 	 *
 	 * @param string $message Log message
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 */
 	public function setMessage($message) {
 		$this->message = $message;
@@ -231,7 +233,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 * Sets the request ID
 	 *
 	 * @param string $requestId
-	 * @return t3lib_log_Record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord
 	 */
 	public function setRequestId($requestId) {
 		$this->requestId = $requestId;
@@ -255,7 +257,7 @@ class t3lib_log_Record implements ArrayAccess {
 	 */
 	public function __toString() {
 		$timestamp = date('r', (int) $this->created);
-		$levelName = t3lib_log_Level::getName($this->level);
+		$levelName = \TYPO3\CMS\Core\Log\LogLevel::getName($this->level);
 		$data = !empty($this->data) ? '- ' . json_encode($this->data) : '';
 		$logRecordString = sprintf('%s [%s] request="%s" component="%s": %s %s', $timestamp, $levelName, $this->requestId, $this->component, $this->message, $data);
 		return $logRecordString;
@@ -330,5 +332,6 @@ class t3lib_log_Record implements ArrayAccess {
 	}
 
 }
+
 
 ?>

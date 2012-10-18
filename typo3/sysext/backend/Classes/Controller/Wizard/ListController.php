@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\Wizard;
+
 /**
  * Script Class for redirecting the user to the Web > List module if a wizard-link has been clicked in TCEforms
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_wizard_list {
+class ListController {
 
 	// Internal, static:
 	// PID
@@ -41,9 +43,9 @@ class SC_wizard_list {
 	 * @todo Define visibility
 	 */
 	public function init() {
-		$this->P = t3lib_div::_GP('P');
-		$this->table = t3lib_div::_GP('table');
-		$this->id = t3lib_div::_GP('id');
+		$this->P = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
+		$this->table = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('table');
+		$this->id = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id');
 	}
 
 	/**
@@ -55,9 +57,9 @@ class SC_wizard_list {
 	 */
 	public function main() {
 		// Get this record
-		$origRow = t3lib_BEfunc::getRecord($this->P['table'], $this->P['uid']);
+		$origRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($this->P['table'], $this->P['uid']);
 		// Get TSconfig for it.
-		$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($this->table, is_array($origRow) ? $origRow : array('pid' => $this->P['pid']));
+		$TSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getTCEFORM_TSconfig($this->table, is_array($origRow) ? $origRow : array('pid' => $this->P['pid']));
 		// Set [params][pid]
 		if (substr($this->P['params']['pid'], 0, 3) == '###' && substr($this->P['params']['pid'], -3) == '###') {
 			$this->pid = intval($TSconfig['_' . substr($this->P['params']['pid'], 3, -3)]);
@@ -67,18 +69,19 @@ class SC_wizard_list {
 		// Make redirect:
 		// If pid is blank OR if id is set, then return...
 		if (!strcmp($this->pid, '') || strcmp($this->id, '')) {
-			$redirectUrl = t3lib_div::sanitizeLocalUrl($this->P['returnUrl']);
+			$redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->P['returnUrl']);
 		} else {
 			// Otherwise, show the list:
 			$urlParameters = array();
 			$urlParameters['id'] = $this->pid;
 			$urlParameters['table'] = $this->P['params']['table'];
-			$urlParameters['returnUrl'] = t3lib_div::getIndpEnv('REQUEST_URI');
-			$redirectUrl = t3lib_BEfunc::getModuleUrl('web_list', $urlParameters);
+			$urlParameters['returnUrl'] = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI');
+			$redirectUrl = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_list', $urlParameters);
 		}
-		t3lib_utility_Http::redirect($redirectUrl);
+		\TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Fluid_ViewHelpers_FormViewHelper {
+class DownloadExtensionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper {
 
 	/**
 	 * @var string
@@ -41,11 +43,11 @@ class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Flu
 	/**
 	 * Renders a download link
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return string the rendered a tag
 	 */
-	public function render(Tx_Extensionmanager_Domain_Model_Extension $extension) {
-		$installPaths = Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallPaths();
+	public function render(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension) {
+		$installPaths = \TYPO3\CMS\Extensionmanager\Domain\Model\Extension::returnAllowedInstallPaths();
 		$pathSelector = '<ul>';
 		foreach ($installPaths as $installPathType => $installPath) {
 			$pathSelector .= ((((((((((((((('<li>
@@ -69,5 +71,6 @@ class Tx_Extensionmanager_ViewHelpers_DownloadExtensionViewHelper extends Tx_Flu
 	}
 
 }
+
 
 ?>

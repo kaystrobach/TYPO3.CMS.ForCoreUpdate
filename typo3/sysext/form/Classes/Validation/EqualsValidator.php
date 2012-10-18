@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Equals extends tx_form_System_Validate_Abstract {
+class EqualsValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Field to compare with value
@@ -93,5 +95,6 @@ class tx_form_System_Validate_Equals extends tx_form_System_Validate_Abstract {
 	}
 
 }
+
 
 ?>

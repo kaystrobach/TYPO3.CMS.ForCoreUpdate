@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage tx_scheduler
  */
-interface tx_scheduler_ProgressProvider
+interface ProgressProviderInterface
 {
 	/**
 	 * Gets the progress of a task.
@@ -38,4 +40,5 @@ interface tx_scheduler_ProgressProvider
 	public function getProgress();
 
 }
+
 ?>

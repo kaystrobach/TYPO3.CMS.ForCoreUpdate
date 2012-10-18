@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Controller;
+
 /**
  * The form wizard controller
  *
@@ -7,7 +9,7 @@
  * @subpackage form
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
-class tx_form_Controller_Wizard {
+class WizardController {
 
 	/**
 	 * Dispatch on action
@@ -17,7 +19,7 @@ class tx_form_Controller_Wizard {
 	 * @return void
 	 */
 	public function dispatch() {
-		switch (t3lib_div::_GP('action')) {
+		switch (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('action')) {
 		case 'save':
 			$this->saveAction();
 			break;
@@ -37,8 +39,8 @@ class tx_form_Controller_Wizard {
 	 * @return void
 	 */
 	protected function indexAction() {
-		/** @var $view tx_form_View_Wizard_Wizard */
-		$view = t3lib_div::makeInstance('tx_form_View_Wizard_Wizard', $this->getRepository());
+		/** @var $view \TYPO3\CMS\Form\View\Wizard\WizardView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Wizard\\WizardView', $this->getRepository());
 		$view->render();
 	}
 
@@ -50,8 +52,8 @@ class tx_form_Controller_Wizard {
 	 * @return void
 	 */
 	protected function saveAction() {
-		/** @var $view tx_form_View_Wizard_Save */
-		$view = t3lib_div::makeInstance('tx_form_View_Wizard_Save', $this->getRepository());
+		/** @var $view \TYPO3\CMS\Form\View\Wizard\SaveWizardView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Wizard\\SaveWizardView', $this->getRepository());
 		$view->render();
 	}
 
@@ -63,20 +65,21 @@ class tx_form_Controller_Wizard {
 	 * @return void
 	 */
 	protected function loadAction() {
-		/** @var $view tx_form_View_Wizard_Load */
-		$view = t3lib_div::makeInstance('tx_form_View_Wizard_Load', $this->getRepository());
+		/** @var $view \TYPO3\CMS\Form\View\Wizard\LoadWizardView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Wizard\\LoadWizardView', $this->getRepository());
 		$view->render();
 	}
 
 	/**
 	 * Gets the repository object.
 	 *
-	 * @return tx_form_Domain_Repository_Content
+	 * @return \TYPO3\CMS\Form\Domain\Repository\ContentRepository
 	 */
 	protected function getRepository() {
-		return t3lib_div::makeInstance('tx_form_Domain_Repository_Content');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Domain\\Repository\\ContentRepository');
 	}
 
 }
+
 
 ?>

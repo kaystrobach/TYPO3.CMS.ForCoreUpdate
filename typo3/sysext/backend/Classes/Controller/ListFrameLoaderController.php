@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class for redirecting shortcut actions to the correct script
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_listframe_loader {
+class ListFrameLoaderController {
 
 	/**
 	 * Main content generated
@@ -28,5 +30,6 @@ class SC_listframe_loader {
 	}
 
 }
+
 
 ?>

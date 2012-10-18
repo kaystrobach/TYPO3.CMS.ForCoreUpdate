@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Stanislas Rolland
  */
-class tslib_content_FlowPlayer extends tslib_content_Abstract {
+class FlowPlayerContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * File extension to mime type
@@ -307,14 +309,14 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 		// Hook for manipulating the conf array, it's needed for some players like flowplayer
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['swfParamTransform'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['swfParamTransform'] as $classRef) {
-				t3lib_div::callUserFunction($classRef, $conf, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($classRef, $conf, $this);
 			}
 		}
 		// Flowplayer config
 		$flowplayerVideoConfig = array();
 		$flowplayerAudioConfig = array();
 		if (is_array($conf['flashvars.'])) {
-			t3lib_div::remapArrayKeys($conf['flashvars.'], $typeConf['mapping.']['flashvars.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['flashvars.'], $typeConf['mapping.']['flashvars.']);
 		} else {
 			$conf['flashvars.'] = array();
 		}
@@ -325,7 +327,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 		$videoSources = '';
 		if (is_array($conf['sources'])) {
 			foreach ($conf['sources'] as $source) {
-				$fileinfo = t3lib_div::split_fileref($source);
+				$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($source);
 				$mimeType = $this->mimeTypes[$fileinfo['fileext']]['video'];
 				$videoSources .= (((('<source src="' . $source) . '"') . ($mimeType ? (' type="' . $mimeType) . '"' : '')) . ' />') . LF;
 			}
@@ -334,7 +336,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 		$audioSources = '';
 		if (is_array($conf['audioSources'])) {
 			foreach ($conf['audioSources'] as $source) {
-				$fileinfo = t3lib_div::split_fileref($source);
+				$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($source);
 				$mimeType = $this->mimeTypes[$fileinfo['fileext']]['audio'];
 				$audioSources .= (((('<source src="' . $source) . '"') . ($mimeType ? (' type="' . $mimeType) . '"' : '')) . ' />') . LF;
 			}
@@ -376,7 +378,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 		$flowplayerAudioJsonConfig = str_replace(array('"true"', '"false"'), array('true', 'false'), json_encode($flowplayerAudioConfig));
 		// Assemble param tags (required?)
 		if (is_array($conf['params.'])) {
-			t3lib_div::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
 		}
 		$videoFlashParams = '';
 		if (is_array($conf['params.'])) {
@@ -393,7 +395,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 		// Assemble audio/video tag attributes
 		$attributes = '';
 		if (is_array($conf['attributes.'])) {
-			t3lib_div::remapArrayKeys($conf['attributes.'], $typeConf['attributes.']['params.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['attributes.'], $typeConf['attributes.']['params.']);
 		}
 		foreach ($this->html5TagAttributes as $attribute) {
 			if (($conf['attributes.'][$attribute] === 'true' || $conf['attributes.'][$attribute] === strToLower($attribute)) || $conf['attributes.'][$attribute] === $attribute) {
@@ -496,7 +498,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 					// Create "source" elements
 					if (is_array($conf['sources']) && count($conf['sources'])) {
 						foreach ($conf['sources'] as $source) {
-							$fileinfo = t3lib_div::split_fileref($source);
+							$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($source);
 							$mimeType = $this->mimeTypes[$fileinfo['fileext']]['video'];
 							$videoTagAssembly .= ((((('
 			' . $replaceElementIdString) . '_video_js.appendChild($f.extend(document.createElement("source"), {
@@ -548,7 +550,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 					// Test whether the browser supports any of types of the provided sources
 					$supported = array();
 					foreach ($conf['sources'] as $source) {
-						$fileinfo = t3lib_div::split_fileref($source);
+						$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($source);
 						$mimeType = $this->mimeTypes[$fileinfo['fileext']]['video'];
 						$supported[] = (($replaceElementIdString . '_videoTag.canPlayType("') . $mimeType) . '") != ""';
 					}
@@ -587,7 +589,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 				// Create "source" elements
 				if (is_array($conf['audioSources']) && count($conf['audioSources'])) {
 					foreach ($conf['audioSources'] as $source) {
-						$fileinfo = t3lib_div::split_fileref($source);
+						$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($source);
 						$mimeType = $this->mimeTypes[$fileinfo['fileext']]['audio'];
 						$audioTagAssembly .= ((((('
 		' . $replaceElementIdString) . '_audio_element.appendChild($f.extend(document.createElement("source"), {
@@ -628,7 +630,7 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 				// Test whether the browser supports any of types of the provided sources
 				$supported = array();
 				foreach ($conf['audioSources'] as $source) {
-					$fileinfo = t3lib_div::split_fileref($source);
+					$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($source);
 					$mimeType = $this->mimeTypes[$fileinfo['fileext']]['audio'];
 					$supported[] = (($replaceElementIdString . '_audioTag.canPlayType("') . $mimeType) . '") != ""';
 				}
@@ -713,5 +715,6 @@ class tslib_content_FlowPlayer extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

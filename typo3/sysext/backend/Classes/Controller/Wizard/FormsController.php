@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\Wizard;
+
 /**
  * API comments:
  *
@@ -93,13 +95,13 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_wizard_forms {
+class FormsController {
 
 	// Internal, dynamic:
 	/**
 	 * document template object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -158,13 +160,13 @@ class SC_wizard_forms {
 	 */
 	public function init() {
 		// GPvars:
-		$this->P = t3lib_div::_GP('P');
-		$this->special = t3lib_div::_GP('special');
-		$this->FORMCFG = t3lib_div::_GP('FORMCFG');
+		$this->P = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
+		$this->special = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('special');
+		$this->FORMCFG = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('FORMCFG');
 		// Setting options:
 		$this->xmlStorage = $this->P['params']['xmlOutput'];
 		// Document template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/wizard_forms.html');
 		$this->doc->JScode = $this->doc->wrapScriptTags('
@@ -173,7 +175,7 @@ class SC_wizard_forms {
 			}
 		');
 		// Setting form tag:
-		list($rUri) = explode('#', t3lib_div::getIndpEnv('REQUEST_URI'));
+		list($rUri) = explode('#', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'));
 		$this->doc->form = ('<form action="' . htmlspecialchars($rUri)) . '" method="post" name="wizardForm">';
 	}
 
@@ -226,17 +228,17 @@ class SC_wizard_forms {
 		);
 		if (($this->P['table'] && $this->P['field']) && $this->P['uid']) {
 			// CSH
-			$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz', $GLOBALS['BACK_PATH'], '');
+			$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz', $GLOBALS['BACK_PATH'], '');
 			// CSH Buttons
-			$buttons['csh_buttons'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz_buttons', $GLOBALS['BACK_PATH'], '');
+			$buttons['csh_buttons'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz_buttons', $GLOBALS['BACK_PATH'], '');
 			// Close
-			$buttons['close'] = ((('<a href="#" onclick="' . htmlspecialchars((('jumpToUrl(unescape(\'' . rawurlencode(t3lib_div::sanitizeLocalUrl($this->P['returnUrl']))) . '\')); return false;'))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-close', array('title' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)))) . '</a>';
+			$buttons['close'] = ((('<a href="#" onclick="' . htmlspecialchars((('jumpToUrl(unescape(\'' . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->P['returnUrl']))) . '\')); return false;'))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close', array('title' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)))) . '</a>';
 			// Save
-			$buttons['save'] = ((('<input type="image" class="c-inputButton" name="savedok"' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/savedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', 1)) . '" />';
+			$buttons['save'] = ((('<input type="image" class="c-inputButton" name="savedok"' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/savedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', 1)) . '" />';
 			// Save & Close
-			$buttons['save_close'] = ((('<input type="image" class="c-inputButton" name="saveandclosedok"' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/saveandclosedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', 1)) . '" />';
+			$buttons['save_close'] = ((('<input type="image" class="c-inputButton" name="saveandclosedok"' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/saveandclosedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', 1)) . '" />';
 			// Reload
-			$buttons['reload'] = ((('<input type="image" class="c-inputButton" name="_refresh"' . t3lib_iconWorks::skinImg('', 'gfx/refresh_n.gif')) . ' title="') . $GLOBALS['LANG']->getLL('forms_refresh', 1)) . '" />';
+			$buttons['reload'] = ((('<input type="image" class="c-inputButton" name="_refresh"' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg('', 'gfx/refresh_n.gif')) . ' title="') . $GLOBALS['LANG']->getLL('forms_refresh', 1)) . '" />';
 		}
 		return $buttons;
 	}
@@ -249,9 +251,9 @@ class SC_wizard_forms {
 	 */
 	public function formsWizard() {
 		// First, check the references by selecting the record:
-		$row = t3lib_BEfunc::getRecord($this->P['table'], $this->P['uid']);
+		$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($this->P['table'], $this->P['uid']);
 		if (!is_array($row)) {
-			throw new RuntimeException('Wizard Error: No reference to record', 1294587124);
+			throw new \RuntimeException('Wizard Error: No reference to record', 1294587124);
 		}
 		// This will get the content of the form configuration code field to us - possibly
 		// cleaned up, saved to database etc. if the form has been submitted in the meantime.
@@ -284,7 +286,7 @@ class SC_wizard_forms {
 			// Convert to string (either line based or XML):
 			if ($this->xmlStorage) {
 				// Convert the input array to XML:
-				$bodyText = t3lib_div::array2xml_cs($this->FORMCFG['c'], 'T3FormWizard');
+				$bodyText = \TYPO3\CMS\Core\Utility\GeneralUtility::array2xml_cs($this->FORMCFG['c'], 'T3FormWizard');
 				// Setting cfgArr directly from the input:
 				$cfgArr = $this->FORMCFG['c'];
 			} else {
@@ -297,7 +299,7 @@ class SC_wizard_forms {
 			// If a save button has been pressed, then save the new field content:
 			if ($_POST['savedok_x'] || $_POST['saveandclosedok_x']) {
 				// Make TCEmain object:
-				$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+				$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 				$tce->stripslashes_values = 0;
 				// Put content into the data array:
 				$data = array();
@@ -309,16 +311,16 @@ class SC_wizard_forms {
 				$tce->start($data, array());
 				$tce->process_datamap();
 				// Re-load the record content:
-				$row = t3lib_BEfunc::getRecord($this->P['table'], $this->P['uid']);
+				$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($this->P['table'], $this->P['uid']);
 				// If the save/close button was pressed, then redirect the screen:
 				if ($_POST['saveandclosedok_x']) {
-					t3lib_utility_Http::redirect(t3lib_div::sanitizeLocalUrl($this->P['returnUrl']));
+					\TYPO3\CMS\Core\Utility\HttpUtility::redirect(\TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->P['returnUrl']));
 				}
 			}
 		} else {
 			// If nothing has been submitted, load the $bodyText variable from the selected database row:
 			if ($this->xmlStorage) {
-				$cfgArr = t3lib_div::xml2array($row[$this->P['field']]);
+				$cfgArr = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($row[$this->P['field']]);
 			} else {
 				// Regular linebased form configuration:
 				$cfgArr = $this->cfgString2CfgArray($row[$this->P['field']]);
@@ -363,7 +365,7 @@ class SC_wizard_forms {
 			// If there is a configuration line which is active, then render it:
 			if (!isset($confData['comment'])) {
 				// Special parts:
-				if ($this->special == 'formtype_mail' && t3lib_div::inList('formtype_mail,subject,html_enabled', $confData['fieldname'])) {
+				if ($this->special == 'formtype_mail' && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('formtype_mail,subject,html_enabled', $confData['fieldname'])) {
 					$specParts[$confData['fieldname']] = $confData['default'];
 				} else {
 					// Render title/field preview COLUMN
@@ -384,11 +386,11 @@ class SC_wizard_forms {
 								', $opt)) . '
 							</select>';
 					// Title field:
-					if (!t3lib_div::inList('hidden,submit', $confData['type'])) {
+					if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList('hidden,submit', $confData['type'])) {
 						$temp_cells[$GLOBALS['LANG']->getLL('forms_label')] = ((((('<input type="text"' . $this->doc->formWidth(15)) . ' name="FORMCFG[c][') . ($k + 1) * 2) . '][label]" value="') . htmlspecialchars($confData['label'])) . '" />';
 					}
 					// Required checkbox:
-					if (!t3lib_div::inList('check,hidden,submit,label', $confData['type'])) {
+					if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList('check,hidden,submit,label', $confData['type'])) {
 						$temp_cells[$GLOBALS['LANG']->getLL('forms_required')] = ((((('<input type="checkbox" name="FORMCFG[c][' . ($k + 1) * 2) . '][required]" value="1"') . ($confData['required'] ? ' checked="checked"' : '')) . ' title="') . $GLOBALS['LANG']->getLL('forms_required', 1)) . '" />';
 					}
 					// Put sub-items together into table cell:
@@ -399,7 +401,7 @@ class SC_wizard_forms {
 					if ($this->special == 'formtype_mail' && $confData['type'] == 'file') {
 						$confData['fieldname'] = 'attachment' . ++$this->attachmentCounter;
 					}
-					if (!t3lib_div::inList('label', $confData['type'])) {
+					if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList('label', $confData['type'])) {
 						$temp_cells[$GLOBALS['LANG']->getLL('forms_fieldName')] = ((((((('<input type="text"' . $this->doc->formWidth(10)) . ' name="FORMCFG[c][') . ($k + 1) * 2) . '][fieldname]" value="') . htmlspecialchars($confData['fieldname'])) . '" title="') . $GLOBALS['LANG']->getLL('forms_fieldName', 1)) . '" />';
 					}
 					// Field configuration depending on the fields type:
@@ -438,7 +440,7 @@ class SC_wizard_forms {
 					}
 					// Default data
 					if ($confData['type'] == 'select' || $confData['type'] == 'radio') {
-						$temp_cells[$GLOBALS['LANG']->getLL('forms_options')] = ((((((('<textarea ' . $this->doc->formWidthText(15)) . ' rows="4" name="FORMCFG[c][') . ($k + 1) * 2) . '][options]" title="') . $GLOBALS['LANG']->getLL('forms_options', 1)) . '">') . t3lib_div::formatForTextarea($confData['default'])) . '</textarea>';
+						$temp_cells[$GLOBALS['LANG']->getLL('forms_options')] = ((((((('<textarea ' . $this->doc->formWidthText(15)) . ' rows="4" name="FORMCFG[c][') . ($k + 1) * 2) . '][options]" title="') . $GLOBALS['LANG']->getLL('forms_options', 1)) . '">') . \TYPO3\CMS\Core\Utility\GeneralUtility::formatForTextarea($confData['default'])) . '</textarea>';
 					} elseif ($confData['type'] == 'check') {
 						$temp_cells[$GLOBALS['LANG']->getLL('forms_checked')] = ((((('<input type="checkbox" name="FORMCFG[c][' . ($k + 1) * 2) . '][default]" value="1"') . (trim($confData['default']) ? ' checked="checked"' : '')) . ' title="') . $GLOBALS['LANG']->getLL('forms_checked', 1)) . '" />';
 					} elseif ($confData['type'] && $confData['type'] != 'file') {
@@ -452,18 +454,18 @@ class SC_wizard_forms {
 					// FIXME $inputStyle undefined
 					$brTag = $inputStyle ? '' : '<br />';
 					if ($k != 0) {
-						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_up][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/pil2up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_up', 1)) . '" />') . $brTag;
+						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_up][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/pil2up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_up', 1)) . '" />') . $brTag;
 					} else {
-						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_bottom][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/turn_up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_bottom', 1)) . '" />') . $brTag;
+						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_bottom][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/turn_up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_bottom', 1)) . '" />') . $brTag;
 					}
-					$ctrl .= ((((((('<input type="image" name="FORMCFG[row_remove][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/garbage.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_removeRow', 1)) . '" />') . $brTag;
+					$ctrl .= ((((((('<input type="image" name="FORMCFG[row_remove][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/garbage.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_removeRow', 1)) . '" />') . $brTag;
 					// FIXME $tLines undefined
 					if ($k + 1 != count($tLines)) {
-						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_down][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/pil2down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_down', 1)) . '" />') . $brTag;
+						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_down][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/pil2down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_down', 1)) . '" />') . $brTag;
 					} else {
-						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_top][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/turn_down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_top', 1)) . '" />') . $brTag;
+						$ctrl .= ((((((('<input type="image" name="FORMCFG[row_top][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/turn_down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_top', 1)) . '" />') . $brTag;
 					}
-					$ctrl .= ((((((('<input type="image" name="FORMCFG[row_add][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/add.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_addRow', 1)) . '" />') . $brTag;
+					$ctrl .= ((((((('<input type="image" name="FORMCFG[row_add][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/add.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_addRow', 1)) . '" />') . $brTag;
 					$ctrl = ('<span class="c-wizButtonsV">' . $ctrl) . '</span>';
 					// Finally, put together the full row from the generated content above:
 					$bgC = $confData['type'] ? ' class="bgColor5"' : '';
@@ -491,7 +493,7 @@ class SC_wizard_forms {
 			$tRows[] = ((('
 				<tr>
 					<td colspan="2" class="bgColor2">&nbsp;</td>
-					<td colspan="2" class="bgColor2"><strong>' . $GLOBALS['LANG']->getLL('forms_special_eform', 1)) . ':</strong>') . t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz_formmail_info', $GLOBALS['BACK_PATH'], '')) . '</td>
+					<td colspan="2" class="bgColor2"><strong>' . $GLOBALS['LANG']->getLL('forms_special_eform', 1)) . ':</strong>') . \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz_formmail_info', $GLOBALS['BACK_PATH'], '')) . '</td>
 				</tr>';
 			// "FORM type":
 			$tRows[] = ((((((((((('
@@ -583,7 +585,7 @@ class SC_wizard_forms {
 			$kk = key($this->FORMCFG['row_down']);
 			$cmd = 'row_down';
 		}
-		if ($cmd && t3lib_utility_Math::canBeInterpretedAsInteger($kk)) {
+		if ($cmd && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($kk)) {
 			if (substr($cmd, 0, 4) == 'row_') {
 				switch ($cmd) {
 				case 'row_remove':
@@ -711,7 +713,8 @@ class SC_wizard_forms {
 				}
 				// Compile the final line:
 				$inLines[] = preg_replace('/[
-]*/', '', implode(' | ', $thisLine));
+
+]*/', '', implode(' | ', $thisLine));
 			}
 		}
 		// Finally, implode the lines into a string, and return it:
@@ -737,17 +740,17 @@ class SC_wizard_forms {
 			// unconfigured fields) or b) it is NOT a comment.
 			if (!$val || strcspn($val, '#/')) {
 				// Split:
-				$parts = t3lib_div::trimExplode('|', $val);
+				$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $val);
 				// Label:
 				$confData['label'] = trim($parts[0]);
 				// Field:
-				$fParts = t3lib_div::trimExplode(',', $parts[1]);
+				$fParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $parts[1]);
 				$fParts[0] = trim($fParts[0]);
 				if (substr($fParts[0], 0, 1) == '*') {
 					$confData['required'] = 1;
 					$fParts[0] = substr($fParts[0], 1);
 				}
-				$typeParts = t3lib_div::trimExplode('=', $fParts[0]);
+				$typeParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('=', $fParts[0]);
 				$confData['type'] = trim(strtolower(end($typeParts)));
 				if ($confData['type']) {
 					if (count($typeParts) == 1) {
@@ -764,7 +767,7 @@ class SC_wizard_forms {
 					case 'select':
 
 					case 'radio':
-						$confData['default'] = implode(LF, t3lib_div::trimExplode(',', $parts[2]));
+						$confData['default'] = implode(LF, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $parts[2]));
 						break;
 					default:
 						$confData['default'] = trim($parts[2]);
@@ -859,5 +862,6 @@ class SC_wizard_forms {
 	}
 
 }
+
 
 ?>

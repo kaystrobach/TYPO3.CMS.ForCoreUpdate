@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @author Christian Kuhn <lolli@schwarzbu.ch>
  * @api
  */
-class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_TaggableBackend {
+class RedisBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * Faked unlimited lifetime = 31536000 (1 Year).
@@ -129,11 +131,11 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 *
 	 * @param string $context FLOW3's application context
 	 * @param array $options Configuration options
-	 * @throws t3lib_cache_Exception if php redis module is not loaded
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if php redis module is not loaded
 	 */
 	public function __construct($context, array $options = array()) {
 		if (!extension_loaded('redis')) {
-			throw new t3lib_cache_Exception('The PHP extension "redis" must be installed and loaded in order to use the redis backend.', 1279462933);
+			throw new \TYPO3\CMS\Core\Cache\Exception('The PHP extension "redis" must be installed and loaded in order to use the redis backend.', 1279462933);
 		}
 		parent::__construct($context, $options);
 	}
@@ -142,26 +144,26 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	 * Initializes the redis backend
 	 *
 	 * @return void
-	 * @throws \t3lib_cache_Exception if access to redis with password is denied or if database selection fails
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if access to redis with password is denied or if database selection fails
 	 */
 	public function initializeObject() {
 		$this->redis = new \Redis();
 		try {
 			$this->connected = $this->redis->connect($this->hostname, $this->port);
 		} catch (\Exception $e) {
-			t3lib_div::sysLog('Could not connect to redis server.', 'core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Could not connect to redis server.', 'core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 		}
 		if ($this->connected) {
 			if (strlen($this->password)) {
 				$success = $this->redis->auth($this->password);
 				if (!$success) {
-					throw new \t3lib_cache_Exception('The given password was not accepted by the redis server.', 1279765134);
+					throw new \TYPO3\CMS\Core\Cache\Exception('The given password was not accepted by the redis server.', 1279765134);
 				}
 			}
 			if ($this->database > 0) {
 				$success = $this->redis->select($this->database);
 				if (!$success) {
-					throw new \t3lib_cache_Exception(('The given database "' . $this->database) . '" could not be selected.', 1279765144);
+					throw new \TYPO3\CMS\Core\Cache\Exception(('The given database "' . $this->database) . '" could not be selected.', 1279765144);
 				}
 			}
 		}
@@ -512,5 +514,6 @@ class t3lib_cache_backend_RedisBackend extends t3lib_cache_backend_AbstractBacke
 	}
 
 }
+
 
 ?>

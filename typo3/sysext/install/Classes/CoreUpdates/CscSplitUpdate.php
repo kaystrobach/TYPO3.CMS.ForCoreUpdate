@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Susanne Moog <typo3@susanne-moog.de>
  */
-class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
+class CscSplitUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Split TypoScript Templates from CSS Styled Content';
 
@@ -101,8 +103,8 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 	 * @todo Define visibility
 	 */
 	public function findUpdateableTemplatesWithCsc($allTemplates) {
-		$compatVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger($GLOBALS['TYPO3_CONF_VARS']['SYS']['compat_version']);
-		$currentVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_branch);
+		$compatVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($GLOBALS['TYPO3_CONF_VARS']['SYS']['compat_version']);
+		$currentVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch);
 		$templatesCount = count($allTemplates);
 		$updateableTemplates = array();
 		for ($i = 0; $i < $templatesCount; $i++) {
@@ -112,32 +114,32 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 			// loop through every entry in the "include static file"
 			for ($j = 0; $j < $includedTemplatesCount; $j++) {
 				if (strpos($includedTemplates[$j], 'css_styled_content') !== FALSE) {
-					if ($compatVersion <= t3lib_utility_VersionNumber::convertVersionNumberToInteger('3.8')) {
+					if ($compatVersion <= \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('3.8')) {
 						if ($includedTemplates[$j] != 'EXT:css_styled_content/static/v3.8/') {
 							$includedTemplates[$j] = 'EXT:css_styled_content/static/v3.8/';
 							$templateNeedsUpdate = TRUE;
 						}
-					} elseif ($compatVersion <= t3lib_utility_VersionNumber::convertVersionNumberToInteger('4.1')) {
+					} elseif ($compatVersion <= \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('4.1')) {
 						if ($includedTemplates[$j] != 'EXT:css_styled_content/static/v3.9/') {
 							$includedTemplates[$j] = 'EXT:css_styled_content/static/v3.9/';
 							$templateNeedsUpdate = TRUE;
 						}
-					} elseif ($compatVersion <= t3lib_utility_VersionNumber::convertVersionNumberToInteger('4.2')) {
+					} elseif ($compatVersion <= \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('4.2')) {
 						if ($includedTemplates[$j] != 'EXT:css_styled_content/static/v4.2/') {
 							$includedTemplates[$j] = 'EXT:css_styled_content/static/v4.2/';
 							$templateNeedsUpdate = TRUE;
 						}
-					} elseif ($compatVersion <= t3lib_utility_VersionNumber::convertVersionNumberToInteger('4.3')) {
+					} elseif ($compatVersion <= \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('4.3')) {
 						if ($includedTemplates[$j] != 'EXT:css_styled_content/static/v4.3/') {
 							$includedTemplates[$j] = 'EXT:css_styled_content/static/v4.3/';
 							$templateNeedsUpdate = TRUE;
 						}
-					} elseif ($compatVersion <= t3lib_utility_VersionNumber::convertVersionNumberToInteger('4.4')) {
+					} elseif ($compatVersion <= \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('4.4')) {
 						if ($includedTemplates[$j] != 'EXT:css_styled_content/static/v4.4/') {
 							$includedTemplates[$j] = 'EXT:css_styled_content/static/v4.4/';
 							$templateNeedsUpdate = TRUE;
 						}
-					} elseif ($compatVersion <= t3lib_utility_VersionNumber::convertVersionNumberToInteger('4.5')) {
+					} elseif ($compatVersion <= \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger('4.5')) {
 						if ($includedTemplates[$j] != 'EXT:css_styled_content/static/v4.5/') {
 							$includedTemplates[$j] = 'EXT:css_styled_content/static/v4.5/';
 							$templateNeedsUpdate = TRUE;
@@ -182,5 +184,6 @@ class tx_coreupdates_cscsplit extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,13 +35,13 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_DraggableAndDropable
+interface DraggableAndDropableNodeInterface
 {
 	/**
 	 * Moves given node inside a destination node
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @param t3lib_tree_Node $destination
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $destination
 	 * @return void
 	 */
 	public function moveNodeInDestinationNode($node, $destination);
@@ -47,8 +49,8 @@ interface t3lib_tree_DraggableAndDropable
 	/**
 	 * Moves given node after a destination node
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @param t3lib_tree_Node $destination
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $destination
 	 * @return void
 	 */
 	public function moveNodeAfterDestinationNode($node, $destination);
@@ -56,8 +58,8 @@ interface t3lib_tree_DraggableAndDropable
 	/**
 	 * Copies given node inside a destination node
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @param t3lib_tree_Node $destination
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $destination
 	 * @return void
 	 */
 	public function copyNodeInDestinationNode($node, $destination);
@@ -65,11 +67,12 @@ interface t3lib_tree_DraggableAndDropable
 	/**
 	 * Copies given node after a destination node
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @param t3lib_tree_Node $destination
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $destination
 	 * @return void
 	 */
 	public function copyNodeAfterDestinationNode($node, $destination);
 
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Sprite;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanager_SpriteIconGenerator {
+abstract class AbstractSpriteHandler implements \TYPO3\CMS\Backend\Sprite\SpriteIconGeneratorInterface {
 
 	/**
 	 * all "registered" icons available through sprite API will cumulated here
@@ -62,7 +64,7 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 	 */
 	public function __construct() {
 		// The file name is prefixed with "z" since the concatenator orders files per name
-		$this->cssTcaFile = (PATH_site . t3lib_SpriteManager::$tempPath) . 'zextensions.css';
+		$this->cssTcaFile = (PATH_site . \TYPO3\CMS\Backend\Sprite\SpriteManager::$tempPath) . 'zextensions.css';
 		$this->styleSheetData = (('/* Auto-Generated via ' . get_class($this)) . ' */') . LF;
 	}
 
@@ -86,17 +88,17 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 			$allowedCssFilesinTempDir[] = $fileName;
 			// get-Cache Filename
 			$unique = md5(($fileName . filemtime((PATH_site . $file))) . filesize((PATH_site . $file)));
-			$cacheFile = (((PATH_site . t3lib_SpriteManager::$tempPath) . $fileName) . $unique) . '.css';
+			$cacheFile = (((PATH_site . \TYPO3\CMS\Backend\Sprite\SpriteManager::$tempPath) . $fileName) . $unique) . '.css';
 			if (!file_exists($cacheFile)) {
 				copy(PATH_site . $file, $cacheFile);
 			}
 		}
 		// Get all .css files in dir
-		$cssFilesPresentInTempDir = t3lib_div::getFilesInDir(PATH_site . t3lib_SpriteManager::$tempPath, '.css', 0);
+		$cssFilesPresentInTempDir = \TYPO3\CMS\Core\Utility\GeneralUtility::getFilesInDir(PATH_site . \TYPO3\CMS\Backend\Sprite\SpriteManager::$tempPath, '.css', 0);
 		// and delete old ones which are not needed anymore
 		$filesToDelete = array_diff($cssFilesPresentInTempDir, $allowedCssFilesinTempDir);
 		foreach ($filesToDelete as $file) {
-			unlink((PATH_site . t3lib_SpriteManager::$tempPath) . $file);
+			unlink((PATH_site . \TYPO3\CMS\Backend\Sprite\SpriteManager::$tempPath) . $file);
 		}
 	}
 
@@ -110,7 +112,7 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 		// Include registered Sprites
 		$this->loadRegisteredSprites();
 		// Cache results in the CSS file
-		t3lib_div::writeFile($this->cssTcaFile, $this->styleSheetData);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($this->cssTcaFile, $this->styleSheetData);
 	}
 
 	/**
@@ -152,7 +154,7 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 					} else {
 						$icon = ($skinPath . 'gfx/i/') . $tcaCtrl['iconfile'];
 					}
-					$icon = t3lib_div::resolveBackPath($icon);
+					$icon = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($icon);
 					$resultArray[('tcarecords-' . $tableName) . '-default'] = $icon;
 				}
 				// If records types are available, register them
@@ -163,7 +165,7 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 						if (strpos($icon, '/') === FALSE) {
 							$icon = ($skinPath . 'gfx/i/') . $icon;
 						}
-						$icon = t3lib_div::resolveBackPath($icon);
+						$icon = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($icon);
 						$resultArray[(('tcarecords-' . $tableName) . '-') . $type] = $icon;
 					}
 				}
@@ -173,5 +175,6 @@ abstract class t3lib_spritemanager_AbstractHandler implements t3lib_spritemanage
 	}
 
 }
+
 
 ?>

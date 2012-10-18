@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Exception;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,9 +30,10 @@
  * @package Extension Manager
  * @subpackage Exception
  */
-class Tx_Extensionmanager_Exception_ExtensionManager extends t3lib_exception {
+class ExtensionManagerException extends \TYPO3\CMS\Core\Exception {
 
 
 }
+
 
 ?>

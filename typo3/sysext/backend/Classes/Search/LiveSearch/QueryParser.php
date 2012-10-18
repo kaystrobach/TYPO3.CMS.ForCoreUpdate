@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Search\Livesearch;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +27,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class for parsing query parameters in backend live search.
  *
@@ -34,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_search_livesearch_queryParser {
+class QueryParser {
 
 	/**
 	 * @var string
@@ -50,12 +51,10 @@ class t3lib_search_livesearch_queryParser {
 	 * @var string
 	 */
 	const COMMAND_KEY_INDICATOR = '#';
-
 	/**
 	 * @var string
 	 */
 	const COMMAND_SPLIT_INDICATOR = ':';
-
 	/**
 	 * Retrieve the validated command key
 	 *
@@ -76,7 +75,7 @@ class t3lib_search_livesearch_queryParser {
 	 */
 	public function getSearchQueryValue($query) {
 		$this->extractKeyFromQuery($query);
-		return str_replace(self::COMMAND_KEY_INDICATOR . $this->commandKey . self::COMMAND_SPLIT_INDICATOR, '', $query);
+		return str_replace((self::COMMAND_KEY_INDICATOR . $this->commandKey) . self::COMMAND_SPLIT_INDICATOR, '', $query);
 	}
 
 	/**
@@ -91,7 +90,6 @@ class t3lib_search_livesearch_queryParser {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['livesearch']) && array_key_exists($this->commandKey, $GLOBALS['TYPO3_CONF_VARS']['SYS']['livesearch'])) {
 			$tableName = $GLOBALS['TYPO3_CONF_VARS']['SYS']['livesearch'][$this->commandKey];
 		}
-
 		return $tableName;
 	}
 
@@ -113,11 +111,9 @@ class t3lib_search_livesearch_queryParser {
 	 */
 	public function isValidPageJump($query) {
 		$isValid = FALSE;
-
-		if (preg_match('~^#(\d)+$~', $query)) {
+		if (preg_match('~^#(\\d)+$~', $query)) {
 			$isValid = TRUE;
 		}
-
 		return $isValid;
 	}
 
@@ -129,12 +125,9 @@ class t3lib_search_livesearch_queryParser {
 	 */
 	public function isValidCommand($query) {
 		$isValid = FALSE;
-		if (strpos($query, self::COMMAND_KEY_INDICATOR) === 0 &&
-			strpos($query, self::COMMAND_SPLIT_INDICATOR) > 1 &&
-			$this->getTableNameFromCommand($query)) {
+		if ((strpos($query, self::COMMAND_KEY_INDICATOR) === 0 && strpos($query, self::COMMAND_SPLIT_INDICATOR) > 1) && $this->getTableNameFromCommand($query)) {
 			$isValid = TRUE;
 		}
-
 		return $isValid;
 	}
 
@@ -151,7 +144,6 @@ class t3lib_search_livesearch_queryParser {
 		} else {
 			$command = FALSE;
 		}
-
 		return $command;
 	}
 
@@ -165,14 +157,14 @@ class t3lib_search_livesearch_queryParser {
 		if ($this->isValidPageJump($query)) {
 			$command = $this->getCommandForTable('pages');
 			$id = $this->getId($query);
-
-			$resultQuery = self::COMMAND_KEY_INDICATOR . $command . self::COMMAND_SPLIT_INDICATOR . $id;
+			$resultQuery = ((self::COMMAND_KEY_INDICATOR . $command) . self::COMMAND_SPLIT_INDICATOR) . $id;
 		} else {
 			$resultQuery = FALSE;
 		}
-
 		return $resultQuery;
 	}
+
 }
+
 
 ?>

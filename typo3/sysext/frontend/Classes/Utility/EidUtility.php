@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -43,7 +45,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-final class tslib_eidtools {
+final class EidUtility {
 
 	/**
 	 * Load and initialize Frontend User. Note, this process is slow because
@@ -58,7 +60,7 @@ final class tslib_eidtools {
 		// Get TSFE instance. It knows how to initialize the user. We also
 		// need TCA because services may need extra tables!
 		self::initTCA();
-		/** @var $tsfe tslib_fe */
+		/** @var $tsfe \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController */
 		$tsfe = self::getTSFE();
 		$tsfe->initFEuser();
 		// Return FE user object:
@@ -89,7 +91,7 @@ final class tslib_eidtools {
 	 */
 	static public function initLanguage($language = 'default') {
 		if (!is_object($GLOBALS['LANG'])) {
-			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
+			$GLOBALS['LANG'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Lang\\LanguageService');
 			$GLOBALS['LANG']->init($language);
 		}
 	}
@@ -119,7 +121,7 @@ final class tslib_eidtools {
 	 * @return void
 	 */
 	static public function initExtensionTCA($extensionKey) {
-		$extTablesPath = t3lib_extMgm::extPath($extensionKey, 'ext_tables.php');
+		$extTablesPath = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($extensionKey, 'ext_tables.php');
 		if (file_exists($extTablesPath)) {
 			$GLOBALS['_EXTKEY'] = $extensionKey;
 			require_once $extTablesPath;
@@ -133,17 +135,18 @@ final class tslib_eidtools {
 	/**
 	 * Creating a single static cached instance of TSFE to use with this class.
 	 *
-	 * @return tslib_fe New instance of tslib_fe
+	 * @return \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController New instance of tslib_fe
 	 */
 	static private function getTSFE() {
 		// Cached instance
 		static $tsfe = NULL;
 		if (is_null($tsfe)) {
-			$tsfe = t3lib_div::makeInstance('tslib_fe', $GLOBALS['TYPO3_CONF_VARS'], 0, 0);
+			$tsfe = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', $GLOBALS['TYPO3_CONF_VARS'], 0, 0);
 		}
 		return $tsfe;
 	}
 
 }
+
 
 ?>

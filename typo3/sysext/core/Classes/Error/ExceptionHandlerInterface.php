@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage error
  */
-interface t3lib_error_ExceptionHandlerInterface
+interface ExceptionHandlerInterface
 {
 	/**
 	 * Constructs this exception handler - registers itself as the default exception handler.
@@ -43,7 +45,7 @@ interface t3lib_error_ExceptionHandlerInterface
 	 * @param Exception $exception: The exception object
 	 * @return void
 	 */
-	public function handleException(Exception $exception);
+	public function handleException(\Exception $exception);
 
 	/**
 	 * Formats and echoes the exception as XHTML.
@@ -51,7 +53,7 @@ interface t3lib_error_ExceptionHandlerInterface
 	 * @param Exception $exception The exception object
 	 * @return void
 	 */
-	public function echoExceptionWeb(Exception $exception);
+	public function echoExceptionWeb(\Exception $exception);
 
 	/**
 	 * Formats and echoes the exception for the command line
@@ -59,7 +61,8 @@ interface t3lib_error_ExceptionHandlerInterface
 	 * @param Exception $exception The exception object
 	 * @return void
 	 */
-	public function echoExceptionCLI(Exception $exception);
+	public function echoExceptionCLI(\Exception $exception);
 
 }
+
 ?>

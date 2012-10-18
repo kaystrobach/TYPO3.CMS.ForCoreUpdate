@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\File;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -47,7 +49,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class TYPO3_tcefile {
+class FileController {
 
 	// Internal, static: GPvar:
 	// Array of file-operations.
@@ -80,11 +82,11 @@ class TYPO3_tcefile {
 	 */
 	public function init() {
 		// Set the GPvars from outside
-		$this->file = t3lib_div::_GP('file');
-		$this->CB = t3lib_div::_GP('CB');
-		$this->overwriteExistingFiles = t3lib_div::_GP('overwriteExistingFiles');
-		$this->vC = t3lib_div::_GP('vC');
-		$this->redirect = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('redirect'));
+		$this->file = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('file');
+		$this->CB = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('CB');
+		$this->overwriteExistingFiles = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('overwriteExistingFiles');
+		$this->vC = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('vC');
+		$this->redirect = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect'));
 		$this->initClipboard();
 	}
 
@@ -95,7 +97,7 @@ class TYPO3_tcefile {
 	 */
 	public function initClipboard() {
 		if (is_array($this->CB)) {
-			$clipObj = t3lib_div::makeInstance('t3lib_clipboard');
+			$clipObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Clipboard\\Clipboard');
 			$clipObj->initializeClipboard();
 			if ($this->CB['paste']) {
 				$clipObj->setCurrentPad($this->CB['pad']);
@@ -116,13 +118,13 @@ class TYPO3_tcefile {
 	 */
 	public function main() {
 		// Initializing:
-		$this->fileProcessor = t3lib_div::makeInstance('t3lib_extFileFunctions');
+		$this->fileProcessor = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\File\\ExtendedFileUtility');
 		$this->fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 		$this->fileProcessor->init_actionPerms($GLOBALS['BE_USER']->getFileoperationPermissions());
 		$this->fileProcessor->dontCheckForUnique = $this->overwriteExistingFiles ? 1 : 0;
 		// Checking referrer / executing:
-		$refInfo = parse_url(t3lib_div::getIndpEnv('HTTP_REFERER'));
-		$httpHost = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+		$refInfo = parse_url(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_REFERER'));
+		$httpHost = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 		if ((($httpHost != $refInfo['host'] && $this->vC != $GLOBALS['BE_USER']->veriCode()) && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']) && $GLOBALS['CLIENT']['BROWSER'] != 'flash') {
 			$this->fileProcessor->writeLog(0, 2, 1, 'Referrer host "%s" and server host "%s" did not match!', array($refInfo['host'], $httpHost));
 		} else {
@@ -140,9 +142,9 @@ class TYPO3_tcefile {
 	public function finish() {
 		// Prints errors, if there are any
 		$this->fileProcessor->printLogErrorMessages($this->redirect);
-		t3lib_BEfunc::setUpdateSignal('updateFolderTree');
+		\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updateFolderTree');
 		if ($this->redirect) {
-			t3lib_utility_Http::redirect($this->redirect);
+			\TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->redirect);
 		}
 	}
 
@@ -153,10 +155,10 @@ class TYPO3_tcefile {
 	 * actual return value
 	 *
 	 * @param array $params Always empty.
-	 * @param TYPO3AJAX $ajaxObj The Ajax object used to return content and set content types
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The Ajax object used to return content and set content types
 	 * @return void
 	 */
-	public function processAjaxRequest(array $params, TYPO3AJAX $ajaxObj) {
+	public function processAjaxRequest(array $params, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
 		$this->init();
 		$this->main();
 		$errors = $this->fileProcessor->getErrorMessages();
@@ -172,5 +174,6 @@ class TYPO3_tcefile {
 	}
 
 }
+
 
 ?>

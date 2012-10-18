@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\View;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,19 +34,20 @@
  * @package TYPO3
  * @subpackage cms
  */
-interface tx_cms_layout_tt_content_drawItemHook
+interface PageLayoutViewDrawItemHookInterface
 {
 	/**
 	 * Preprocesses the preview rendering of a content element.
 	 *
-	 * @param tx_cms_layout $parentObject Calling parent object
+	 * @param \TYPO3\CMS\Backend\View\PageLayoutView $parentObject Calling parent object
 	 * @param boolean $drawItem Whether to draw the item using the default functionalities
 	 * @param string $headerContent Header content
 	 * @param string $itemContent Item content
 	 * @param array $row Record row of tt_content
 	 * @return void
 	 */
-	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row);
+	public function preProcess(\TYPO3\CMS\Backend\View\PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row);
 
 }
+
 ?>

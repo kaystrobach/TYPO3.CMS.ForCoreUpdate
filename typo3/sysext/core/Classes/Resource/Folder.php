@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,12 +43,12 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Folder implements t3lib_file_FolderInterface {
+class Folder implements \TYPO3\CMS\Core\Resource\FolderInterface {
 
 	/**
 	 * The storage this folder belongs to.
 	 *
-	 * @var t3lib_file_Storage
+	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected $storage;
 
@@ -69,11 +71,11 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	/**
 	 * Initialization of the folder
 	 *
-	 * @param t3lib_file_Storage $storage
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storage
 	 * @param $identifier
 	 * @param $name
 	 */
-	public function __construct(t3lib_file_Storage $storage, $identifier, $name) {
+	public function __construct(\TYPO3\CMS\Core\Resource\ResourceStorage $storage, $identifier, $name) {
 		$this->storage = $storage;
 		$this->identifier = rtrim($identifier, '/') . '/';
 		$this->name = $name;
@@ -103,7 +105,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	/**
 	 * Returns the storage this folder belongs to.
 	 *
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	public function getStorage() {
 		return $this->storage;
@@ -127,7 +129,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 */
 	public function getCombinedIdentifier() {
 		// @todo $this->properties is never defined nor used here
-		if (is_array($this->properties) && t3lib_utility_Math::canBeInterpretedAsInteger($this->properties['storage'])) {
+		if (is_array($this->properties) && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->properties['storage'])) {
 			$combinedIdentifier = ($this->properties['storage'] . ':') . $this->getIdentifier();
 		} else {
 			$combinedIdentifier = ($this->getStorage()->getUid() . ':') . $this->getIdentifier();
@@ -159,8 +161,8 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 */
 	public function getFiles($start = 0, $numberOfItems = 0, $useFilters = TRUE) {
 		// TODO fetch
-		/** @var $factory t3lib_file_Factory */
-		$factory = t3lib_div::makeInstance('t3lib_file_Factory');
+		/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
+		$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 		$fileArray = $this->storage->getFileList($this->identifier, $start, $numberOfItems, $useFilters);
 		$fileObjects = array();
 		foreach ($fileArray as $fileInfo) {
@@ -185,16 +187,16 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * Returns the object for a subfolder of the current folder, if it exists.
 	 *
 	 * @param string $name Name of the subfolder
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getSubfolder($name) {
 		if (!$this->storage->hasFolderInFolder($name, $this)) {
-			throw new InvalidArgumentException(((('Folder "' . $name) . '" does not exist in "') . $this->identifier) . '"', 1329836110);
+			throw new \InvalidArgumentException(((('Folder "' . $name) . '" does not exist in "') . $this->identifier) . '"', 1329836110);
 		}
 		// TODO this will not work with non-hierarchical storages -> the identifier for subfolders is not composed of
 		// the current item's identifier for these
-		/** @var $factory t3lib_file_Factory */
-		$factory = t3lib_file_Factory::getInstance();
+		/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
+		$factory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
 		$folderObject = $factory->createFolderObject($this->storage, ($this->identifier . $name) . '/', $name);
 		return $folderObject;
 	}
@@ -208,8 +210,8 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 		$folderObjects = array();
 		$folderArray = $this->storage->getFolderList($this->identifier);
 		if (count($folderArray) > 0) {
-			/** @var $factory t3lib_file_Factory */
-			$factory = t3lib_div::makeInstance('t3lib_file_Factory');
+			/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
+			$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 			// TODO this will not work with non-hierarchical storages
 			// -> the identifier for subfolders is not composed of the
 			// current item's identifier for these
@@ -227,7 +229,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * @param string $localFilePath
 	 * @param string $fileName
 	 * @param string $conflictMode possible value are 'cancel', 'replace'
-	 * @return t3lib_file_File The file object
+	 * @return \TYPO3\CMS\Core\Resource\File The file object
 	 */
 	public function addFile($localFilePath, $fileName = NULL, $conflictMode = 'cancel') {
 		$fileName = $fileName ? $fileName : basename($localFilePath);
@@ -239,7 +241,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 *
 	 * @param array $uploadedFileData contains information about the uploaded file given by $_FILES['file1']
 	 * @param string $conflictMode possible value are 'cancel', 'replace'
-	 * @return t3lib_file_File The file object
+	 * @return \TYPO3\CMS\Core\Resource\File The file object
 	 */
 	public function addUploadedFile(array $uploadedFileData, $conflictMode = 'cancel') {
 		return $this->storage->addUploadedFile($uploadedFileData, $this, $uploadedFileData['name'], $conflictMode);
@@ -249,7 +251,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * Renames this folder.
 	 *
 	 * @param string $newName
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function rename($newName) {
 		return $this->storage->renameFolder($this, $newName);
@@ -269,7 +271,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * Creates a new blank file
 	 *
 	 * @param string $fileName
-	 * @return t3lib_file_File The new file object
+	 * @return \TYPO3\CMS\Core\Resource\File The new file object
 	 */
 	public function createFile($fileName) {
 		return $this->storage->createFile($fileName, $this);
@@ -279,7 +281,7 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	 * Creates a new folder
 	 *
 	 * @param string $folderName
-	 * @return t3lib_file_Folder The new folder object
+	 * @return \TYPO3\CMS\Core\Resource\Folder The new folder object
 	 */
 	public function createFolder($folderName) {
 		return $this->storage->createFolder($folderName, $this);
@@ -288,24 +290,24 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	/**
 	 * Copies folder to a target folder
 	 *
-	 * @param t3lib_file_Folder $targetFolder Target folder to copy to.
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder Target folder to copy to.
 	 * @param string $targetFolderName an optional destination fileName
 	 * @param string $conflictMode "overrideExistingFile", "renameNewFile" or "cancel
-	 * @return t3lib_file_Folder New (copied) folder object.
+	 * @return \TYPO3\CMS\Core\Resource\Folder New (copied) folder object.
 	 */
-	public function copyTo(t3lib_file_Folder $targetFolder, $targetFolderName = NULL, $conflictMode = 'renameNewFile') {
+	public function copyTo(\TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFolderName = NULL, $conflictMode = 'renameNewFile') {
 		return $this->storage->copyFolder($this, $targetFolder, $targetFolderName, $conflictMode);
 	}
 
 	/**
 	 * Moves folder to a target folder
 	 *
-	 * @param t3lib_file_Folder $targetFolder Target folder to move to.
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder Target folder to move to.
 	 * @param string $targetFolderName an optional destination fileName
 	 * @param string $conflictMode "overrideExistingFile", "renameNewFile" or "cancel
-	 * @return t3lib_file_Folder New (copied) folder object.
+	 * @return \TYPO3\CMS\Core\Resource\Folder New (copied) folder object.
 	 */
-	public function moveTo(t3lib_file_Folder $targetFolder, $targetFolderName = NULL, $conflictMode = 'renameNewFile') {
+	public function moveTo(\TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFolderName = NULL, $conflictMode = 'renameNewFile') {
 		return $this->storage->moveFolder($this, $targetFolder, $targetFolderName, $conflictMode);
 	}
 
@@ -359,5 +361,6 @@ class t3lib_file_Folder implements t3lib_file_FolderInterface {
 	}
 
 }
+
 
 ?>

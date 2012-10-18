@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -42,7 +44,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-abstract class tx_rsaauth_abstract_backend {
+abstract class AbstractBackend {
 
 	/**
 	 * Error message for the last operation. Derieved classes should always set
@@ -55,7 +57,7 @@ abstract class tx_rsaauth_abstract_backend {
 	/**
 	 * Creates a new key pair for the encryption.
 	 *
-	 * @return tx_rsaauth_keypair A new key pair or NULL in case of error
+	 * @return \TYPO3\CMS\Rsaauth\Keypair A new key pair or NULL in case of error
 	 */
 	abstract public function createNewKeyPair();
 
@@ -85,5 +87,6 @@ abstract class tx_rsaauth_abstract_backend {
 	}
 
 }
+
 
 ?>

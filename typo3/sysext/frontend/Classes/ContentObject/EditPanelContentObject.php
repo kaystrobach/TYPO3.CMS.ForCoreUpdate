@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Jeff Segars <jeff@webempoweredchurch.org>
  */
-class tslib_content_EditPanel extends tslib_content_Abstract {
+class EditPanelContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, EDITPANEL
@@ -49,5 +51,6 @@ class tslib_content_EditPanel extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

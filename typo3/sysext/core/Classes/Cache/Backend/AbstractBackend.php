@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,14 +35,14 @@
  * @subpackage t3lib_cache
  * @api
  */
-abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_Backend {
+abstract class AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\BackendInterface {
 
 	const DATETIME_EXPIRYTIME_UNLIMITED = '9999-12-31T23:59:59+0000';
 	const UNLIMITED_LIFETIME = 0;
 	/**
 	 * Reference to the cache which uses this backend
 	 *
-	 * @var t3lib_cache_frontend_Frontend
+	 * @var \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
 	 */
 	protected $cache;
 
@@ -92,11 +94,11 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 	/**
 	 * Sets a reference to the cache frontend which uses this backend
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The frontend for this backend
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The frontend for this backend
 	 * @return void
 	 * @api
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache) {
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		$this->cache = $cache;
 		$this->cacheIdentifier = $this->cache->getIdentifier();
 	}
@@ -136,5 +138,6 @@ abstract class t3lib_cache_backend_AbstractBackend implements t3lib_cache_backen
 	}
 
 }
+
 
 ?>

@@ -95,9 +95,9 @@ return array(
 				'priority' => 'xlf,xml,php'
 			),
 			'parser' => array(
-				'php' => 't3lib_l10n_parser_Llphp',
-				'xml' => 't3lib_l10n_parser_Llxml',
-				'xlf' => 't3lib_l10n_parser_Xliff'
+				'php' => 'TYPO3\\CMS\\Core\\Localization\\Parser\\LocallangArrayParser',
+				'xml' => 'TYPO3\\CMS\\Core\\Localization\\Parser\\LocallangXmlParser',
+				'xlf' => 'TYPO3\\CMS\\Core\\Localization\\Parser\\XliffParser'
 			)
 		),
 		'sitename' => 'TYPO3',
@@ -211,53 +211,53 @@ return array(
 				// The cache_core cache is is for core php code only and must
 				// not be abused by third party extensions.
 				'cache_core' => array(
-					'frontend' => 't3lib_cache_frontend_PhpFrontend',
-					'backend' => 't3lib_cache_backend_SimpleFileBackend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\PhpFrontend',
+					'backend' => 'TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend',
 					'options' => array()
 				),
 				'cache_hash' => array(
-					'frontend' => 't3lib_cache_frontend_VariableFrontend',
-					'backend' => 't3lib_cache_backend_DbBackend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\VariableFrontend',
+					'backend' => 'TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend',
 					'options' => array()
 				),
 				'cache_pages' => array(
-					'frontend' => 't3lib_cache_frontend_VariableFrontend',
-					'backend' => 't3lib_cache_backend_DbBackend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\VariableFrontend',
+					'backend' => 'TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend',
 					'options' => array(
 						'compression' => TRUE
 					)
 				),
 				'cache_pagesection' => array(
-					'frontend' => 't3lib_cache_frontend_VariableFrontend',
-					'backend' => 't3lib_cache_backend_DbBackend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\VariableFrontend',
+					'backend' => 'TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend',
 					'options' => array(
 						'compression' => TRUE
 					)
 				),
 				'cache_phpcode' => array(
-					'frontend' => 't3lib_cache_frontend_PhpFrontend',
-					'backend' => 't3lib_cache_backend_FileBackend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\PhpFrontend',
+					'backend' => 'TYPO3\CMS\Core\Cache\Backend\FileBackend',
 					'options' => array()
 				),
 				'cache_runtime' => array(
-					'frontend' => 't3lib_cache_frontend_VariableFrontend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\VariableFrontend',
 					'backend' => 't3lib_cache_backend_TransientMemoryBackend',
 					'options' => array()
 				),
 				'cache_rootline' => array(
-					'frontend' => 't3lib_cache_frontend_VariableFrontend',
-					'backend' => 't3lib_cache_backend_DbBackend',
+					'frontend' => 'TYPO3\CMS\Core\Cache\Frontend\VariableFrontend',
+					'backend' => 'TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend',
 					'options' => array()
 				)
 			)
 		),
 		'displayErrors' => -1,
 		// <p>Integer (-1, 0, 1, 2). Configures whether PHP errors should be displayed.</p><dl><dt>0</dt><dd>Do not display any PHP error messages. Overrides the value of "exceptionalErrors" and sets it to 0 (= no errors are turned into exceptions), the configured "productionExceptionHandler" is used as exception handler</dd><dt>1</dt><dd>Display error messages with the registered errorhandler. The configured "debugExceptionHandler" is used as exception handler</dd><dt>2</dt><dd>Display errors only if client matches <a href="#SYS-devIPmask">[SYS][devIPmask]</a>. If devIPmask matches the users IP address  the configured "debugExceptionHandler" is used  for exceptions, if not "productionExceptionHandler" will be used</dd><dt>-1</dt><dd>Default setting. With this option, you can override the PHP setting "display_errors". If devIPmask matches the users IP address  the configured "debugExceptionHandler" is used  for exceptions, if not "productionExceptionHandler" will be used.</dd></dl>
-		'productionExceptionHandler' => 't3lib_error_ProductionExceptionHandler',
+		'productionExceptionHandler' => 'TYPO3\\CMS\\Core\\Error\\ProductionExceptionHandler',
 		// String: Classname to handle exceptions that might happen in the TYPO3-code. Leave empty to disable exception handling. Default: "t3lib_error_ProductionExceptionHandler". This exception handler displays a nice error message when something went wrong. The error message is logged to the configured logs. Note: The configured "productionExceptionHandler" is used if displayErrors is set to "0" or to "-1" and devIPmask doesn't match the users IP.
-		'debugExceptionHandler' => 't3lib_error_DebugExceptionHandler',
+		'debugExceptionHandler' => 'TYPO3\\CMS\\Core\\Error\\DebugExceptionHandler',
 		// String: Classname to handle exceptions that might happen in the TYPO3-code. Leave empty to disable exception handling. Default: "t3lib_error_DebugExceptionHandler". This exception handler displays the complete stack trace of any encountered exception. The error message and the stack trace  is logged to the configured logs. Note: The configured "debugExceptionHandler" is used if displayErrors is set to "1" and if displayErrors is "-1"  or "2" and the devIPmask matches the users IP.
-		'errorHandler' => 't3lib_error_ErrorHandler',
+		'errorHandler' => 'TYPO3\\CMS\\Core\\Error\\ErrorHandler',
 		// String: Classname to handle PHP errors. E.g.: t3lib_error_ErrorHandler. This class displays and logs all errors that are registered as "errorHandlerErrors" (<a href="#SYS-errorHandlerErrors">[SYS][errorHandlerErrors]</a>). Leave empty to disable error handling. Errors can be logged to syslog (see: <a href="#SYS-systemLog">[SYS][systemLog]</a>) to the installed developer log and to the "syslog" table. If an error is registered in "exceptionalErrors" ([SYS][exceptionalErrors]) it will be turned into an exception to be handled by the configured exceptionHandler.
 		'errorHandlerErrors' => E_ALL & ~(E_STRICT | E_NOTICE),
 		// Integer: The E_* constant that will be handled by the errorhandler. Default is "E_ALL ^ E_NOTICE".
@@ -278,7 +278,7 @@ return array(
 		'fal' => array(
 			'registeredDrivers' => array(
 				'Local' => array(
-					'class' => 't3lib_file_Driver_LocalDriver',
+					'class' => 'TYPO3\\CMS\\Core\\Resource\\Driver\\LocalDriver',
 					'shortName' => 'Local',
 					'flexFormDS' => 'FILE:t3lib/file/Driver/Configuration/LocalDriverFlexForm.xml',
 					'label' => 'Local filesystem'
@@ -286,7 +286,7 @@ return array(
 			),
 			'callbackFilterMethods' => array(
 				array(
-					't3lib_file_Utility_FilenameFilters',
+					'TYPO3\\CMS\\Core\\Resource\\Filter\\FileNameFilter',
 					'filterHiddenFilesAndFolders'
 				)
 			)
@@ -680,7 +680,7 @@ return array(
 		// If set, then the diff-data of localized records is not saved automatically when updated but requires that a translator clicks the special finish_translation/save/close button that becomes available.
 		'versionNumberInFilename' => FALSE,
 		// <p>Boolean: If TRUE, included CSS and JS files will have the timestamp embedded in the filename, ie. filename.1269312081.js. This will make browsers and proxies reload the files if they change (thus avoiding caching issues). IMPORTANT: this feature requires extra .htaccess rules to work (please refer to _.htaccess or the _.htaccess file from the dummy package)</p><p>If FALSE the filemtime will be appended as a query-string.</p>
-		'spriteIconGenerator_handler' => 't3lib_spritemanager_SimpleHandler',
+		'spriteIconGenerator_handler' => 'TYPO3\\CMS\\Backend\\Sprite\\SimpleSpriteHandler',
 		// String: Used to register own/other spriteGenerating Handler, they have to implement the interface t3lib_spritemanager_SpriteIconGenerator. If set to "t3lib_spritemanager_SpriteBuildingHandler" icons from extensions will automatically merged into sprites.
 		'debug' => FALSE,
 		// Boolean: If set, the loginrefresh is disabled and pageRenderer is set to debug mode. Use this to debug the backend only!
@@ -717,14 +717,14 @@ return array(
 	'HTTP' => array('adapter' => 'socket', 'connect_timeout' => 10, 'timeout' => 0, 'protocol_version' => '1.1', 'follow_redirects' => FALSE, 'max_redirects' => 5, 'strict_redirects' => FALSE, 'proxy_host' => '', 'proxy_port' => '', 'proxy_user' => '', 'proxy_password' => '', 'proxy_auth_scheme' => 'basic', 'ssl_verify_peer' => FALSE, 'ssl_verify_host' => TRUE, 'ssl_cafile' => '', 'ssl_capath' => '', 'ssl_local_cert' => '', 'ssl_passphrase' => '', 'userAgent' => 'TYPO3/' . TYPO3_version),
 	'LOG' => array(
 		'writerConfiguration' => array(
-			t3lib_log_Level::DEBUG => array(
-				't3lib_log_writer_File' => array()
+			\TYPO3\CMS\Core\Log\LogLevel::DEBUG => array(
+				'TYPO3\\CMS\\Core\\Log\\Writer\\FileWriter' => array()
 			)
 		),
 		'deprecated' => array(
 			'writerConfiguration' => array(
-				t3lib_log_Level::WARNING => array(
-					't3lib_log_writer_File' => array(
+				\TYPO3\CMS\Core\Log\LogLevel::WARNING => array(
+					'TYPO3\\CMS\\Core\\Log\\Writer\\FileWriter' => array(
 						'logFile' => 'typo3conf/deprecation.log'
 					)
 				)

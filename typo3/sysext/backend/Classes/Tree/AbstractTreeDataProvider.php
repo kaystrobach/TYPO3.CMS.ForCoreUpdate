@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,30 +34,31 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_tree_AbstractDataProvider {
+abstract class AbstractTreeDataProvider {
 
 	/**
 	 * Root Node
 	 *
-	 * @var t3lib_tree_Node
+	 * @var \TYPO3\CMS\Backend\Tree\TreeNode
 	 */
 	protected $rootNode = NULL;
 
 	/**
 	 * Returns the root node
 	 *
-	 * @return t3lib_tree_Node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNode
 	 */
 	abstract public function getRoot();
 
 	/**
 	 * Fetches the subnodes of the given node
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @return t3lib_tree_NodeCollection
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNodeCollection
 	 */
-	abstract public function getNodes(t3lib_tree_Node $node);
+	abstract public function getNodes(\TYPO3\CMS\Backend\Tree\TreeNode $node);
 
 }
+
 
 ?>

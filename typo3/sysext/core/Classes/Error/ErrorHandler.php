@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage error
  */
-class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
+class ErrorHandler implements \TYPO3\CMS\Core\Error\ErrorHandlerInterface {
 
 	/**
 	 * Error levels which should result in an exception thrown.
@@ -71,7 +73,7 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 	 * @param string $errorFile Name of the file the error occurred in
 	 * @param integer $errorLine Line number where the error occurred
 	 * @return void
-	 * @throws t3lib_error_Exception with the data passed to this method if the error is registered as exceptionalError
+	 * @throws \TYPO3\CMS\Core\Error\Exception with the data passed to this method if the error is registered as exceptionalError
 	 */
 	public function handleError($errorLevel, $errorMessage, $errorFile, $errorLine) {
 		// Don't do anything if error_reporting is disabled by an @ sign
@@ -91,11 +93,11 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 		if ($errorLevel & $this->exceptionalErrors) {
 			// We need to manually require the exception classes in case the autoloader is not available at this point yet.
 			// @see http://forge.typo3.org/issues/23444
-			if (!class_exists('t3lib_error_Exception', FALSE)) {
+			if (!class_exists('TYPO3\\CMS\\Core\\Error\\Exception', FALSE)) {
 				require_once PATH_t3lib . 'class.t3lib_exception.php';
 				require_once PATH_t3lib . 'error/class.t3lib_error_exception.php';
 			}
-			throw new t3lib_error_Exception($message, 1);
+			throw new \TYPO3\CMS\Core\Error\Exception($message, 1);
 		} else {
 			switch ($errorLevel) {
 			case E_USER_ERROR:
@@ -116,21 +118,21 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 			// Write error message to the configured syslogs,
 			// see: $TYPO3_CONF_VARS['SYS']['systemLog']
 			if ($errorLevel & $GLOBALS['TYPO3_CONF_VARS']['SYS']['syslogErrorReporting']) {
-				t3lib_div::sysLog($message, $logTitle, $severity);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog($message, $logTitle, $severity);
 			}
 			// In case an error occurs before a database connection exists, try
 			// to connect to the DB to be able to write an entry to devlog/sys_log
 			if (is_object($GLOBALS['TYPO3_DB']) && empty($GLOBALS['TYPO3_DB']->link)) {
 				try {
 					$GLOBALS['TYPO3_DB']->connectDB();
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 
 				}
 			}
 			// Write error message to devlog extension(s),
 			// see: $TYPO3_CONF_VARS['SYS']['enable_errorDLOG']
 			if (TYPO3_ERROR_DLOG) {
-				t3lib_div::devLog($message, $logTitle, $severity + 1);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog($message, $logTitle, $severity + 1);
 			}
 			// Write error message to TSlog (admin panel)
 			if (is_object($GLOBALS['TT'])) {
@@ -142,8 +144,8 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 			}
 			// Add error message to the flashmessageQueue
 			if (defined('TYPO3_ERRORHANDLER_MODE') && TYPO3_ERRORHANDLER_MODE == 'debug') {
-				$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $message, 'PHP ' . $errorLevels[$errorLevel], $severity);
-				t3lib_FlashMessageQueue::addMessage($flashMessage);
+				$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $message, 'PHP ' . $errorLevels[$errorLevel], $severity);
+				\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($flashMessage);
 			}
 		}
 		// Don't execute PHP internal error handler
@@ -176,7 +178,7 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 				'error' => $severity,
 				'details_nr' => 0,
 				'details' => $logMessage,
-				'IP' => t3lib_div::getIndpEnv('REMOTE_ADDR'),
+				'IP' => \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'),
 				'tstamp' => $GLOBALS['EXEC_TIME'],
 				'workspace' => $workspace
 			);
@@ -185,5 +187,6 @@ class t3lib_error_ErrorHandler implements t3lib_error_ErrorHandlerInterface {
 	}
 
 }
+
 
 ?>

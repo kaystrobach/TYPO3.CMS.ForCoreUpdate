@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persistence_Repository {
+class LogEntryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
 	 * backend users, with UID as key
@@ -45,9 +47,9 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 	 * @return void
 	 */
 	public function initializeObject() {
-		$this->beUserList = t3lib_BEfunc::getUserNames();
-		/** @var $defaultQuerySettings Tx_Extbase_Persistence_QuerySettingsInterface */
-		$defaultQuerySettings = $this->objectManager->create('Tx_Extbase_Persistence_QuerySettingsInterface');
+		$this->beUserList = \TYPO3\CMS\Backend\Utility\BackendUtility::getUserNames();
+		/** @var $defaultQuerySettings \TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface */
+		$defaultQuerySettings = $this->objectManager->create('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\QuerySettingsInterface');
 		$defaultQuerySettings->setRespectStoragePage(FALSE);
 		$this->setDefaultQuerySettings($defaultQuerySettings);
 	}
@@ -55,16 +57,16 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 	/**
 	 * Finds all log entries that match all given constraints.
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
 	 * @return Tx_Extbase_Persistence_QueryResult<Tx_Belog_Domain_Model_LogEntry>
 	 */
-	public function findByConstraint(Tx_Belog_Domain_Model_Constraint $constraint) {
+	public function findByConstraint(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint) {
 		$query = $this->createQuery();
 		$queryConstraints = $this->createQueryConstraints($query, $constraint);
 		if (!empty($queryConstraints)) {
 			$query->matching($query->logicalAnd($queryConstraints));
 		}
-		$query->setOrderings(array('uid' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING));
+		$query->setOrderings(array('uid' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING));
 		$query->setLimit($constraint->getNumber());
 		return $query->execute();
 	}
@@ -72,16 +74,16 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 	/**
 	 * Create an array of query constraints from constraint object
 	 *
-	 * @param Tx_Extbase_Persistence_QueryInterface $query
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
+	 * @param \TYPO3\CMS\Extbase\Persistence\QueryInterface $query
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
 	 * @return array<Tx_Extbase_Persistence_QOM_Constraint>
 	 */
-	protected function createQueryConstraints(Tx_Extbase_Persistence_QueryInterface $query, Tx_Belog_Domain_Model_Constraint $constraint) {
+	protected function createQueryConstraints(\TYPO3\CMS\Extbase\Persistence\QueryInterface $query, \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint) {
 		$queryConstraints = array();
 		// User / group handling
 		$this->addUsersAndGroupsToQueryConstraints($constraint, $query, $queryConstraints);
 		// Workspace
-		if ($constraint->getWorkspaceUid() != Tx_Belog_Domain_Model_Workspace::UID_ANY_WORKSPACE) {
+		if ($constraint->getWorkspaceUid() != \TYPO3\CMS\Belog\Domain\Model\Workspace::UID_ANY_WORKSPACE) {
 			$queryConstraints[] = $query->equals('workspace', $constraint->getWorkspaceUid());
 		}
 		// Action (type):
@@ -103,20 +105,20 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 	 * Adds constraints for the page(s) to the query; this could be one single page or a whole subtree beneath a given
 	 * page.
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
-	 * @param Tx_Extbase_Persistence_QueryInterface $query
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
+	 * @param \TYPO3\CMS\Extbase\Persistence\QueryInterface $query
 	 * @param array &$queryConstraints the query constraints to add to, will be modified
 	 * @return void
 	 */
-	protected function addPageTreeConstraintsToQuery(Tx_Belog_Domain_Model_Constraint $constraint, Tx_Extbase_Persistence_QueryInterface $query, array &$queryConstraints) {
+	protected function addPageTreeConstraintsToQuery(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint, \TYPO3\CMS\Extbase\Persistence\QueryInterface $query, array &$queryConstraints) {
 		if (!$constraint->getIsInPageContext()) {
 			return;
 		}
 		$pageIds = array();
 		// check if we should get a whole tree of pages and not only a single page
 		if ($constraint->getDepth() > 0) {
-			/** @var $pageTree t3lib_pageTree */
-			$pageTree = t3lib_div::makeInstance('t3lib_pageTree');
+			/** @var $pageTree \TYPO3\CMS\Backend\Tree\View\PageTreeView */
+			$pageTree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\View\\PageTreeView');
 			$pageTree->init('AND ' . $GLOBALS['BE_USER']->getPagePermsClause(1));
 			$pageTree->makeHTML = 0;
 			$pageTree->fieldArray = array('uid');
@@ -130,12 +132,12 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 	/**
 	 * Adds users and groups to the query constraints.
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
-	 * @param Tx_Extbase_Persistence_QueryInterface $query
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
+	 * @param \TYPO3\CMS\Extbase\Persistence\QueryInterface $query
 	 * @param array &$queryConstraints the query constraints to add to, will be modified
 	 * @return void
 	 */
-	protected function addUsersAndGroupsToQueryConstraints(Tx_Belog_Domain_Model_Constraint $constraint, Tx_Extbase_Persistence_QueryInterface $query, array &$queryConstraints) {
+	protected function addUsersAndGroupsToQueryConstraints(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint, \TYPO3\CMS\Extbase\Persistence\QueryInterface $query, array &$queryConstraints) {
 		$userOrGroup = $constraint->getUserOrGroup();
 		if ($userOrGroup === '') {
 			return;
@@ -145,7 +147,7 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 			$groupId = intval(substr($userOrGroup, 3));
 			$userIds = array();
 			foreach ($this->beUserList as $userId => $userData) {
-				if (t3lib_div::inList($userData['usergroup_cached_list'], $groupId)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($userData['usergroup_cached_list'], $groupId)) {
 					$userIds[] = $userId;
 				}
 			}
@@ -163,5 +165,6 @@ class Tx_Belog_Domain_Repository_LogEntryRepository extends Tx_Extbase_Persisten
 	}
 
 }
+
 
 ?>

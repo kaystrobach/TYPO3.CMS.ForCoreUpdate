@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,16 +34,16 @@
  * @subpackage t3lib
  * @api
  */
-interface t3lib_cache_backend_Backend
+interface BackendInterface
 {
 	/**
 	 * Sets a reference to the cache frontend which uses this backend
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The frontend for this backend
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The frontend for this backend
 	 * @return void
 	 * @api
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache);
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache);
 
 	/**
 	 * Saves data in the cache.
@@ -51,7 +53,7 @@ interface t3lib_cache_backend_Backend
 	 * @param array $tags Tags to associate with this cache entry. If the backend does not support tags, this option can be ignored.
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited lifetime.
 	 * @return void
-	 * @throws t3lib_cache_Exception if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if no cache frontend has been set.
 	 * @throws t3lib_cache_Exception_InvalidData if the data is not a string
 	 * @api
 	 */
@@ -103,4 +105,5 @@ interface t3lib_cache_backend_Backend
 	public function collectGarbage();
 
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  *
  * @author 	Benjamin Mack <benni@typo3.org>
  */
-class Tx_IndexedSearch_ViewHelpers_PageBrowsingResultsViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class PageBrowsingResultsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * main render function
@@ -43,11 +45,12 @@ class Tx_IndexedSearch_ViewHelpers_PageBrowsingResultsViewHelper extends Tx_Flui
 	public function render($numberOfResults, $resultsPerPage, $currentPage = 1) {
 		$firstResultOnPage = $currentPage * $resultsPerPage + 1;
 		$lastResultOnPage = $currentPage * $resultsPerPage + $resultsPerPage;
-		$label = Tx_Extbase_Utility_Localization::translate('displayResults', 'indexed_search');
+		$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('displayResults', 'indexed_search');
 		$content = sprintf($label, $firstResultOnPage, min(array($numberOfResults, $lastResultOnPage)), $numberOfResults);
 		return $content;
 	}
 
 }
+
 
 ?>

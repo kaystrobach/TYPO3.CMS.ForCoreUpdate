@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\View;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @subpackage core
  * @see class t3lib_browseTree
  */
-class webPageTree extends t3lib_browseTree {
+class PageTreeView extends \TYPO3\CMS\Backend\Tree\View\BrowseTreeView {
 
 	/**
 	 * @todo Define visibility
@@ -81,9 +83,9 @@ class webPageTree extends t3lib_browseTree {
 	 */
 	public function wrapIcon($thePageIcon, &$row) {
 		// If the record is locked, present a warning sign.
-		if ($lockInfo = t3lib_BEfunc::isRecordLocked('pages', $row['uid'])) {
+		if ($lockInfo = \TYPO3\CMS\Backend\Utility\BackendUtility::isRecordLocked('pages', $row['uid'])) {
 			$aOnClick = ('alert(' . $GLOBALS['LANG']->JScharCode($lockInfo['msg'])) . ');return false;';
-			$lockIcon = ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . t3lib_iconWorks::getSpriteIcon('status-warning-in-use', array('title' => htmlspecialchars($lockInfo['msg'])))) . '</a>';
+			$lockIcon = ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-warning-in-use', array('title' => htmlspecialchars($lockInfo['msg'])))) . '</a>';
 		} else {
 			$lockIcon = '';
 		}
@@ -106,7 +108,7 @@ class webPageTree extends t3lib_browseTree {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks'])) {
 			$_params = array('pages', $row['uid']);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks'] as $_funcRef) {
-				$stat .= t3lib_div::callUserFunction($_funcRef, $_params, $this);
+				$stat .= \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 		return (($dragDropIcon . $lockIcon) . $pageIdStr) . $stat;
@@ -123,7 +125,7 @@ class webPageTree extends t3lib_browseTree {
 	 */
 	public function wrapStop($str, $row) {
 		if ($row['php_tree_stop']) {
-			$str .= ('<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => $row['uid'])))) . '" class="typo3-red">+</a> ';
+			$str .= ('<a href="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('setTempDBmount' => $row['uid'])))) . '" class="typo3-red">+</a> ';
 		}
 		return $str;
 	}
@@ -143,7 +145,7 @@ class webPageTree extends t3lib_browseTree {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.webpagetree.php']['pageTitleOverlay'])) {
 			$_params = array('title' => &$title, 'row' => &$row);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.webpagetree.php']['pageTitleOverlay'] as $_funcRef) {
-				t3lib_div::callUserFunction($_funcRef, $_params, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 			}
 			unset($_params);
 		}
@@ -172,7 +174,7 @@ class webPageTree extends t3lib_browseTree {
 		';
 		// -- evaluate AJAX request
 		// IE takes anchor as parameter
-		$PM = t3lib_div::_GP('PM');
+		$PM = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('PM');
 		if (($PMpos = strpos($PM, '#')) !== FALSE) {
 			$PM = substr($PM, 0, $PMpos);
 		}
@@ -272,7 +274,7 @@ class webPageTree extends t3lib_browseTree {
 	public function PMicon($row, $a, $c, $nextCount, $exp) {
 		$PM = $nextCount ? ($exp ? 'minus' : 'plus') : 'join';
 		$BTM = $a == $c ? 'bottom' : '';
-		$icon = ('<img' . t3lib_iconWorks::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' alt="" />';
+		$icon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' alt="" />';
 		if ($nextCount) {
 			$cmd = (((($this->bank . '_') . ($exp ? '0_' : '1_')) . $row['uid']) . '_') . $this->treeName;
 			$icon = $this->PMiconATagWrap($icon, $cmd, !$exp);
@@ -325,7 +327,7 @@ class webPageTree extends t3lib_browseTree {
 			$cmd = (((($this->bank . '_') . ($isOpen ? '0_' : '1_')) . $uid) . '_') . $this->treeName;
 			// Only, if not for uid 0
 			if ($uid) {
-				$icon = ('<img' . t3lib_iconWorks::skinImg($this->backPath, (('gfx/ol/' . ($isOpen ? 'minus' : 'plus')) . 'only.gif'))) . ' alt="" />';
+				$icon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, (('gfx/ol/' . ($isOpen ? 'minus' : 'plus')) . 'only.gif'))) . ' alt="" />';
 				$firstHtml = $this->PMiconATagWrap($icon, $cmd, !$isOpen);
 			}
 			// Preparing rootRec for the mount
@@ -383,7 +385,7 @@ class webPageTree extends t3lib_browseTree {
 		while ($crazyRecursionLimiter > 0 && ($row = $this->getDataNext($res, $subCSSclass))) {
 			$crazyRecursionLimiter--;
 			// Not in menu:
-			if ($this->ext_separateNotinmenuPages && (($row['doktype'] == t3lib_pageSelect::DOKTYPE_BE_USER_SECTION || $row['doktype'] >= 200) || $row['nav_hide'])) {
+			if ($this->ext_separateNotinmenuPages && (($row['doktype'] == \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_BE_USER_SECTION || $row['doktype'] >= 200) || $row['nav_hide'])) {
 				$outOfMenuPages[] = $row;
 				$outOfMenuPagesTextIndex[] = ($row['doktype'] >= 200 ? ('zzz' . $row['doktype']) . '_' : '') . $row['title'];
 			} else {
@@ -440,7 +442,7 @@ class webPageTree extends t3lib_browseTree {
 			// Set HTML-icons, if any:
 			if ($this->makeHTML) {
 				if ($row['_FIRST_NOT_IN_MENU']) {
-					$HTML = ((((('<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/line.gif')) . ' alt="" /><br/><img') . t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/line.gif')) . ' alt="" /><i>Not shown in menu') . $label_shownAlphabetically) . ':</i><br>';
+					$HTML = ((((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/ol/line.gif')) . ' alt="" /><br/><img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/ol/line.gif')) . ' alt="" /><i>Not shown in menu') . $label_shownAlphabetically) . ':</i><br>';
 				} else {
 					$HTML = '';
 				}
@@ -468,5 +470,6 @@ class webPageTree extends t3lib_browseTree {
 	}
 
 }
+
 
 ?>

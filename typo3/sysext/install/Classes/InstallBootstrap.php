@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class Typo3_Bootstrap_Install {
+class InstallBootstrap {
 
 	/**
 	 * Check ENABLE_INSTALL_TOOL and FIRST_INSTALL file in typo3conf
@@ -108,7 +110,7 @@ class Typo3_Bootstrap_Install {
 			'
 		);
 		// Fill the markers
-		$content = t3lib_parsehtml::substituteMarkerArray($template, $markers, '###|###', 1, 1);
+		$content = \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($template, $markers, '###|###', 1, 1);
 		// Output the warning message and exit
 		header('Content-Type: text/html; charset=utf-8');
 		header('Cache-Control: no-cache, must-revalidate');
@@ -118,5 +120,6 @@ class Typo3_Bootstrap_Install {
 	}
 
 }
+
 
 ?>

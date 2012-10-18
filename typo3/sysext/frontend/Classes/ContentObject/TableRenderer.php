@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_controlTable {
+class TableRenderer {
 
 	// offset, x
 	/**
@@ -152,8 +154,8 @@ class tslib_controlTable {
 	 * @todo Define visibility
 	 */
 	public function start($offset, $cMargins) {
-		$offArr = t3lib_div::intExplode(',', $offset);
-		$cMargArr = t3lib_div::intExplode(',', $cMargins);
+		$offArr = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $offset);
+		$cMargArr = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $cMargins);
 		$cols = 0;
 		$rows = 0;
 		if ($this->lm) {
@@ -259,5 +261,6 @@ class tslib_controlTable {
 	}
 
 }
+
 
 ?>

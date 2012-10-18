@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @package TYPO3
  * @subpackage tx_rte
  */
-class tx_rtehtmlarea_image_folderTree extends TBE_FolderTree {
+class ImageFolderTree extends TBE_FolderTree {
 
 	/**
 	 * @todo Define visibility
@@ -53,7 +55,7 @@ class tx_rtehtmlarea_image_folderTree extends TBE_FolderTree {
 	 * @return 	string			Wrapping title string.
 	 * @todo Define visibility
 	 */
-	public function wrapTitle($title, t3lib_file_Folder $folderObject) {
+	public function wrapTitle($title, \TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		if ($this->ext_isLinkable($folderObject)) {
 			$aOnClick = ((((((((('return jumpToUrl(\'' . $this->thisScript) . '?editorNo=') . $GLOBALS['SOBE']->browser->editorNo) . '&act=') . $GLOBALS['SOBE']->browser->act) . '&mode=') . $GLOBALS['SOBE']->browser->mode) . '&expandFolder=') . rawurlencode($folderObject->getCombinedIdentifier())) . '\');';
 			return ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . $title) . '</a>';
@@ -69,7 +71,7 @@ class tx_rtehtmlarea_image_folderTree extends TBE_FolderTree {
 	 * @return 	boolean			TRUE is returned if the path is found in the web-part of the the server and is NOT a recycler or temp folder
 	 * @todo Define visibility
 	 */
-	public function ext_isLinkable(t3lib_file_Folder $folderObject) {
+	public function ext_isLinkable(\TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		// $folderObject->getStorage()->isPublic() does not matter if the mode is 'magic'
 		return $GLOBALS['SOBE']->browser->act === 'magic' || parent::ext_isLinkable($folderObject);
 	}
@@ -92,5 +94,6 @@ class tx_rtehtmlarea_image_folderTree extends TBE_FolderTree {
 	}
 
 }
+
 
 ?>

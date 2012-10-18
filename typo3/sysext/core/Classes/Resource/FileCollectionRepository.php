@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Repository_FileCollectionRepository extends t3lib_collection_RecordCollectionRepository {
+class FileCollectionRepository extends \TYPO3\CMS\Core\Collection\RecordCollectionRepository {
 
 	/**
 	 * @var string
@@ -54,7 +56,7 @@ class t3lib_file_Repository_FileCollectionRepository extends t3lib_collection_Re
 	public function findByUid($uid) {
 		$object = parent::findByUid($uid);
 		if ($object === NULL) {
-			throw new RuntimeException(((('Could not find row with uid "' . $uid) . '" in table "') . $this->table) . '"', 1314354065);
+			throw new \RuntimeException(((('Could not find row with uid "' . $uid) . '" in table "') . $this->table) . '"', 1314354065);
 		}
 		return $object;
 	}
@@ -63,7 +65,7 @@ class t3lib_file_Repository_FileCollectionRepository extends t3lib_collection_Re
 	 * Creates a record collection domain object.
 	 *
 	 * @param $record Database record to be reconsituted
-	 * @return t3lib_file_Collection_AbstractFileCollection
+	 * @return \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection
 	 */
 	protected function createDomainObject(array $record) {
 		return $this->getFileFactory()->createCollectionObject($record);
@@ -72,12 +74,13 @@ class t3lib_file_Repository_FileCollectionRepository extends t3lib_collection_Re
 	/**
 	 * Gets the file factory.
 	 *
-	 * @return t3lib_file_Factory
+	 * @return \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected function getFileFactory() {
-		return t3lib_div::makeInstance('t3lib_file_Factory');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 	}
 
 }
+
 
 ?>

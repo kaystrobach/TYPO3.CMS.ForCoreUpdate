@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Hooks;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tx_cms_treelistCacheUpdate {
+class TreelistCacheUpdateHooks {
 
 	// Should not be manipulated from others except through the
 	// configuration provided @see __construct()
@@ -56,7 +58,7 @@ class tx_cms_treelistCacheUpdate {
 		// update of the treelist cache, too; so we also add those
 		// example: $TYPO3_CONF_VARS['BE']['additionalTreelistUpdateFields'] .= ',my_field';
 		if (!empty($GLOBALS['TYPO3_CONF_VARS']['BE']['additionalTreelistUpdateFields'])) {
-			$additionalTreelistUpdateFields = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['BE']['additionalTreelistUpdateFields'], TRUE);
+			$additionalTreelistUpdateFields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['BE']['additionalTreelistUpdateFields'], TRUE);
 			$this->updateRequiringFields += $additionalTreelistUpdateFields;
 		}
 	}
@@ -69,10 +71,10 @@ class tx_cms_treelistCacheUpdate {
 	 * @param string $table The DB table the operation was carried out on
 	 * @param mixed $recordId The record's uid for update records, a string to look the record's uid up after it has been created
 	 * @param array $updatedFields Array of changed fiels and their new values
-	 * @param t3lib_TCEmain $tceMain TCEmain parent object
+	 * @param \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain TCEmain parent object
 	 * @return void
 	 */
-	public function processDatamap_afterDatabaseOperations($status, $table, $recordId, array $updatedFields, t3lib_TCEmain $tceMain) {
+	public function processDatamap_afterDatabaseOperations($status, $table, $recordId, array $updatedFields, \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain) {
 		if ($table == 'pages' && $this->requiresUpdate($updatedFields)) {
 			$affectedPagePid = 0;
 			$affectedPageUid = 0;
@@ -86,7 +88,7 @@ class tx_cms_treelistCacheUpdate {
 				$affectedPageUid = $recordId;
 				// When updating a page the pid is not directly available so we
 				// need to retrieve it ourselves.
-				$fullPageRecord = t3lib_BEfunc::getRecord($table, $recordId);
+				$fullPageRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $recordId);
 				$affectedPagePid = $fullPageRecord['pid'];
 			}
 			$clearCacheActions = $this->determineClearCacheActions($status, $updatedFields);
@@ -102,12 +104,12 @@ class tx_cms_treelistCacheUpdate {
 	 * @param string $table The record's table
 	 * @param integer $recordId The record's uid
 	 * @param array $commandValue The commands value, typically an array with more detailed command information
-	 * @param t3lib_TCEmain $tceMain The TCEmain parent object
+	 * @param \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain The TCEmain parent object
 	 * @return void
 	 */
-	public function processCmdmap_postProcess($command, $table, $recordId, $commandValue, t3lib_TCEmain $tceMain) {
+	public function processCmdmap_postProcess($command, $table, $recordId, $commandValue, \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain) {
 		if ($table == 'pages' && $command == 'delete') {
-			$deletedRecord = t3lib_BEfunc::getRecord($table, $recordId, '*', '', FALSE);
+			$deletedRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $recordId, '*', '', FALSE);
 			$affectedPageUid = $deletedRecord['uid'];
 			$affectedPagePid = $deletedRecord['pid'];
 			// Faking the updated fields
@@ -126,10 +128,10 @@ class tx_cms_treelistCacheUpdate {
 	 * @param integer $destinationPid The record's destination page id
 	 * @param array $movedRecord The record that moved
 	 * @param array $updatedFields Array of changed fields
-	 * @param t3lib_TCEmain $tceMain TCEmain parent object
+	 * @param \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain TCEmain parent object
 	 * @return void
 	 */
-	public function moveRecord_firstElementPostProcess($table, $recordId, $destinationPid, array $movedRecord, array $updatedFields, t3lib_TCEmain $tceMain) {
+	public function moveRecord_firstElementPostProcess($table, $recordId, $destinationPid, array $movedRecord, array $updatedFields, \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain) {
 		if ($table == 'pages' && $this->requiresUpdate($updatedFields)) {
 			$affectedPageUid = $recordId;
 			$affectedPageOldPid = $movedRecord['pid'];
@@ -152,10 +154,10 @@ class tx_cms_treelistCacheUpdate {
 	 * @param integer $originalDestinationPid (negative) page id th page has been moved after
 	 * @param array $movedRecord The record that moved
 	 * @param array $updatedFields Array of changed fields
-	 * @param t3lib_TCEmain $tceMain TCEmain parent object
+	 * @param \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain TCEmain parent object
 	 * @return void
 	 */
-	public function moveRecord_afterAnotherElementPostProcess($table, $recordId, $destinationPid, $originalDestinationPid, array $movedRecord, array $updatedFields, t3lib_TCEmain $tceMain) {
+	public function moveRecord_afterAnotherElementPostProcess($table, $recordId, $destinationPid, $originalDestinationPid, array $movedRecord, array $updatedFields, \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain) {
 		if ($table == 'pages' && $this->requiresUpdate($updatedFields)) {
 			$affectedPageUid = $recordId;
 			$affectedPageOldPid = $movedRecord['pid'];
@@ -228,7 +230,7 @@ class tx_cms_treelistCacheUpdate {
 	 * @return void
 	 */
 	protected function clearCacheForAllParents($affectedParentPage) {
-		$rootline = t3lib_BEfunc::BEgetRootLine($affectedParentPage);
+		$rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($affectedParentPage);
 		$rootlineIds = array();
 		foreach ($rootline as $page) {
 			if ($page['uid'] != 0) {
@@ -331,5 +333,6 @@ class tx_cms_treelistCacheUpdate {
 	}
 
 }
+
 
 ?>

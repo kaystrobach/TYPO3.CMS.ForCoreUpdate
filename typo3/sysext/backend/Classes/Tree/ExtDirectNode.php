@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
+class ExtDirectNode extends \TYPO3\CMS\Backend\Tree\TreeNode {
 
 	/**
 	 * Node type
@@ -516,10 +518,10 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	/**
 	 * Sets the child nodes collection
 	 *
-	 * @param t3lib_tree_NodeCollection $childNodes
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $childNodes
 	 * @return void
 	 */
-	public function setChildNodes(t3lib_tree_NodeCollection $childNodes) {
+	public function setChildNodes(\TYPO3\CMS\Backend\Tree\TreeNodeCollection $childNodes) {
 		parent::setChildNodes($childNodes);
 		if ($childNodes->count()) {
 			$this->setLeaf(FALSE);
@@ -620,5 +622,6 @@ class t3lib_tree_extdirect_Node extends t3lib_tree_Node {
 	}
 
 }
+
 
 ?>

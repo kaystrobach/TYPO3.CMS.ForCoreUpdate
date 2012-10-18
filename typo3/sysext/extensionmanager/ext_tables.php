@@ -7,12 +7,12 @@ $TCA['tx_extensionmanager_domain_model_extension'] = array(
 		'title' => 'LLL:EXT:extensionmanager/Resources/Private/Language/locallang_db.xml:tx_extensionmanager_domain_model_extension',
 		'label' => 'uid',
 		'default_sortby' => '',
-		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/TCA/Extension.php',
+		'dynamicConfigFile' => \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'Configuration/TCA/Extension.php',
 		'hideTable' => TRUE
 	)
 );
 if (TYPO3_MODE === 'BE') {
-	Tx_Extbase_Utility_Extension::registerModule($_EXTKEY, 'tools', 'extensionmanager', '', array(
+	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule($_EXTKEY, 'tools', 'extensionmanager', '', array(
 		'List' => 'index,ter,showAllVersions',
 		'Action' => 'toggleExtensionInstallationState,removeExtension,downloadExtensionZip,downloadExtensionData',
 		'Configuration' => 'showConfigurationForm,save',

@@ -3,8 +3,8 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 if (TYPO3_MODE == 'BE') {
-	t3lib_extMgm::addModule('user', 'setup', 'after:task', t3lib_extMgm::extPath($_EXTKEY) . 'mod/');
-	t3lib_extMgm::addLLrefForTCAdescr('_MOD_user_setup', 'EXT:setup/locallang_csh_mod.xml');
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addModule('user', 'setup', 'after:task', \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'mod/');
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addLLrefForTCAdescr('_MOD_user_setup', 'EXT:setup/locallang_csh_mod.xml');
 }
 $GLOBALS['TYPO3_USER_SETTINGS'] = array(
 	'ctrl' => array(
@@ -44,13 +44,13 @@ $GLOBALS['TYPO3_USER_SETTINGS'] = array(
 		),
 		'lang' => array(
 			'type' => 'select',
-			'itemsProcFunc' => 'SC_mod_user_setup_index->renderLanguageSelect',
+			'itemsProcFunc' => 'TYPO3\\CMS\\Setup\\Controller\\SetupModuleController->renderLanguageSelect',
 			'label' => 'LLL:EXT:setup/mod/locallang.xml:language',
 			'csh' => 'language'
 		),
 		'startModule' => array(
 			'type' => 'select',
-			'itemsProcFunc' => 'SC_mod_user_setup_index->renderStartModuleSelect',
+			'itemsProcFunc' => 'TYPO3\\CMS\\Setup\\Controller\\SetupModuleController->renderStartModuleSelect',
 			'label' => 'LLL:EXT:setup/mod/locallang.xml:startModule',
 			'csh' => 'startModule'
 		),
@@ -96,7 +96,7 @@ $GLOBALS['TYPO3_USER_SETTINGS'] = array(
 		),
 		'simulate' => array(
 			'type' => 'select',
-			'itemsProcFunc' => 'SC_mod_user_setup_index->renderSimulateUserSelect',
+			'itemsProcFunc' => 'TYPO3\\CMS\\Setup\\Controller\\SetupModuleController->renderSimulateUserSelect',
 			'label' => 'LLL:EXT:setup/mod/locallang.xml:simulate',
 			'csh' => 'simuser'
 		),

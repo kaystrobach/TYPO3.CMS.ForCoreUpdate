@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Sprite;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_spritemanager_SpriteGenerator {
+class SpriteGenerator {
 
 	/**
 	 * Template creating CSS for the spritefile
@@ -178,7 +180,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Sets namespace of css code
 	 *
 	 * @param string $nameSpace
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setNamespace($nameSpace) {
 		$this->nameSpace = $nameSpace;
@@ -189,7 +191,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Sets the spritename
 	 *
 	 * @param string $spriteName The name of the sprite to be generated
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setSpriteName($spriteName) {
 		$this->spriteName = $spriteName;
@@ -200,7 +202,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Sets the sprite-graphics target-folder
 	 *
 	 * @param string $folder The target folder where the generated sprite is stored
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setSpriteFolder($folder) {
 		$this->spriteFolder = $folder;
@@ -211,7 +213,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Sets the sprite-css target-folder
 	 *
 	 * @param string $folder the target folder where the generated CSS files are stored
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setCSSFolder($folder) {
 		$this->cssFolder = $folder;
@@ -222,7 +224,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Setter do enable the exclusion of the sprites-name from iconnames
 	 *
 	 * @param boolean $value
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setOmmitSpriteNameInIconName($value) {
 		$this->ommitSpriteNameInIconName = is_bool($value) ? $value : FALSE;
@@ -233,7 +235,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Setter to adjust how much space is between to icons in the sprite
 	 *
 	 * @param integer $value
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setIconSpace($value) {
 		$this->space = intval($value);
@@ -244,7 +246,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * Setter for timestamp inclusion: imageFiles will be included with ?timestamp
 	 *
 	 * @param boolean $value
-	 * @return t3lib_spritemanager_SpriteGenerator An instance of $this, to enable chaining.
+	 * @return \TYPO3\CMS\Backend\Sprite\SpriteGenerator An instance of $this, to enable chaining.
 	 */
 	public function setIncludeTimestampInCSS($value) {
 		$this->includeTimestampInCSS = is_bool($value) ? $value : TRUE;
@@ -317,7 +319,7 @@ class t3lib_spritemanager_SpriteGenerator {
 		$markerArray['###SPRITEURL###'] .= ($this->spriteName . '.png') . $timestamp;
 		foreach ($this->spriteBases as $base) {
 			$markerArray['###SPRITENAME###'] = $base;
-			$cssData .= t3lib_parsehtml::substituteMarkerArray($this->templateSprite, $markerArray);
+			$cssData .= \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($this->templateSprite, $markerArray);
 		}
 		foreach ($this->iconsData as $key => $data) {
 			$temp = $data['iconNameParts'];
@@ -336,9 +338,9 @@ class t3lib_spritemanager_SpriteGenerator {
 			if ($data['width'] != $this->defaultWidth) {
 				$markerArrayIcons['###SIZE_INFO###'] .= (((TAB . 'width: ') . $data['width']) . 'px;') . LF;
 			}
-			$cssData .= t3lib_parsehtml::substituteMarkerArray($this->templateIcon, $markerArrayIcons);
+			$cssData .= \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($this->templateIcon, $markerArrayIcons);
 		}
-		t3lib_div::writeFile(((PATH_site . $this->cssFolder) . $this->spriteName) . '.css', $cssData);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(((PATH_site . $this->cssFolder) . $this->spriteName) . '.css', $cssData);
 	}
 
 	/**
@@ -350,8 +352,8 @@ class t3lib_spritemanager_SpriteGenerator {
 		// Fix window paths
 		$this->cssFolder = str_replace('\\', '/', $this->cssFolder);
 		$this->spriteFolder = str_replace('\\', '/', $this->spriteFolder);
-		$cssPathSegments = t3lib_div::trimExplode('/', trim($this->cssFolder, '/'));
-		$graphicPathSegments = t3lib_div::trimExplode('/', trim($this->spriteFolder, '/'));
+		$cssPathSegments = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('/', trim($this->cssFolder, '/'));
+		$graphicPathSegments = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('/', trim($this->spriteFolder, '/'));
 		$i = 0;
 		while ((isset($cssPathSegments[$i]) && isset($graphicPathSegments[$i])) && $cssPathSegments[$i] == $graphicPathSegments[$i]) {
 			unset($cssPathSegments[$i]);
@@ -363,7 +365,7 @@ class t3lib_spritemanager_SpriteGenerator {
 		}
 		$completePath = array_merge($cssPathSegments, $graphicPathSegments);
 		$path = implode('/', $completePath);
-		return t3lib_div::resolveBackPath($path);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($path);
 	}
 
 	/**
@@ -372,7 +374,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * @return void
 	 */
 	protected function generateGraphic() {
-		$tempSprite = t3lib_div::tempnam($this->spriteName);
+		$tempSprite = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam($this->spriteName);
 		$filePath = array(
 			'mainFile' => ((PATH_site . $this->spriteFolder) . $this->spriteName) . '.png'
 		);
@@ -389,8 +391,8 @@ class t3lib_spritemanager_SpriteGenerator {
 			}
 		}
 		imagepng($newSprite, $tempSprite . '.png');
-		t3lib_div::upload_copy_move($tempSprite . '.png', $filePath['mainFile']);
-		t3lib_div::unlink_tempfile($tempSprite . '.png');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::upload_copy_move($tempSprite . '.png', $filePath['mainFile']);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::unlink_tempfile($tempSprite . '.png');
 	}
 
 	/**
@@ -453,14 +455,14 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * @return array Returns an array with all files key: iconname, value: fileName
 	 */
 	protected function getFolder($directoryPath) {
-		$subFolders = t3lib_div::get_dirs(PATH_site . $directoryPath);
+		$subFolders = \TYPO3\CMS\Core\Utility\GeneralUtility::get_dirs(PATH_site . $directoryPath);
 		if (!$this->ommitSpriteNameInIconName) {
 			$subFolders[] = '';
 		}
 		$resultArray = array();
 		foreach ($subFolders as $folder) {
 			if ($folder !== '.svn') {
-				$icons = t3lib_div::getFilesInDir(((PATH_site . $directoryPath) . $folder) . '/', 'gif,png,jpg');
+				$icons = \TYPO3\CMS\Core\Utility\GeneralUtility::getFilesInDir(((PATH_site . $directoryPath) . $folder) . '/', 'gif,png,jpg');
 				if ((!in_array($folder, $this->spriteBases) && count($icons)) && $folder !== '') {
 					$this->spriteBases[] = $folder;
 				}
@@ -485,7 +487,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 */
 	protected function buildFileInformationCache(array $files) {
 		foreach ($files as $iconName => $iconFile) {
-			$iconNameParts = t3lib_div::trimExplode('-', $iconName);
+			$iconNameParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('-', $iconName);
 			if (!in_array($iconNameParts[0], $this->spriteBases)) {
 				$this->spriteBases[] = $iconNameParts[0];
 			}
@@ -525,7 +527,7 @@ class t3lib_spritemanager_SpriteGenerator {
 	 * @return array
 	 */
 	protected function explodeSizeTag($tag = '') {
-		$size = t3lib_div::trimExplode('x', $tag);
+		$size = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('x', $tag);
 		return array(
 			'width' => $size[0],
 			'height' => $size[1]
@@ -533,5 +535,6 @@ class t3lib_spritemanager_SpriteGenerator {
 	}
 
 }
+
 
 ?>

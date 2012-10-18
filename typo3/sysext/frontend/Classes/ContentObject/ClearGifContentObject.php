@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_ClearGif extends tslib_content_Abstract {
+class ClearGifContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, CLEARGIF
@@ -64,5 +66,6 @@ class tslib_content_ClearGif extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

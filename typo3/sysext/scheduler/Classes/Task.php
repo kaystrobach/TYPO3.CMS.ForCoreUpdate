@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_scheduler
  */
-abstract class tx_scheduler_Task {
+abstract class Task {
 
 	/**
 	 * Reference to a scheduler object
@@ -57,7 +59,7 @@ abstract class tx_scheduler_Task {
 	/**
 	 * The execution object related to the task
 	 *
-	 * @var tx_scheduler_Execution
+	 * @var \TYPO3\CMS\Scheduler\Execution
 	 */
 	protected $execution;
 
@@ -73,7 +75,7 @@ abstract class tx_scheduler_Task {
 	 */
 	public function __construct() {
 		$this->setScheduler();
-		$this->execution = t3lib_div::makeInstance('tx_scheduler_Execution');
+		$this->execution = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Execution');
 	}
 
 	/**
@@ -193,7 +195,7 @@ abstract class tx_scheduler_Task {
 	 * @return void
 	 */
 	public function setScheduler() {
-		$this->scheduler = t3lib_div::makeInstance('tx_scheduler');
+		$this->scheduler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Scheduler');
 	}
 
 	/**
@@ -213,8 +215,8 @@ abstract class tx_scheduler_Task {
 	 * @param integer $timestamp Timestamp of the next execution
 	 */
 	public function registerSingleExecution($timestamp) {
-		/** @var $execution tx_scheduler_Execution */
-		$execution = t3lib_div::makeInstance('tx_scheduler_Execution');
+		/** @var $execution \TYPO3\CMS\Scheduler\Execution */
+		$execution = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Execution');
 		$execution->setStart($timestamp);
 		$execution->setInterval(0);
 		$execution->setEnd($timestamp);
@@ -236,8 +238,8 @@ abstract class tx_scheduler_Task {
 	 * @return void
 	 */
 	public function registerRecurringExecution($start, $interval, $end = 0, $multiple = FALSE, $cron_cmd = '') {
-		/** @var $execution tx_scheduler_Execution */
-		$execution = t3lib_div::makeInstance('tx_scheduler_Execution');
+		/** @var $execution \TYPO3\CMS\Scheduler\Execution */
+		$execution = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Execution');
 		// Set general values
 		$execution->setStart($start);
 		$execution->setEnd($end);
@@ -258,16 +260,16 @@ abstract class tx_scheduler_Task {
 	/**
 	 * Sets the internal execution object
 	 *
-	 * @param tx_scheduler_Execution $execution The execution to add
+	 * @param \TYPO3\CMS\Scheduler\Execution $execution The execution to add
 	 */
-	public function setExecution(tx_scheduler_Execution $execution) {
+	public function setExecution(\TYPO3\CMS\Scheduler\Execution $execution) {
 		$this->execution = $execution;
 	}
 
 	/**
 	 * Returns the execution object
 	 *
-	 * @return tx_scheduler_Execution The internal execution object
+	 * @return \TYPO3\CMS\Scheduler\Execution The internal execution object
 	 */
 	public function getExecution() {
 		return $this->execution;
@@ -360,7 +362,7 @@ abstract class tx_scheduler_Task {
 	 * @param Exception $failure An exception to signal a failed execution
 	 * @return 	void
 	 */
-	public function unmarkExecution($executionID, Exception $failure = NULL) {
+	public function unmarkExecution($executionID, \Exception $failure = NULL) {
 		// Get the executions for the task
 		$queryArr = array(
 			'SELECT' => 'serialized_executions',
@@ -380,7 +382,7 @@ abstract class tx_scheduler_Task {
 				} else {
 					$runningExecutionsSerialized = '';
 				}
-				if ($failure instanceof Exception) {
+				if ($failure instanceof \Exception) {
 					// Log failed execution
 					$logMessage = (((('Task failed to execute successfully. Class: ' . get_class($this)) . ', UID: ') . $this->taskUid) . '. ') . $failure->getMessage();
 					$this->scheduler->log($logMessage, 1, $failure->getCode());
@@ -427,7 +429,7 @@ abstract class tx_scheduler_Task {
 	 * @return 	void
 	 */
 	public function stop() {
-		$this->execution = t3lib_div::makeInstance('tx_scheduler_Execution');
+		$this->execution = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Execution');
 	}
 
 	/**
@@ -440,5 +442,6 @@ abstract class tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

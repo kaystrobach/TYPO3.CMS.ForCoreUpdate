@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract implements tx_form_System_Validate_Interface {
+class BetweenValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator implements \TYPO3\CMS\Form\Validation\InterfaceValidator {
 
 	/**
 	 * Minimum value
@@ -154,5 +156,6 @@ class tx_form_System_Validate_Between extends tx_form_System_Validate_Abstract i
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_file_Repository_AbstractRepository implements Tx_Extbase_Persistence_RepositoryInterface, t3lib_Singleton {
+abstract class AbstractRepository implements \TYPO3\CMS\Extbase\Persistence\RepositoryInterface, \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var string
@@ -40,7 +42,7 @@ abstract class t3lib_file_Repository_AbstractRepository implements Tx_Extbase_Pe
 	protected $table = '';
 
 	/**
-	 * @var t3lib_file_Factory
+	 * @var \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected $factory;
 
@@ -58,7 +60,7 @@ abstract class t3lib_file_Repository_AbstractRepository implements Tx_Extbase_Pe
 	 * Creates this object.
 	 */
 	public function __construct() {
-		$this->factory = t3lib_div::makeInstance('t3lib_file_Factory');
+		$this->factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 	}
 
 	/**
@@ -184,11 +186,11 @@ abstract class t3lib_file_Repository_AbstractRepository implements Tx_Extbase_Pe
 	 */
 	public function findByUid($uid) {
 		if (!is_numeric($uid)) {
-			throw new InvalidArgumentException('uid has to be numeric.', 1316779798);
+			throw new \InvalidArgumentException('uid has to be numeric.', 1316779798);
 		}
 		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, ('uid=' . intval($uid)) . ' AND deleted=0');
 		if (count($row) === 0) {
-			throw new RuntimeException(('Could not find row with uid "' . $uid) . '" in table $this->table.', 1314354065);
+			throw new \RuntimeException(('Could not find row with uid "' . $uid) . '" in table $this->table.', 1314354065);
 		}
 		return $this->createDomainObject($row);
 	}
@@ -206,30 +208,31 @@ abstract class t3lib_file_Repository_AbstractRepository implements Tx_Extbase_Pe
 	 * @api
 	 */
 	public function setDefaultOrderings(array $defaultOrderings) {
-		throw new BadMethodCallException('Repository does not support the setDefaultOrderings() method.', 1313185906);
+		throw new \BadMethodCallException('Repository does not support the setDefaultOrderings() method.', 1313185906);
 	}
 
 	/**
 	 * Sets the default query settings to be used in this repository
 	 *
-	 * @param Tx_Extbase_Persistence_QuerySettingsInterface $defaultQuerySettings The query settings to be used by default
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface $defaultQuerySettings The query settings to be used by default
 	 * @return void
 	 * @api
 	 */
-	public function setDefaultQuerySettings(Tx_Extbase_Persistence_QuerySettingsInterface $defaultQuerySettings) {
-		throw new BadMethodCallException('Repository does not support the setDefaultQuerySettings() method.', 1313185907);
+	public function setDefaultQuerySettings(\TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface $defaultQuerySettings) {
+		throw new \BadMethodCallException('Repository does not support the setDefaultQuerySettings() method.', 1313185907);
 	}
 
 	/**
 	 * Returns a query for objects of this repository
 	 *
-	 * @return Tx_Extbase_Persistence_QueryInterface
+	 * @return \TYPO3\CMS\Extbase\Persistence\QueryInterface
 	 * @api
 	 */
 	public function createQuery() {
-		throw new BadMethodCallException('Repository does not support the createQuery() method.', 1313185908);
+		throw new \BadMethodCallException('Repository does not support the createQuery() method.', 1313185908);
 	}
 
 }
+
 
 ?>

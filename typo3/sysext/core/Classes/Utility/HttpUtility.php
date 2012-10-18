@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_utility_Http {
+class HttpUtility {
 
 	// HTTP Headers, see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for Details
 	const HTTP_STATUS_100 = 'HTTP/1.1 100 Continue';
@@ -85,7 +87,7 @@ class t3lib_utility_Http {
 	 */
 	static public function redirect($url, $httpStatus = self::HTTP_STATUS_303) {
 		self::setResponseCode($httpStatus);
-		header('Location: ' . t3lib_div::locationHeaderUrl($url));
+		header('Location: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::locationHeaderUrl($url));
 		die;
 	}
 
@@ -122,5 +124,6 @@ class t3lib_utility_Http {
 	}
 
 }
+
 
 ?>

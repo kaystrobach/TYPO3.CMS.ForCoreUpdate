@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_orphan_records extends tx_lowlevel_cleaner_core {
+class OrphanRecordsCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * Constructor
@@ -96,7 +98,7 @@ Will report orphan uids from TCA tables.';
 		);
 		// zero = tree root, must use tree root if you wish to reverse selection to find orphans!
 		$startingPoint = 0;
-		$pt = t3lib_div::milliseconds();
+		$pt = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 		$this->genTree($startingPoint, 1000, (int) $this->cli_argValue('--echotree'));
 		$resultArray['misplaced_at_rootlevel'] = $this->recStats['misplaced_at_rootlevel'];
 		$resultArray['misplaced_inside_tree'] = $this->recStats['misplaced_inside_tree'];
@@ -140,7 +142,7 @@ Will report orphan uids from TCA tables.';
 					echo $bypass;
 				} else {
 					// Execute CMD array:
-					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+					$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 					$tce->stripslashes_values = FALSE;
 					$tce->start(array(), array());
 					// Notice, we are deleting pages with no regard to subpages/subrecords - we do this
@@ -159,5 +161,6 @@ Will report orphan uids from TCA tables.';
 	}
 
 }
+
 
 ?>

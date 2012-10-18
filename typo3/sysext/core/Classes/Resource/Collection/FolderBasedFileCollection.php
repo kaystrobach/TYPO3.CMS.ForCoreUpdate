@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Collection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Collection_FolderBasedFileCollection extends t3lib_file_Collection_AbstractFileCollection {
+class FolderBasedFileCollection extends \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection {
 
 	/**
 	 * @var string
@@ -52,7 +54,7 @@ class t3lib_file_Collection_FolderBasedFileCollection extends t3lib_file_Collect
 	/**
 	 * The folder
 	 *
-	 * @var t3lib_file_Folder
+	 * @var \TYPO3\CMS\Core\Resource\Folder
 	 */
 	protected $folder;
 
@@ -112,9 +114,9 @@ class t3lib_file_Collection_FolderBasedFileCollection extends t3lib_file_Collect
 		$this->title = $array['title'];
 		$this->description = $array['description'];
 		if (!empty($array['folder']) && !empty($array['storage'])) {
-			/** @var $storageRepository t3lib_file_Repository_StorageRepository */
-			$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
-			/** @var $storage t3lib_file_Storage */
+			/** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
+			$storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
+			/** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
 			$storage = $storageRepository->findByUid($array['storage']);
 			if ($storage) {
 				$this->folder = $storage->getFolder($array['folder']);
@@ -123,5 +125,6 @@ class t3lib_file_Collection_FolderBasedFileCollection extends t3lib_file_Collect
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @subpackage form
  * @author Oliver Hader <oliver.hader@typo3.org>
  */
-class tx_form_Common implements t3lib_Singleton {
+class FormUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var array
@@ -38,10 +40,10 @@ class tx_form_Common implements t3lib_Singleton {
 	/**
 	 * Gets a singleton instance of this object.
 	 *
-	 * @return tx_form_Common
+	 * @return \TYPO3\CMS\Form\Utility\FormUtility
 	 */
 	static public function getInstance() {
-		return t3lib_div::makeInstance('tx_form_Common');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Utility\\FormUtility');
 	}
 
 	/**
@@ -95,14 +97,14 @@ class tx_form_Common implements t3lib_Singleton {
 	/**
 	 * Initializes the available form objects.
 	 *
-	 * @return tx_form_Common
+	 * @return \TYPO3\CMS\Form\Utility\FormUtility
 	 */
 	public function initializeFormObjects() {
 		// Assign new FORM objects
 		foreach ($this->getFormObjects() as $formObject) {
 			$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['cObjTypeAndClass'][] = array(
 				$formObject,
-				'EXT:form/Classes/Controller/Form.php:&tx_form_Controller_Form'
+				'EXT:form/Classes/Controller/Form.php:&TYPO3\\CMS\\Form\\Controller\\FormController'
 			);
 		}
 		return $this;
@@ -111,10 +113,10 @@ class tx_form_Common implements t3lib_Singleton {
 	/**
 	 * Initializes the Page TSconfig properties.
 	 *
-	 * @return tx_form_Common
+	 * @return \TYPO3\CMS\Form\Utility\FormUtility
 	 */
 	public function initializePageTsConfig() {
-		t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:form/Configuration/PageTS/modWizards.ts">');
+		\TYPO3\CMS\Core\Extension\ExtensionManager::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:form/Configuration/PageTS/modWizards.ts">');
 		return $this;
 	}
 
@@ -135,5 +137,6 @@ class tx_form_Common implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

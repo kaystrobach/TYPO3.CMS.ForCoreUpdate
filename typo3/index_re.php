@@ -39,5 +39,5 @@
  */
 define('TYPO3_PROCEED_IF_NO_USER', 1);
 require 'init.php';
-t3lib_utility_Http::redirect(t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'index.php');
+\TYPO3\CMS\Core\Utility\HttpUtility::redirect(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_DIR') . 'index.php');
 ?>

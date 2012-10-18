@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tsfeBeUserAuth extends t3lib_beUserAuth {
+class FrontendBackendUserAuthentication extends \TYPO3\CMS\Core\Authentication\BackendUserAuthentication {
 
 	/**
 	 * Form field with login name.
@@ -124,7 +126,7 @@ class t3lib_tsfeBeUserAuth extends t3lib_beUserAuth {
 		if (isset($this->extAdminConfig['enable.'])) {
 			foreach ($this->extAdminConfig['enable.'] as $key => $value) {
 				if ($value) {
-					$this->adminPanel = t3lib_div::makeInstance('tslib_AdminPanel');
+					$this->adminPanel = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\View\\AdminPanelView');
 					$this->extAdmEnabled = TRUE;
 					break;
 				}
@@ -141,7 +143,7 @@ class t3lib_tsfeBeUserAuth extends t3lib_beUserAuth {
 		if (isset($this->extAdminConfig['enable.']) && $this->isFrontendEditingActive()) {
 			foreach ($this->extAdminConfig['enable.'] as $key => $value) {
 				if ($value) {
-					if ($GLOBALS['TSFE'] instanceof tslib_fe) {
+					if ($GLOBALS['TSFE'] instanceof \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController) {
 						// Grab the Page TSConfig property that determines which controller to use.
 						$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
 						$controllerKey = isset($pageTSConfig['TSFE.']['frontendEditingController']) ? $pageTSConfig['TSFE.']['frontendEditingController'] : 'default';
@@ -150,7 +152,7 @@ class t3lib_tsfeBeUserAuth extends t3lib_beUserAuth {
 					}
 					$controllerClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tsfebeuserauth.php']['frontendEditingController'][$controllerKey];
 					if ($controllerClass) {
-						$this->frontendEdit = t3lib_div::getUserObj($controllerClass, FALSE);
+						$this->frontendEdit = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($controllerClass, FALSE);
 					}
 					break;
 				}
@@ -205,13 +207,13 @@ class t3lib_tsfeBeUserAuth extends t3lib_beUserAuth {
 		}
 		// Check IP
 		if (trim($GLOBALS['TYPO3_CONF_VARS']['BE']['IPmaskList'])) {
-			if (!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['BE']['IPmaskList'])) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['BE']['IPmaskList'])) {
 				return FALSE;
 			}
 		}
 		// Check SSL (https)
 		if (intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL']) && $GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL'] != 3) {
-			if (!t3lib_div::getIndpEnv('TYPO3_SSL')) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
 				return FALSE;
 			}
 		}
@@ -311,5 +313,6 @@ class t3lib_tsfeBeUserAuth extends t3lib_beUserAuth {
 	}
 
 }
+
 
 ?>

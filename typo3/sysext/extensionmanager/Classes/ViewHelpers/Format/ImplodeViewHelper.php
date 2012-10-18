@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers\Format;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_Format_ImplodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class ImplodeViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Implodes a string
@@ -46,5 +48,6 @@ class Tx_Extensionmanager_ViewHelpers_Format_ImplodeViewHelper extends Tx_Fluid_
 	}
 
 }
+
 
 ?>

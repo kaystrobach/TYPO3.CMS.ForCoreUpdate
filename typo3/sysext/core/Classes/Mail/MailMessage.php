@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Mail;
+
 /**
  * Adapter for Swift_Mailer to be used by TYPO3 extensions
  *
@@ -6,10 +8,10 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_mail_Message extends Swift_Message {
+class MailMessage extends Swift_Message {
 
 	/**
-	 * @var t3lib_mail_Mailer
+	 * @var \TYPO3\CMS\Core\Mail\Mailer
 	 */
 	protected $mailer;
 
@@ -36,7 +38,7 @@ class t3lib_mail_Message extends Swift_Message {
 	 * @return void
 	 */
 	private function initializeMailer() {
-		$this->mailer = t3lib_div::makeInstance('t3lib_mail_Mailer');
+		$this->mailer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\Mailer');
 	}
 
 	/**
@@ -73,5 +75,6 @@ class t3lib_mail_Message extends Swift_Message {
 	}
 
 }
+
 
 ?>

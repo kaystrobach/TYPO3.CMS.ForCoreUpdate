@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,15 +30,15 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Radiogroup extends tx_form_Domain_Model_Element_Fieldset {
+class RadioGroupElement extends \TYPO3\CMS\Form\Domain\Model\Element\FieldsetElement {
 
 	/**
 	 * Add child object to this element
 	 *
-	 * @param tx_form_Domain_Model_Element_Radio $element The child object
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\RadioElement $element The child object
 	 * @return object
 	 */
-	public function addElement(tx_form_Domain_Model_Element_Radio $element) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Element\RadioElement $element) {
 		if ($element->acceptsParentName()) {
 			$element->setName($this->getName());
 			$element->attributes->setValue('name', $this->getName());
@@ -47,5 +49,6 @@ class tx_form_Domain_Model_Element_Radiogroup extends tx_form_Domain_Model_Eleme
 	}
 
 }
+
 
 ?>

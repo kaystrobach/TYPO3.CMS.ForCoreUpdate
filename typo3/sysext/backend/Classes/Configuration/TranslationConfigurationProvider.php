@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Configuration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_transl8tools {
+class TranslationConfigurationProvider {
 
 	/**
 	 * Returns array of system languages
@@ -52,7 +54,7 @@ class t3lib_transl8tools {
 	 * @todo Define visibility
 	 */
 	public function getSystemLanguages($page_id = 0, $backPath = '') {
-		$modSharedTSconfig = t3lib_BEfunc::getModTSconfig($page_id, 'mod.SHARED');
+		$modSharedTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($page_id, 'mod.SHARED');
 		$languageIconTitles = array();
 		// fallback "old iconstyles"
 		if (preg_match('/\\.gif$/', $modSharedTSconfig['properties']['defaultLanguageFlag'])) {
@@ -75,14 +77,14 @@ class t3lib_transl8tools {
 		$sys_languages = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_language', '');
 		foreach ($sys_languages as $row) {
 			$languageIconTitles[$row['uid']] = $row;
-			if ($row['static_lang_isocode'] && t3lib_extMgm::isLoaded('static_info_tables')) {
-				$staticLangRow = t3lib_BEfunc::getRecord('static_languages', $row['static_lang_isocode'], 'lg_iso_2');
+			if ($row['static_lang_isocode'] && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables')) {
+				$staticLangRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('static_languages', $row['static_lang_isocode'], 'lg_iso_2');
 				if ($staticLangRow['lg_iso_2']) {
 					$languageIconTitles[$row['uid']]['ISOcode'] = $staticLangRow['lg_iso_2'];
 				}
 			}
 			if (strlen($row['flag'])) {
-				$languageIconTitles[$row['uid']]['flagIcon'] = t3lib_iconWorks::mapRecordTypeToSpriteIconName('sys_language', $row);
+				$languageIconTitles[$row['uid']]['flagIcon'] = \TYPO3\CMS\Backend\Utility\IconUtility::mapRecordTypeToSpriteIconName('sys_language', $row);
 			}
 		}
 		return $languageIconTitles;
@@ -102,9 +104,9 @@ class t3lib_transl8tools {
 	 */
 	public function translationInfo($table, $uid, $sys_language_uid = 0, $row = NULL, $selFieldList = '') {
 		if ($GLOBALS['TCA'][$table] && $uid) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			if ($row === NULL) {
-				$row = t3lib_BEfunc::getRecordWSOL($table, $uid);
+				$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL($table, $uid);
 			}
 			if (is_array($row)) {
 				$trTable = $this->getTranslationTable($table);
@@ -112,7 +114,7 @@ class t3lib_transl8tools {
 					if ($trTable !== $table || $row[$GLOBALS['TCA'][$table]['ctrl']['languageField']] <= 0) {
 						if ($trTable !== $table || $row[$GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']] == 0) {
 							// Look for translations of this record, index by language field value:
-							$translationsTemp = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($selFieldList ? $selFieldList : 'uid,' . $GLOBALS['TCA'][$trTable]['ctrl']['languageField'], $trTable, (((((((($GLOBALS['TCA'][$trTable]['ctrl']['transOrigPointerField'] . '=') . intval($uid)) . ' AND pid=') . intval(($table === 'pages' ? $row['uid'] : $row['pid']))) . ' AND ') . $GLOBALS['TCA'][$trTable]['ctrl']['languageField']) . (!$sys_language_uid ? '>0' : '=' . intval($sys_language_uid))) . t3lib_BEfunc::deleteClause($trTable)) . t3lib_BEfunc::versioningPlaceholderClause($trTable));
+							$translationsTemp = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($selFieldList ? $selFieldList : 'uid,' . $GLOBALS['TCA'][$trTable]['ctrl']['languageField'], $trTable, (((((((($GLOBALS['TCA'][$trTable]['ctrl']['transOrigPointerField'] . '=') . intval($uid)) . ' AND pid=') . intval(($table === 'pages' ? $row['uid'] : $row['pid']))) . ' AND ') . $GLOBALS['TCA'][$trTable]['ctrl']['languageField']) . (!$sys_language_uid ? '>0' : '=' . intval($sys_language_uid))) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($trTable)) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($trTable));
 							$translations = array();
 							$translations_errors = array();
 							foreach ($translationsTemp as $r) {
@@ -185,5 +187,6 @@ class t3lib_transl8tools {
 	}
 
 }
+
 
 ?>

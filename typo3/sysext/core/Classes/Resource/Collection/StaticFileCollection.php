@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Collection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Collection_StaticFileCollection extends t3lib_file_Collection_AbstractFileCollection {
+class StaticFileCollection extends \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection {
 
 	/**
 	 * @var string
@@ -62,8 +64,8 @@ class t3lib_file_Collection_StaticFileCollection extends t3lib_file_Collection_A
 	 * @return void
 	 */
 	public function loadContents() {
-		/** @var t3lib_file_Repository_FileRepository $fileRepository */
-		$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+		/** @var \TYPO3\CMS\Core\Resource\FileRepository $fileRepository */
+		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$fileReferences = $fileRepository->findByRelation('sys_file_collection', 'files', $this->getIdentifier());
 		foreach ($fileReferences as $file) {
 			$this->add($file);
@@ -71,5 +73,6 @@ class t3lib_file_Collection_StaticFileCollection extends t3lib_file_Collection_A
 	}
 
 }
+
 
 ?>

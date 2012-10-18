@@ -35,7 +35,7 @@ error_reporting(E_ALL & ~((E_STRICT | E_NOTICE) | E_DEPRECATED));
 unset($MCONF);
 require 'conf.php';
 require $BACK_PATH . 'init.php';
-$LANG->includeLLFile('EXT:lang/locallang_browse_links.xml');
+$LANG->includeLLFile('EXT:lang/locallang_TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser.xml');
 $LANG->includeLLFile('EXT:rtehtmlarea/mod4/locallang.xml');
 $LANG->includeLLFile('EXT:rtehtmlarea/htmlarea/locallang_dialogs.xml');
 /*
@@ -43,9 +43,9 @@ $LANG->includeLLFile('EXT:rtehtmlarea/htmlarea/locallang_dialogs.xml');
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/rtehtmlarea/Classes/Controller/SelectImageController.php
  */
-require_once t3lib_extMgm::extPath('rtehtmlarea') . 'Classes/Controller/SelectImageController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('rtehtmlarea') . 'Classes/Controller/SelectImageController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_rtehtmlarea_SC_select_image');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rtehtmlarea\\Controller\\SelectImageController');
 $SOBE->main();
 $SOBE->printContent();
 ?>

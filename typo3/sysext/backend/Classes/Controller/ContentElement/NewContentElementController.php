@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\ContentElement;
+
 /**
  * Script Class for the New Content element wizard
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_db_new_content_el {
+class NewContentElementController {
 
 	// Internal, static (from GPvars):
 	// Page id
@@ -48,7 +50,7 @@ class SC_db_new_content_el {
 	/**
 	 * Internal backend template object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -90,17 +92,17 @@ class SC_db_new_content_el {
 			$this->include_once = array_merge($this->include_once, $GLOBALS['TBE_MODULES_EXT']['xMOD_db_new_content_el']['addElClasses']);
 		}
 		// Setting internal vars:
-		$this->id = intval(t3lib_div::_GP('id'));
-		$this->sys_language = intval(t3lib_div::_GP('sys_language_uid'));
-		$this->R_URI = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
-		$this->colPos = t3lib_div::_GP('colPos');
-		$this->uid_pid = intval(t3lib_div::_GP('uid_pid'));
+		$this->id = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'));
+		$this->sys_language = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('sys_language_uid'));
+		$this->R_URI = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
+		$this->colPos = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('colPos');
+		$this->uid_pid = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('uid_pid'));
 		$this->MCONF['name'] = 'xMOD_db_new_content_el';
-		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id, 'mod.wizards.newContentElement');
-		$config = t3lib_BEfunc::getPagesTSconfig($this->id);
+		$this->modTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($this->id, 'mod.wizards.newContentElement');
+		$config = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($this->id);
 		$this->config = $config['mod.']['wizards.']['newContentElement.'];
 		// Starting the document template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/db_new_content_el.html');
 		$this->doc->JScode = '';
@@ -109,7 +111,7 @@ class SC_db_new_content_el {
 		$this->doc->getContextMenuCode();
 		// Getting the current page and receiving access information (used in main())
 		$perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $perms_clause);
+		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $perms_clause);
 		$this->access = is_array($this->pageinfo) ? 1 : 0;
 	}
 
@@ -122,7 +124,7 @@ class SC_db_new_content_el {
 	public function main() {
 		if ($this->id && $this->access) {
 			// Init position map object:
-			$posMap = t3lib_div::makeInstance('ext_posMap');
+			$posMap = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('ext_posMap');
 			$posMap->cur_sys_language = $this->sys_language;
 			$posMap->backPath = $GLOBALS['BACK_PATH'];
 			// If a column is pre-set:
@@ -157,9 +159,9 @@ class SC_db_new_content_el {
 			// Hook for manipulating wizardItems, wrapper, onClickEvent etc.
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook'] as $classData) {
-					$hookObject = t3lib_div::getUserObj($classData);
-					if (!$hookObject instanceof cms_newContentElementWizardsHook) {
-						throw new UnexpectedValueException('$hookObject must implement interface cms_newContentElementWizardItemsHook', 1227834741);
+					$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classData);
+					if (!$hookObject instanceof \TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface) {
+						throw new \UnexpectedValueException('$hookObject must implement interface cms_newContentElementWizardItemsHook', 1227834741);
 					}
 					$hookObject->manipulateWizardItems($wizardItems, $this);
 				}
@@ -201,7 +203,7 @@ class SC_db_new_content_el {
 					// Icon:
 					$iInfo = @getimagesize($wInfo['icon']);
 					$content .= ((((($this->elementWrapper['wizardPart'][0] . '<a href="#" onclick="') . htmlspecialchars($aOnClick)) . '">
-						<img') . t3lib_iconWorks::skinImg($this->doc->backPath, $wInfo['icon'], '')) . ' alt="" /></a>') . $this->elementWrapper['wizardPart'][1];
+						<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, $wInfo['icon'], '')) . ' alt="" /></a>') . $this->elementWrapper['wizardPart'][1];
 					// Title + description:
 					$content .= ((((((($this->elementWrapper['wizardPart'][0] . '<a href="#" onclick="') . htmlspecialchars($aOnClick)) . '"><strong>') . htmlspecialchars($wInfo['title'])) . '</strong><br />') . nl2br(htmlspecialchars(trim($wInfo['description'])))) . '</a>') . $this->elementWrapper['wizardPart'][1];
 					// Finally, put it together in a container:
@@ -236,9 +238,9 @@ class SC_db_new_content_el {
 				// Select position
 				$code = $GLOBALS['LANG']->getLL('sel2', 1) . '<br /><br />';
 				// Load SHARED page-TSconfig settings and retrieve column list from there, if applicable:
-				$modTSconfig_SHARED = t3lib_BEfunc::getModTSconfig($this->id, 'mod.SHARED');
+				$modTSconfig_SHARED = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($this->id, 'mod.SHARED');
 				$colPosList = strcmp(trim($modTSconfig_SHARED['properties']['colPos_list']), '') ? trim($modTSconfig_SHARED['properties']['colPos_list']) : '1,0,2,3';
-				$colPosList = implode(',', array_unique(t3lib_div::intExplode(',', $colPosList)));
+				$colPosList = implode(',', array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $colPosList)));
 				// Removing duplicates, if any
 				// Finally, add the content of the column selector to the content:
 				$code .= $posMap->printContentElementColumns($this->id, 0, $colPosList, 1, $this->R_URI);
@@ -286,10 +288,10 @@ class SC_db_new_content_el {
 		);
 		if ($this->id && $this->access) {
 			// CSH
-			$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'new_ce', $GLOBALS['BACK_PATH'], '', TRUE);
+			$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'new_ce', $GLOBALS['BACK_PATH'], '', TRUE);
 			// Back
 			if ($this->R_URI) {
-				$buttons['back'] = ((((('<a href="' . htmlspecialchars($this->R_URI)) . '" class="typo3-goBack" title="') . $GLOBALS['LANG']->getLL('goBack', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-view-go-back')) . '</a>';
+				$buttons['back'] = ((((('<a href="' . htmlspecialchars($this->R_URI)) . '" class="typo3-goBack" title="') . $GLOBALS['LANG']->getLL('goBack', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-view-go-back')) . '</a>';
 			}
 		}
 		return $buttons;
@@ -326,7 +328,7 @@ class SC_db_new_content_el {
 		if (is_array($wizards)) {
 			foreach ($wizards as $groupKey => $wizardGroup) {
 				$groupKey = preg_replace('/\\.$/', '', $groupKey);
-				$showItems = t3lib_div::trimExplode(',', $wizardGroup['show'], TRUE);
+				$showItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $wizardGroup['show'], TRUE);
 				$showAll = strcmp($wizardGroup['show'], '*') ? FALSE : TRUE;
 				$groupItems = array();
 				if (is_array($appendWizards[$groupKey . '.']['elements.'])) {
@@ -368,7 +370,7 @@ class SC_db_new_content_el {
 		if (is_array($GLOBALS['TBE_MODULES_EXT']['xMOD_db_new_content_el']['addElClasses'])) {
 			foreach ($GLOBALS['TBE_MODULES_EXT']['xMOD_db_new_content_el']['addElClasses'] as $class => $path) {
 				require_once $path;
-				$modObj = t3lib_div::makeInstance($class);
+				$modObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($class);
 				$wizardElements = $modObj->proc($wizardElements);
 			}
 		}
@@ -418,24 +420,24 @@ class SC_db_new_content_el {
 	 */
 	public function removeInvalidElements(&$wizardItems) {
 		// Load full table definition:
-		t3lib_div::loadTCA('tt_content');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 		// Get TCEFORM from TSconfig of current page
 		$row = array('pid' => $this->id);
-		$TCEFORM_TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig('tt_content', $row);
-		$removeItems = t3lib_div::trimExplode(',', $TCEFORM_TSconfig['CType']['removeItems'], 1);
-		$keepItems = t3lib_div::trimExplode(',', $TCEFORM_TSconfig['CType']['keepItems'], 1);
+		$TCEFORM_TSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getTCEFORM_TSconfig('tt_content', $row);
+		$removeItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $TCEFORM_TSconfig['CType']['removeItems'], 1);
+		$keepItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $TCEFORM_TSconfig['CType']['keepItems'], 1);
 		$headersUsed = array();
 		// Traverse wizard items:
 		foreach ($wizardItems as $key => $cfg) {
 			// Exploding parameter string, if any (old style)
 			if ($wizardItems[$key]['params']) {
 				// Explode GET vars recursively
-				$tempGetVars = t3lib_div::explodeUrl2Array($wizardItems[$key]['params'], TRUE);
+				$tempGetVars = \TYPO3\CMS\Core\Utility\GeneralUtility::explodeUrl2Array($wizardItems[$key]['params'], TRUE);
 				// If tt_content values are set, merge them into the tt_content_defValues array, unset them from $tempGetVars and re-implode $tempGetVars into the param string (in case remaining parameters are around).
 				if (is_array($tempGetVars['defVals']['tt_content'])) {
 					$wizardItems[$key]['tt_content_defValues'] = array_merge(is_array($wizardItems[$key]['tt_content_defValues']) ? $wizardItems[$key]['tt_content_defValues'] : array(), $tempGetVars['defVals']['tt_content']);
 					unset($tempGetVars['defVals']['tt_content']);
-					$wizardItems[$key]['params'] = t3lib_div::implodeArrayForUrl('', $tempGetVars);
+					$wizardItems[$key]['params'] = \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', $tempGetVars);
 				}
 			}
 			// If tt_content_defValues are defined...:
@@ -471,5 +473,6 @@ class SC_db_new_content_el {
 	}
 
 }
+
 
 ?>

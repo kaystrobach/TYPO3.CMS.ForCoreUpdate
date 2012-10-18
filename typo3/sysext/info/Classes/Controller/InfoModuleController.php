@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Info\Controller;
+
 /**
  * Script Class for the Web > Info module
  * This class creates the framework to which other extensions can connect their sub-modules
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_mod_web_info_index extends t3lib_SCbase {
+class InfoModuleController extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 	// Internal, dynamic:
 	/**
@@ -28,7 +30,7 @@ class SC_mod_web_info_index extends t3lib_SCbase {
 	/**
 	 * Document Template Object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -42,14 +44,14 @@ class SC_mod_web_info_index extends t3lib_SCbase {
 	public function main() {
 		// Access check...
 		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
+		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 		if ($this->id && $access || $GLOBALS['BE_USER']->user['admin'] && !$this->id) {
 			$this->CALC_PERMS = $GLOBALS['BE_USER']->calcPerms($this->pageinfo);
 			if ($GLOBALS['BE_USER']->user['admin'] && !$this->id) {
 				$this->pageinfo = array('title' => '[root-level]', 'uid' => 0, 'pid' => 0);
 			}
-			$this->doc = t3lib_div::makeInstance('template');
+			$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 			$this->doc->setModuleTemplate('templates/info.html');
 			$this->doc->tableLayout = array(
@@ -85,14 +87,14 @@ class SC_mod_web_info_index extends t3lib_SCbase {
 			$docHeaderButtons = $this->getButtons();
 			$markers = array(
 				'CSH' => $docHeaderButtons['csh'],
-				'FUNC_MENU' => t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
+				'FUNC_MENU' => \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
 				'CONTENT' => $this->content
 			);
 			// Build the <body> for the module
 			$this->content = $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers);
 		} else {
 			// If no access or if ID == zero
-			$this->doc = t3lib_div::makeInstance('mediumDoc');
+			$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate');
 			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 			$this->content = $this->doc->header($GLOBALS['LANG']->getLL('title'));
 			$this->content .= $this->doc->spacer(5);
@@ -125,9 +127,9 @@ class SC_mod_web_info_index extends t3lib_SCbase {
 			'shortcut' => ''
 		);
 		// CSH
-		$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_info', '', $GLOBALS['BACK_PATH'], '', TRUE);
+		$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('_MOD_web_info', '', $GLOBALS['BACK_PATH'], '', TRUE);
 		// View page
-		$buttons['view'] = ((((('<a href="#" onclick="' . htmlspecialchars(t3lib_BEfunc::viewOnClick($this->pageinfo['uid'], $GLOBALS['BACK_PATH'], t3lib_BEfunc::BEgetRootLine($this->pageinfo['uid'])))) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showPage', 1)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-view')) . '</a>';
+		$buttons['view'] = ((((('<a href="#" onclick="' . htmlspecialchars(\TYPO3\CMS\Backend\Utility\BackendUtility::viewOnClick($this->pageinfo['uid'], $GLOBALS['BACK_PATH'], \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($this->pageinfo['uid'])))) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showPage', 1)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-view')) . '</a>';
 		// Shortcut
 		if ($GLOBALS['BE_USER']->mayMakeShortcut()) {
 			$buttons['shortcut'] = $this->doc->makeShortcutIcon('id, edit_record, pointer, new_unique_uid, search_field, search_levels, showLimit', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name']);
@@ -136,5 +138,6 @@ class SC_mod_web_info_index extends t3lib_SCbase {
 	}
 
 }
+
 
 ?>

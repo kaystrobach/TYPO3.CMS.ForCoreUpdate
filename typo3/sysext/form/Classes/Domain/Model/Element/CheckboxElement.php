@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Checkbox extends tx_form_Domain_Model_Element_Abstract {
+class CheckboxElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -76,7 +78,7 @@ class tx_form_Domain_Model_Element_Checkbox extends tx_form_Domain_Model_Element
 	 * If there is submitted data for this field
 	 * it will change the checked attribute
 	 *
-	 * @return tx_form_Domain_Model_Element_Checkbox
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\CheckboxElement
 	 * @see tx_form_Domain_Model_Element::checkFilterAndSetIncomingDataFromRequest()
 	 */
 	public function checkFilterAndSetIncomingDataFromRequest() {
@@ -104,14 +106,14 @@ class tx_form_Domain_Model_Element_Checkbox extends tx_form_Domain_Model_Element
 	 *
 	 * @param string $attribute Name of the attribute
 	 * @param mixed $value Value of the attribute
-	 * @return tx_form_Domain_Model_Element_Checkbox
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\CheckboxElement
 	 */
 	public function setAttribute($attribute, $value) {
 		if (array_key_exists($attribute, $this->allowedAttributes)) {
 			$this->attributes->addAttribute($attribute, $value);
 		}
 		if ($attribute === 'name') {
-			/** @var $nameAttribute tx_form_Domain_Model_Attributes_Name */
+			/** @var $nameAttribute \TYPO3\CMS\Form\Domain\Model\Attribute\NameAttribute */
 			$nameAttribute = $this->attributes->getAttributeObjectByKey('name');
 			$nameAttribute->setAddition('[]');
 		}
@@ -119,5 +121,6 @@ class tx_form_Domain_Model_Element_Checkbox extends tx_form_Domain_Model_Element
 	}
 
 }
+
 
 ?>

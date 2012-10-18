@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Wizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @subpackage form
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
-class tx_form_View_Wizard_Load extends tx_form_View_Wizard_Abstract {
+class LoadWizardView extends \TYPO3\CMS\Form\View\Wizard\AbstractWizardView {
 
 	/**
 	 * The main render method
@@ -69,5 +71,6 @@ class tx_form_View_Wizard_Load extends tx_form_View_Wizard_Abstract {
 	}
 
 }
+
 
 ?>

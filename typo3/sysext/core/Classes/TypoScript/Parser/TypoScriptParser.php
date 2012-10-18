@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\TypoScript\Parser;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @subpackage t3lib
  * @see t3lib_tstemplate, t3lib_BEfunc::getPagesTSconfig(), t3lib_beUserAuth::fetchGroupData(), t3lib_TStemplate::generateConfig()
  */
-class t3lib_TSparser {
+class TypoScriptParser {
 
 	// If set, then key names cannot contain characters other than [:alnum:]_\.-
 	/**
@@ -360,8 +362,8 @@ class t3lib_TSparser {
 						}
 						if (strlen($objStrName)) {
 							$r = array();
-							if ($this->strict && preg_match('/[^[:alnum:]_\\.-]/i', $objStrName, $r)) {
-								$this->error(((((('Line ' . (($this->lineNumberOffset + $this->rawP) - 1)) . ': Object Name String, "') . htmlspecialchars($objStrName)) . '" contains invalid character "') . $r[0]) . '". Must be alphanumeric or one of: "_-."');
+							if ($this->strict && preg_match('/[^[:alnum:]_\\\\\\.-]/i', $objStrName, $r)) {
+								$this->error(((((('Line ' . (($this->lineNumberOffset + $this->rawP) - 1)) . ': Object Name String, "') . htmlspecialchars($objStrName)) . '" contains invalid character "') . $r[0]) . '". Must be alphanumeric or one of: "_-\\."');
 							} else {
 								$line = ltrim(substr($line, $varL));
 								if ($this->syntaxHighLight) {
@@ -396,8 +398,8 @@ class t3lib_TSparser {
 										$newValue = (strcmp('', $currentValue) ? $currentValue . ',' : '') . trim($tsFuncArg);
 										break;
 									case 'removeFromList':
-										$existingElements = t3lib_div::trimExplode(',', $currentValue);
-										$removeElements = t3lib_div::trimExplode(',', $tsFuncArg);
+										$existingElements = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $currentValue);
+										$removeElements = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $tsFuncArg);
 										if (count($removeElements)) {
 											$newValue = implode(',', array_diff($existingElements, $removeElements));
 										}
@@ -407,9 +409,9 @@ class t3lib_TSparser {
 											$hookMethod = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tsparser.php']['preParseFunc'][$tsFunc];
 											$params = array('currentValue' => $currentValue, 'functionArgument' => $tsFuncArg);
 											$fakeThis = FALSE;
-											$newValue = t3lib_div::callUserFunction($hookMethod, $params, $fakeThis);
+											$newValue = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hookMethod, $params, $fakeThis);
 										} else {
-											t3lib_div::sysLog((('Missing function definition for ' . $tsFunc) . ' on TypoScript line ') . $lineP, 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+											\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog((('Missing function definition for ' . $tsFunc) . ' on TypoScript line ') . $lineP, 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 										}
 									}
 									if (isset($newValue)) {
@@ -665,7 +667,7 @@ class t3lib_TSparser {
 	static public function checkIncludeLines($string, $cycle_counter = 1, $returnFiles = FALSE) {
 		$includedFiles = array();
 		if ($cycle_counter > 100) {
-			t3lib_div::sysLog('It appears like TypoScript code is looping over itself. Check your templates for "&lt;INCLUDE_TYPOSCRIPT: ..." tags', 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('It appears like TypoScript code is looping over itself. Check your templates for "&lt;INCLUDE_TYPOSCRIPT: ..." tags', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			if ($returnFiles) {
 				return array(
 					'typoscript' => '',
@@ -693,20 +695,20 @@ class t3lib_TSparser {
 					if (preg_match('/^\\s*\\r?\\n/', $subparts[1])) {
 						// SO, the include was positively recognized:
 						$newString .= ((('### ' . $splitStr) . $subparts[0]) . '> BEGIN:') . LF;
-						$params = t3lib_div::get_tag_attributes($subparts[0]);
+						$params = \TYPO3\CMS\Core\Utility\GeneralUtility::get_tag_attributes($subparts[0]);
 						if ($params['source']) {
 							$sourceParts = explode(':', $params['source'], 2);
 							switch (strtolower(trim($sourceParts[0]))) {
 							case 'file':
-								$filename = t3lib_div::getFileAbsFileName(trim($sourceParts[1]));
+								$filename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(trim($sourceParts[1]));
 								// Must exist and must not contain '..' and must be relative
 								if (strcmp($filename, '')) {
 									// Check for allowed files
-									if (t3lib_div::verifyFilenameAgainstDenyPattern($filename)) {
+									if (\TYPO3\CMS\Core\Utility\GeneralUtility::verifyFilenameAgainstDenyPattern($filename)) {
 										if (@is_file($filename)) {
 											// Check for includes in included text
 											$includedFiles[] = $filename;
-											$included_text = self::checkIncludeLines(t3lib_div::getUrl($filename), $cycle_counter + 1, $returnFiles);
+											$included_text = self::checkIncludeLines(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($filename), $cycle_counter + 1, $returnFiles);
 											// If the method also has to return all included files, merge currently included
 											// files with files included by recursively calling itself
 											if ($returnFiles && is_array($included_text)) {
@@ -721,7 +723,7 @@ class t3lib_TSparser {
 ###
 
 ';
-											t3lib_div::sysLog(('File "' . $filename) . '" was not found.', 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+											\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(('File "' . $filename) . '" was not found.', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 										}
 									} else {
 										$newString .= ('
@@ -730,7 +732,7 @@ class t3lib_TSparser {
 ###
 
 ';
-										t3lib_div::sysLog(('File "' . $filename) . '" was not included since it is not allowed due to fileDenyPattern', 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+										\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(('File "' . $filename) . '" was not included since it is not allowed due to fileDenyPattern', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 									}
 								}
 								break;
@@ -783,7 +785,7 @@ class t3lib_TSparser {
 	 */
 	static public function extractIncludes($string, $cycle_counter = 1, $extractedFileNames = array()) {
 		if ($cycle_counter > 10) {
-			t3lib_div::sysLog('It appears like TypoScript code is looping over itself. Check your templates for "&lt;INCLUDE_TYPOSCRIPT: ..." tags', 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('It appears like TypoScript code is looping over itself. Check your templates for "&lt;INCLUDE_TYPOSCRIPT: ..." tags', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			return '
 ###
 ### ERROR: Recursion!
@@ -833,22 +835,22 @@ class t3lib_TSparser {
 					$fileContentString = implode('
 ', $fileContent);
 					// Write the content to the file
-					$realFileName = t3lib_div::getFileAbsFileName($fileName);
+					$realFileName = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($fileName);
 					// Some file checks
 					if (empty($realFileName)) {
-						throw new UnexpectedValueException(sprintf('"%s" is not a valid file location.', $fileName), 1294586441);
+						throw new \UnexpectedValueException(sprintf('"%s" is not a valid file location.', $fileName), 1294586441);
 					}
 					if (!is_writable($realFileName)) {
-						throw new RuntimeException(sprintf('"%s" is not writable.', $fileName), 1294586442);
+						throw new \RuntimeException(sprintf('"%s" is not writable.', $fileName), 1294586442);
 					}
 					if (in_array($realFileName, $extractedFileNames)) {
-						throw new RuntimeException(sprintf('Recursive/multiple inclusion of file "%s"', $realFileName), 1294586443);
+						throw new \RuntimeException(sprintf('Recursive/multiple inclusion of file "%s"', $realFileName), 1294586443);
 					}
 					$extractedFileNames[] = $realFileName;
 					// Recursive call to detected nested commented include statements
 					$fileContentString = self::extractIncludes($fileContentString, $cycle_counter + 1, $extractedFileNames);
-					if (!t3lib_div::writeFile($realFileName, $fileContentString)) {
-						throw new RuntimeException(sprintf('Could not write file "%s"', $realFileName), 1294586444);
+					if (!\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($realFileName, $fileContentString)) {
+						throw new \RuntimeException(sprintf('Could not write file "%s"', $realFileName), 1294586444);
 					}
 					// Insert reference to the file in the rest content
 					$restContent[] = ('<INCLUDE_TYPOSCRIPT: source="FILE: ' . $fileName) . '">';
@@ -979,11 +981,11 @@ class t3lib_TSparser {
 				$lineC .= (($this->highLightStyles['error'][0] . '<strong> - ERROR:</strong> ') . htmlspecialchars(implode(';', $errA[$rawP]))) . $this->highLightStyles['error'][1];
 			}
 			if ($highlightBlockMode && $this->highLightData_bracelevel[$rawP]) {
-				$lineC = (((((str_pad('', $this->highLightData_bracelevel[$rawP] * 2, ' ', STR_PAD_LEFT) . '<span style="') . $this->highLightBlockStyles) . ($this->highLightBlockStyles_basecolor ? 'background-color: ' . t3lib_div::modifyHTMLColorAll($this->highLightBlockStyles_basecolor, -$this->highLightData_bracelevel[$rawP] * 16) : '')) . '">') . (strcmp($lineC, '') ? $lineC : '&nbsp;')) . '</span>';
+				$lineC = (((((str_pad('', $this->highLightData_bracelevel[$rawP] * 2, ' ', STR_PAD_LEFT) . '<span style="') . $this->highLightBlockStyles) . ($this->highLightBlockStyles_basecolor ? 'background-color: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::modifyHTMLColorAll($this->highLightBlockStyles_basecolor, -$this->highLightData_bracelevel[$rawP] * 16) : '')) . '">') . (strcmp($lineC, '') ? $lineC : '&nbsp;')) . '</span>';
 			}
 			if (is_array($lineNumDat)) {
 				$lineNum = $rawP + $lineNumDat[0];
-				if ($this->parentObject instanceof t3lib_tsparser_ext) {
+				if ($this->parentObject instanceof \TYPO3\CMS\Core\TypoScript\ExtendedTemplateService) {
 					$lineNum = $this->parentObject->ext_lnBreakPointWrap($lineNum, $lineNum);
 				}
 				$lineC = (((($this->highLightStyles['linenum'][0] . str_pad($lineNum, 4, ' ', STR_PAD_LEFT)) . ':') . $this->highLightStyles['linenum'][1]) . ' ') . $lineC;
@@ -994,5 +996,6 @@ class t3lib_TSparser {
 	}
 
 }
+
 
 ?>

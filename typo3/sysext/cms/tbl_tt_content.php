@@ -295,7 +295,7 @@ $TCA['tt_content'] = array(
 			'label' => 'LLL:EXT:cms/locallang_ttc.xml:colPos',
 			'config' => array(
 				'type' => 'select',
-				'itemsProcFunc' => 'EXT:cms/classes/class.tx_cms_backendlayout.php:tx_cms_BackendLayout->colPosListItemProcFunc',
+				'itemsProcFunc' => 'EXT:cms/classes/class.tx_cms_backendlayout.php:TYPO3\\CMS\\Backend\\View\\BackendLayoutView->colPosListItemProcFunc',
 				'items' => array(
 					array(
 						'LLL:EXT:cms/locallang_ttc.xml:colPos.I.0',
@@ -678,7 +678,7 @@ $TCA['tt_content'] = array(
 		'image' => array(
 			'l10n_mode' => 'mergeIfNotBlank',
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.images',
-			'config' => t3lib_extMgm::getFileFieldTCAConfig('image', array(
+			'config' => \TYPO3\CMS\Core\Extension\ExtensionManager::getFileFieldTCAConfig('image', array(
 				'appearance' => array(
 					'createNewRelationLinkTitle' => 'LLL:EXT:cms/locallang_ttc.xlf:images.addFileReference'
 				),
@@ -690,27 +690,27 @@ $TCA['tt_content'] = array(
 							--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
 							--palette--;;filePalette'
 					),
-					t3lib_file_File::FILETYPE_TEXT => array(
+					\TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => array(
 						'showitem' => '
 							--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
 							--palette--;;filePalette'
 					),
-					t3lib_file_File::FILETYPE_IMAGE => array(
+					\TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => array(
 						'showitem' => '
 							--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
 							--palette--;;filePalette'
 					),
-					t3lib_file_File::FILETYPE_AUDIO => array(
+					\TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => array(
 						'showitem' => '
 							--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
 							--palette--;;filePalette'
 					),
-					t3lib_file_File::FILETYPE_VIDEO => array(
+					\TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => array(
 						'showitem' => '
 							--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
 							--palette--;;filePalette'
 					),
-					t3lib_file_File::FILETYPE_SOFTWARE => array(
+					\TYPO3\CMS\Core\Resource\File::FILETYPE_SOFTWARE => array(
 						'showitem' => '
 							--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
 							--palette--;;filePalette'
@@ -1440,7 +1440,7 @@ $TCA['tt_content'] = array(
 		),
 		'media' => array(
 			'label' => 'LLL:EXT:cms/locallang_ttc.xml:media',
-			'config' => t3lib_extMgm::getFileFieldTCAConfig('media', array(
+			'config' => \TYPO3\CMS\Core\Extension\ExtensionManager::getFileFieldTCAConfig('media', array(
 				'appearance' => array(
 					'createNewRelationLinkTitle' => 'LLL:EXT:cms/locallang_ttc.xlf:media.addFileReference'
 				)
@@ -1698,7 +1698,7 @@ $TCA['tt_content'] = array(
 						  </ROOT>
 						</T3DataStructure>
 					',
-					',media' => file_get_contents(t3lib_extMgm::extPath('cms') . 'flexform_media.xml')
+					',media' => file_get_contents(\TYPO3\CMS\Core\Extension\ExtensionManager::extPath('cms') . 'flexform_media.xml')
 				),
 				'search' => array(
 					'andWhere' => 'CType=\'list\''
@@ -2137,8 +2137,8 @@ $TCA['tt_content'] = array(
 // keep old code (pre-FAL) for installations that haven't upgraded yet. please remove this code in TYPO3 7.0
 // @deprecated since TYPO3 6.0, please remove in TYPO3 7.0
 // existing installation - and files are merged, nothing to do
-if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'tt_content:image')) && !t3lib_div::compat_version('6.0')) {
-	t3lib_div::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[tt_content][columns][image] yet. Please do so before TYPO3 v7.');
+if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'tt_content:image')) && !\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6.0')) {
+	\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[tt_content][columns][image] yet. Please do so before TYPO3 v7.');
 	// Existing installation and no upgrade wizard was executed - and files haven't been merged: use the old code
 	$TCA['tt_content']['columns']['image']['config'] = array(
 		'type' => 'group',
@@ -2153,8 +2153,8 @@ if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Upd
 		'autoSizeMax' => 40
 	);
 }
-if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'tt_content:media')) && !t3lib_div::compat_version('6.0')) {
-	t3lib_div::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[tt_content][columns][media] yet. Please do so before TYPO3 v7.');
+if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'tt_content:media')) && !\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6.0')) {
+	\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[tt_content][columns][media] yet. Please do so before TYPO3 v7.');
 	// Existing installation and no upgrade wizard was executed - and files haven't been merged: use the old code
 	$TCA['tt_content']['columns']['media']['config'] = array(
 		'type' => 'group',

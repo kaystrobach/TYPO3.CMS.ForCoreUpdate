@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_double_files extends tx_lowlevel_cleaner_core {
+class DoubleFilesCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * @todo Define visibility
@@ -137,8 +139,8 @@ This will check the system for double files relations.';
 		ksort($resultArray['dirname_registry']);
 		foreach ($resultArray['dirname_registry'] as $dir => $temp) {
 			ksort($resultArray['dirname_registry'][$dir]);
-			if (!t3lib_div::isFirstPartOfStr($dir, 'uploads/')) {
-				$resultArray['warnings'][t3lib_div::shortmd5($dir)] = (('Directory "' . $dir) . '" was outside uploads/ which is unusual practice in TYPO3 although not forbidden. Directory used by the following table:field pairs: ') . implode(',', array_keys($temp));
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($dir, 'uploads/')) {
+				$resultArray['warnings'][\TYPO3\CMS\Core\Utility\GeneralUtility::shortmd5($dir)] = (('Directory "' . $dir) . '" was outside uploads/ which is unusual practice in TYPO3 although not forbidden. Directory used by the following table:field pairs: ') . implode(',', array_keys($temp));
 			}
 		}
 		return $resultArray;
@@ -154,7 +156,7 @@ This will check the system for double files relations.';
 	 */
 	public function main_autoFix($resultArray) {
 		foreach ($resultArray['multipleReferencesList'] as $key => $value) {
-			$absFileName = t3lib_div::getFileAbsFileName($key);
+			$absFileName = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($key);
 			if ($absFileName && @is_file($absFileName)) {
 				echo ('Processing file: ' . $key) . LF;
 				$c = 0;
@@ -163,19 +165,19 @@ This will check the system for double files relations.';
 						echo (((('	Keeping ' . $key) . ' for record "') . $recReference) . '"') . LF;
 					} else {
 						// Create unique name for file:
-						$fileFunc = t3lib_div::makeInstance('t3lib_basicFileFunctions');
+						$fileFunc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\File\\BasicFileUtility');
 						$newName = $fileFunc->getUniqueName(basename($key), dirname($absFileName));
 						echo ((((('	Copying ' . $key) . ' to ') . substr($newName, strlen(PATH_site))) . ' for record "') . $recReference) . '": ';
 						if ($bypass = $this->cli_noExecutionCheck($recReference)) {
 							echo $bypass;
 						} else {
-							t3lib_div::upload_copy_move($absFileName, $newName);
+							\TYPO3\CMS\Core\Utility\GeneralUtility::upload_copy_move($absFileName, $newName);
 							clearstatcache();
 							if (@is_file($newName)) {
-								$sysRefObj = t3lib_div::makeInstance('t3lib_refindex');
+								$sysRefObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 								$error = $sysRefObj->setReferenceValue($hash, basename($newName));
 								if ($error) {
-									echo ('	ERROR:	t3lib_refindex::setReferenceValue(): ' . $error) . LF;
+									echo ('	ERROR:	TYPO3\\CMS\\Core\\Database\\ReferenceIndex::setReferenceValue(): ' . $error) . LF;
 									die;
 								} else {
 									echo 'DONE';
@@ -195,5 +197,6 @@ This will check the system for double files relations.';
 	}
 
 }
+
 
 ?>

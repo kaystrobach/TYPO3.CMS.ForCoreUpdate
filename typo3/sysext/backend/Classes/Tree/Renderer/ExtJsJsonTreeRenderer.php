@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Renderer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
+class ExtJsJsonTreeRenderer extends \TYPO3\CMS\Backend\Tree\Renderer\AbstractTreeRenderer {
 
 	/**
 	 * recursion level
@@ -45,11 +47,11 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Renders a node recursive or just a single instance
 	 *
-	 * @param t3lib_tree_RepresentationNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node
 	 * @param boolean $recursive
 	 * @return array
 	 */
-	public function renderNode(t3lib_tree_RepresentationNode $node, $recursive = TRUE) {
+	public function renderNode(\TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node, $recursive = TRUE) {
 		$nodeArray = $this->getNodeArray($node);
 		if ($recursive && $node->hasChildNodes()) {
 			$this->recursionLevel++;
@@ -63,10 +65,10 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Get node array
 	 *
-	 * @param t3lib_tree_RepresentationNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node
 	 * @return array
 	 */
-	protected function getNodeArray(t3lib_tree_RepresentationNode $node) {
+	protected function getNodeArray(\TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node) {
 		$nodeArray = array(
 			'iconCls' => $node->getIcon(),
 			'text' => $node->getLabel(),
@@ -80,11 +82,11 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Renders a node collection recursive or just a single instance
 	 *
-	 * @param t3lib_tree_NodeCollection $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $node
 	 * @param boolean $recursive
 	 * @return string
 	 */
-	public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE) {
+	public function renderTree(\TYPO3\CMS\Backend\Tree\AbstractTree $tree, $recursive = TRUE) {
 		$this->recursionLevel = 0;
 		$children = $this->renderNode($tree->getRoot(), $recursive);
 		return json_encode($children);
@@ -93,11 +95,11 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Renders an tree recursive or just a single instance
 	 *
-	 * @param t3lib_tree_AbstractTree $node
+	 * @param \TYPO3\CMS\Backend\Tree\AbstractTree $node
 	 * @param boolean $recursive
 	 * @return array
 	 */
-	public function renderNodeCollection(t3lib_tree_NodeCollection $collection, $recursive = TRUE) {
+	public function renderNodeCollection(\TYPO3\CMS\Backend\Tree\TreeNodeCollection $collection, $recursive = TRUE) {
 		foreach ($collection as $node) {
 			$treeItems[] = $this->renderNode($node, $recursive);
 		}
@@ -105,5 +107,6 @@ class t3lib_tree_Renderer_ExtJsJson extends t3lib_tree_Renderer_Abstract {
 	}
 
 }
+
 
 ?>

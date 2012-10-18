@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,29 +35,29 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_extjs_ExtDirectRouter {
+class ExtDirectRouter {
 
 	/**
 	 * Dispatches the incoming calls to methods about the ExtDirect API.
 	 *
 	 * @param aray $ajaxParams Ajax parameters
-	 * @param TYPO3AJAX $ajaxObj typo3ajax instance
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj typo3ajax instance
 	 * @return void
 	 */
-	public function route($ajaxParams, TYPO3AJAX $ajaxObj) {
-		$GLOBALS['error'] = t3lib_div::makeInstance('t3lib_extjs_ExtDirectDebug');
+	public function route($ajaxParams, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
+		$GLOBALS['error'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\ExtDirect\\ExtDirectDebug');
 		$isForm = FALSE;
 		$isUpload = FALSE;
 		$rawPostData = file_get_contents('php://input');
-		$postParameters = t3lib_div::_POST();
-		$namespace = t3lib_div::_GET('namespace');
+		$postParameters = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST();
+		$namespace = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('namespace');
 		$response = array();
 		$request = NULL;
 		$isValidRequest = TRUE;
 		if (!empty($postParameters['extAction'])) {
 			$isForm = TRUE;
 			$isUpload = $postParameters['extUpload'] === 'true';
-			$request = new stdClass();
+			$request = new \stdClass();
 			$request->action = $postParameters['extAction'];
 			$request->method = $postParameters['extMethod'];
 			$request->tid = $postParameters['extTID'];
@@ -87,17 +89,17 @@ class t3lib_extjs_ExtDirectRouter {
 				$token = array_pop($singleRequest->data);
 				if ($firstCall) {
 					$firstCall = FALSE;
-					$formprotection = t3lib_formprotection_Factory::get();
+					$formprotection = \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get();
 					$validToken = $formprotection->validateToken($token, 'extDirect');
 				}
 				try {
 					if (!$validToken) {
-						throw new t3lib_formprotection_InvalidTokenException('ExtDirect: Invalid Security Token!');
+						throw new \TYPO3\CMS\Core\FormProtection\Exception('ExtDirect: Invalid Security Token!');
 					}
 					$response[$index]['type'] = 'rpc';
 					$response[$index]['result'] = $this->processRpc($singleRequest, $namespace);
 					$response[$index]['debug'] = $GLOBALS['error']->toString();
-				} catch (Exception $exception) {
+				} catch (\Exception $exception) {
 					$response[$index]['type'] = 'exception';
 					$response[$index]['message'] = $exception->getMessage();
 					$response[$index]['code'] = 'router';
@@ -130,11 +132,11 @@ class t3lib_extjs_ExtDirectRouter {
 	protected function processRpc($singleRequest, $namespace) {
 		$endpointName = ($namespace . '.') . $singleRequest->action;
 		if (!isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName])) {
-			throw new UnexpectedValueException('ExtDirect: Call to undefined endpoint: ' . $endpointName, 1294586450);
+			throw new \UnexpectedValueException('ExtDirect: Call to undefined endpoint: ' . $endpointName, 1294586450);
 		}
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName])) {
 			if (!isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName]['callbackClass'])) {
-				throw new UnexpectedValueException('ExtDirect: Call to undefined endpoint: ' . $endpointName, 1294586450);
+				throw new \UnexpectedValueException('ExtDirect: Call to undefined endpoint: ' . $endpointName, 1294586450);
 			}
 			$callbackClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName]['callbackClass'];
 			$configuration = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ExtDirect'][$endpointName];
@@ -145,10 +147,11 @@ class t3lib_extjs_ExtDirectRouter {
 				), TRUE);
 			}
 		}
-		$endpointObject = t3lib_div::getUserObj($callbackClass, FALSE);
+		$endpointObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($callbackClass, FALSE);
 		return call_user_func_array(array($endpointObject, $singleRequest->method), is_array($singleRequest->data) ? $singleRequest->data : array());
 	}
 
 }
+
 
 ?>

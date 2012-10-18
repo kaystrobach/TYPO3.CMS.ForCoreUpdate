@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Christoph Koehler <christoph@webempoweredchurch.org>
  */
-class AjaxLogin {
+class AjaxLoginHandler {
 
 	/**
 	 * Handles the actual login process, more specifically it defines the response.
@@ -39,14 +41,14 @@ class AjaxLogin {
 	 * If it was unsuccessful, we display that and show the login box again.
 	 *
 	 * @param array $parameters Parameters (not used)
-	 * @param TYPO3AJAX $ajaxObj The calling parent AJAX object
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The calling parent AJAX object
 	 * @return void
 	 */
-	public function login(array $parameters, TYPO3AJAX $ajaxObj) {
+	public function login(array $parameters, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
 		if ($this->isAuthorizedBackendSession()) {
 			$json = array('success' => TRUE);
 			if ($this->hasLoginBeenProcessed()) {
-				$formProtection = t3lib_formprotection_Factory::get();
+				$formProtection = \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get();
 				$formProtection->setSessionTokenFromRegistry();
 				$formProtection->persistSessionToken();
 			}
@@ -63,7 +65,7 @@ class AjaxLogin {
 	 * @return boolean
 	 */
 	protected function isAuthorizedBackendSession() {
-		return (isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof t3lib_beUserAuth) && isset($GLOBALS['BE_USER']->user['uid']);
+		return (isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof \TYPO3\CMS\Core\Authentication\BackendUserAuthentication) && isset($GLOBALS['BE_USER']->user['uid']);
 	}
 
 	/**
@@ -73,17 +75,17 @@ class AjaxLogin {
 	 */
 	protected function hasLoginBeenProcessed() {
 		$loginFormData = $GLOBALS['BE_USER']->getLoginFormData();
-		return ((($loginFormData['status'] == 'login' && isset($loginFormData['uname'])) && isset($loginFormData['uident'])) && isset($loginFormData['chalvalue'])) && (string) $_COOKIE[t3lib_beUserAuth::getCookieName()] !== (string) $GLOBALS['BE_USER']->id;
+		return ((($loginFormData['status'] == 'login' && isset($loginFormData['uname'])) && isset($loginFormData['uident'])) && isset($loginFormData['chalvalue'])) && (string) $_COOKIE[\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::getCookieName()] !== (string) $GLOBALS['BE_USER']->id;
 	}
 
 	/**
 	 * Logs out the current BE user
 	 *
 	 * @param array $parameters Parameters (not used)
-	 * @param TYPO3AJAX $ajaxObj The calling parent AJAX object
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The calling parent AJAX object
 	 * @return void
 	 */
-	public function logout(array $parameters, TYPO3AJAX $ajaxObj) {
+	public function logout(array $parameters, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
 		$GLOBALS['BE_USER']->logoff();
 		if ($GLOBALS['BE_USER']->user['uid']) {
 			$ajaxObj->addContent('logout', array('success' => FALSE));
@@ -97,10 +99,10 @@ class AjaxLogin {
 	 * Refreshes the login without needing login information. We just refresh the session.
 	 *
 	 * @param array $parameters Parameters (not used)
-	 * @param TYPO3AJAX $ajaxObj The calling parent AJAX object
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The calling parent AJAX object
 	 * @return void
 	 */
-	public function refreshLogin(array $parameters, TYPO3AJAX $ajaxObj) {
+	public function refreshLogin(array $parameters, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
 		$GLOBALS['BE_USER']->checkAuthentication();
 		$ajaxObj->addContent('refresh', array('success' => TRUE));
 		$ajaxObj->setContentFormat('json');
@@ -110,11 +112,11 @@ class AjaxLogin {
 	 * Checks if the user session is expired yet
 	 *
 	 * @param array $parameters Parameters (not used)
-	 * @param TYPO3AJAX $ajaxObj The calling parent AJAX object
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The calling parent AJAX object
 	 * @return void
 	 * @todo Define visibility
 	 */
-	public function isTimedOut(array $parameters, TYPO3AJAX $ajaxObj) {
+	public function isTimedOut(array $parameters, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
 		if (is_object($GLOBALS['BE_USER'])) {
 			$ajaxObj->setContentFormat('json');
 			if (@is_file((PATH_typo3conf . 'LOCK_BACKEND'))) {
@@ -143,10 +145,10 @@ class AjaxLogin {
 	 * Gets a MD5 challenge.
 	 *
 	 * @param array $parameters Parameters (not used)
-	 * @param TYPO3AJAX $parent The calling parent AJAX object
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $parent The calling parent AJAX object
 	 * @return void
 	 */
-	public function getChallenge(array $parameters, TYPO3AJAX $parent) {
+	public function getChallenge(array $parameters, \TYPO3\CMS\Core\Http\AjaxRequestHandler $parent) {
 		session_start();
 		$_SESSION['login_challenge'] = md5(uniqid('') . getmypid());
 		session_commit();
@@ -155,5 +157,6 @@ class AjaxLogin {
 	}
 
 }
+
 
 ?>

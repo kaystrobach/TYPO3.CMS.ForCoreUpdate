@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\ExtraPageCmOptions;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @package TYPO3
  * @subpackage tx_extrapagecmoptions
  */
-class tx_extrapagecmoptions {
+class ExtraPageContextMenuOptions {
 
 	/**
 	 * Adding various standard options to the context menu.
@@ -54,7 +56,7 @@ class tx_extrapagecmoptions {
 	public function main(&$backRef, $menuItems, $table, $uid) {
 		// Accumulation of local items.
 		$localItems = array();
-		$subname = t3lib_div::_GP('subname');
+		$subname = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('subname');
 		// Detecting menu level
 		// LEVEL: Primary menu.
 		if (!in_array('moreoptions', $backRef->disabledItems) && !$backRef->cmLevel) {
@@ -62,7 +64,7 @@ class tx_extrapagecmoptions {
 			if ($backRef->editOK) {
 				$LL = $this->includeLL();
 				$localItems[] = 'spacer';
-				$localItems['moreoptions'] = $backRef->linkItem($GLOBALS['LANG']->makeEntities($GLOBALS['LANG']->getLLL('label', $LL)), $backRef->excludeIcon(''), ('top.loadTopMenu(\'' . t3lib_div::linkThisScript()) . '&cmLevel=1&subname=moreoptions\');return false;', 0, 1);
+				$localItems['moreoptions'] = $backRef->linkItem($GLOBALS['LANG']->makeEntities($GLOBALS['LANG']->getLLL('label', $LL)), $backRef->excludeIcon(''), ('top.loadTopMenu(\'' . \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript()) . '&cmLevel=1&subname=moreoptions\');return false;', 0, 1);
 				if ((!in_array('hide', $backRef->disabledItems) && is_array($GLOBALS['TCA'][$table]['ctrl']['enablecolumns'])) && $GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']) {
 					$localItems['hide'] = $backRef->DB_hideUnhide($table, $backRef->rec, $GLOBALS['TCA'][$table]['ctrl']['enablecolumns']['disabled']);
 				}
@@ -129,5 +131,6 @@ class tx_extrapagecmoptions {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Rte;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_rteapi {
+class AbstractRte {
 
 	// Internal, dynamic:
 	// Error messages regarding non-availability is collected here.
@@ -100,7 +102,7 @@ class t3lib_rteapi {
 		// Create item:
 		$item = ((((((('
 			' . $this->triggerField($PA['itemFormElName'])) . '
-			<textarea name="') . htmlspecialchars($PA['itemFormElName'])) . '"') . $pObj->formWidthText('48', 'off')) . ' rows="20" wrap="off" style="background-color: #99eebb;">') . t3lib_div::formatForTextarea($value)) . '</textarea>';
+			<textarea name="') . htmlspecialchars($PA['itemFormElName'])) . '"') . $pObj->formWidthText('48', 'off')) . ' rows="20" wrap="off" style="background-color: #99eebb;">') . \TYPO3\CMS\Core\Utility\GeneralUtility::formatForTextarea($value)) . '</textarea>';
 		// Return form item:
 		return $item;
 	}
@@ -125,11 +127,11 @@ class t3lib_rteapi {
 	 */
 	public function transformContent($dirRTE, $value, $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $pid) {
 		if ($specConf['rte_transform']) {
-			$p = t3lib_BEfunc::getSpecConfParametersFromArray($specConf['rte_transform']['parameters']);
+			$p = \TYPO3\CMS\Backend\Utility\BackendUtility::getSpecConfParametersFromArray($specConf['rte_transform']['parameters']);
 			// There must be a mode set for transformation
 			if ($p['mode']) {
 				// Initialize transformation:
-				$parseHTML = t3lib_div::makeInstance('t3lib_parsehtml_proc');
+				$parseHTML = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\RteHtmlParser');
 				$parseHTML->init(($table . ':') . $field, $pid);
 				$parseHTML->setRelPath($RTErelPath);
 				// Perform transformation:
@@ -157,5 +159,6 @@ class t3lib_rteapi {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Frontend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Karsten Dambekalns <karsten@typo3.org>
  * @api
  */
-class t3lib_cache_frontend_StringFrontend extends t3lib_cache_frontend_AbstractFrontend {
+class StringFrontend extends \TYPO3\CMS\Core\Cache\Frontend\AbstractFrontend {
 
 	/**
 	 * Saves the value of a PHP variable in the cache.
@@ -42,7 +44,7 @@ class t3lib_cache_frontend_StringFrontend extends t3lib_cache_frontend_AbstractF
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited liftime.
 	 * @return void
 	 * @throws \InvalidArgumentException if the identifier or tag is not valid
-	 * @throws \t3lib_cache_exception_InvalidData if the variable to cache is not of type string
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if the variable to cache is not of type string
 	 * @api
 	 */
 	public function set($entryIdentifier, $string, array $tags = array(), $lifetime = NULL) {
@@ -50,7 +52,7 @@ class t3lib_cache_frontend_StringFrontend extends t3lib_cache_frontend_AbstractF
 			throw new \InvalidArgumentException(('"' . $entryIdentifier) . '" is not a valid cache entry identifier.', 1233057566);
 		}
 		if (!is_string($string)) {
-			throw new \t3lib_cache_exception_InvalidData(('Given data is of type "' . gettype($string)) . '", but a string is expected for string cache.', 1222808333);
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidDataException(('Given data is of type "' . gettype($string)) . '", but a string is expected for string cache.', 1222808333);
 		}
 		foreach ($tags as $tag) {
 			if (!$this->isValidTag($tag)) {
@@ -96,5 +98,6 @@ class t3lib_cache_frontend_StringFrontend extends t3lib_cache_frontend_AbstractF
 	}
 
 }
+
 
 ?>

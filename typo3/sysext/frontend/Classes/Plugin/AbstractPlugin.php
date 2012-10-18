@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Plugin;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -42,13 +44,13 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_pibase {
+class AbstractPlugin {
 
 	// Reserved variables:
 	/**
 	 * The backReference to the mother cObj object set at call time
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 * @todo Define visibility
 	 */
 	public $cObj;
@@ -217,7 +219,7 @@ class tslib_pibase {
 	public function __construct() {
 		// Setting piVars:
 		if ($this->prefixId) {
-			$this->piVars = t3lib_div::_GPmerged($this->prefixId);
+			$this->piVars = \TYPO3\CMS\Core\Utility\GeneralUtility::_GPmerged($this->prefixId);
 			// cHash mode check
 			// IMPORTANT FOR CACHED PLUGINS (USER cObject): As soon as you generate cached plugin output which depends on parameters (eg. seeing the details of a news item) you MUST check if a cHash value is set.
 			// Background: The function call will check if a cHash parameter was sent with the URL because only if it was the page may be cached. If no cHash was found the function will simply disable caching to avoid unpredictable caching behaviour. In any case your plugin can generate the expected output and the only risk is that the content may not be cached. A missing cHash value is considered a mistake in the URL resulting from either URL manipulation, "realurl" "grayzones" etc. The problem is rare (more frequent with "realurl") but when it occurs it is very puzzling!
@@ -241,7 +243,7 @@ class tslib_pibase {
 	 */
 	public function pi_setPiVarDefaults() {
 		if (is_array($this->conf['_DEFAULT_PI_VARS.'])) {
-			$this->piVars = t3lib_div::array_merge_recursive_overrule($this->conf['_DEFAULT_PI_VARS.'], is_array($this->piVars) ? $this->piVars : array());
+			$this->piVars = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($this->conf['_DEFAULT_PI_VARS.'], is_array($this->piVars) ? $this->piVars : array());
 		}
 	}
 
@@ -302,7 +304,7 @@ class tslib_pibase {
 		$conf['useCacheHash'] = $this->pi_USER_INT_obj ? 0 : $cache;
 		$conf['no_cache'] = $this->pi_USER_INT_obj ? 0 : !$cache;
 		$conf['parameter'] = $altPageId ? $altPageId : ($this->pi_tmpPageId ? $this->pi_tmpPageId : $GLOBALS['TSFE']->id);
-		$conf['additionalParams'] = ($this->conf['parent.']['addParams'] . t3lib_div::implodeArrayForUrl('', $urlParameters, '', TRUE)) . $this->pi_moreParams;
+		$conf['additionalParams'] = ($this->conf['parent.']['addParams'] . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', $urlParameters, '', TRUE)) . $this->pi_moreParams;
 		return $this->cObj->typoLink($str, $conf);
 	}
 
@@ -324,7 +326,7 @@ class tslib_pibase {
 		if ((is_array($this->piVars) && is_array($overrulePIvars)) && !$clearAnyway) {
 			$piVars = $this->piVars;
 			unset($piVars['DATA']);
-			$overrulePIvars = t3lib_div::array_merge_recursive_overrule($piVars, $overrulePIvars);
+			$overrulePIvars = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($piVars, $overrulePIvars);
 			if ($this->pi_autoCacheEn) {
 				$cache = $this->pi_autoCache($overrulePIvars);
 			}
@@ -394,7 +396,7 @@ class tslib_pibase {
 	 */
 	public function pi_openAtagHrefInJSwindow($str, $winName = '', $winParams = 'width=670,height=500,status=0,menubar=0,scrollbars=1,resizable=1') {
 		if (preg_match('/(.*)(<a[^>]*>)(.*)/i', $str, $match)) {
-			$aTagContent = t3lib_div::get_tag_attributes($match[2]);
+			$aTagContent = \TYPO3\CMS\Core\Utility\GeneralUtility::get_tag_attributes($match[2]);
 			$match[2] = ('<a href="#" onclick="' . htmlspecialchars((((((('vHWin=window.open(\'' . $GLOBALS['TSFE']->baseUrlWrap($aTagContent['href'])) . '\',\'') . ($winName ? $winName : md5($aTagContent['href']))) . '\',\'') . $winParams) . '\');vHWin.focus();return false;'))) . '">';
 			$str = ($match[1] . $match[2]) . $match[3];
 		}
@@ -445,9 +447,9 @@ class tslib_pibase {
 		// Initializing variables:
 		$pointer = intval($this->piVars[$pointerName]);
 		$count = intval($this->internal['res_count']);
-		$results_at_a_time = t3lib_utility_Math::forceIntegerInRange($this->internal['results_at_a_time'], 1, 1000);
+		$results_at_a_time = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->internal['results_at_a_time'], 1, 1000);
 		$totalPages = ceil($count / $results_at_a_time);
-		$maxPages = t3lib_utility_Math::forceIntegerInRange($this->internal['maxPages'], 1, 100);
+		$maxPages = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->internal['maxPages'], 1, 100);
 		$pi_isOnlyFields = $this->pi_isOnlyFields($this->pi_isOnlyFields);
 		if (!$forceOutput && $count <= $results_at_a_time) {
 			return '';
@@ -466,7 +468,7 @@ class tslib_pibase {
 				$pagefloat = ceil(($maxPages - 1) / 2);
 			} else {
 				// pagefloat set as integer. 0 = left, value >= $this->internal['maxPages'] = right
-				$pagefloat = t3lib_utility_Math::forceIntegerInRange($this->internal['pagefloat'], -1, $maxPages - 1);
+				$pagefloat = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->internal['pagefloat'], -1, $maxPages - 1);
 			}
 		} else {
 			// pagefloat disabled
@@ -494,7 +496,7 @@ class tslib_pibase {
 				$firstPage = max(0, $lastPage - $maxPages);
 			} else {
 				$firstPage = 0;
-				$lastPage = t3lib_utility_Math::forceIntegerInRange($totalPages, 1, $maxPages);
+				$lastPage = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($totalPages, 1, $maxPages);
 			}
 			$links = array();
 			// Make browse-table/links:
@@ -594,7 +596,7 @@ class tslib_pibase {
 			List search box:
 		-->
 		<div' . $this->pi_classParam('searchbox')) . '>
-			<form action="') . htmlspecialchars(t3lib_div::getIndpEnv('REQUEST_URI'))) . '" method="post" style="margin: 0 0 0 0;">
+			<form action="') . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'))) . '" method="post" style="margin: 0 0 0 0;">
 			<') . trim(('table ' . $tableParams))) . '>
 				<tr>
 					<td><input type="text" name="') . $this->prefixId) . '[sword]" value="') . htmlspecialchars($this->piVars['sword'])) . '"') . $this->pi_classParam('searchbox-sword')) . ' /></td>
@@ -726,10 +728,10 @@ class tslib_pibase {
 	 */
 	public function pi_classParam($class, $addClasses = '') {
 		$output = '';
-		foreach (t3lib_div::trimExplode(',', $class) as $v) {
+		foreach (\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $class) as $v) {
 			$output .= ' ' . $this->pi_getClassName($v);
 		}
-		foreach (t3lib_div::trimExplode(',', $addClasses) as $v) {
+		foreach (\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $addClasses) as $v) {
 			$output .= ' ' . $v;
 		}
 		return (' class="' . trim($output)) . '"';
@@ -790,7 +792,7 @@ class tslib_pibase {
 		if ($GLOBALS['TSFE']->beUserLogin) {
 			// Create local cObj if not set:
 			if (!is_object($this->pi_EPtemp_cObj)) {
-				$this->pi_EPtemp_cObj = t3lib_div::makeInstance('tslib_cObj');
+				$this->pi_EPtemp_cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 				$this->pi_EPtemp_cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 			}
 			// Initialize the cObj object with current row
@@ -834,7 +836,7 @@ class tslib_pibase {
 				'beforeLastTag' => 1,
 				'iconTitle' => $title
 			), $oConf);
-			$content = $this->cObj->editIcons($content, ($tablename . ':') . $fields, $conf, ($tablename . ':') . $row['uid'], $row, '&viewUrl=' . rawurlencode(t3lib_div::getIndpEnv('REQUEST_URI')));
+			$content = $this->cObj->editIcons($content, ($tablename . ':') . $fields, $conf, ($tablename . ':') . $row['uid'], $row, '&viewUrl=' . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI')));
 		}
 		return $content;
 	}
@@ -895,9 +897,9 @@ class tslib_pibase {
 		if (!$this->LOCAL_LANG_loaded && $this->scriptRelPath) {
 			$basePath = ((('EXT:' . $this->extKey) . '/') . dirname($this->scriptRelPath)) . '/locallang.xml';
 			// Read the strings in the required charset (since TYPO3 4.2)
-			$this->LOCAL_LANG = t3lib_div::readLLfile($basePath, $this->LLkey, $GLOBALS['TSFE']->renderCharset);
+			$this->LOCAL_LANG = \TYPO3\CMS\Core\Utility\GeneralUtility::readLLfile($basePath, $this->LLkey, $GLOBALS['TSFE']->renderCharset);
 			if ($this->altLLkey) {
-				$this->LOCAL_LANG = t3lib_div::readLLfile($basePath, $this->altLLkey);
+				$this->LOCAL_LANG = \TYPO3\CMS\Core\Utility\GeneralUtility::readLLfile($basePath, $this->altLLkey);
 			}
 			// Overlaying labels from TypoScript (including fictitious language keys for non-system languages!):
 			$confLL = $this->conf['_LOCAL_LANG.'];
@@ -981,14 +983,14 @@ class tslib_pibase {
 		} else {
 			// Order by data:
 			if (!$orderBy && $this->internal['orderBy']) {
-				if (t3lib_div::inList($this->internal['orderByList'], $this->internal['orderBy'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->internal['orderByList'], $this->internal['orderBy'])) {
 					$orderBy = ((('ORDER BY ' . $table) . '.') . $this->internal['orderBy']) . ($this->internal['descFlag'] ? ' DESC' : '');
 				}
 			}
 			// Limit data:
 			$pointer = $this->piVars['pointer'];
 			$pointer = intval($pointer);
-			$results_at_a_time = t3lib_utility_Math::forceIntegerInRange($this->internal['results_at_a_time'], 1, 1000);
+			$results_at_a_time = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->internal['results_at_a_time'], 1, 1000);
 			$LIMIT = ($pointer * $results_at_a_time . ',') . $results_at_a_time;
 			// Add 'SELECT'
 			$queryParts = array(
@@ -1029,11 +1031,11 @@ class tslib_pibase {
 		if (!strcmp($pid_list, '')) {
 			$pid_list = $GLOBALS['TSFE']->id;
 		}
-		$recursive = t3lib_utility_Math::forceIntegerInRange($recursive, 0);
-		$pid_list_arr = array_unique(t3lib_div::trimExplode(',', $pid_list, 1));
+		$recursive = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($recursive, 0);
+		$pid_list_arr = array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $pid_list, 1));
 		$pid_list = array();
 		foreach ($pid_list_arr as $val) {
-			$val = t3lib_utility_Math::forceIntegerInRange($val, 0);
+			$val = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($val, 0);
 			if ($val) {
 				$_list = $this->cObj->getTreeList(-1 * $val, $recursive);
 				if ($_list) {
@@ -1053,7 +1055,7 @@ class tslib_pibase {
 	 * @todo Define visibility
 	 */
 	public function pi_prependFieldsWithTable($table, $fieldList) {
-		$list = t3lib_div::trimExplode(',', $fieldList, 1);
+		$list = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $fieldList, 1);
 		$return = array();
 		foreach ($list as $listItem) {
 			$return[] = ($table . '.') . $listItem;
@@ -1099,10 +1101,10 @@ class tslib_pibase {
 	 */
 	public function pi_isOnlyFields($fList, $lowerThan = -1) {
 		$lowerThan = $lowerThan == -1 ? $this->pi_lowerThan : $lowerThan;
-		$fList = t3lib_div::trimExplode(',', $fList, 1);
+		$fList = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $fList, 1);
 		$tempPiVars = $this->piVars;
 		foreach ($fList as $k) {
-			if (!t3lib_utility_Math::canBeInterpretedAsInteger($tempPiVars[$k]) || $tempPiVars[$k] < $lowerThan) {
+			if (!\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($tempPiVars[$k]) || $tempPiVars[$k] < $lowerThan) {
 				unset($tempPiVars[$k]);
 			}
 		}
@@ -1174,7 +1176,7 @@ class tslib_pibase {
 	public function pi_initPIflexForm($field = 'pi_flexform') {
 		// Converting flexform data into array:
 		if (!is_array($this->cObj->data[$field]) && $this->cObj->data[$field]) {
-			$this->cObj->data[$field] = t3lib_div::xml2array($this->cObj->data[$field]);
+			$this->cObj->data[$field] = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($this->cObj->data[$field]);
 			if (!is_array($this->cObj->data[$field])) {
 				$this->cObj->data[$field] = array();
 			}
@@ -1213,7 +1215,7 @@ class tslib_pibase {
 	public function pi_getFFvalueFromSheetArray($sheetArray, $fieldNameArr, $value) {
 		$tempArr = $sheetArray;
 		foreach ($fieldNameArr as $k => $v) {
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($v)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($v)) {
 				if (is_array($tempArr)) {
 					$c = 0;
 					foreach ($tempArr as $values) {
@@ -1232,5 +1234,6 @@ class tslib_pibase {
 	}
 
 }
+
 
 ?>

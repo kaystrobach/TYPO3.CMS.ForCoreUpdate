@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Trim implements tx_form_System_Filter_Interface {
+class TrimFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Characters used by trim filter
@@ -75,5 +77,6 @@ class tx_form_System_Filter_Trim implements tx_form_System_Filter_Interface {
 	}
 
 }
+
 
 ?>

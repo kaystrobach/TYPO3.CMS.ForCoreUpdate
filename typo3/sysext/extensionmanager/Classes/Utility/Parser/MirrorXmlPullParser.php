@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Parser;
+
 /***************************************************************
  * Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
+class MirrorXmlPullParser extends \TYPO3\CMS\Extensionmanager\Utility\Parser\MirrorXmlAbstractParser implements SplSubject {
 
 	/**
 	 * Keeps list of attached observers.
@@ -51,7 +53,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 	public function __construct() {
 		$this->requiredPhpExtensions = 'xmlreader';
 		if ($this->isAvailable()) {
-			$this->objXml = new XMLReader();
+			$this->objXml = new \XMLReader();
 		}
 	}
 
@@ -60,20 +62,20 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 	 *
 	 * @param string $file file resource, typically a stream
 	 * @return void
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager in case of XML parser errors
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException in case of XML parser errors
 	 */
 	public function parseXml($file) {
 		if (!(is_object($this->objXml) && get_class($this->objXml) == 'XMLReader')) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Unable to create XML parser.', 1342640820);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Unable to create XML parser.', 1342640820);
 		}
 		if ($this->objXml->open($file, 'utf-8') === FALSE) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Unable to open file resource %s.', htmlspecialchars($file)), 1342640893);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('Unable to open file resource %s.', htmlspecialchars($file)), 1342640893);
 		}
 		while ($this->objXml->read()) {
-			if ($this->objXml->nodeType == XMLReader::ELEMENT) {
+			if ($this->objXml->nodeType == \XMLReader::ELEMENT) {
 				$this->startElement($this->objXml->name);
 			} else {
-				if ($this->objXml->nodeType == XMLReader::END_ELEMENT) {
+				if ($this->objXml->nodeType == \XMLReader::END_ELEMENT) {
 					$this->endElement($this->objXml->name);
 				} else {
 					continue;
@@ -151,10 +153,10 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 		if (!$this->objXml->isEmptyElement) {
 			$value = '';
 			while ($this->objXml->read()) {
-				if ((($this->objXml->nodeType == XMLReader::TEXT || $this->objXml->nodeType == XMLReader::CDATA) || $this->objXml->nodeType == XMLReader::WHITESPACE) || $this->objXml->nodeType == XMLReader::SIGNIFICANT_WHITESPACE) {
+				if ((($this->objXml->nodeType == \XMLReader::TEXT || $this->objXml->nodeType == \XMLReader::CDATA) || $this->objXml->nodeType == \XMLReader::WHITESPACE) || $this->objXml->nodeType == \XMLReader::SIGNIFICANT_WHITESPACE) {
 					$value .= $this->objXml->value;
 				} else {
-					if ($this->objXml->nodeType == XMLReader::END_ELEMENT && $this->objXml->name === $elementName) {
+					if ($this->objXml->nodeType == \XMLReader::END_ELEMENT && $this->objXml->name === $elementName) {
 						break;
 					}
 				}
@@ -170,7 +172,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 	 * @return void
 	 * @see $observers, detach(), notify()
 	 */
-	public function attach(SplObserver $observer) {
+	public function attach(\SplObserver $observer) {
 		$this->observers[] = $observer;
 	}
 
@@ -181,7 +183,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 	 * @return void
 	 * @see $observers, attach(), notify()
 	 */
-	public function detach(SplObserver $observer) {
+	public function detach(\SplObserver $observer) {
 		$key = array_search($observer, $this->observers, TRUE);
 		if (!($key === FALSE)) {
 			unset($this->observers[$key]);
@@ -202,5 +204,6 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser extends Tx_Extensio
 	}
 
 }
+
 
 ?>

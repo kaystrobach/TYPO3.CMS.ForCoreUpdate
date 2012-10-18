@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class RemoveExtensionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelper {
 
 	/**
 	 * @var string
@@ -45,7 +47,7 @@ class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid
 	 * @return string the rendered a tag
 	 */
 	public function render($extension) {
-		if (!in_array($extension['type'], Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallTypes())) {
+		if (!in_array($extension['type'], \TYPO3\CMS\Extensionmanager\Domain\Model\Extension::returnAllowedInstallTypes())) {
 			return '';
 		}
 		$uriBuilder = $this->controllerContext->getUriBuilder();
@@ -57,7 +59,7 @@ class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid
 		), 'Action');
 		$this->tag->addAttribute('href', $uri);
 		$cssClass = 'removeExtension';
-		if (t3lib_extMgm::isLoaded($extension['key'])) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($extension['key'])) {
 			$cssClass .= ' isLoadedWarning';
 		}
 		$this->tag->addAttribute('class', $cssClass);
@@ -67,5 +69,6 @@ class Tx_Extensionmanager_ViewHelpers_RemoveExtensionViewHelper extends Tx_Fluid
 	}
 
 }
+
 
 ?>

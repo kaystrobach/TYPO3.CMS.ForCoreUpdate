@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error\Http;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,9 +30,10 @@
  * @package TYPO3
  * @subpackage error
  */
-abstract class t3lib_error_http_AbstractServerErrorException extends t3lib_error_http_StatusException {
+abstract class AbstractServerErrorException extends \TYPO3\CMS\Core\Error\Http\StatusException {
 
 
 }
+
 
 ?>

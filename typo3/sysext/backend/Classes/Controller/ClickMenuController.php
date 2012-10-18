@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class for the Context Sensitive Menu in TYPO3 (rendered in top frame, normally writing content dynamically to list frames).
  *
@@ -7,7 +9,7 @@
  * @subpackage core
  * @see template::getContextMenuCode()
  */
-class SC_alt_clickmenu {
+class ClickMenuController {
 
 	// Internal, static: GPvar:
 	// Back path.
@@ -67,14 +69,14 @@ class SC_alt_clickmenu {
 	 */
 	public function init() {
 		// Setting GPvars:
-		$this->backPath = t3lib_div::_GP('backPath');
-		$this->item = t3lib_div::_GP('item');
-		$this->reloadListFrame = t3lib_div::_GP('reloadListFrame');
+		$this->backPath = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('backPath');
+		$this->item = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('item');
+		$this->reloadListFrame = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('reloadListFrame');
 		// Setting pseudo module name
 		$this->MCONF['name'] = 'xMOD_alt_clickmenu.php';
 		// Takes the backPath as a parameter BUT since we are worried about someone forging a backPath (XSS security hole) we will check with sent md5 hash:
 		$inputBP = explode('|', $this->backPath);
-		if (count($inputBP) == 2 && $inputBP[1] == t3lib_div::shortMD5(($inputBP[0] . '|') . $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
+		if (count($inputBP) == 2 && $inputBP[1] == \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(($inputBP[0] . '|') . $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
 			$this->backPath = $inputBP[0];
 		} else {
 			$this->backPath = $GLOBALS['BACK_PATH'];
@@ -91,7 +93,7 @@ class SC_alt_clickmenu {
 		}
 		// Initialize template object
 		if (!$this->ajax) {
-			$this->doc = t3lib_div::makeInstance('template');
+			$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		}
 		// Setting mode for display and background image in the top frame
@@ -100,7 +102,7 @@ class SC_alt_clickmenu {
 			$this->doc->bodyTagId .= '-notop';
 		}
 		// Setting clickmenu timeout
-		$secs = t3lib_utility_Math::forceIntegerInRange($GLOBALS['BE_USER']->getTSConfigVal('options.contextMenu.options.clickMenuTimeOut'), 1, 100, 5);
+		$secs = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['BE_USER']->getTSConfigVal('options.contextMenu.options.clickMenuTimeOut'), 1, 100, 5);
 		// default is 5
 		// Setting the JavaScript controlling the timer on the page
 		$listFrameDoc = $this->reloadListFrame != 2 ? 'top.content.list_frame' : 'top.content';
@@ -108,7 +110,7 @@ class SC_alt_clickmenu {
 	var date = new Date();
 	var mo_timeout = Math.floor(date.getTime()/1000);
 
-	roImg = "' . t3lib_iconWorks::getSpriteIconClasses('status-status-current')) . '";
+	roImg = "' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconClasses('status-status-current')) . '";
 
 	routImg = "t3-icon-empty";
 
@@ -156,20 +158,20 @@ class SC_alt_clickmenu {
 	 * @todo Define visibility
 	 */
 	public function main() {
-		$this->ajax = t3lib_div::_GP('ajax') ? TRUE : FALSE;
+		$this->ajax = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('ajax') ? TRUE : FALSE;
 		// Initialize Clipboard object:
-		$clipObj = t3lib_div::makeInstance('t3lib_clipboard');
+		$clipObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Clipboard\\Clipboard');
 		$clipObj->initializeClipboard();
 		// This locks the clipboard to the Normal for this request.
 		$clipObj->lockToNormal();
 		// Update clipboard if some actions are sent.
-		$CB = t3lib_div::_GET('CB');
+		$CB = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('CB');
 		$clipObj->setCmd($CB);
 		$clipObj->cleanCurrent();
 		// Saves
 		$clipObj->endClipboard();
 		// Create clickmenu object
-		$clickMenu = t3lib_div::makeInstance('clickMenu');
+		$clickMenu = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\ClickMenu\\ClickMenu');
 		// Set internal vars in clickmenu object:
 		$clickMenu->clipObj = $clipObj;
 		$clickMenu->extClassArray = $this->extClassArray;
@@ -201,5 +203,6 @@ class SC_alt_clickmenu {
 	}
 
 }
+
 
 ?>

@@ -45,7 +45,7 @@ $LANG->includeLLFile('EXT:lang/locallang_misc.xml');
  * @package TYPO3
  * @subpackage core
  */
-class localPageTree extends t3lib_pageTree {
+class localPageTree extends \TYPO3\CMS\Backend\Tree\View\PageTreeView {
 
 	/**
 	 * Inserting uid-information in title-text for an icon
@@ -78,9 +78,9 @@ class localPageTree extends t3lib_pageTree {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/NewRecordController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/NewRecordController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/NewRecordController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_db_new');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\NewRecordController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

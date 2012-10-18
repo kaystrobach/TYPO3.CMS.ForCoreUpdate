@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-interface tx_form_System_Validate_Interface
+interface InterfaceValidator
 {
 	/**
 	 * Set the fieldName
@@ -98,4 +100,5 @@ interface tx_form_System_Validate_Interface
 	public function messageMustBeDisplayed();
 
 }
+
 ?>

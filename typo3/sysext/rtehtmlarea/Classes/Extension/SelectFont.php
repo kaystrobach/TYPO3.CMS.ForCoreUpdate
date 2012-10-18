@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_selectfont extends tx_rtehtmlarea_api {
+class SelectFont extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -102,7 +104,7 @@ class tx_rtehtmlarea_selectfont extends tx_rtehtmlarea_api {
 	 */
 	public function buildJavascriptConfiguration($RTEcounter) {
 		$registerRTEinJavascriptString = '';
-		$pluginButtonsArray = t3lib_div::trimExplode(',', $this->pluginButtons);
+		$pluginButtonsArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pluginButtons);
 		// Process Page TSConfig configuration for each button
 		foreach ($pluginButtonsArray as $buttonId) {
 			if (in_array($buttonId, $this->toolbar)) {
@@ -129,7 +131,7 @@ class tx_rtehtmlarea_selectfont extends tx_rtehtmlarea_api {
 				$hideItems = $this->thisConfig['buttons.'][$buttonId . '.']['removeItems'];
 			}
 			if ($this->thisConfig['buttons.'][$buttonId . '.']['addItems']) {
-				$addItems = t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList($this->thisConfig['buttons.'][$buttonId . '.']['addItems']), 1);
+				$addItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList($this->thisConfig['buttons.'][$buttonId . '.']['addItems']), 1);
 			}
 		}
 		// Initializing the items array
@@ -143,7 +145,7 @@ class tx_rtehtmlarea_selectfont extends tx_rtehtmlarea_api {
 		if ($hideItems != '*') {
 			$index = 0;
 			foreach ($this->defaultFont[$buttonId] as $name => $value) {
-				if (!t3lib_div::inList($hideItems, strval(($index + 1)))) {
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($hideItems, strval(($index + 1)))) {
 					if ($this->htmlAreaRTE->is_FE()) {
 						$label = $GLOBALS['TSFE']->getLLL($name, $this->LOCAL_LANG);
 					} else {
@@ -192,5 +194,6 @@ class tx_rtehtmlarea_selectfont extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Core;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * The script aborts execution with an error message if
  * some part fails or conditions are not met.
  */
-class Typo3_Bootstrap_BaseSetup {
+class SystemEnvironmentBuilder {
 
 	/**
 	 * Run base setup.
@@ -134,7 +136,7 @@ class Typo3_Bootstrap_BaseSetup {
 		// Security related constant: List of file extensions that should be registered as php script file extensions
 		define('PHP_EXTENSIONS_DEFAULT', 'php,php3,php4,php5,php6,phpsh,inc,phtml');
 		// List of extensions required to run the core
-		define('REQUIRED_EXTENSIONS', 'cms,lang,sv,extensionmanager,recordlist,extbase,fluid');
+		define('REQUIRED_EXTENSIONS', 'core,backend,frontend,cli,integrity,cms,lang,sv,extensionmanager,recordlist,extbase,fluid');
 		// Operating system identifier
 		// Either "WIN" or empty string
 		define('TYPO3_OS', self::getTypo3Os());
@@ -204,29 +206,29 @@ class Typo3_Bootstrap_BaseSetup {
 	 */
 	static protected function requireBaseClasses() {
 		/** @define PATH_t3lib" "../../../t3lib/ */
-		require_once PATH_t3lib . 'class.t3lib_div.php';
-		require_once PATH_t3lib . 'utility/class.t3lib_utility_array.php';
-		require_once PATH_t3lib . 'class.t3lib_configuration.php';
-		require_once PATH_t3lib . 'class.t3lib_extmgm.php';
-		require_once PATH_t3lib . 'class.t3lib_cache.php';
-		require_once PATH_t3lib . 'cache/class.t3lib_cache_exception.php';
-		require_once PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_nosuchcache.php';
-		require_once PATH_t3lib . 'cache/exception/class.t3lib_cache_exception_invaliddata.php';
-		require_once PATH_t3lib . 'interfaces/interface.t3lib_singleton.php';
-		require_once PATH_t3lib . 'cache/class.t3lib_cache_factory.php';
-		require_once PATH_t3lib . 'cache/class.t3lib_cache_manager.php';
-		require_once PATH_t3lib . 'cache/frontend/interfaces/interface.t3lib_cache_frontend_frontend.php';
-		require_once PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php';
-		require_once PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_stringfrontend.php';
-		require_once PATH_t3lib . 'cache/frontend/class.t3lib_cache_frontend_phpfrontend.php';
-		require_once PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_backend.php';
-		require_once PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_taggablebackend.php';
-		require_once PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_abstractbackend.php';
-		require_once PATH_t3lib . 'cache/backend/interfaces/interface.t3lib_cache_backend_phpcapablebackend.php';
-		require_once PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_simplefilebackend.php';
-		require_once PATH_t3lib . 'cache/backend/class.t3lib_cache_backend_nullbackend.php';
-		require_once PATH_t3lib . 'log/class.t3lib_log_level.php';
-		require_once PATH_t3lib . 'class.t3lib_autoloader.php';
+		require_once __DIR__ . '/../Utility/GeneralUtility.php';
+		require_once __DIR__ . '/../Utility/ArrayUtility.php';
+		require_once __DIR__ . '/../Configuration/ConfigurationManager.php';
+		require_once __DIR__ . '/../Extension/ExtensionManager.php';
+		require_once __DIR__ . '/../Cache/Cache.php';
+		require_once __DIR__ . '/../Cache/Exception.php';
+		require_once __DIR__ . '/../Cache/Exception/NoSuchCacheException.php';
+		require_once __DIR__ . '/../Cache/Exception/InvalidDataException.php';
+		require_once __DIR__ . '/../SingletonInterface.php';
+		require_once __DIR__ . '/../Cache/CacheFactory.php';
+		require_once __DIR__ . '/../Cache/CacheManager.php';
+		require_once __DIR__ . '/../Cache/Frontend/FrontendInterface.php';
+		require_once __DIR__ . '/../Cache/Frontend/AbstractFrontend.php';
+		require_once __DIR__ . '/../Cache/Frontend/StringFrontend.php';
+		require_once __DIR__ . '/../Cache/Frontend/PhpFrontend.php';
+		require_once __DIR__ . '/../Cache/Backend/BackendInterface.php';
+		require_once __DIR__ . '/../Cache/Backend/TaggableBackendInterface.php';
+		require_once __DIR__ . '/../Cache/Backend/AbstractBackend.php';
+		require_once __DIR__ . '/../Cache/Backend/PhpCapableBackendInterface.php';
+		require_once __DIR__ . '/../Cache/Backend/SimpleFileBackend.php';
+		require_once __DIR__ . '/../Cache/Backend/NullBackend.php';
+		require_once __DIR__ . '/../Log/LogLevel.php';
+		require_once __DIR__ . '/../Autoloader.php';
 	}
 
 	/**
@@ -236,8 +238,8 @@ class Typo3_Bootstrap_BaseSetup {
 	 */
 	static protected function handleMagicQuotesGpc() {
 		if (!get_magic_quotes_gpc()) {
-			t3lib_div::addSlashesOnArray($_GET);
-			t3lib_div::addSlashesOnArray($_POST);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::addSlashesOnArray($_GET);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::addSlashesOnArray($_POST);
 			$GLOBALS['HTTP_GET_VARS'] = $_GET;
 			$GLOBALS['HTTP_POST_VARS'] = $_POST;
 		}
@@ -270,7 +272,7 @@ class Typo3_Bootstrap_BaseSetup {
 		// Unset variable(s) in global scope (security issue #13959)
 		unset($GLOBALS['error']);
 		// Set up base information about browser/user-agent
-		$GLOBALS['CLIENT'] = t3lib_div::clientInfo();
+		$GLOBALS['CLIENT'] = \TYPO3\CMS\Core\Utility\GeneralUtility::clientInfo();
 		$GLOBALS['TYPO3_MISC'] = array();
 		$GLOBALS['T3_VAR'] = array();
 		$GLOBALS['T3_SERVICES'] = array();
@@ -282,7 +284,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 * @return void
 	 */
 	static protected function loadDefaultConfiguration() {
-		$GLOBALS['TYPO3_CONF_VARS'] = t3lib_Configuration::getDefaultConfiguration();
+		$GLOBALS['TYPO3_CONF_VARS'] = \TYPO3\CMS\Core\Configuration\ConfigurationManager::getDefaultConfiguration();
 	}
 
 	/**
@@ -293,7 +295,7 @@ class Typo3_Bootstrap_BaseSetup {
 	 */
 	static protected function initializeGlobalTimeTrackingVariables() {
 		// Set PARSETIME_START to the system time in milliseconds.
-		$GLOBALS['PARSETIME_START'] = t3lib_div::milliseconds();
+		$GLOBALS['PARSETIME_START'] = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 		// Microtime of (nearly) script start
 		$GLOBALS['TYPO3_MISC']['microtime_start'] = microtime(TRUE);
 		// EXEC_TIME is set so that the rest of the script has a common value for the script execution time
@@ -518,5 +520,6 @@ class Typo3_Bootstrap_BaseSetup {
 	}
 
 }
+
 
 ?>

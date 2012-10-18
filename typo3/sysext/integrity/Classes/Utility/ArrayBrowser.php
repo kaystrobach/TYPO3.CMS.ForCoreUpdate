@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @subpackage t3lib
  * @see SC_mod_tools_config_index::main()
  */
-class t3lib_arrayBrowser {
+class ArrayBrowser {
 
 	/**
 	 * @todo Define visibility
@@ -124,11 +126,11 @@ class t3lib_arrayBrowser {
 			$BTM = $a == $c ? 'bottom' : '';
 			$PM = $isArray ? ($deeper ? 'minus' : 'plus') : 'join';
 			$HTML .= $depthData;
-			$theIcon = ('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" border="0" alt="" />';
+			$theIcon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" border="0" alt="" />';
 			if ($PM == 'join') {
 				$HTML .= $theIcon;
 			} else {
-				$HTML .= (($this->expAll ? '' : ((('<a id="' . $goto) . '" href="') . htmlspecialchars(((((((t3lib_BEfunc::getModuleUrl(t3lib_div::_GP('M')) . '&node[') . $depth) . ']=') . ($deeper ? 0 : 1)) . '#') . $goto))) . '">') . $theIcon) . ($this->expAll ? '' : '</a>');
+				$HTML .= (($this->expAll ? '' : ((('<a id="' . $goto) . '" href="') . htmlspecialchars(((((((\TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('M')) . '&node[') . $depth) . ']=') . ($deeper ? 0 : 1)) . '#') . $goto))) . '">') . $theIcon) . ($this->expAll ? '' : '</a>');
 			}
 			$label = $key;
 			$HTML .= $this->wrapArrayKey($label, $depth, !$isArray ? $arr[$key] : '');
@@ -147,7 +149,7 @@ class t3lib_arrayBrowser {
 			}
 			$HTML .= '<br />';
 			if ($deeper) {
-				$HTML .= $this->tree($arr[$key], $depth, (($depthData . '<img') . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />');
+				$HTML .= $this->tree($arr[$key], $depth, (($depthData . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />');
 			}
 		}
 		return $HTML;
@@ -183,8 +185,8 @@ class t3lib_arrayBrowser {
 		$label = htmlspecialchars($label);
 		// If varname is set:
 		if ($this->varName && !$this->dontLinkVar) {
-			$variableName = (((($this->varName . '[\'') . str_replace('.', '\'][\'', $depth)) . '\'] = ') . (!t3lib_utility_Math::canBeInterpretedAsInteger($theValue) ? ('\'' . addslashes($theValue)) . '\'' : $theValue)) . '; ';
-			$label = ((('<a href="' . htmlspecialchars(((t3lib_BEfunc::getModuleUrl(t3lib_div::_GP('M')) . '&varname=') . urlencode($variableName)))) . '#varname">') . $label) . '</a>';
+			$variableName = (((($this->varName . '[\'') . str_replace('.', '\'][\'', $depth)) . '\'] = ') . (!\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($theValue) ? ('\'' . addslashes($theValue)) . '\'' : $theValue)) . '; ';
+			$label = ((('<a href="' . htmlspecialchars(((\TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('M')) . '&varname=') . urlencode($variableName)))) . '#varname">') . $label) . '</a>';
 		}
 		// Return:
 		return ('[' . $label) . ']';
@@ -279,5 +281,6 @@ class t3lib_arrayBrowser {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_ShowExtensionVersionsViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class ShowExtensionVersionsViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelper {
 
 	/**
 	 * @var string
@@ -41,7 +43,7 @@ class Tx_Extensionmanager_ViewHelpers_ShowExtensionVersionsViewHelper extends Tx
 	/**
 	 * Renders an install link
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return string the rendered a tag
 	 */
 	public function render($extension) {
@@ -58,5 +60,6 @@ class Tx_Extensionmanager_ViewHelpers_ShowExtensionVersionsViewHelper extends Tx
 	}
 
 }
+
 
 ?>

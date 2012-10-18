@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class, creating the content for the dummy script - which is just blank output.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_dummy {
+class DummyController {
 
 	/**
 	 * @todo Define visibility
@@ -37,5 +39,6 @@ class SC_dummy {
 	}
 
 }
+
 
 ?>

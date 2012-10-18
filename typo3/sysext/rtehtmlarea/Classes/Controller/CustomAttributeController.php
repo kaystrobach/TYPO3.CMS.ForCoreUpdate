@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_pi3 extends tslib_pibase {
+class CustomAttributeController extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	// Default plugin variables:
 	/**
@@ -58,7 +60,7 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 	/**
 	 * cObj object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 * @todo Define visibility
 	 */
 	public $cObj;
@@ -78,7 +80,7 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 			// Backward compatibility
 			$clickenlarge = isset($this->cObj->parameters['clickenlarge']) ? $this->cObj->parameters['clickenlarge'] : 0;
 		}
-		$fileFactory = t3lib_file_Factory::getInstance();
+		$fileFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
 		$fileTable = $this->cObj->parameters['data-htmlarea-file-table'];
 		$fileUid = $this->cObj->parameters['data-htmlarea-file-uid'];
 		if ($fileUid) {
@@ -89,10 +91,10 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 			// Pre-FAL backward compatibility
 			$path = $this->cObj->parameters['src'];
 			$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier($GLOBALS['TYPO3_CONF_VARS']['BE']['RTE_imageStorageDir']);
-			if ($magicFolder instanceof t3lib_file_Folder) {
+			if ($magicFolder instanceof \TYPO3\CMS\Core\Resource\Folder) {
 				$magicFolderPath = $magicFolder->getPublicUrl();
 				$pathPre = $magicFolderPath . 'RTEmagicC_';
-				if (t3lib_div::isFirstPartOfStr($path, $pathPre)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($path, $pathPre)) {
 					// Find original file:
 					$pI = pathinfo(substr($path, strlen($pathPre)));
 					$filename = substr($pI['basename'], 0, -strlen(('.' . $pI['extension'])));
@@ -107,7 +109,7 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 		// Backward compatibility
 		unset($this->cObj->parameters['clickenlarge']);
 		unset($this->cObj->parameters['allParams']);
-		$content = ('<img ' . t3lib_div::implodeAttributes($this->cObj->parameters, TRUE, TRUE)) . ' />';
+		$content = ('<img ' . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeAttributes($this->cObj->parameters, TRUE, TRUE)) . ' />';
 		if ($clickenlarge && is_array($conf['imageLinkWrap.'])) {
 			$theImage = $file ? $GLOBALS['TSFE']->tmpl->getFileName($file) : '';
 			if ($theImage) {
@@ -126,5 +128,6 @@ class tx_rtehtmlarea_pi3 extends tslib_pibase {
 	}
 
 }
+
 
 ?>

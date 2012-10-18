@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface tslib_content_getDataHook
+interface ContentObjectGetDataHookInterface
 {
 	/**
 	 * Extends the getData()-Method of tslib_cObj to process more/other commands
@@ -40,10 +42,11 @@ interface tslib_content_getDataHook
 	 * @param array $fields Current field-array
 	 * @param string $sectionValue Currently examined section value of the getData request e.g. "field:title
 	 * @param string $returnValue Current returnValue that was processed so far by getData
-	 * @param tslib_cObj $parentObject Parent content object
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject Parent content object
 	 * @return string Get data result
 	 */
-	public function getDataExtension($getDataString, array $fields, $sectionValue, $returnValue, tslib_cObj &$parentObject);
+	public function getDataExtension($getDataString, array $fields, $sectionValue, $returnValue, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer &$parentObject);
 
 }
+
 ?>

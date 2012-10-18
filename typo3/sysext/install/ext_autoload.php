@@ -2,7 +2,7 @@
 /*
  * Register necessary class names with autoloader
  */
-$extPath = t3lib_extMgm::extPath('install');
+$extPath = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('install');
 return array(
 	'tx_install_report_installstatus' => $extPath . 'report/class.tx_install_report_installstatus.php',
 	'tx_install_service_basicservice' => $extPath . 'Classes/Service/BasicService.php',

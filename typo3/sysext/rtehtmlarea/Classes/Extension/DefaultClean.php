@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_defaultclean extends tx_rtehtmlarea_api {
+class DefaultClean extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -90,9 +92,10 @@ class tx_rtehtmlarea_defaultclean extends tx_rtehtmlarea_api {
 	 * @return 	array		toolbar button array, possibly updated
 	 */
 	public function applyToolbarConstraints($show) {
-		return array_unique(array_merge($show, t3lib_div::trimExplode(',', $this->pluginButtons)));
+		return array_unique(array_merge($show, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pluginButtons)));
 	}
 
 }
+
 
 ?>

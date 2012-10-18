@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Importer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,12 +39,12 @@
  * @package Extension Manager
  * @subpackage Utility/Importer
  */
-class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
+class MirrorListUtility implements SplObserver {
 
 	/**
 	 * Keeps instance of a XML parser.
 	 *
-	 * @var Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\Parser\MirrorXmlAbstractParser
 	 */
 	protected $parser;
 
@@ -62,11 +64,11 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 */
 	public function __construct() {
 		// TODO catch parser exception
-		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('mirror');
+		$this->parser = \TYPO3\CMS\Extensionmanager\Utility\Parser\XmlParserFactory::getParserInstance('mirror');
 		if (is_object($this->parser)) {
 			$this->parser->attach($this);
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(get_class($this) . ': No XML parser available.', 1342640390);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(get_class($this) . ': No XML parser available.', 1342640390);
 		}
 	}
 
@@ -75,13 +77,13 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 * Tx_Extensionmanager_Domain_Model_Mirrors with retrieved details.
 	 *
 	 * @param string $localMirrorListFile absolute path to local mirror xml.gz file
-	 * @return Tx_Extensionmanager_Domain_Model_Mirrors
+	 * @return \TYPO3\CMS\Extensionmanager\Domain\Model\Mirrors
 	 */
 	public function getMirrors($localMirrorListFile) {
 		$zlibStream = 'compress.zlib://';
 		$this->parser->parseXml($zlibStream . $localMirrorListFile);
-		/** @var $objRepositoryMirrors Tx_Extensionmanager_Domain_Model_Mirrors */
-		$objRepositoryMirrors = t3lib_div::makeInstance('Tx_Extensionmanager_Domain_Model_Mirrors');
+		/** @var $objRepositoryMirrors \TYPO3\CMS\Extensionmanager\Domain\Model\Mirrors */
+		$objRepositoryMirrors = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Mirrors');
 		$objRepositoryMirrors->setMirrors($this->arrTmpMirrors);
 		$this->arrTmpMirrors = array();
 		return $objRepositoryMirrors;
@@ -93,13 +95,14 @@ class Tx_Extensionmanager_Utility_Importer_MirrorList implements SplObserver {
 	 * @param SplSubject $subject a subject notifying this observer
 	 * @return void
 	 */
-	public function update(SplSubject $subject) {
+	public function update(\SplSubject $subject) {
 		// TODO mirrorxml_abstract_parser
-		if (is_subclass_of($subject, 'Tx_Extensionmanager_Utility_Parser_XmlAbstractParser')) {
+		if (is_subclass_of($subject, 'TYPO3\\CMS\\Extensionmanager\\Utility\\Parser\\XmlAbstractParser')) {
 			$this->arrTmpMirrors[] = $subject->getAll();
 		}
 	}
 
 }
+
 
 ?>

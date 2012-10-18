@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html_Element_Hidden extends tx_form_View_Mail_Html_Element_Abstract {
+class HiddenElementView extends \TYPO3\CMS\Form\View\Mail\Html\Element\AbstractElementView {
 
 	/**
 	 * Default layout of this object
@@ -49,13 +51,14 @@ class tx_form_View_Mail_Html_Element_Hidden extends tx_form_View_Mail_Html_Eleme
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Hidden $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\HiddenElement $model Model for this element
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Hidden $model) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\HiddenElement $model) {
 		parent::__construct($model);
 	}
 
 }
+
 
 ?>

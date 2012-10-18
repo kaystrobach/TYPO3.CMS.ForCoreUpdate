@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_rootline {
+class RootlineUtility {
 
 	/**
 	 * @var integer
@@ -61,7 +63,7 @@ class t3lib_rootline {
 	protected $versionPreview = FALSE;
 
 	/**
-	 * @var t3lib_cache_frontend_Frontend
+	 * @var \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
 	 */
 	static protected $cache = NULL;
 
@@ -104,7 +106,7 @@ class t3lib_rootline {
 	/**
 	 * Rootline Context
 	 *
-	 * @var t3lib_pageSelect
+	 * @var \TYPO3\CMS\Frontend\Page\PageRepository
 	 */
 	protected $pageContext;
 
@@ -116,17 +118,17 @@ class t3lib_rootline {
 	/**
 	 * @param int $uid
 	 * @param string $mountPointParameter
-	 * @param t3lib_pageSelect $context
+	 * @param \TYPO3\CMS\Frontend\Page\PageRepository $context
 	 * @throws RuntimeException
 	 */
-	public function __construct($uid, $mountPointParameter = '', t3lib_pageSelect $context = NULL) {
+	public function __construct($uid, $mountPointParameter = '', \TYPO3\CMS\Frontend\Page\PageRepository $context = NULL) {
 		$this->pageUid = intval($uid);
 		$this->mountPointParameter = trim($mountPointParameter);
 		if ($context === NULL) {
 			if ($GLOBALS['TSFE']->sys_page !== NULL) {
 				$this->pageContext = $GLOBALS['TSFE']->sys_page;
 			} else {
-				$this->pageContext = t3lib_div::makeInstance('t3lib_pageSelect');
+				$this->pageContext = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 			}
 		} else {
 			$this->pageContext = $context;
@@ -146,7 +148,7 @@ class t3lib_rootline {
 		$this->versionPreview = $this->pageContext->versioningPreview;
 		if ($this->mountPointParameter !== '') {
 			if (!$GLOBALS['TYPO3_CONF_VARS']['FE']['enable_mount_pids']) {
-				throw new RuntimeException('Mount-Point Pages are disabled for this installation. Cannot resolve a Rootline for a page with Mount-Points', 1343462896);
+				throw new \RuntimeException('Mount-Point Pages are disabled for this installation. Cannot resolve a Rootline for a page with Mount-Points', 1343462896);
 			} else {
 				$this->parseMountPointParameter();
 			}
@@ -154,7 +156,7 @@ class t3lib_rootline {
 		if (self::$cache === NULL) {
 			self::$cache = $GLOBALS['typo3CacheManager']->getCache('cache_rootline');
 		}
-		self::$rootlineFields = array_merge(self::$rootlineFields, t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'], TRUE));
+		self::$rootlineFields = array_merge(self::$rootlineFields, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'], TRUE));
 		array_unique(self::$rootlineFields);
 	}
 
@@ -204,11 +206,11 @@ class t3lib_rootline {
 				if (isset($GLOBALS['TSFE'])) {
 					$GLOBALS['TSFE']->includeTCA($GLOBALS['TSFE']->TCAloaded);
 				}
-				t3lib_div::loadTCA('pages');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('pages');
 			}
-			$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(implode(',', self::$rootlineFields), 'pages', (('uid = ' . intval($uid)) . ' AND pages.deleted = 0 AND pages.doktype <> ') . t3lib_pageSelect::DOKTYPE_RECYCLER);
+			$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(implode(',', self::$rootlineFields), 'pages', (('uid = ' . intval($uid)) . ' AND pages.deleted = 0 AND pages.doktype <> ') . \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_RECYCLER);
 			if (empty($row)) {
-				throw new RuntimeException(('Could not fetch page data for uid ' . $uid) . '.', 1343589451);
+				throw new \RuntimeException(('Could not fetch page data for uid ' . $uid) . '.', 1343589451);
 			}
 			$this->pageContext->versionOL('pages', $row, FALSE, TRUE);
 			$this->pageContext->fixVersioningPid('pages', $row);
@@ -219,7 +221,7 @@ class t3lib_rootline {
 			}
 		}
 		if (!is_array(self::$pageRecordCache[$this->getCacheIdentifier($uid)])) {
-			throw new RuntimeException(('Broken rootline. Could not resolve page with uid ' . $uid) . '.', 1343464101);
+			throw new \RuntimeException(('Broken rootline. Could not resolve page with uid ' . $uid) . '.', 1343464101);
 		}
 		return self::$pageRecordCache[$this->getCacheIdentifier($uid)];
 	}
@@ -237,8 +239,8 @@ class t3lib_rootline {
 			if ($this->columnHasRelationToResolve($configuration)) {
 				$configuration = $configuration['config'];
 				if ($configuration['MM']) {
-					/** @var $loadDBGroup t3lib_loadDBGroup */
-					$loadDBGroup = t3lib_div::makeInstance('t3lib_loadDBGroup');
+					/** @var $loadDBGroup \TYPO3\CMS\Core\Database\RelationHandler */
+					$loadDBGroup = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 					$loadDBGroup->start($pageRecord[$column], $configuration['foreign_table'], $configuration['MM'], $uid, 'pages', $configuration);
 					$relatedUids = $loadDBGroup->tableArray[$configuration['foreign_table']];
 				} elseif ($configuration['foreign_field']) {
@@ -256,7 +258,7 @@ class t3lib_rootline {
 					$whereClause = implode(' AND ', $whereClauseParts);
 					$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $table, $whereClause);
 					if (!is_array($rows)) {
-						throw new RuntimeException((('Could to resolve related records for page ' . $uid) . ' and foreign_table ') . htmlspecialchars($configuration['foreign_table']), 1343589452);
+						throw new \RuntimeException((('Could to resolve related records for page ' . $uid) . ' and foreign_table ') . htmlspecialchars($configuration['foreign_table']), 1343589452);
 					}
 					$relatedUids = array();
 					foreach ($rows as $row) {
@@ -309,14 +311,14 @@ class t3lib_rootline {
 		if ($parentUid > 0) {
 			// Get rootline of (and including) parent page
 			$mountPointParameter = count($this->parsedMountPointParameters) > 0 ? $this->mountPointParameter : '';
-			/** @var $rootline t3lib_rootline */
-			$rootline = t3lib_div::makeInstance('t3lib_rootline', $parentUid, $mountPointParameter, $this->pageContext);
+			/** @var $rootline \TYPO3\CMS\Core\Utility\RootlineUtility */
+			$rootline = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\RootlineUtility', $parentUid, $mountPointParameter, $this->pageContext);
 			$rootline = $rootline->get();
 			// retrieve cache tags of parent rootline
 			foreach ($rootline as $entry) {
 				$cacheTags[] = 'pageId_' . $entry['uid'];
 				if ($entry['uid'] == $this->pageUid) {
-					throw new RuntimeException(('Circular connection in rootline for page with uid ' . $this->pageUid) . ' found. Check your mountpoint configuration.', 1343464103);
+					throw new \RuntimeException(('Circular connection in rootline for page with uid ' . $this->pageUid) . ' found. Check your mountpoint configuration.', 1343464103);
 				}
 			}
 		} else {
@@ -348,7 +350,7 @@ class t3lib_rootline {
 	 */
 	protected function processMountedPage(array $mountedPageData, array $mountPointPageData) {
 		if ($mountPointPageData['mount_pid'] != $mountedPageData['uid']) {
-			throw new RuntimeException(((('Broken rootline. Mountpoint parameter does not match the actual rootline. mount_pid (' . $mountPointPageData['mount_pid']) . ') does not match page uid (') . $mountedPageData['uid']) . ').', 1343464100);
+			throw new \RuntimeException(((('Broken rootline. Mountpoint parameter does not match the actual rootline. mount_pid (' . $mountPointPageData['mount_pid']) . ') does not match page uid (') . $mountedPageData['uid']) . ').', 1343464100);
 		}
 		// Current page replaces the original mount-page
 		if ($mountPointPageData['mount_pid_ol']) {
@@ -375,13 +377,14 @@ class t3lib_rootline {
 	 * @return void
 	 */
 	protected function parseMountPointParameter() {
-		$mountPoints = t3lib_div::trimExplode(',', $this->mountPointParameter);
+		$mountPoints = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->mountPointParameter);
 		foreach ($mountPoints as $mP) {
-			list($mountedPageUid, $mountPageUid) = t3lib_div::intExplode('-', $mP);
+			list($mountedPageUid, $mountPageUid) = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('-', $mP);
 			$this->parsedMountPointParameters[$mountedPageUid] = $mountPageUid;
 		}
 	}
 
 }
+
 
 ?>

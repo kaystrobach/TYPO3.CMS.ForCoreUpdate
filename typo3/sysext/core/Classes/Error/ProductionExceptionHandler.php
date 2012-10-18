@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage error
  */
-class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExceptionHandler {
+class ProductionExceptionHandler extends \TYPO3\CMS\Core\Error\AbstractExceptionHandler {
 
 	/**
 	 * Default title for error messages
@@ -61,10 +63,10 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @param Exception $exception The exception
 	 * @return void
 	 */
-	public function echoExceptionWeb(Exception $exception) {
+	public function echoExceptionWeb(\Exception $exception) {
 		$this->sendStatusHeaders($exception);
 		$this->writeLogEntries($exception, self::CONTEXT_WEB);
-		$messageObj = t3lib_div::makeInstance('t3lib_message_ErrorPageMessage', $this->getMessage($exception), $this->getTitle($exception));
+		$messageObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_message_ErrorPageMessage', $this->getMessage($exception), $this->getTitle($exception));
 		$messageObj->output();
 	}
 
@@ -74,7 +76,7 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @param Exception $exception The exception
 	 * @return void
 	 */
-	public function echoExceptionCLI(Exception $exception) {
+	public function echoExceptionCLI(\Exception $exception) {
 		$this->writeLogEntries($exception, self::CONTEXT_CLI);
 		die(1);
 	}
@@ -85,9 +87,9 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @param Exception $exception The exception
 	 * @return boolean
 	 */
-	protected function discloseExceptionInformation(Exception $exception) {
+	protected function discloseExceptionInformation(\Exception $exception) {
 		// Show client error messages 40x in every case
-		if ($exception instanceof t3lib_error_http_AbstractClientErrorException) {
+		if ($exception instanceof \TYPO3\CMS\Core\Error\Http\AbstractClientErrorException) {
 			return TRUE;
 		}
 		// Only show errors in FE, if a BE user is authenticated
@@ -103,7 +105,7 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @param Exception $exception Exception causing the error
 	 * @return string
 	 */
-	protected function getTitle(Exception $exception) {
+	protected function getTitle(\Exception $exception) {
 		if (($this->discloseExceptionInformation($exception) && method_exists($exception, 'getTitle')) && strlen($exception->getTitle()) > 0) {
 			return htmlspecialchars($exception->getTitle());
 		} else {
@@ -117,7 +119,7 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	 * @param Exception $exception Exception causing the error
 	 * @return string
 	 */
-	protected function getMessage(Exception $exception) {
+	protected function getMessage(\Exception $exception) {
 		if ($this->discloseExceptionInformation($exception)) {
 			// Exception has an error code given
 			if ($exception->getCode() > 0) {
@@ -132,5 +134,6 @@ class t3lib_error_ProductionExceptionHandler extends t3lib_error_AbstractExcepti
 	}
 
 }
+
 
 ?>

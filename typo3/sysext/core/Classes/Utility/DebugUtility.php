@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_utility_Debug {
+final class DebugUtility {
 
 	/**
 	 * Template for debug output
@@ -107,7 +109,7 @@ final class t3lib_utility_Debug {
 					});
 				})();
 			';
-			echo t3lib_div::wrapJS($script);
+			echo \TYPO3\CMS\Core\Utility\GeneralUtility::wrapJS($script);
 		} else {
 			echo $debug;
 		}
@@ -222,7 +224,7 @@ final class t3lib_utility_Debug {
 				}
 			})();
 		';
-		echo t3lib_div::wrapJS($script);
+		echo \TYPO3\CMS\Core\Utility\GeneralUtility::wrapJS($script);
 	}
 
 	/**
@@ -379,5 +381,6 @@ final class t3lib_utility_Debug {
 	}
 
 }
+
 
 ?>

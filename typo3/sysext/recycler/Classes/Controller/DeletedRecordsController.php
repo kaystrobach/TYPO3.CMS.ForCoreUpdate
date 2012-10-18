@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recycler\Controller;
+
 /**
  * Deleted Records View
  *
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage tx_recycler
  */
-class tx_recycler_view_deletedRecords {
+class DeletedRecordsController {
 
 	/**
 	 * Transforms the rows for the deleted Records into the Array View necessary for ExtJS Ext.data.ArrayReader
@@ -26,18 +28,18 @@ class tx_recycler_view_deletedRecords {
 			foreach ($deletedRowsArray as $table => $rows) {
 				$total += count($deletedRowsArray[$table]);
 				foreach ($rows as $row) {
-					$backendUser = t3lib_BEfunc::getRecord('be_users', $row[$GLOBALS['TCA'][$table]['ctrl']['cruser_id']], 'username', '', FALSE);
+					$backendUser = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('be_users', $row[$GLOBALS['TCA'][$table]['ctrl']['cruser_id']], 'username', '', FALSE);
 					$jsonArray['rows'][] = array(
 						'uid' => $row['uid'],
 						'pid' => $row['pid'],
 						'table' => $table,
-						'crdate' => t3lib_BEfunc::datetime($row[$GLOBALS['TCA'][$table]['ctrl']['crdate']]),
-						'tstamp' => t3lib_BEfunc::datetime($row[$GLOBALS['TCA'][$table]['ctrl']['tstamp']]),
+						'crdate' => \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row[$GLOBALS['TCA'][$table]['ctrl']['crdate']]),
+						'tstamp' => \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row[$GLOBALS['TCA'][$table]['ctrl']['tstamp']]),
 						'owner' => htmlspecialchars($backendUser['username']),
 						'owner_uid' => $row[$GLOBALS['TCA'][$table]['ctrl']['cruser_id']],
-						'tableTitle' => tx_recycler_helper::getUtf8String($GLOBALS['LANG']->sL($GLOBALS['TCA'][$table]['ctrl']['title'])),
-						'title' => htmlspecialchars(tx_recycler_helper::getUtf8String(t3lib_BEfunc::getRecordTitle($table, $row))),
-						'path' => tx_recycler_helper::getRecordPath($row['pid'])
+						'tableTitle' => \TYPO3\CMS\Recycler\Utility\RecyclerUtility::getUtf8String($GLOBALS['LANG']->sL($GLOBALS['TCA'][$table]['ctrl']['title'])),
+						'title' => htmlspecialchars(\TYPO3\CMS\Recycler\Utility\RecyclerUtility::getUtf8String(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($table, $row))),
+						'path' => \TYPO3\CMS\Recycler\Utility\RecyclerUtility::getRecordPath($row['pid'])
 					);
 				}
 			}
@@ -47,5 +49,6 @@ class tx_recycler_view_deletedRecords {
 	}
 
 }
+
 
 ?>

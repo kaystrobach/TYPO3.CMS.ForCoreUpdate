@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Select extends tx_form_Domain_Model_Element_Container {
+class SelectElement extends \TYPO3\CMS\Form\Domain\Model\Element\ContainerElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -61,10 +63,10 @@ class tx_form_Domain_Model_Element_Select extends tx_form_Domain_Model_Element_C
 	/**
 	 * Add child object to this element
 	 *
-	 * @param tx_form_Domain_Model_Element_Option $element The child object
-	 * @return tx_form_Domain_Model_Element_Select
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\OptionElement $element The child object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\SelectElement
 	 */
-	public function addElement(tx_form_Domain_Model_Element_Option $element) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Element\OptionElement $element) {
 		$element->setParentName($this->getName());
 		$this->elements[] = $element;
 		return $this;
@@ -75,14 +77,14 @@ class tx_form_Domain_Model_Element_Select extends tx_form_Domain_Model_Element_C
 	 *
 	 * @param string $attribute Name of the attribute
 	 * @param mixed $value Value of the attribute
-	 * @return tx_form_Domain_Model_Element_Select
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\SelectElement
 	 */
 	public function setAttribute($attribute, $value) {
 		if (array_key_exists($attribute, $this->allowedAttributes)) {
 			$this->attributes->addAttribute($attribute, $value);
 		}
 		if (($attribute === 'name' && $this->attributes->hasAttribute('multiple')) && $this->attributes->getValue('multiple') === 'multiple' || $attribute === 'multiple' && $this->attributes->hasAttribute('name')) {
-			/** @var $nameAttribute tx_form_Domain_Model_Attributes_Name */
+			/** @var $nameAttribute \TYPO3\CMS\Form\Domain\Model\Attribute\NameAttribute */
 			$nameAttribute = $this->attributes->getAttributeObjectByKey('name');
 			$nameAttribute->setAddition('[]');
 		}
@@ -90,5 +92,6 @@ class tx_form_Domain_Model_Element_Select extends tx_form_Domain_Model_Element_C
 	}
 
 }
+
 
 ?>

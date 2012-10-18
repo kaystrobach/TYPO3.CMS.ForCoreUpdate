@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth;
+
 // Include backends
 /**
  * Service "RSA authentication" for the "rsaauth" extension. This service will
@@ -11,12 +13,12 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_sv1 extends tx_sv_auth {
+class RsaAuthService extends \TYPO3\CMS\Sv\AuthenticationService {
 
 	/**
 	 * An RSA backend.
 	 *
-	 * @var tx_rsaauth_abstract_backend
+	 * @var \TYPO3\CMS\Rsaauth\Backend\AbstractBackend
 	 */
 	protected $backend = NULL;
 
@@ -55,8 +57,8 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 	public function processLoginData(array &$loginData, $passwordTransmissionStrategy) {
 		$isProcessed = FALSE;
 		if ($passwordTransmissionStrategy === 'rsa') {
-			$storage = tx_rsaauth_storagefactory::getStorage();
-			/** @var $storage tx_rsaauth_abstract_storage */
+			$storage = \TYPO3\CMS\Rsaauth\Storage\StorageFactory::getStorage();
+			/** @var $storage \TYPO3\CMS\Rsaauth\Storage\AbstractStorage */
 			// Decrypt the password
 			$password = $loginData['uident'];
 			$key = $storage->get();
@@ -68,14 +70,14 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 					$isProcessed = TRUE;
 				} else {
 					if ($this->pObj->writeDevLog) {
-						t3lib_div::devLog('Process login data: Failed to RSA decrypt password', 'tx_rsaauth_sv1');
+						\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Process login data: Failed to RSA decrypt password', 'TYPO3\\CMS\\Rsaauth\\RsaAuthService');
 					}
 				}
 				// Remove the key
 				$storage->put(NULL);
 			} else {
 				if ($this->pObj->writeDevLog) {
-					t3lib_div::devLog('Process login data: passwordTransmissionStrategy has been set to "rsa" but no rsa encrypted password has been found.', 'tx_rsaauth_sv1');
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Process login data: passwordTransmissionStrategy has been set to "rsa" but no rsa encrypted password has been found.', 'TYPO3\\CMS\\Rsaauth\\RsaAuthService');
 				}
 			}
 		}
@@ -91,7 +93,7 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 		$available = parent::init();
 		if ($available) {
 			// Get the backend
-			$this->backend = tx_rsaauth_backendfactory::getBackend();
+			$this->backend = \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend();
 			if (is_null($this->backend)) {
 				$available = FALSE;
 			}
@@ -100,5 +102,6 @@ class tx_rsaauth_sv1 extends tx_sv_auth {
 	}
 
 }
+
 
 ?>

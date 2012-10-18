@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Form_Element_Radiogroup extends tx_form_View_Form_Element_Fieldset {
+class RadioGroupElementView extends \TYPO3\CMS\Form\View\Form\Element\FieldsetElementView {
 
 	/**
 	 * Default layout of this object
@@ -43,5 +45,6 @@ class tx_form_View_Form_Element_Radiogroup extends tx_form_View_Form_Element_Fie
 	';
 
 }
+
 
 ?>

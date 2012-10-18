@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Writer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
+class SyslogWriter extends \TYPO3\CMS\Core\Log\Writer\AbstractWriter {
 
 	/**
 	 * List of valid syslog facility names.
@@ -81,7 +83,7 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 		parent::__construct($options);
 		if (!openlog('TYPO3', (LOG_ODELAY | LOG_PID), $this->facility)) {
 			$facilityName = array_search($this->facility, $this->facilities);
-			throw new RuntimeException('Could not open syslog for facility ' . $facilityName, 1321722682);
+			throw new \RuntimeException('Could not open syslog for facility ' . $facilityName, 1321722682);
 		}
 	}
 
@@ -107,10 +109,10 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 	/**
 	 * Returns the data of the record in syslog format
 	 *
-	 * @param t3lib_log_Record $record
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record
 	 * @return string
 	 */
-	public function getMessageForSyslog(t3lib_log_Record $record) {
+	public function getMessageForSyslog(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		$data = $record->getData();
 		$data = !empty($data) ? '- ' . json_encode($data) : '';
 		$message = sprintf('[request="%s" component="%s"] %s %s', $record->getRequestId(), $record->getComponent(), $record->getMessage(), $data);
@@ -120,17 +122,18 @@ class t3lib_log_writer_Syslog extends t3lib_log_writer_Abstract {
 	/**
 	 * Writes the log record to syslog
 	 *
-	 * @param t3lib_log_Record $record Log record
-	 * @return t3lib_log_writer_Writer
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record Log record
+	 * @return \TYPO3\CMS\Core\Log\Writer\Writer
 	 * @throws RuntimeException
 	 */
-	public function writeLog(t3lib_log_Record $record) {
+	public function writeLog(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		if (FALSE === syslog($record->getLevel(), $this->getMessageForSyslog($record))) {
-			throw new RuntimeException('Could not write log record to syslog', 1345036337);
+			throw new \RuntimeException('Could not write log record to syslog', 1345036337);
 		}
 		return $this;
 	}
 
 }
+
 
 ?>

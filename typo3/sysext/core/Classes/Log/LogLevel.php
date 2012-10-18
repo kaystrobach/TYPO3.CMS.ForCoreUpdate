@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_Level {
+class LogLevel {
 
 	/**
 	 * Emergency: system is unusable
@@ -131,7 +133,7 @@ class t3lib_log_Level {
 	 * @return boolean TRUE if the given log level is valid, FALSE otherwise
 	 */
 	static public function isValidLevel($level) {
-		return t3lib_utility_Math::isIntegerInRange($level, self::EMERGENCY, self::DEBUG);
+		return \TYPO3\CMS\Core\Utility\MathUtility::isIntegerInRange($level, self::EMERGENCY, self::DEBUG);
 	}
 
 	/**
@@ -143,10 +145,11 @@ class t3lib_log_Level {
 	 */
 	static public function validateLevel($level) {
 		if (!self::isValidLevel($level)) {
-			throw new RangeException(('Invalid Log Level "' . $level) . '".', 1321637121);
+			throw new \RangeException(('Invalid Log Level "' . $level) . '".', 1321637121);
 		}
 	}
 
 }
+
 
 ?>

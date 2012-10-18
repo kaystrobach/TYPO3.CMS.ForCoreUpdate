@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage tx_reports
  */
-interface tx_reports_Report
+interface ReportInterface
 {
 	/**
 	 * Returns the content for a report
@@ -41,4 +43,5 @@ interface tx_reports_Report
 	public function getReport();
 
 }
+
 ?>

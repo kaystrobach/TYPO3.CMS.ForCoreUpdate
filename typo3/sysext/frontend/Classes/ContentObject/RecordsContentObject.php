@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Records extends tslib_content_Abstract {
+class RecordsContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, RECORDS
@@ -58,7 +60,7 @@ class tslib_content_Records extends tslib_content_Abstract {
 					}
 				}
 			}
-			$loadDB = t3lib_div::makeInstance('FE_loadDBGroup');
+			$loadDB = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('FE_loadDBGroup');
 			$loadDB->start($source, $allowedTables);
 			foreach ($loadDB->tableArray as $table => $v) {
 				if (is_array($GLOBALS['TCA'][$table])) {
@@ -68,7 +70,7 @@ class tslib_content_Records extends tslib_content_Abstract {
 			$loadDB->getFromDB();
 			reset($loadDB->itemArray);
 			$data = $loadDB->results;
-			$cObj = t3lib_div::makeInstance('tslib_cObj');
+			$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 			$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 			$this->cObj->currentRecordNumber = 0;
 			$this->cObj->currentRecordTotal = count($loadDB->itemArray);
@@ -114,5 +116,6 @@ class tslib_content_Records extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

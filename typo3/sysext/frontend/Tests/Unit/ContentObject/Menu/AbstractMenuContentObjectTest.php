@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Tests\Unit\ContentObject\Menu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,10 +30,10 @@
  * @subpackage tslib
  * @author Stefan Galinski <stefan.galinski@gmail.com>
  */
-class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class AbstractMenuContentObjectTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var tslib_menu
+	 * @var \TYPO3\CMS\Frontend\ContentObject\Menu\AbstractMenuContentObject
 	 */
 	private $fixture = NULL;
 
@@ -41,13 +43,13 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	private $backupGlobalVariables = array();
 
 	public function setUp() {
-		$proxy = $this->buildAccessibleProxy('tslib_menu');
+		$proxy = $this->buildAccessibleProxy('TYPO3\\CMS\\Frontend\\ContentObject\\Menu\\AbstractMenuContentObject');
 		$this->fixture = new $proxy();
 		$backupGlobalVariables['TYPO3_DB'] = $GLOBALS['TYPO3_DB'];
 		$GLOBALS['TYPO3_DB'] = $this->getMock('t3lib_db');
 		$backupGlobalVariables['TSFE'] = $GLOBALS['TSFE'];
-		$GLOBALS['TSFE'] = $this->getMock('tslib_fe');
-		$GLOBALS['TSFE']->cObj = new tslib_cObj();
+		$GLOBALS['TSFE'] = $this->getMock('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController');
+		$GLOBALS['TSFE']->cObj = new \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer();
 	}
 
 	public function tearDown() {
@@ -66,8 +68,8 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	 * @return void
 	 */
 	protected function prepareSectionIndexTest() {
-		$this->fixture->sys_page = $this->getMock('t3lib_pageSelect');
-		$this->fixture->parent_cObj = $this->getMock('tslib_cObj');
+		$this->fixture->sys_page = $this->getMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+		$this->fixture->parent_cObj = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 	}
 
 	/**
@@ -222,5 +224,6 @@ class tslib_menuTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	}
 
 }
+
 
 ?>

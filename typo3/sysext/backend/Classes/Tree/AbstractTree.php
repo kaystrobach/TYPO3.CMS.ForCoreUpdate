@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,12 +33,12 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_tree_AbstractTree {
+abstract class AbstractTree {
 
 	/**
 	 * Data Provider
 	 *
-	 * @var t3lib_tree_AbstractDataProvider
+	 * @var \TYPO3\CMS\Backend\Tree\AbstractTreeDataProvider
 	 */
 	protected $dataProvider = NULL;
 
@@ -48,15 +50,15 @@ abstract class t3lib_tree_AbstractTree {
 	protected $nodeRenderer = NULL;
 
 	/**
-	 * @param t3lib_tree_AbstractDataProvider $dataProvider
+	 * @param \TYPO3\CMS\Backend\Tree\AbstractTreeDataProvider $dataProvider
 	 * @return void
 	 */
-	public function setDataProvider(t3lib_tree_AbstractDataProvider $dataProvider) {
+	public function setDataProvider(\TYPO3\CMS\Backend\Tree\AbstractTreeDataProvider $dataProvider) {
 		$this->dataProvider = $dataProvider;
 	}
 
 	/**
-	 * @return t3lib_tree_AbstractDataProvider
+	 * @return \TYPO3\CMS\Backend\Tree\AbstractTreeDataProvider
 	 */
 	public function getDataProvider() {
 		return $this->dataProvider;
@@ -66,7 +68,7 @@ abstract class t3lib_tree_AbstractTree {
 	 * @param t3lib_tree_renderer_Abstract $dataProvider
 	 * @return void
 	 */
-	public function setNodeRenderer(t3lib_tree_renderer_Abstract $nodeRenderer) {
+	public function setNodeRenderer(\t3lib_tree_renderer_Abstract $nodeRenderer) {
 		$this->nodeRenderer = $nodeRenderer;
 	}
 
@@ -80,10 +82,11 @@ abstract class t3lib_tree_AbstractTree {
 	/**
 	 * Returns the root node
 	 *
-	 * @return t3lib_tree_Node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNode
 	 */
 	abstract public function getRoot();
 
 }
+
 
 ?>

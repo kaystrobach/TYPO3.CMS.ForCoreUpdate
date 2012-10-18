@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Tests\Unit;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @subpackage tslib
  * @author Christian Kuhn <lolli@schwarzbu.ch>
  */
-class tslib_AdminPanelTest extends tx_phpunit_testcase {
+class AdminPanelTest extends tx_phpunit_testcase {
 
 	/**
 	 * Enable backup of global and system variables
@@ -56,7 +58,7 @@ class tslib_AdminPanelTest extends tx_phpunit_testcase {
 		$hookClass = uniqid('tx_coretest');
 		eval(('class ' . $hookClass) . ' {}');
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_adminpanel.php']['extendAdminPanel'][] = $hookClass;
-		$adminPanelMock = $this->getMock('tslib_AdminPanel', array('dummy'), array(), '', FALSE);
+		$adminPanelMock = $this->getMock('TYPO3\\CMS\\Frontend\\View\\AdminPanelView', array('dummy'), array(), '', FALSE);
 		$adminPanelMock->display();
 	}
 
@@ -65,14 +67,15 @@ class tslib_AdminPanelTest extends tx_phpunit_testcase {
 	 */
 	public function extendAdminPanelHookCallsExtendAdminPanelMethodOfHook() {
 		$hookClass = uniqid('tx_coretest');
-		$hookMock = $this->getMock('tslib_adminPanelHook', array(), array(), $hookClass);
+		$hookMock = $this->getMock('TYPO3\\CMS\\Frontend\\View\\AdminPanelViewHookInterface', array(), array(), $hookClass);
 		$GLOBALS['T3_VAR']['getUserObj'][$hookClass] = $hookMock;
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_adminpanel.php']['extendAdminPanel'][] = $hookClass;
-		$adminPanelMock = $this->getMock('tslib_AdminPanel', array('dummy'), array(), '', FALSE);
-		$hookMock->expects($this->once())->method('extendAdminPanel')->with($this->isType('string'), $this->isInstanceOf('tslib_AdminPanel'));
+		$adminPanelMock = $this->getMock('TYPO3\\CMS\\Frontend\\View\\AdminPanelView', array('dummy'), array(), '', FALSE);
+		$hookMock->expects($this->once())->method('extendAdminPanel')->with($this->isType('string'), $this->isInstanceOf('TYPO3\\CMS\\Frontend\\View\\AdminPanelView'));
 		$adminPanelMock->display();
 	}
 
 }
+
 
 ?>

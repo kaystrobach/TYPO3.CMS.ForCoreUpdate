@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Digit extends tx_form_System_Validate_Abstract {
+class DigitValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Returns TRUE if submitted value validates according to rule
@@ -40,8 +42,8 @@ class tx_form_System_Validate_Digit extends tx_form_System_Validate_Abstract {
 		if ($this->requestHandler->has($this->fieldName)) {
 			$value = $this->requestHandler->getByMethod($this->fieldName);
 			if ($this->filter === NULL) {
-				$className = 'tx_form_System_Filter_Digit';
-				$this->filter = t3lib_div::makeInstance($className);
+				$className = 'TYPO3\\CMS\\Form\\Filter\\DigitFilter';
+				$this->filter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
 			}
 			if ($this->filter->filter($value) !== $value) {
 				return FALSE;
@@ -51,5 +53,6 @@ class tx_form_System_Validate_Digit extends tx_form_System_Validate_Abstract {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_cleaner_core extends t3lib_cli {
+class CleanerCommand extends \TYPO3\CMS\Cli\Controller\CommandLineController {
 
 	/**
 	 * @todo Define visibility
@@ -123,7 +125,7 @@ This will show you missing files in the TYPO3 system and only report back if err
 		$GLOBALS['BE_USER']->setWorkspace(0);
 		// Print Howto:
 		if ($this->cli_isArg('--showhowto')) {
-			$howto = t3lib_div::getUrl(t3lib_extMgm::extPath('lowlevel') . 'HOWTO_clean_up_TYPO3_installations.txt');
+			$howto = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl(\TYPO3\CMS\Core\Extension\ExtensionManager::extPath('lowlevel') . 'HOWTO_clean_up_TYPO3_installations.txt');
 			echo wordwrap($howto, 120) . LF;
 			die;
 		}
@@ -138,7 +140,7 @@ This will show you missing files in the TYPO3 system and only report back if err
 		switch ((string) $analysisType) {
 		default:
 			if (is_array($this->cleanerModules[$analysisType])) {
-				$cleanerMode = t3lib_div::getUserObj($this->cleanerModules[$analysisType][0]);
+				$cleanerMode = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($this->cleanerModules[$analysisType][0]);
 				$cleanerMode->cli_validateArgs();
 				// Run it...
 				if ($this->cli_isArg('-r')) {
@@ -180,7 +182,7 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 	public function cli_referenceIndexCheck() {
 		// Reference index option:
 		$refIndexMode = isset($this->cli_args['--refindex']) ? $this->cli_args['--refindex'][0] : 'check';
-		if (!t3lib_div::inList('update,ignore,check', $refIndexMode)) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList('update,ignore,check', $refIndexMode)) {
 			$this->cli_echo('ERROR: Wrong value for --refindex argument.
 ', 1);
 			die;
@@ -189,7 +191,7 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 		case 'check':
 
 		case 'update':
-			$refIndexObj = t3lib_div::makeInstance('t3lib_refindex');
+			$refIndexObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 			list($headerContent, $bodyContent, $errorCount) = $refIndexObj->updateIndex($refIndexMode == 'check', $this->cli_echo());
 			if ($errorCount && $refIndexMode == 'check') {
 				$ok = FALSE;
@@ -241,7 +243,7 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 	 * @todo Define visibility
 	 */
 	public function cli_printInfo($header, $res) {
-		$detailLevel = t3lib_utility_Math::forceIntegerInRange($this->cli_isArg('-v') ? $this->cli_argValue('-v') : 1, 0, 3);
+		$detailLevel = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->cli_isArg('-v') ? $this->cli_argValue('-v') : 1, 0, 3);
 		$silent = !$this->cli_echo();
 		$severity = array(
 			0 => 'MESSAGE',
@@ -304,11 +306,11 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 	 * @todo Define visibility
 	 */
 	public function genTree($rootID, $depth = 1000, $echoLevel = 0, $callBack = '') {
-		$pt = t3lib_div::milliseconds();
+		$pt = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 		$this->performanceStatistics['genTree()'] = '';
 		// Initialize:
-		if (t3lib_extMgm::isLoaded('workspaces')) {
-			$this->workspaceIndex = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,title', 'sys_workspace', '1=1' . t3lib_BEfunc::deleteClause('sys_workspace'), '', '', '', 'uid');
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('workspaces')) {
+			$this->workspaceIndex = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,title', 'sys_workspace', '1=1' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_workspace'), '', '', '', 'uid');
 		}
 		$this->workspaceIndex[-1] = TRUE;
 		$this->workspaceIndex[0] = TRUE;
@@ -334,11 +336,11 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 			'misplaced_inside_tree' => array()
 		);
 		// Start traversal:
-		$pt2 = t3lib_div::milliseconds();
+		$pt2 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 		$this->performanceStatistics['genTree_traverse()'] = '';
 		$this->performanceStatistics['genTree_traverse():TraverseTables'] = '';
 		$this->genTree_traverse($rootID, $depth, $echoLevel, $callBack);
-		$this->performanceStatistics['genTree_traverse()'] = t3lib_div::milliseconds() - $pt2;
+		$this->performanceStatistics['genTree_traverse()'] = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt2;
 		// Sort recStats (for diff'able displays)
 		foreach ($this->recStats as $kk => $vv) {
 			foreach ($this->recStats[$kk] as $tables => $recArrays) {
@@ -350,7 +352,7 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 			echo LF . LF;
 		}
 		// Processing performance statistics:
-		$this->performanceStatistics['genTree()'] = t3lib_div::milliseconds() - $pt;
+		$this->performanceStatistics['genTree()'] = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt;
 		// Count records:
 		foreach ($GLOBALS['TCA'] as $tableName => $cfg) {
 			// Select all records belonging to page:
@@ -383,7 +385,7 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 	public function genTree_traverse($rootID, $depth, $echoLevel = 0, $callBack = '', $versionSwapmode = '', $rootIsVersion = 0, $accumulatedPath = '') {
 		// Register page:
 		$this->recStats['all']['pages'][$rootID] = $rootID;
-		$pageRecord = t3lib_BEfunc::getRecordRaw('pages', 'uid=' . intval($rootID), 'deleted,title,t3ver_count,t3ver_wsid');
+		$pageRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw('pages', 'uid=' . intval($rootID), 'deleted,title,t3ver_count,t3ver_wsid');
 		$accumulatedPath .= '/' . $pageRecord['title'];
 		// Register if page is deleted:
 		if ($pageRecord['deleted']) {
@@ -422,16 +424,16 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 		if ($callBack) {
 			$this->{$callBack}('pages', $rootID, $echoLevel, $versionSwapmode, $rootIsVersion);
 		}
-		$pt3 = t3lib_div::milliseconds();
+		$pt3 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 		// Traverse tables of records that belongs to page:
 		foreach ($GLOBALS['TCA'] as $tableName => $cfg) {
 			if ($tableName != 'pages') {
 				// Select all records belonging to page:
-				$pt4 = t3lib_div::milliseconds();
-				$resSub = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid' . ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$tableName]['ctrl']['delete'] : ''), $tableName, ('pid=' . intval($rootID)) . ($this->genTree_traverseDeleted ? '' : t3lib_BEfunc::deleteClause($tableName)));
-				$this->performanceStatistics['genTree_traverse():TraverseTables:']['MySQL']['(ALL)'] += t3lib_div::milliseconds() - $pt4;
-				$this->performanceStatistics['genTree_traverse():TraverseTables:']['MySQL'][$tableName] += t3lib_div::milliseconds() - $pt4;
-				$pt5 = t3lib_div::milliseconds();
+				$pt4 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
+				$resSub = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid' . ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$tableName]['ctrl']['delete'] : ''), $tableName, ('pid=' . intval($rootID)) . ($this->genTree_traverseDeleted ? '' : \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($tableName)));
+				$this->performanceStatistics['genTree_traverse():TraverseTables:']['MySQL']['(ALL)'] += \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt4;
+				$this->performanceStatistics['genTree_traverse():TraverseTables:']['MySQL'][$tableName] += \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt4;
+				$pt5 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 				$count = $GLOBALS['TYPO3_DB']->sql_num_rows($resSub);
 				if ($count) {
 					if ($echoLevel == 2) {
@@ -477,7 +479,7 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 						}
 						// Add any versions of those records:
 						if ($this->genTree_traverseVersions) {
-							$versions = t3lib_BEfunc::selectVersionsOfRecord($tableName, $rowSub['uid'], 'uid,t3ver_wsid,t3ver_count' . ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$tableName]['ctrl']['delete'] : ''), 0, TRUE);
+							$versions = \TYPO3\CMS\Backend\Utility\BackendUtility::selectVersionsOfRecord($tableName, $rowSub['uid'], 'uid,t3ver_wsid,t3ver_count' . ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$tableName]['ctrl']['delete'] : ''), 0, TRUE);
 							if (is_array($versions)) {
 								foreach ($versions as $verRec) {
 									if (!$verRec['_CURRENT_VERSION']) {
@@ -528,25 +530,25 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 						}
 					}
 				}
-				$this->performanceStatistics['genTree_traverse():TraverseTables:']['Proc']['(ALL)'] += t3lib_div::milliseconds() - $pt5;
-				$this->performanceStatistics['genTree_traverse():TraverseTables:']['Proc'][$tableName] += t3lib_div::milliseconds() - $pt5;
+				$this->performanceStatistics['genTree_traverse():TraverseTables:']['Proc']['(ALL)'] += \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt5;
+				$this->performanceStatistics['genTree_traverse():TraverseTables:']['Proc'][$tableName] += \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt5;
 			}
 		}
 		unset($resSub);
 		unset($rowSub);
-		$this->performanceStatistics['genTree_traverse():TraverseTables'] += t3lib_div::milliseconds() - $pt3;
+		$this->performanceStatistics['genTree_traverse():TraverseTables'] += \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds() - $pt3;
 		// Find subpages to root ID and traverse (only when rootID is not a version or is a branch-version):
 		if (!$versionSwapmode || $versionSwapmode == 'SWAPMODE:1') {
 			if ($depth > 0) {
 				$depth--;
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', ('pid=' . intval($rootID)) . ($this->genTree_traverseDeleted ? '' : t3lib_BEfunc::deleteClause('pages')), '', 'sorting');
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', ('pid=' . intval($rootID)) . ($this->genTree_traverseDeleted ? '' : \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('pages')), '', 'sorting');
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 					$this->genTree_traverse($row['uid'], $depth, $echoLevel, $callBack, $versionSwapmode, 0, $accumulatedPath);
 				}
 			}
 			// Add any versions of pages
 			if ($rootID > 0 && $this->genTree_traverseVersions) {
-				$versions = t3lib_BEfunc::selectVersionsOfRecord('pages', $rootID, 'uid,t3ver_oid,t3ver_wsid,t3ver_count', 0, TRUE);
+				$versions = \TYPO3\CMS\Backend\Utility\BackendUtility::selectVersionsOfRecord('pages', $rootID, 'uid,t3ver_oid,t3ver_wsid,t3ver_count', 0, TRUE);
 				if (is_array($versions)) {
 					foreach ($versions as $verRec) {
 						if (!$verRec['_CURRENT_VERSION']) {
@@ -575,5 +577,6 @@ NOW Running --AUTOFIX on result. OK?' . ($this->cli_isArg('--dryrun') ? ' (--dry
 	}
 
 }
+
 
 ?>

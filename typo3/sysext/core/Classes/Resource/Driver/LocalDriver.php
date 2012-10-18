@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Driver;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package 	TYPO3
  * @subpackage 	t3lib
  */
-class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
+class LocalDriver extends \TYPO3\CMS\Core\Resource\Driver\AbstractDriver {
 
 	/**
 	 * The absolute base path. It always contains a trailing slash.
@@ -56,7 +58,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	protected $baseUri;
 
 	/**
-	 * @var t3lib_cs
+	 * @var \TYPO3\CMS\Core\Charset\CharsetConverter
 	 */
 	protected $charsetConversion;
 
@@ -65,7 +67,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 *
 	 * @param array $configuration The configuration
 	 * @return void
-	 * @throws t3lib_file_exception_InvalidConfigurationException
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InvalidConfigurationException
 	 */
 	static public function verifyConfiguration(array $configuration) {
 		self::calculateBasePath($configuration);
@@ -89,7 +91,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	public function initialize() {
 		$this->determineBaseUrl();
 		// The capabilities of this driver. See CAPABILITY_* constants for possible values
-		$this->capabilities = (t3lib_file_Storage::CAPABILITY_BROWSABLE | t3lib_file_Storage::CAPABILITY_PUBLIC) | t3lib_file_Storage::CAPABILITY_WRITABLE;
+		$this->capabilities = (\TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_BROWSABLE | \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_PUBLIC) | \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_WRITABLE;
 	}
 
 	/**
@@ -99,11 +101,11 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * @return void
 	 */
 	protected function determineBaseUrl() {
-		if (t3lib_div::isFirstPartOfStr($this->absoluteBasePath, PATH_site)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($this->absoluteBasePath, PATH_site)) {
 			// use site-relative URLs
 			// TODO add unit test
 			$this->baseUri = substr($this->absoluteBasePath, strlen(PATH_site));
-		} elseif (isset($this->configuration['baseUri']) && t3lib_div::isValidUrl($this->configuration['baseUri'])) {
+		} elseif (isset($this->configuration['baseUri']) && \TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($this->configuration['baseUri'])) {
 			$this->baseUri = rtrim($this->configuration['baseUri'], '/') . '/';
 		} else {
 
@@ -126,7 +128,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		}
 		$absoluteBasePath = rtrim($absoluteBasePath, '/') . '/';
 		if (!is_dir($absoluteBasePath)) {
-			throw new t3lib_file_exception_InvalidConfigurationException(('Base path "' . $absoluteBasePath) . '" does not exist or is no directory.', 1299233097);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InvalidConfigurationException(('Base path "' . $absoluteBasePath) . '" does not exist or is no directory.', 1299233097);
 		}
 		return $absoluteBasePath;
 	}
@@ -135,22 +137,22 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Returns the public URL to a file. For the local driver, this will always
 	 * return a path relative to PATH_site.
 	 *
-	 * @param t3lib_file_ResourceInterface  $fileOrFolder
+	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface  $fileOrFolder
 	 * @param bool $relativeToCurrentScript Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
 	 * @return string
 	 */
-	public function getPublicUrl(t3lib_file_ResourceInterface $fileOrFolder, $relativeToCurrentScript = FALSE) {
+	public function getPublicUrl(\TYPO3\CMS\Core\Resource\ResourceInterface $fileOrFolder, $relativeToCurrentScript = FALSE) {
 		if ($this->configuration['pathType'] === 'relative' && rtrim($this->configuration['basePath'], '/') !== '') {
 			$publicUrl = (rtrim($this->configuration['basePath'], '/') . '/') . ltrim($fileOrFolder->getIdentifier(), '/');
 		} elseif (isset($this->baseUri)) {
 			$publicUrl = $this->baseUri . ltrim($fileOrFolder->getIdentifier(), '/');
 		} else {
-			throw new t3lib_file_exception_AbstractFileException('Public URL of file cannot be determined', 1329765518);
+			throw new \TYPO3\CMS\Core\Resource\Exception('Public URL of file cannot be determined', 1329765518);
 		}
 		// If requested, make the path relative to the current script in order to make it possible
 		// to use the relative file
 		if ($relativeToCurrentScript) {
-			$publicUrl = t3lib_utility_Path::getRelativePathTo(dirname((PATH_site . $publicUrl))) . basename($publicUrl);
+			$publicUrl = \TYPO3\CMS\Core\Utility\PathUtility::getRelativePathTo(dirname((PATH_site . $publicUrl))) . basename($publicUrl);
 		}
 		return $publicUrl;
 	}
@@ -158,11 +160,11 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns the root level folder of the storage.
 	 *
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getRootLevelFolder() {
 		if (!$this->rootLevelFolder) {
-			$this->rootLevelFolder = t3lib_file_Factory::getInstance()->createFolderObject($this->storage, '/', '');
+			$this->rootLevelFolder = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->createFolderObject($this->storage, '/', '');
 		}
 		return $this->rootLevelFolder;
 	}
@@ -170,14 +172,14 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns the default folder new files should be put into.
 	 *
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getDefaultFolder() {
 		if (!$this->defaultLevelFolder) {
 			if (!file_exists(($this->absoluteBasePath . '_temp_/'))) {
 				mkdir($this->absoluteBasePath . '_temp_/');
 			}
-			$this->defaultLevelFolder = t3lib_file_Factory::getInstance()->createFolderObject($this->storage, '/_temp_/', '');
+			$this->defaultLevelFolder = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->createFolderObject($this->storage, '/_temp_/', '');
 		}
 		return $this->defaultLevelFolder;
 	}
@@ -186,14 +188,14 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Creates a folder.
 	 *
 	 * @param string $newFolderName
-	 * @param t3lib_file_Folder $parentFolder
-	 * @return t3lib_file_Folder The new (created) folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
+	 * @return \TYPO3\CMS\Core\Resource\Folder The new (created) folder object
 	 */
-	public function createFolder($newFolderName, t3lib_file_Folder $parentFolder) {
+	public function createFolder($newFolderName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
 		$newFolderName = trim($this->sanitizeFileName($newFolderName), '/');
 		$newFolderPath = $this->getAbsolutePath($parentFolder) . $newFolderName;
-		t3lib_div::mkdir($newFolderPath);
-		return t3lib_file_Factory::getInstance()->createFolderObject($this->storage, $parentFolder->getIdentifier() . $newFolderName, $newFolderName);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($newFolderPath);
+		return \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->createFolderObject($this->storage, $parentFolder->getIdentifier() . $newFolderName, $newFolderName);
 	}
 
 	/**
@@ -213,7 +215,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		// don't use $this->fileExists() because we need the absolute path to the file anyways, so we can directly
 		// use PHP's filesystem method.
 		if (!file_exists($absoluteFilePath)) {
-			throw new InvalidArgumentException(('File ' . $fileIdentifier) . ' does not exist.', 1314516809);
+			throw new \InvalidArgumentException(('File ' . $fileIdentifier) . ' does not exist.', 1314516809);
 		}
 		return $this->extractFileInformation($absoluteFilePath, $dirPath);
 	}
@@ -226,7 +228,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * @see t3lib_div::validPathStr()
 	 */
 	protected function isPathValid($theFile) {
-		return t3lib_div::validPathStr($theFile);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::validPathStr($theFile);
 	}
 
 	/**
@@ -268,7 +270,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		// Strip trailing dots and return
 		$cleanFileName = preg_replace('/\\.*$/', '', $cleanFileName);
 		if (!$cleanFileName) {
-			throw new t3lib_file_exception_InvalidFileNameException(('File name ' . $cleanFileName) . ' is invalid.', 1320288991);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InvalidFileNameException(('File name ' . $cleanFileName) . ' is invalid.', 1320288991);
 		}
 		return $cleanFileName;
 	}
@@ -289,7 +291,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	protected function getDirectoryItemList($path, $start, $numberOfItems, array $filterMethods, $itemHandlerMethod, $itemRows = array()) {
 		$realPath = rtrim(($this->absoluteBasePath . trim($path, '/')), '/') . '/';
 		if (!is_dir($realPath)) {
-			throw new InvalidArgumentException(('Cannot list items in directory ' . $path) . ' - does not exist or is no directory', 1314349666);
+			throw new \InvalidArgumentException(('Cannot list items in directory ' . $path) . ' - does not exist or is no directory', 1314349666);
 		}
 		if ($start > 0) {
 			$start--;
@@ -299,7 +301,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		// an arbitrary order
 		$items = $this->getFileAndFoldernamesInPath($realPath);
 		natcasesort($items);
-		$iterator = new ArrayIterator($items);
+		$iterator = new \ArrayIterator($items);
 		if ($iterator->count() == 0) {
 			return array();
 		}
@@ -371,7 +373,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 			return array('', array());
 		}
 		// also don't show hidden files
-		if ((($folderName === '..' || $folderName === '.') || $folderName === '') || t3lib_div::isFirstPartOfStr($folderName, '.') === TRUE) {
+		if ((($folderName === '..' || $folderName === '.') || $folderName === '') || \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($folderName, '.') === TRUE) {
 			return array('', array());
 		}
 		// remove the trailing slash from the folder name (the trailing slash comes from the DirectoryIterator)
@@ -389,9 +391,9 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 */
 	protected function getFileAndFoldernamesInPath($path, $recursive = FALSE) {
 		if ($recursive) {
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::CURRENT_AS_FILEINFO));
+			$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, \FilesystemIterator::CURRENT_AS_FILEINFO));
 		} else {
-			$iterator = new RecursiveDirectoryIterator($path, FilesystemIterator::CURRENT_AS_FILEINFO);
+			$iterator = new \RecursiveDirectoryIterator($path, \FilesystemIterator::CURRENT_AS_FILEINFO);
 		}
 		$directoryEntries = array();
 		while ($iterator->valid()) {
@@ -426,7 +428,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 */
 	protected function extractFileInformation($filePath, $containerPath) {
 		$fileName = basename($filePath);
-		$fileMimeInformation = new finfo(FILEINFO_MIME_TYPE);
+		$fileMimeInformation = new \finfo(FILEINFO_MIME_TYPE);
 		$fileInformation = array(
 			'size' => filesize($filePath),
 			'atime' => fileatime($filePath),
@@ -475,15 +477,15 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * @return string
 	 */
 	public function getAbsolutePath($file) {
-		if ($file instanceof t3lib_file_FileInterface) {
+		if ($file instanceof \TYPO3\CMS\Core\Resource\FileInterface) {
 			$path = $this->absoluteBasePath . ltrim($file->getIdentifier(), '/');
-		} elseif ($file instanceof t3lib_file_Folder) {
+		} elseif ($file instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			// We can assume a trailing slash here because it is added by the folder object on construction.
 			$path = $this->absoluteBasePath . ltrim($file->getIdentifier(), '/');
 		} elseif (is_string($file)) {
 			$path = $this->absoluteBasePath . ltrim($file, '/');
 		} else {
-			throw new RuntimeException(('Type "' . gettype($file)) . '" is not supported.', 1325191178);
+			throw new \RuntimeException(('Type "' . gettype($file)) . '" is not supported.', 1325191178);
 		}
 		return $path;
 	}
@@ -491,16 +493,16 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns metadata of a file (size, times, mimetype)
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return array
 	 */
-	public function getLowLevelFileInfo(t3lib_file_FileInterface $file) {
+	public function getLowLevelFileInfo(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		// TODO define which data should be returned
 		// TODO write unit test
 		// TODO cache this info. Registry?
 		$filePath = $this->getAbsolutePath($file);
 		$fileStat = stat($filePath);
-		$fileInfo = new finfo();
+		$fileInfo = new \finfo();
 		$stat = array(
 			'size' => filesize($filePath),
 			'atime' => $fileStat['atime'],
@@ -516,13 +518,13 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Creates a (cryptographic) hash for a file.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $hashAlgorithm The hash algorithm to use
 	 * @return string
 	 */
-	public function hash(t3lib_file_FileInterface $file, $hashAlgorithm) {
+	public function hash(\TYPO3\CMS\Core\Resource\FileInterface $file, $hashAlgorithm) {
 		if (!in_array($hashAlgorithm, $this->getSupportedHashAlgorithms())) {
-			throw new InvalidArgumentException(('Hash algorithm "' . $hashAlgorithm) . '" is not supported.', 1304964032);
+			throw new \InvalidArgumentException(('Hash algorithm "' . $hashAlgorithm) . '" is not supported.', 1304964032);
 		}
 		switch ($hashAlgorithm) {
 		case 'sha1':
@@ -532,7 +534,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 			$hash = md5_file($this->getAbsolutePath($file));
 			break;
 		default:
-			throw new RuntimeException(('Hash algorithm ' . $hashAlgorithm) . ' is not implemented.', 1329644451);
+			throw new \RuntimeException(('Hash algorithm ' . $hashAlgorithm) . ' is not implemented.', 1329644451);
 		}
 		return $hash;
 	}
@@ -543,17 +545,17 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * This assumes that the local file exists, so no further check is done here!
 	 *
 	 * @param string $localFilePath
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $fileName The name to add the file under
-	 * @param t3lib_file_AbstractFile $updateFileObject File object to update (instead of creating a new object). With this parameter, this function can be used to "populate" a dummy file object with a real file underneath.
+	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $updateFileObject File object to update (instead of creating a new object). With this parameter, this function can be used to "populate" a dummy file object with a real file underneath.
 	 * @todo t3lib_file_File $updateFileObject should be t3lib_file_FileInterface, but indexer logic is only in t3lib_file_File
-	 * @return t3lib_file_FileInterface
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface
 	 */
-	public function addFile($localFilePath, t3lib_file_Folder $targetFolder, $fileName, t3lib_file_AbstractFile $updateFileObject = NULL) {
+	public function addFile($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName, \TYPO3\CMS\Core\Resource\AbstractFile $updateFileObject = NULL) {
 		// as for the "virtual storage" for backwards-compatibility, this check always fails, as the file probably lies under PATH_site
 		// thus, it is not checked here
-		if (t3lib_div::isFirstPartOfStr($localFilePath, $this->absoluteBasePath) && $this->storage->getUid() > 0) {
-			throw new InvalidArgumentException('Cannot add a file that is already part of this storage.', 1314778269);
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($localFilePath, $this->absoluteBasePath) && $this->storage->getUid() > 0) {
+			throw new \InvalidArgumentException('Cannot add a file that is already part of this storage.', 1314778269);
 		}
 		$relativeTargetPath = ltrim($targetFolder->getIdentifier(), '/');
 		$relativeTargetPath .= $fileName ? $fileName : basename($localFilePath);
@@ -564,11 +566,11 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 			$moveResult = rename($localFilePath, $targetPath);
 		}
 		if ($moveResult !== TRUE) {
-			throw new RuntimeException(((('Moving file ' . $localFilePath) . ' to ') . $targetPath) . ' failed.', 1314803096);
+			throw new \RuntimeException(((('Moving file ' . $localFilePath) . ' to ') . $targetPath) . ' failed.', 1314803096);
 		}
 		clearstatcache();
 		// Change the permissions of the file
-		t3lib_div::fixPermissions($targetPath);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($targetPath);
 		$fileInfo = $this->getFileInfoByIdentifier($relativeTargetPath);
 		if ($updateFileObject) {
 			$updateFileObject->updateProperties($fileInfo);
@@ -605,10 +607,10 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Checks if a file inside a storage folder exists
 	 *
 	 * @param string $fileName
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	public function fileExistsInFolder($fileName, t3lib_file_Folder $folder) {
+	public function fileExistsInFolder($fileName, \TYPO3\CMS\Core\Resource\Folder $folder) {
 		$identifier = ltrim($folder->getIdentifier(), '/') . $fileName;
 		return $this->fileExists($identifier);
 	}
@@ -628,10 +630,10 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Checks if a file inside a storage folder exists.
 	 *
 	 * @param string $folderName
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
 	 */
-	public function folderExistsInFolder($folderName, t3lib_file_Folder $folder) {
+	public function folderExistsInFolder($folderName, \TYPO3\CMS\Core\Resource\Folder $folder) {
 		$identifier = $folder->getIdentifier() . $folderName;
 		return $this->folderExists($identifier);
 	}
@@ -640,10 +642,10 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Returns a folder within the given folder.
 	 *
 	 * @param string $name The name of the folder to get
-	 * @param t3lib_file_Folder $parentFolder
-	 * @return t3lib_file_Folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
-	public function getFolderInFolder($name, t3lib_file_Folder $parentFolder) {
+	public function getFolderInFolder($name, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
 		$folderIdentifier = ($parentFolder->getIdentifier() . $name) . '/';
 		return $this->getFolder($folderIdentifier);
 	}
@@ -651,15 +653,15 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Replaces the contents (and file-specific metadata) of a file object with a local file.
 	 *
-	 * @param t3lib_file_AbstractFile $file
+	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $file
 	 * @param string $localFilePath
 	 * @return boolean TRUE if the operation succeeded
 	 */
-	public function replaceFile(t3lib_file_AbstractFile $file, $localFilePath) {
+	public function replaceFile(\TYPO3\CMS\Core\Resource\AbstractFile $file, $localFilePath) {
 		$filePath = $this->getAbsolutePath($file);
 		$result = rename($localFilePath, $filePath);
 		if ($result === FALSE) {
-			throw new RuntimeException(((('Replacing file ' . $filePath) . ' with ') . $localFilePath) . ' failed.', 1315314711);
+			throw new \RuntimeException(((('Replacing file ' . $filePath) . ' with ') . $localFilePath) . ' failed.', 1315314711);
 		}
 		$fileInfo = $this->getFileInfoByIdentifier($file->getIdentifier());
 		$file->updateProperties($fileInfo);
@@ -671,16 +673,16 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Adds a file at the specified location. This should only be used internally.
 	 *
 	 * @param string $localFilePath
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $targetFileName
 	 * @return boolean TRUE if adding the file succeeded
 	 */
-	public function addFileRaw($localFilePath, t3lib_file_Folder $targetFolder, $targetFileName) {
+	public function addFileRaw($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName) {
 		$fileIdentifier = $targetFolder->getIdentifier() . $targetFileName;
 		$absoluteFilePath = $this->absoluteBasePath . $fileIdentifier;
 		$result = copy($localFilePath, $absoluteFilePath);
 		if ($result === FALSE || !file_exists($absoluteFilePath)) {
-			throw new RuntimeException(((('Adding file ' . $localFilePath) . ' at ') . $fileIdentifier) . ' failed.');
+			throw new \RuntimeException(((('Adding file ' . $localFilePath) . ' at ') . $fileIdentifier) . ' failed.');
 		}
 		return $fileIdentifier;
 	}
@@ -698,7 +700,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		$targetPath = $this->absoluteBasePath . ltrim($identifier, '/');
 		$result = unlink($targetPath);
 		if ($result === FALSE || file_exists($targetPath)) {
-			throw new RuntimeException(('Deleting file ' . $identifier) . ' failed.', 1320381534);
+			throw new \RuntimeException(('Deleting file ' . $identifier) . ' failed.', 1320381534);
 		}
 		return TRUE;
 	}
@@ -708,12 +710,12 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Note that this is only about an intra-storage move action, where a file is just
 	 * moved to another folder in the same storage.
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $fileName
-	 * @return t3lib_file_FileInterface The new (copied) file object.
+	 * @return \TYPO3\CMS\Core\Resource\FileInterface The new (copied) file object.
 	 */
-	public function copyFileWithinStorage(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder, $fileName) {
+	public function copyFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName) {
 		// TODO add unit test
 		$sourcePath = $this->getAbsolutePath($file);
 		$targetPath = ltrim($targetFolder->getIdentifier(), '/') . $fileName;
@@ -726,17 +728,17 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * Note that this is only about an intra-storage move action, where a file is just
 	 * moved to another folder in the same storage.
 	 *
-	 * @param t3lib_file_FileInterface $file
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $fileName
 	 * @return boolean
 	 */
-	public function moveFileWithinStorage(t3lib_file_FileInterface $file, t3lib_file_Folder $targetFolder, $fileName) {
+	public function moveFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName) {
 		$sourcePath = $this->getAbsolutePath($file);
 		$targetIdentifier = $targetFolder->getIdentifier() . $fileName;
 		$result = rename($sourcePath, $this->absoluteBasePath . $targetIdentifier);
 		if ($result === FALSE) {
-			throw new RuntimeException(((('Moving file ' . $sourcePath) . ' to ') . $targetIdentifier) . ' failed.', 1315314712);
+			throw new \RuntimeException(((('Moving file ' . $sourcePath) . ' to ') . $targetIdentifier) . ' failed.', 1315314712);
 		}
 		return $targetIdentifier;
 	}
@@ -744,15 +746,15 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Copies a file to a temporary path and returns that path.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string The temporary path
 	 */
-	public function copyFileToTemporaryPath(t3lib_file_FileInterface $file) {
+	public function copyFileToTemporaryPath(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		$sourcePath = $this->getAbsolutePath($file);
 		$temporaryPath = $this->getTemporaryPathForFile($file);
 		$result = copy($sourcePath, $temporaryPath);
 		if ($result === FALSE) {
-			throw new RuntimeException(('Copying file ' . $file->getIdentifier()) . ' to temporary path failed.', 1320577649);
+			throw new \RuntimeException(('Copying file ' . $file->getIdentifier()) . ' to temporary path failed.', 1320577649);
 		}
 		return $temporaryPath;
 	}
@@ -773,7 +775,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 			$oldIdentifier = $relativeSourcePath . $oldSubIdentifier;
 			$newIdentifier = $relativeTargetPath . $oldSubIdentifier;
 			if (!$this->resourceExists($newIdentifier)) {
-				throw new t3lib_file_exception_FileOperationErrorException(sprintf('File "%1$s" was not found (should have been copied/moved from "%2$s").', $newIdentifier, $oldIdentifier), 1330119453);
+				throw new \TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException(sprintf('File "%1$s" was not found (should have been copied/moved from "%2$s").', $newIdentifier, $oldIdentifier), 1330119453);
 			}
 			$identifierMap[$oldIdentifier] = $newIdentifier;
 		}
@@ -783,12 +785,12 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Folder equivalent to moveFileWithinStorage().
 	 *
-	 * @param t3lib_file_Folder $folderToMove
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $newFolderName
 	 * @return array A map of old to new file identifiers
 	 */
-	public function moveFolderWithinStorage(t3lib_file_Folder $folderToMove, t3lib_file_Folder $targetFolder, $newFolderName) {
+	public function moveFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFolderName) {
 		$relativeSourcePath = $folderToMove->getIdentifier();
 		$sourcePath = $this->getAbsolutePath($relativeSourcePath);
 		$relativeTargetPath = ($targetFolder->getIdentifier() . $newFolderName) . '/';
@@ -797,7 +799,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		$filesAndFolders = $this->getFileAndFoldernamesInPath($sourcePath, TRUE);
 		$result = rename($sourcePath, $targetPath);
 		if ($result === FALSE) {
-			throw new RuntimeException(((('Moving folder ' . $sourcePath) . ' to ') . $targetPath) . ' failed.', 1320711817);
+			throw new \RuntimeException(((('Moving folder ' . $sourcePath) . ' to ') . $targetPath) . ' failed.', 1320711817);
 		}
 		// Create a mapping from old to new identifiers
 		$identifierMap = $this->createIdentifierMap($filesAndFolders, $relativeSourcePath, $relativeTargetPath);
@@ -807,19 +809,19 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Folder equivalent to copyFileWithinStorage().
 	 *
-	 * @param t3lib_file_Folder $folderToCopy
-	 * @param t3lib_file_Folder $targetFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToCopy
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $newFolderName
 	 * @return boolean
 	 */
-	public function copyFolderWithinStorage(t3lib_file_Folder $folderToCopy, t3lib_file_Folder $targetFolder, $newFolderName) {
+	public function copyFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToCopy, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFolderName) {
 		// This target folder path already includes the topmost level, i.e. the folder this method knows as $folderToCopy.
 		// We can thus rely on this folder being present and just create the subfolder we want to copy to.
 		$targetFolderPath = ($this->getAbsolutePath($targetFolder) . $newFolderName) . '/';
 		mkdir($targetFolderPath);
 		$sourceFolderPath = $this->getAbsolutePath($folderToCopy);
 		/** @var $iterator RecursiveDirectoryIterator */
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourceFolderPath));
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourceFolderPath));
 		while ($iterator->valid()) {
 			/** @var $current RecursiveDirectoryIterator */
 			$current = $iterator->current();
@@ -829,7 +831,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 			} elseif ($current->isFile()) {
 				$result = copy($sourceFolderPath . $itemSubPath, $targetFolderPath . $itemSubPath);
 				if ($result === FALSE) {
-					throw new t3lib_file_exception_FileOperationErrorException(((((('Copying file "' . $sourceFolderPath) . $itemSubPath) . '" to "') . $targetFolderPath) . $itemSubPath) . '" failed.', 1330119452);
+					throw new \TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException(((((('Copying file "' . $sourceFolderPath) . $itemSubPath) . '" to "') . $targetFolderPath) . $itemSubPath) . '" failed.', 1330119452);
 				}
 			}
 			$iterator->next();
@@ -840,23 +842,23 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Renames a file in this storage.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $newName The target path (including the file name!)
 	 * @return string The identifier of the file after renaming
 	 */
-	public function renameFile(t3lib_file_FileInterface $file, $newName) {
+	public function renameFile(\TYPO3\CMS\Core\Resource\FileInterface $file, $newName) {
 		// Makes sure the Path given as parameter is valid
 		$newName = $this->sanitizeFileName($newName);
 		$newIdentifier = (rtrim(dirname($file->getIdentifier()), '/') . '/') . $newName;
 		// The target should not exist already
 		if ($this->fileExists($newIdentifier)) {
-			throw new t3lib_file_exception_ExistingTargetFileNameException('The target file already exists.', 1320291063);
+			throw new \TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException('The target file already exists.', 1320291063);
 		}
 		$sourcePath = $this->getAbsolutePath($file);
 		$targetPath = ($this->absoluteBasePath . '/') . ltrim($newIdentifier, '/');
 		$result = rename($sourcePath, $targetPath);
 		if ($result === FALSE) {
-			throw new RuntimeException(((('Renaming file ' . $sourcePath) . ' to ') . $targetPath) . ' failed.', 1320375115);
+			throw new \RuntimeException(((('Renaming file ' . $sourcePath) . ' to ') . $targetPath) . ' failed.', 1320375115);
 		}
 		return $newIdentifier;
 	}
@@ -870,19 +872,19 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	protected function checkFilePath($filePath) {
 		// filePath must be valid
 		if (!$this->isPathValid($filePath)) {
-			throw new t3lib_file_exception_InvalidPathException(('File ' . $filePath) . ' is not valid (".." and "//" is not allowed in path).', 1320286857);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InvalidPathException(('File ' . $filePath) . ' is not valid (".." and "//" is not allowed in path).', 1320286857);
 		}
 	}
 
 	/**
 	 * Renames a folder in this storage.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @param string $newName The target path (including the file name!)
 	 * @return array A map of old to new file identifiers
 	 * @throws RuntimeException if renaming the folder failed
 	 */
-	public function renameFolder(t3lib_file_Folder $folder, $newName) {
+	public function renameFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $newName) {
 		// Makes sure the path given as parameter is valid
 		$newName = $this->sanitizeFileName($newName);
 		$relativeSourcePath = $folder->getIdentifier();
@@ -893,14 +895,14 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 		$filesAndFolders = $this->getFileAndFoldernamesInPath($sourcePath, TRUE);
 		$result = rename($sourcePath, $targetPath);
 		if ($result === FALSE) {
-			throw new RuntimeException(sprintf('Renaming folder "%1$s" to "%2$s" failed."', $sourcePath, $targetPath), 1320375116);
+			throw new \RuntimeException(sprintf('Renaming folder "%1$s" to "%2$s" failed."', $sourcePath, $targetPath), 1320375116);
 		}
 		try {
 			// Create a mapping from old to new identifiers
 			$identifierMap = $this->createIdentifierMap($filesAndFolders, $relativeSourcePath, $relativeTargetPath);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			rename($targetPath, $sourcePath);
-			throw new RuntimeException(sprintf('Creating filename mapping after renaming "%1$s" to "%2$s" failed. Reverted rename operation.\\n\\nOriginal error: %3$s"', $sourcePath, $targetPath, $e->getMessage()), 1334160746);
+			throw new \RuntimeException(sprintf('Creating filename mapping after renaming "%1$s" to "%2$s" failed. Reverted rename operation.\\n\\nOriginal error: %3$s"', $sourcePath, $targetPath, $e->getMessage()), 1334160746);
 		}
 		return $identifierMap;
 	}
@@ -908,14 +910,14 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Removes a file from this storage.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return boolean TRUE if deleting the file succeeded
 	 */
-	public function deleteFile(t3lib_file_FileInterface $file) {
+	public function deleteFile(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		$filePath = $this->getAbsolutePath($file);
 		$result = unlink($filePath);
 		if ($result === FALSE) {
-			throw new RuntimeException(('Deletion of file ' . $file->getIdentifier()) . ' failed.', 1320855304);
+			throw new \RuntimeException(('Deletion of file ' . $file->getIdentifier()) . ' failed.', 1320855304);
 		}
 		return $result;
 	}
@@ -923,15 +925,15 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Removes a folder from this storage.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @param bool $deleteRecursively
 	 * @return boolean
 	 */
-	public function deleteFolder(t3lib_file_Folder $folder, $deleteRecursively = FALSE) {
+	public function deleteFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $deleteRecursively = FALSE) {
 		$folderPath = $this->getAbsolutePath($folder);
-		$result = t3lib_div::rmdir($folderPath, $deleteRecursively);
+		$result = \TYPO3\CMS\Core\Utility\GeneralUtility::rmdir($folderPath, $deleteRecursively);
 		if ($result === FALSE) {
-			throw new t3lib_file_exception_FileOperationErrorException(('Deleting folder "' . $folder->getIdentifier()) . '" failed.', 1330119451);
+			throw new \TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException(('Deleting folder "' . $folder->getIdentifier()) . '" failed.', 1330119451);
 		}
 		return $result;
 	}
@@ -939,10 +941,10 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Checks if a folder contains files and (if supported) other folders.
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean TRUE if there are no files and folders within $folder
 	 */
-	public function isFolderEmpty(t3lib_file_Folder $folder) {
+	public function isFolderEmpty(\TYPO3\CMS\Core\Resource\Folder $folder) {
 		$path = $this->getAbsolutePath($folder);
 		$dirHandle = opendir($path);
 		while ($entry = readdir($dirHandle)) {
@@ -959,11 +961,11 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * first when in writable mode, so if you change the file,
 	 * you have to update it yourself afterwards.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param boolean $writable Set this to FALSE if you only need the file for read operations. This might speed up things, e.g. by using a cached local version. Never modify the file if you have set this flag!
 	 * @return string The path to the file on the local disk
 	 */
-	public function getFileForLocalProcessing(t3lib_file_FileInterface $file, $writable = TRUE) {
+	public function getFileForLocalProcessing(\TYPO3\CMS\Core\Resource\FileInterface $file, $writable = TRUE) {
 		if ($writable === FALSE) {
 			// TODO check if this is ok or introduce additional measures against file changes
 			return $this->getAbsolutePath($file);
@@ -976,11 +978,11 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns the permissions of a file as an array (keys r, w) of boolean flags
 	 *
-	 * @param t3lib_file_FileInterface $file The file object to check
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file The file object to check
 	 * @return array
 	 * @throws RuntimeException If fetching the permissions failed
 	 */
-	public function getFilePermissions(t3lib_file_FileInterface $file) {
+	public function getFilePermissions(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		$filePath = $this->getAbsolutePath($file);
 		return $this->getPermissions($filePath);
 	}
@@ -988,11 +990,11 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Returns the permissions of a folder as an array (keys r, w) of boolean flags
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return array
 	 * @throws RuntimeException If fetching the permissions failed
 	 */
-	public function getFolderPermissions(t3lib_file_Folder $folder) {
+	public function getFolderPermissions(\TYPO3\CMS\Core\Resource\Folder $folder) {
 		$folderPath = $this->getAbsolutePath($folder);
 		return $this->getPermissions($folderPath);
 	}
@@ -1007,7 +1009,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	protected function getPermissions($path) {
 		$permissionBits = fileperms($path);
 		if ($permissionBits === FALSE) {
-			throw new RuntimeException('Error while fetching permissions for ' . $path, 1319455097);
+			throw new \RuntimeException('Error while fetching permissions for ' . $path, 1319455097);
 		}
 		return array(
 			'r' => (bool) is_readable($path),
@@ -1020,39 +1022,39 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * a file or folder is within another folder.
 	 * This can e.g. be used to check for webmounts.
 	 *
-	 * @param t3lib_file_Folder $container
+	 * @param \TYPO3\CMS\Core\Resource\Folder $container
 	 * @param mixed $content An object or an identifier to check
 	 * @return bool TRUE if $content is within $container, always FALSE if $container is not within this storage
 	 */
-	public function isWithin(t3lib_file_Folder $container, $content) {
+	public function isWithin(\TYPO3\CMS\Core\Resource\Folder $container, $content) {
 		if ($container->getStorage() != $this->storage) {
 			return FALSE;
 		}
-		if ($content instanceof t3lib_file_FileInterface || $content instanceof t3lib_file_Folder) {
+		if ($content instanceof \TYPO3\CMS\Core\Resource\FileInterface || $content instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$content = $container->getIdentifier();
 		}
 		$folderPath = $container->getIdentifier();
 		$content = '/' . ltrim($content, '/');
-		return t3lib_div::isFirstPartOfStr($content, $folderPath);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($content, $folderPath);
 	}
 
 	/**
 	 * Creates a new file and returns the matching file object for it.
 	 *
 	 * @param string $fileName
-	 * @param t3lib_file_Folder $parentFolder
-	 * @return t3lib_file_File
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
-	public function createFile($fileName, t3lib_file_Folder $parentFolder) {
+	public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
 		if (!$this->isValidFilename($fileName)) {
-			throw new t3lib_file_exception_InvalidFileNameException(('Invalid characters in fileName "' . $fileName) . '"', 1320572272);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InvalidFileNameException(('Invalid characters in fileName "' . $fileName) . '"', 1320572272);
 		}
 		$filePath = $parentFolder->getIdentifier() . ltrim($fileName, '/');
 		// TODO set permissions of new file
 		$result = touch($this->absoluteBasePath . $filePath);
 		clearstatcache();
 		if ($result !== TRUE) {
-			throw new RuntimeException(('Creating file ' . $filePath) . ' failed.', 1320569854);
+			throw new \RuntimeException(('Creating file ' . $filePath) . ' failed.', 1320569854);
 		}
 		$fileInfo = $this->getFileInfoByIdentifier($filePath);
 		return $this->getFileObject($fileInfo);
@@ -1064,10 +1066,10 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	 * external location. So this might be an expensive operation (both in terms of
 	 * processing resources and money) for large files.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string The file contents
 	 */
-	public function getFileContents(t3lib_file_FileInterface $file) {
+	public function getFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		$filePath = $this->getAbsolutePath($file);
 		return file_get_contents($filePath);
 	}
@@ -1075,16 +1077,16 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Sets the contents of a file to the specified value.
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $contents
 	 * @return integer The number of bytes written to the file
 	 * @throws RuntimeException if the operation failed
 	 */
-	public function setFileContents(t3lib_file_FileInterface $file, $contents) {
+	public function setFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file, $contents) {
 		$filePath = $this->getAbsolutePath($file);
 		$result = file_put_contents($filePath, $contents);
 		if ($result === FALSE) {
-			throw new RuntimeException(('Setting contents of file "' . $file->getIdentifier()) . '" failed.', 1325419305);
+			throw new \RuntimeException(('Setting contents of file "' . $file->getIdentifier()) . '" failed.', 1325419305);
 		}
 		return $result;
 	}
@@ -1092,7 +1094,7 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 	/**
 	 * Gets the charset conversion object.
 	 *
-	 * @return t3lib_cs
+	 * @return \TYPO3\CMS\Core\Charset\CharsetConverter
 	 */
 	protected function getCharsetConversion() {
 		if (!isset($this->charsetConversion)) {
@@ -1103,12 +1105,13 @@ class t3lib_file_Driver_LocalDriver extends t3lib_file_Driver_AbstractDriver {
 				$this->charsetConversion = $GLOBALS['LANG']->csConvObj;
 			} else {
 				// The object may not exist yet, so we need to create it now. Happens in the Install Tool for example.
-				$this->charsetConversion = t3lib_div::makeInstance('t3lib_cs');
+				$this->charsetConversion = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 			}
 		}
 		return $this->charsetConversion;
 	}
 
 }
+
 
 ?>

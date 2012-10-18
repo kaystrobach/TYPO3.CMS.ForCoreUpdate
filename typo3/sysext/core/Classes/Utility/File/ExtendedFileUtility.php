@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility\File;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -60,7 +62,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
+class ExtendedFileUtility extends \TYPO3\CMS\Core\Utility\File\BasicFileUtility {
 
 	// External static variables:
 	// Notice; some of these are overridden in the start() method with values from $GLOBALS['TYPO3_CONF_VARS']['BE']
@@ -137,7 +139,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	/**
 	 * The File Factory
 	 *
-	 * @var t3lib_file_Factory
+	 * @var \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected $fileFactory;
 
@@ -156,7 +158,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		}
 		$this->unzipPath = $unzipPath;
 		// Initialize Object Factory
-		$this->fileFactory = t3lib_file_Factory::getInstance();
+		$this->fileFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
 		// Initializing file processing commands:
 		$this->fileCmdMap = $fileCmds;
 	}
@@ -266,9 +268,9 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 						// Hook for post-processing the action
 						if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_extfilefunc.php']['processData'])) {
 							foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_extfilefunc.php']['processData'] as $classRef) {
-								$hookObject = t3lib_div::getUserObj($classRef);
-								if (!$hookObject instanceof t3lib_extFileFunctions_processDataHook) {
-									throw new UnexpectedValueException('$hookObject must implement interface t3lib_extFileFunctions_processDataHook', 1279719168);
+								$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+								if (!$hookObject instanceof \TYPO3\CMS\Core\Utility\File\ExtendedFileUtilityProcessDataHookInterface) {
+									throw new \UnexpectedValueException('$hookObject must implement interface TYPO3\\CMS\\Core\\Utility\\File\\ExtendedFileUtilityProcessDataHookInterface', 1279719168);
 								}
 								$hookObject->processData_postProcessAction($action, $cmdArr, $result[$action], $this);
 							}
@@ -303,8 +305,8 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$logData = unserialize($row['log_data']);
 			$msg = ($row['error'] . ': ') . sprintf($row['details'], $logData[0], $logData[1], $logData[2], $logData[3], $logData[4]);
-			$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $msg, '', t3lib_FlashMessage::ERROR, TRUE);
-			t3lib_FlashMessageQueue::addMessage($flashMessage);
+			$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $msg, '', \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR, TRUE);
+			\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($flashMessage);
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 	}
@@ -320,10 +322,10 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * @deprecated since TYPO3 6.0, use t3lib_file_Storage method instead
 	 */
 	public function findRecycler($theFile) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		if ($this->isPathValid($theFile)) {
 			$theFile = $this->cleanDirectoryName($theFile);
-			$fI = t3lib_div::split_fileref($theFile);
+			$fI = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($theFile);
 			$c = 0;
 			// !!! Method has been put in the storage, can be saftely removed
 			$rDir = $fI['path'] . $this->recyclerFN;
@@ -333,7 +335,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 				}
 				$theFile = $fI['path'];
 				$theFile = $this->cleanDirectoryName($theFile);
-				$fI = t3lib_div::split_fileref($theFile);
+				$fI = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($theFile);
 				$c++;
 			}
 		}
@@ -382,31 +384,31 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		$fileObject = $this->getFileObject($cmds['data']);
 		// @todo implement the recycler feature which has been removed from the original implementation
 		// Copies the file
-		if ($fileObject instanceof t3lib_file_File) {
+		if ($fileObject instanceof \TYPO3\CMS\Core\Resource\File) {
 			$refIndexRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_refindex', 'ref_table=\'sys_file\' AND ref_uid=' . $fileObject->getUid());
 			if (count($refIndexRecords) > 0) {
 				$shortcutContent = array();
 				foreach ($refIndexRecords as $row) {
 					$shortcutRecord = NULL;
-					$shortcutRecord = t3lib_BEfunc::getRecord($row['tablename'], $row['recuid']);
+					$shortcutRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($row['tablename'], $row['recuid']);
 					if (is_array($shortcutRecord) && $row['tablename'] !== 'sys_file_reference') {
-						$icon = t3lib_iconWorks::getSpriteIconForRecord($row['tablename'], $shortcutRecord);
+						$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord($row['tablename'], $shortcutRecord);
 						$onClick = ((('showClickmenu("' . $row['tablename']) . '", "') . $row['recuid']) . '", "1", "+info,history,edit,delete", "|", "");return false;';
-						$shortcutContent[] = (((((('<a href="#" oncontextmenu="' . htmlspecialchars($onClick)) . '" onclick="') . htmlspecialchars($onClick)) . '">') . $icon) . '</a>') . htmlspecialchars((((t3lib_BEfunc::getRecordTitle($row['tablename'], $shortcutRecord) . '  [') . t3lib_BEfunc::getRecordPath($shortcutRecord['pid'], '', 80)) . ']'));
+						$shortcutContent[] = (((((('<a href="#" oncontextmenu="' . htmlspecialchars($onClick)) . '" onclick="') . htmlspecialchars($onClick)) . '">') . $icon) . '</a>') . htmlspecialchars((((\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($row['tablename'], $shortcutRecord) . '  [') . \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordPath($shortcutRecord['pid'], '', 80)) . ']'));
 					}
 				}
 				$out = ('<p>The file cannot be deleted since it is still used at the following places:<br />' . implode('<br />', $shortcutContent)) . '</p>';
-				$flashMessage = t3lib_div::makeInstance('t3lib_flashMessage', $out, 'File not deleted', t3lib_FlashMessage::WARNING, TRUE);
-				t3lib_FlashMessageQueue::addMessage($flashMessage);
+				$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_flashMessage', $out, 'File not deleted', \TYPO3\CMS\Core\Messaging\FlashMessage::WARNING, TRUE);
+				\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($flashMessage);
 				return;
 			} else {
 				try {
 					$result = $fileObject->delete();
-				} catch (t3lib_file_exception_InsufficientFileAccessPermissionsException $e) {
+				} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
 					$this->writelog(4, 1, 112, 'You are not allowed to access the file', array($fileObject->getIdentifier()));
-				} catch (t3lib_file_exception_NotInMountPointException $e) {
+				} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
 					$this->writelog(4, 1, 111, 'Target was not within your mountpoints! T="%s"', array($fileObject->getIdentifier()));
-				} catch (RuntimeException $e) {
+				} catch (\RuntimeException $e) {
 					$this->writelog(4, 1, 110, 'Could not delete file "%s". Write-permission problem?', array($fileObject->getIdentifier()));
 				}
 				// Log success
@@ -414,13 +416,13 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			}
 		} else {
 			try {
-				/** @var $fileObject t3lib_file_FolderInterface */
+				/** @var $fileObject \TYPO3\CMS\Core\Resource\FolderInterface */
 				$result = $fileObject->delete(TRUE);
-			} catch (t3lib_file_exception_InsufficientFileAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
 				$this->writelog(4, 1, 123, 'You are not allowed to access the directory', array($fileObject->getIdentifier()));
-			} catch (t3lib_file_exception_NotInMountPointException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
 				$this->writelog(4, 1, 121, 'Target was not within your mountpoints! T="%s"', array($fileObject->getIdentifier()));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(4, 1, 120, 'Could not delete directory! Write-permission problem? Is directory "%s" empty? (You are not allowed to delete directories recursively).', array($fileObject->getIdentifier()));
 			}
 			// Log success
@@ -438,7 +440,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	protected function getFileObject($identifier) {
 		$object = $this->fileFactory->retrieveFileOrFolderObject($identifier);
 		if (!is_object($object)) {
-			throw new t3lib_file_exception_InvalidFileException(('The item ' . $identifier) . ' was not a file or directory!!', 1320122453);
+			throw new \TYPO3\CMS\Core\Resource\Exception\InvalidFileException(('The item ' . $identifier) . ' was not a file or directory!!', 1320122453);
 		}
 		return $object;
 	}
@@ -454,17 +456,17 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * $cmds['altName'] (string): Use an alternative name if the target already exists
 	 *
 	 * @param array $cmds Command details as described above
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	protected function func_copy($cmds) {
 		if (!$this->isInit) {
 			return FALSE;
 		}
 		$sourceFileObject = $this->getFileObject($cmds['data']);
-		/** @var $targetFolderObject t3lib_file_Folder */
+		/** @var $targetFolderObject \TYPO3\CMS\Core\Resource\Folder */
 		$targetFolderObject = $this->getFileObject($cmds['target']);
 		// Basic check
-		if (!$targetFolderObject instanceof t3lib_file_Folder) {
+		if (!$targetFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$this->writelog(2, 2, 100, 'Destination "%s" was not a directory', array($cmds['target']));
 			return FALSE;
 		}
@@ -472,19 +474,19 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		$appendSuffixOnConflict = (string) $cmds['altName'];
 		$resultObject = NULL;
 		// Copying the file
-		if ($sourceFileObject instanceof t3lib_file_File) {
+		if ($sourceFileObject instanceof \TYPO3\CMS\Core\Resource\File) {
 			try {
 				$conflictMode = $appendSuffixOnConflict !== '' ? 'renameNewFile' : 'cancel';
 				$resultObject = $sourceFileObject->copyTo($targetFolderObject, NULL, $conflictMode);
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(2, 1, 114, 'You are not allowed to copy files', '');
-			} catch (t3lib_file_exception_InsufficientFileAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
 				$this->writelog(2, 1, 110, 'Could not access all necessary resources. Source file or destination maybe was not within your mountpoints? T="%s", D="%s"', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_IllegalFileExtensionException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException $e) {
 				$this->writelog(2, 1, 111, 'Extension of file name "%s" is not allowed in "%s"!', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_ExistingTargetFileNameException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
 				$this->writelog(2, 1, 112, 'File "%s" already exists in folder "%s"!', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(2, 2, 109, 'File "%s" WAS NOT copied to "%s"! Write-permission problem?', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
 			}
 			$this->writelog(2, 0, 1, 'File "%s" copied to "%s"', array($sourceFileObject->getIdentifier(), $resultObject->getIdentifier()));
@@ -494,17 +496,17 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			try {
 				$conflictMode = $appendSuffixOnConflict !== '' ? 'renameNewFile' : 'cancel';
 				$resultObject = $sourceFolderObject->copyTo($targetFolderObject, NULL, $conflictMode);
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(2, 1, 125, 'You are not allowed to copy directories', '');
-			} catch (t3lib_file_exception_InsufficientFileAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
 				$this->writelog(2, 1, 110, 'Could not access all necessary resources. Source file or destination maybe was not within your mountpoints? T="%s", D="%s"', array($sourceFolderObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_InsufficientFolderAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException $e) {
 				$this->writelog(2, 1, 121, 'You don\'t have full access to the destination directory "%s"!', array($targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_InvalidTargetFolderException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InvalidTargetFolderException $e) {
 				$this->writelog(2, 1, 122, 'Destination cannot be inside the target! D="%s", T="%s"', array($targetFolderObject->getIdentifier(), $sourceFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_ExistingTargetFolderException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException $e) {
 				$this->writelog(2, 1, 123, 'Target "%s" already exists!', array($targetFolderObject->getIdentifier()));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(2, 2, 119, 'Directory "%s" WAS NOT copied to "%s"! Write-permission problem?', array($sourceFolderObject->getIdentifier(), $targetFolderObject->getIdentifier()));
 			}
 			$this->writelog(2, 0, 2, 'Directory "%s" copied to "%s"', array($sourceFolderObject->getIdentifier(), $targetFolderObject->getIdentifier()));
@@ -523,7 +525,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * $cmds['altName'] (string): Use an alternative name if the target already exists
 	 *
 	 * @param array $cmds Command details as described above
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	protected function func_move($cmds) {
 		if (!$this->isInit) {
@@ -532,14 +534,14 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		$sourceFileObject = $this->getFileObject($cmds['data']);
 		$targetFolderObject = $this->getFileObject($cmds['target']);
 		// Basic check
-		if (!$targetFolderObject instanceof t3lib_file_Folder) {
+		if (!$targetFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$this->writelog(3, 2, 100, 'Destination "%s" was not a directory', array($cmds['target']));
 			return FALSE;
 		}
 		$alternativeName = (string) $cmds['altName'];
 		$resultObject = NULL;
 		// Moving the file
-		if ($sourceFileObject instanceof t3lib_file_File) {
+		if ($sourceFileObject instanceof \TYPO3\CMS\Core\Resource\File) {
 			try {
 				if ($alternativeName !== '') {
 					// Don't allow overwriting existing files, but find a new name
@@ -548,15 +550,15 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 					// Don't allow overwriting existing files
 					$resultObject = $sourceFileObject->moveTo($targetFolderObject, NULL, 'cancel');
 				}
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(3, 1, 114, 'You are not allowed to move files', '');
-			} catch (t3lib_file_exception_InsufficientFileAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
 				$this->writelog(3, 1, 110, 'Could not access all necessary resources. Source file or destination maybe was not within your mountpoints? T="%s", D="%s"', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_IllegalFileExtensionException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException $e) {
 				$this->writelog(3, 1, 111, 'Extension of file name "%s" is not allowed in "%s"!', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_ExistingTargetFileNameException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
 				$this->writelog(3, 1, 112, 'File "%s" already exists in folder "%s"!', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(3, 2, 109, 'File "%s" WAS NOT copied to "%s"! Write-permission problem?', array($sourceFileObject->getIdentifier(), $targetFolderObject->getIdentifier()));
 			}
 			$this->writelog(3, 0, 1, 'File "%s" moved to "%s"', array($sourceFileObject->getIdentifier(), $resultObject->getIdentifier()));
@@ -571,17 +573,17 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 					// Don't allow overwriting existing files
 					$resultObject = $sourceFolderObject->moveTo($targetFolderObject, NULL, 'renameNewFile');
 				}
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(3, 1, 125, 'You are not allowed to move directories', '');
-			} catch (t3lib_file_exception_InsufficientFileAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
 				$this->writelog(3, 1, 110, 'Could not access all necessary resources. Source file or destination maybe was not within your mountpoints? T="%s", D="%s"', array($sourceFolderObject->getIdentifier(), $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_InsufficientFolderAccessPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException $e) {
 				$this->writelog(3, 1, 121, 'You don\'t have full access to the destination directory "%s"!', array($targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_InvalidTargetFolderException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InvalidTargetFolderException $e) {
 				$this->writelog(3, 1, 122, 'Destination cannot be inside the target! D="%s", T="%s"', array($targetFolderObject->getIdentifier(), $sourceFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_ExistingTargetFolderException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException $e) {
 				$this->writelog(3, 1, 123, 'Target "%s" already exists!', array($targetFolderObject->getIdentifier()));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(3, 2, 119, 'Directory "%s" WAS NOT moved to "%s"! Write-permission problem?', array($sourceFolderObject->getIdentifier(), $targetFolderObject->getIdentifier()));
 			}
 			$this->writelog(3, 0, 2, 'Directory "%s" moved to "%s"', array($sourceFolderObject->getIdentifier(), $targetFolderObject->getIdentifier()));
@@ -598,7 +600,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * $cmds['target'] (string): New name of the file/folder
 	 *
 	 * @param array $cmds Command details as described above
-	 * @return t3lib_file_File Returns the new file upon success
+	 * @return \TYPO3\CMS\Core\Resource\File Returns the new file upon success
 	 * @todo Define visibility
 	 */
 	public function func_rename($cmds) {
@@ -608,19 +610,19 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		$sourceFileObject = $this->getFileObject($cmds['data']);
 		$targetFile = $cmds['target'];
 		$resultObject = NULL;
-		if ($sourceFileObject instanceof t3lib_file_File) {
+		if ($sourceFileObject instanceof \TYPO3\CMS\Core\Resource\File) {
 			try {
 				// Try to rename the File
 				$resultObject = $sourceFileObject->rename($targetFile);
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(5, 1, 102, 'You are not allowed to rename files!', '');
-			} catch (t3lib_file_exception_IllegalFileExtensionException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException $e) {
 				$this->writelog(5, 1, 101, 'Extension of file name "%s" was not allowed!', array($targetFile));
-			} catch (t3lib_file_exception_ExistingTargetFileNameException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
 				$this->writelog(5, 1, 120, 'Destination "%s" existed already!', array($targetFile));
-			} catch (t3lib_file_exception_NotInMountPointException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
 				$this->writelog(5, 1, 121, 'Destination path "%s" was not within your mountpoints!', array($targetFile));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(5, 1, 100, 'File "%s" was not renamed! Write-permission problem in "%s"?', array($sourceFileObject->getName(), $targetFile));
 			}
 			$this->writelog(5, 0, 1, 'File renamed from "%s" to "%s"', array($sourceFileObject->getName(), $targetFile));
@@ -629,13 +631,13 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			try {
 				// Try to rename the Folder
 				$resultObject = $sourceFileObject->rename($targetFile);
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(5, 1, 111, 'You are not allowed to rename directories!', '');
-			} catch (t3lib_file_exception_ExistingTargetFileNameException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
 				$this->writelog(5, 1, 120, 'Destination "%s" existed already!', array($targetFile));
-			} catch (t3lib_file_exception_NotInMountPointException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
 				$this->writelog(5, 1, 121, 'Destination path "%s" was not within your mountpoints!', array($targetFile));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(5, 1, 110, 'Directory "%s" was not renamed! Write-permission problem in "%s"?', array($sourceFileObject->getName(), $targetFile));
 			}
 			$this->writelog(5, 0, 2, 'Directory renamed from "%s" to "%s"', array($sourceFileObject->getName(), $targetFile));
@@ -651,7 +653,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	 * + example "2:targetpath/targetfolder/"
 	 *
 	 * @param array $cmds Command details as described above
-	 * @return t3lib_file_Folder Returns the new foldername upon success
+	 * @return \TYPO3\CMS\Core\Resource\Folder Returns the new foldername upon success
 	 * @todo Define visibility
 	 */
 	public function func_newfolder($cmds) {
@@ -659,7 +661,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			return FALSE;
 		}
 		$targetFolderObject = $this->getFileObject($cmds['target']);
-		if (!$targetFolderObject instanceof t3lib_file_Folder) {
+		if (!$targetFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$this->writelog(6, 2, 104, 'Destination "%s" was not a directory', array($cmds['target']));
 			return FALSE;
 		}
@@ -668,13 +670,13 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			$folderName = $cmds['data'];
 			$resultObject = $targetFolderObject->createFolder($folderName);
 			$this->writelog(6, 0, 1, 'Directory "%s" created in "%s"', array($folderName, $targetFolderObject->getIdentifier() . '/'));
-		} catch (t3lib_file_exception_InsufficientFolderWritePermissionsException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException $e) {
 			$this->writelog(6, 1, 103, 'You are not allowed to create directories!', '');
-		} catch (t3lib_file_exception_NotInMountPointException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
 			$this->writelog(6, 1, 102, 'Destination path "%s" was not within your mountpoints!', array($targetFolderObject->getIdentifier() . '/'));
-		} catch (t3lib_file_exception_ExistingTargetFolderException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException $e) {
 			$this->writelog(6, 1, 101, 'File or directory "%s" existed already!', array($folderName));
-		} catch (RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 			$this->writelog(6, 1, 100, 'Directory "%s" not created. Write-permission problem in "%s"?', array($folderName, $targetFolderObject->getIdentifier() . '/'));
 		}
 		return $resultObject;
@@ -695,7 +697,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			return FALSE;
 		}
 		$targetFolderObject = $this->getFileObject($cmds['target']);
-		if (!$targetFolderObject instanceof t3lib_file_Folder) {
+		if (!$targetFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 			$this->writelog(8, 2, 104, 'Destination "%s" was not a directory', array($cmds['target']));
 			return FALSE;
 		}
@@ -704,15 +706,15 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			$fileName = $cmds['data'];
 			$resultObject = $targetFolderObject->createFile($fileName);
 			$this->writelog(8, 0, 1, 'File created: "%s"', array($fileName));
-		} catch (t3lib_file_exception_InsufficientFolderWritePermissionsException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException $e) {
 			$this->writelog(8, 1, 103, 'You are not allowed to create files!', '');
-		} catch (t3lib_file_exception_NotInMountPointException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
 			$this->writelog(8, 1, 102, 'Destination path "%s" was not within your mountpoints!', array($targetFolderObject->getIdentifier()));
-		} catch (t3lib_file_exception_ExistingTargetFileNameException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
 			$this->writelog(8, 1, 101, 'File existed already in "%s"!', array($targetFolderObject->getIdentifier()));
-		} catch (t3lib_file_exception_InvalidFileNameException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\InvalidFileNameException $e) {
 			$this->writelog(8, 1, 106, 'File name "%s" was not allowed!', $fileName);
-		} catch (RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 			$this->writelog(8, 1, 100, 'File "%s" was not created! Write-permission problem in "%s"?', array($fileName, $targetFolderObject->getIdentifier()));
 		}
 		return $resultObject;
@@ -735,12 +737,12 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		$fileObject = $this->getFileObject($fileIdentifier);
 		// Example indentifier for $cmds['target'] => "2:targetpath/targetfolder/"
 		$content = $cmds['data'];
-		if (!$fileObject instanceof t3lib_file_File) {
+		if (!$fileObject instanceof \TYPO3\CMS\Core\Resource\File) {
 			$this->writelog(9, 2, 123, 'Target "%s" was not a file!', array($fileIdentifier));
 			return FALSE;
 		}
 		$extList = $GLOBALS['TYPO3_CONF_VARS']['SYS']['textfile_ext'];
-		if (!t3lib_div::inList($extList, $fileObject->getExtension())) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($extList, $fileObject->getExtension())) {
 			$this->writelog(9, 1, 102, 'File extension "%s" is not a textfile format! (%s)', array($fileObject->getExtension(), $extList));
 			return FALSE;
 		}
@@ -749,10 +751,10 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			clearstatcache();
 			$this->writelog(9, 0, 1, 'File saved to "%s", bytes: %s, MD5: %s ', array($fileObject->getIdentifier(), $fileObject->getSize(), md5($content)));
 			return TRUE;
-		} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 			$this->writelog(9, 1, 104, 'You are not allowed to edit files!', '');
 			return FALSE;
-		} catch (t3lib_file_exception_InsufficientFileWritePermissionsException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileWritePermissionsException $e) {
 			$this->writelog(9, 1, 100, 'File "%s" was not saved! Write-permission problem?', array($fileObject->getIdentifier()));
 			return FALSE;
 		}
@@ -827,19 +829,19 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 				}
 				$resultObjects[] = $targetFolderObject->addUploadedFile($fileInfo, $conflictMode);
 				$this->writelog(1, 0, 1, 'Uploading file "%s" to "%s"', array($fileInfo['name'], $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_UploadException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\UploadException $e) {
 				$this->writelog(1, 2, 106, 'The upload has failed, no uploaded file found!', '');
-			} catch (t3lib_file_exception_InsufficientUserPermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientUserPermissionsException $e) {
 				$this->writelog(1, 1, 105, 'You are not allowed to upload files!', '');
-			} catch (t3lib_file_exception_UploadSizeException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\UploadSizeException $e) {
 				$this->writelog(1, 1, 104, 'The uploaded file "%s" exceeds the size-limit', array($fileInfo['name']));
-			} catch (t3lib_file_exception_InsufficientFolderWritePermissionsException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException $e) {
 				$this->writelog(1, 1, 103, 'Destination path "%s" was not within your mountpoints!', array($targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_IllegalFileExtensionException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException $e) {
 				$this->writelog(1, 1, 102, 'Extension of file name "%s" is not allowed in "%s"!', array($fileInfo['name'], $targetFolderObject->getIdentifier()));
-			} catch (t3lib_file_exception_ExistingTargetFileNameException $e) {
+			} catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
 				$this->writelog(1, 1, 101, 'No unique filename available in "%s"!', array($targetFolderObject->getIdentifier()));
-			} catch (RuntimeException $e) {
+			} catch (\RuntimeException $e) {
 				$this->writelog(1, 1, 100, 'Uploaded file could not be moved! Write-permission problem in "%s"?', array($targetFolderObject->getIdentifier()));
 			}
 		}
@@ -863,7 +865,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 			$this->writelog(7, 2, 105, 'The file "%s" did not exist!', array($theFile));
 			return FALSE;
 		}
-		$fI = t3lib_div::split_fileref($theFile);
+		$fI = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($theFile);
 		if (!isset($cmds['target'])) {
 			$cmds['target'] = $fI['path'];
 		}
@@ -890,7 +892,7 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 		if ($this->checkPathAgainstMounts($theFile) && $this->checkPathAgainstMounts($theDest . '/')) {
 			// No way to do this under windows.
 			$cmd = ((($this->unzipPath . 'unzip -qq ') . escapeshellarg($theFile)) . ' -d ') . escapeshellarg($theDest);
-			t3lib_utility_Command::exec($cmd);
+			\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd);
 			$this->writelog(7, 0, 1, 'Unzipping file "%s" in "%s"', array($theFile, $theDest));
 			return TRUE;
 		} else {
@@ -900,5 +902,6 @@ class t3lib_extFileFunctions extends t3lib_basicFileFunctions {
 	}
 
 }
+
 
 ?>

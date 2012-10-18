@@ -36,21 +36,21 @@
  */
 require_once 'init.php';
 $GLOBALS['LANG']->includeLLFile('EXT:lang/locallang_alt_doc.xml');
-t3lib_BEfunc::lockRecords();
+\TYPO3\CMS\Backend\Utility\BackendUtility::lockRecords();
 /*
  * @deprecated since 6.0, the classname SC_alt_doc and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/EditDocumentController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/EditDocumentController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/EditDocumentController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_alt_doc');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\EditDocumentController');
 // Preprocessing, storing data if submitted to
 $SOBE->preInit();
-$formprotection = t3lib_formprotection_Factory::get();
+$formprotection = \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get();
 // Checks, if a save button has been clicked (or the doSave variable is sent)
 if ($SOBE->doProcessData()) {
-	if ($formprotection->validateToken(t3lib_div::_GP('formToken'), 'editRecord')) {
+	if ($formprotection->validateToken(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('formToken'), 'editRecord')) {
 		$SOBE->processData();
 	}
 }

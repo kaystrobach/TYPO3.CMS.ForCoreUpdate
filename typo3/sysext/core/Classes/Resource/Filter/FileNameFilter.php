@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Utility_FilenameFilters {
+class FileNameFilter {
 
 	/**
 	 * whether to also show the hidden files (don't show them by default)
@@ -50,10 +52,10 @@ class t3lib_file_Utility_FilenameFilters {
 	 * @param string $itemIdentifier
 	 * @param string $parentIdentifier
 	 * @param array $additionalInformation Additional information (driver dependent) about the inspected item
-	 * @param t3lib_file_Driver_AbstractDriver $driverInstance
+	 * @param \TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driverInstance
 	 * @return boolean|integer -1 if the file should not be included in a listing
 	 */
-	static public function filterHiddenFilesAndFolders($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, t3lib_file_Driver_AbstractDriver $driverInstance) {
+	static public function filterHiddenFilesAndFolders($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, \TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driverInstance) {
 		// Only apply the filter if you want to hide the hidden files
 		if (self::$showHiddenFilesAndFolders === FALSE && substr($itemName, 0, 1) == '.') {
 			return -1;
@@ -84,5 +86,6 @@ class t3lib_file_Utility_FilenameFilters {
 	}
 
 }
+
 
 ?>

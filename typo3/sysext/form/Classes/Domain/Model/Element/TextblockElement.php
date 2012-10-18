@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,9 +30,10 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Textblock extends tx_form_Domain_Model_Element_AbstractPlain {
+class TextblockElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractPlainElement {
 
 
 }
+
 
 ?>

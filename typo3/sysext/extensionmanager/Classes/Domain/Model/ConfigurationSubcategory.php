@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Model
  */
-class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extbase_DomainObject_AbstractEntity {
+class ConfigurationSubcategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string
@@ -47,11 +49,11 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 	 * Constructs this Category
 	 */
 	public function __construct() {
-		$this->items = new Tx_Extbase_Persistence_ObjectStorage();
+		$this->items = new \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage();
 	}
 
 	/**
-	 * @param Tx_Extbase_Persistence_ObjectStorage $items
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage $items
 	 * @return void
 	 */
 	public function setItems($items) {
@@ -59,7 +61,7 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 	}
 
 	/**
-	 * @return Tx_Extbase_Persistence_ObjectStorage
+	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage
 	 */
 	public function getItems() {
 		return $this->items;
@@ -68,10 +70,10 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 	/**
 	 * Adds a subcategory
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $item
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $item
 	 * @return void
 	 */
-	public function addItem(Tx_Extensionmanager_Domain_Model_ConfigurationItem $item) {
+	public function addItem(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $item) {
 		$this->items->attach($item);
 	}
 
@@ -91,5 +93,6 @@ class Tx_Extensionmanager_Domain_Model_ConfigurationSubcategory extends Tx_Extba
 	}
 
 }
+
 
 ?>

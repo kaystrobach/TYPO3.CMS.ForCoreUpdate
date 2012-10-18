@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Steffen Kamper <info@sk-typo3.de>
  */
-class tx_coreupdates_mergeadvanced extends Tx_Install_Updates_Base {
+class MergeAdvancedUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Update Pages with Pagetype "Advanced"';
 
@@ -77,5 +79,6 @@ class tx_coreupdates_mergeadvanced extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

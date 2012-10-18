@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_utility_Path {
+final class PathUtility {
 
 	/**
 	 * Gets the relative path from the current used script to a given directory.
@@ -58,7 +60,7 @@ final class t3lib_utility_Path {
 		$targetPath = rtrim($targetPath, DIRECTORY_SEPARATOR);
 		if ($sourcePath !== $targetPath) {
 			$commonPrefix = self::getCommonPrefix(array($sourcePath, $targetPath));
-			if ($commonPrefix !== NULL && t3lib_div::isAllowedAbsPath($commonPrefix)) {
+			if ($commonPrefix !== NULL && \TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($commonPrefix)) {
 				$commonPrefixLength = strlen($commonPrefix);
 				$resolvedSourcePath = '';
 				$resolvedTargetPath = '';
@@ -129,5 +131,6 @@ final class t3lib_utility_Path {
 	}
 
 }
+
 
 ?>

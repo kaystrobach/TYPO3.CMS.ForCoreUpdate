@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_refindex {
+class ReferenceIndex {
 
 	/**
 	 * @todo Define visibility
@@ -98,7 +100,7 @@ class t3lib_refindex {
 		// Get current index from Database:
 		$currentRels = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_refindex', (('tablename=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($table, 'sys_refindex')) . ' AND recuid=') . intval($uid), '', '', '', 'hash');
 		// First, test to see if the record exists (including deleted-flagged)
-		if (t3lib_BEfunc::getRecordRaw($table, 'uid=' . intval($uid), 'uid')) {
+		if (\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw($table, 'uid=' . intval($uid), 'uid')) {
 			// Then, get relations:
 			$relations = $this->generateRefIndexData($table, $uid);
 			if (is_array($relations)) {
@@ -200,9 +202,9 @@ class t3lib_refindex {
 					}
 				}
 				// Word indexing:
-				t3lib_div::loadTCA($table);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 				foreach ($GLOBALS['TCA'][$table]['columns'] as $field => $conf) {
-					if ((t3lib_div::inList('input,text', $conf['config']['type']) && strcmp($record[$field], '')) && !t3lib_utility_Math::canBeInterpretedAsInteger($record[$field])) {
+					if ((\TYPO3\CMS\Core\Utility\GeneralUtility::inList('input,text', $conf['config']['type']) && strcmp($record[$field], '')) && !\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($record[$field])) {
 						$this->words_strings[$field] = $record[$field];
 					}
 				}
@@ -278,7 +280,7 @@ class t3lib_refindex {
 	public function createEntryData_fileRels($table, $uid, $fieldname, $flexpointer, $deleted, $items) {
 		foreach ($items as $sort => $i) {
 			$filePath = $i['ID_absFile'];
-			if (t3lib_div::isFirstPartOfStr($filePath, PATH_site)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($filePath, PATH_site)) {
 				$filePath = substr($filePath, strlen(PATH_site));
 			}
 			$this->relations[] = $this->createEntryData($table, $uid, $fieldname, $flexpointer, $deleted, '_FILE', 0, $filePath, $sort);
@@ -342,7 +344,7 @@ class t3lib_refindex {
 	 */
 	public function getRelations($table, $row, $onlyField = '') {
 		// Load full table description
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		// Initialize:
 		$uid = $row['uid'];
 		$nonFields = explode(',', 'uid,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,pid');
@@ -370,8 +372,8 @@ class t3lib_refindex {
 				if ($conf['type'] == 'flex') {
 					// Get current value array:
 					// NOTICE: failure to resolve Data Structures can lead to integrity problems with the reference index. Please look up the note in the JavaDoc documentation for the function t3lib_BEfunc::getFlexFormDS()
-					$dataStructArray = t3lib_BEfunc::getFlexFormDS($conf, $row, $table, '', $this->WSOL);
-					$currentValueArray = t3lib_div::xml2array($value);
+					$dataStructArray = \TYPO3\CMS\Backend\Utility\BackendUtility::getFlexFormDS($conf, $row, $table, '', $this->WSOL);
+					$currentValueArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($value);
 					// Traversing the XML structure, processing files:
 					if (is_array($currentValueArray)) {
 						$this->temp_flexRelations = array(
@@ -380,7 +382,7 @@ class t3lib_refindex {
 							'softrefs' => array()
 						);
 						// Create and call iterator object:
-						$flexObj = t3lib_div::makeInstance('t3lib_flexformtools');
+						$flexObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 						$flexObj->traverseFlexFormXMLData($table, $field, $row, $this, 'getRelations_flexFormCallBack');
 						// Create an entry for the field:
 						$outRow[$field] = array(
@@ -390,10 +392,10 @@ class t3lib_refindex {
 					}
 				}
 				// Soft References:
-				if (strlen($value) && ($softRefs = t3lib_BEfunc::explodeSoftRefParserList($conf['softref']))) {
+				if (strlen($value) && ($softRefs = \TYPO3\CMS\Backend\Utility\BackendUtility::explodeSoftRefParserList($conf['softref']))) {
 					$softRefValue = $value;
 					foreach ($softRefs as $spKey => $spParams) {
-						$softRefObj = t3lib_BEfunc::softRefParserObj($spKey);
+						$softRefObj = \TYPO3\CMS\Backend\Utility\BackendUtility::softRefParserObj($spKey);
 						if (is_object($softRefObj)) {
 							$resultArray = $softRefObj->findRef($table, $field, $uid, $softRefValue, $spKey, $spParams);
 							if (is_array($resultArray)) {
@@ -442,10 +444,10 @@ class t3lib_refindex {
 			$this->temp_flexRelations['db'][$structurePath] = $result;
 		}
 		// Soft References:
-		if (strlen($dataValue) && ($softRefs = t3lib_BEfunc::explodeSoftRefParserList($dsConf['softref']))) {
+		if (strlen($dataValue) && ($softRefs = \TYPO3\CMS\Backend\Utility\BackendUtility::explodeSoftRefParserList($dsConf['softref']))) {
 			$softRefValue = $dataValue;
 			foreach ($softRefs as $spKey => $spParams) {
-				$softRefObj = t3lib_BEfunc::softRefParserObj($spKey);
+				$softRefObj = \TYPO3\CMS\Backend\Utility\BackendUtility::softRefParserObj($spKey);
 				if (is_object($softRefObj)) {
 					$resultArray = $softRefObj->findRef($table, $field, $uid, $softRefValue, $spKey, $spParams, $structurePath);
 					if (is_array($resultArray) && is_array($resultArray['elements'])) {
@@ -476,7 +478,7 @@ class t3lib_refindex {
 			// Collect file values in array:
 			if ($conf['MM']) {
 				$theFileValues = array();
-				$dbAnalysis = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				$dbAnalysis = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 				$dbAnalysis->start('', 'files', $conf['MM'], $uid);
 				foreach ($dbAnalysis->itemArray as $somekey => $someval) {
 					if ($someval['id']) {
@@ -523,7 +525,7 @@ class t3lib_refindex {
 			if ($conf['MM_opposite_field']) {
 				return array();
 			}
-			$dbAnalysis = t3lib_div::makeInstance('t3lib_loadDBGroup');
+			$dbAnalysis = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 			$dbAnalysis->start($value, $allowedTables, $conf['MM'], $uid, $table, $conf);
 			return $dbAnalysis->itemArray;
 		} elseif ($conf['type'] == 'inline' && $conf['foreign_table'] == 'sys_file_reference') {
@@ -535,11 +537,11 @@ class t3lib_refindex {
 			return $fileArray;
 		} elseif (($conf['type'] == 'input' && isset($conf['wizards']['link'])) && trim($value)) {
 			try {
-				$file = t3lib_file_Factory::getInstance()->retrieveFileOrFolderObject($value);
-			} catch (Exception $e) {
+				$file = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->retrieveFileOrFolderObject($value);
+			} catch (\Exception $e) {
 
 			}
-			if ($file instanceof t3lib_file_FileInterface) {
+			if ($file instanceof \TYPO3\CMS\Core\Resource\FileInterface) {
 				return array(
 					0 => array(
 						'table' => 'sys_file',
@@ -637,7 +639,7 @@ class t3lib_refindex {
 								return $dataArray;
 							} else {
 								// Execute CMD array:
-								$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+								$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 								$tce->stripslashes_values = FALSE;
 								$tce->dontProcessTransformations = TRUE;
 								$tce->bypassWorkspaceRestrictions = TRUE;
@@ -692,7 +694,7 @@ class t3lib_refindex {
 			}
 			// Set in data array:
 			if ($flexpointer) {
-				$flexToolObj = t3lib_div::makeInstance('t3lib_flexformtools');
+				$flexToolObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 				$dataArray[$refRec['tablename']][$refRec['recuid']][$refRec['field']]['data'] = array();
 				$flexToolObj->setArrayValueByPath(substr($flexpointer, 0, -1), $dataArray[$refRec['tablename']][$refRec['recuid']][$refRec['field']]['data'], implode(',', $saveValue));
 			} else {
@@ -730,7 +732,7 @@ class t3lib_refindex {
 			}
 			// Set in data array:
 			if ($flexpointer) {
-				$flexToolObj = t3lib_div::makeInstance('t3lib_flexformtools');
+				$flexToolObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 				$dataArray[$refRec['tablename']][$refRec['recuid']][$refRec['field']]['data'] = array();
 				$flexToolObj->setArrayValueByPath(substr($flexpointer, 0, -1), $dataArray[$refRec['tablename']][$refRec['recuid']][$refRec['field']]['data'], implode(',', $saveValue));
 			} else {
@@ -765,7 +767,7 @@ class t3lib_refindex {
 			// Set in data array:
 			if (!strstr($softref['tokenizedContent'], '{softref:')) {
 				if ($flexpointer) {
-					$flexToolObj = t3lib_div::makeInstance('t3lib_flexformtools');
+					$flexToolObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 					$dataArray[$refRec['tablename']][$refRec['recuid']][$refRec['field']]['data'] = array();
 					$flexToolObj->setArrayValueByPath(substr($flexpointer, 0, -1), $dataArray[$refRec['tablename']][$refRec['recuid']][$refRec['field']]['data'], $softref['tokenizedContent']);
 				} else {
@@ -843,14 +845,14 @@ class t3lib_refindex {
 			$allRecs = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $tableName, '1=1');
 			if (!is_array($allRecs)) {
 				// Table exists in $TCA but does not exist in the database
-				t3lib_div::sysLog(sprintf('Table "%s" exists in $TCA but does not exist in the database. You should run the Database Analyzer in the Install Tool to fix this.', $tableName), 'core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf('Table "%s" exists in $TCA but does not exist in the database. You should run the Database Analyzer in the Install Tool to fix this.', $tableName), 'core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 				continue;
 			}
 			$tableNames[] = $tableName;
 			$tableCount++;
 			$uidList = array(0);
 			foreach ($allRecs as $recdat) {
-				$refIndexObj = t3lib_div::makeInstance('t3lib_refindex');
+				$refIndexObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 				$result = $refIndexObj->updateRefIndexTable($tableName, $recdat['uid'], $testOnly);
 				$uidList[] = $recdat['uid'];
 				$recCount++;
@@ -895,12 +897,13 @@ class t3lib_refindex {
 			echo ($testedHowMuch . (count($errors) ? 'Updates: ' . count($errors) : 'Index Integrity was perfect!')) . LF;
 		}
 		if (!$testOnly) {
-			$registry = t3lib_div::makeInstance('t3lib_Registry');
+			$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 			$registry->set('core', 'sys_refindex_lastUpdate', $GLOBALS['EXEC_TIME']);
 		}
 		return array($headerContent, $bodyContent, count($errors));
 	}
 
 }
+
 
 ?>

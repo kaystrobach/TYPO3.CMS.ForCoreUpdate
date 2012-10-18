@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Float extends tx_form_System_Validate_Abstract {
+class FloatValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Returns TRUE if submitted value validates according to rule
@@ -52,5 +54,6 @@ class tx_form_System_Validate_Float extends tx_form_System_Validate_Abstract {
 	}
 
 }
+
 
 ?>

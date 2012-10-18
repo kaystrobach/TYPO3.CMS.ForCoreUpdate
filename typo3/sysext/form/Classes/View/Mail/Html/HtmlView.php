@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html extends tx_form_View_Mail_Html_Element_Container {
+class HtmlView extends \TYPO3\CMS\Form\View\Mail\Html\Element\ContainerElementView {
 
 	/**
 	 * Default layout of this object
@@ -58,14 +60,14 @@ class tx_form_View_Mail_Html extends tx_form_View_Mail_Html_Element_Container {
 	/**
 	 * The localization handler
 	 *
-	 * @var tx_form_System_Localization
+	 * @var \TYPO3\CMS\Form\Localization
 	 */
 	protected $localizationHandler;
 
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
@@ -74,9 +76,9 @@ class tx_form_View_Mail_Html extends tx_form_View_Mail_Html_Element_Container {
 	 *
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Form $model, array $typoscript) {
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
-		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Form $model, array $typoscript) {
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
 		$this->typoscript = $typoscript;
 		parent::__construct($model);
 	}
@@ -84,10 +86,10 @@ class tx_form_View_Mail_Html extends tx_form_View_Mail_Html_Element_Container {
 	/**
 	 * Set the data for the FORM tag
 	 *
-	 * @param tx_form_Domain_Model_Form $formModel The model of the form
+	 * @param \TYPO3\CMS\Form\Domain\Model\Form $formModel The model of the form
 	 * @return void
 	 */
-	public function setData(tx_form_Domain_Model_Form $model) {
+	public function setData(\TYPO3\CMS\Form\Domain\Model\Form $model) {
 		$this->model = (object) $model;
 	}
 
@@ -105,5 +107,6 @@ class tx_form_View_Mail_Html extends tx_form_View_Mail_Html_Element_Container {
 	}
 
 }
+
 
 ?>

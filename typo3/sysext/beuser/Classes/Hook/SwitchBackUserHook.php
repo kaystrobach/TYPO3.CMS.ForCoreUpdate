@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,13 +30,13 @@
  * @author Sebastian Kurfürst <sebastian@garbage-group.de>
  * @author Felix Kopp <felix-source@phorax.com>
  */
-class tx_beuser_switchbackuser {
+class SwitchBackUserHook {
 
 	/**
 	 * Switch backen user session
 	 *
 	 * @param array $params
-	 * @param t3lib_userAuth $that
+	 * @param \TYPO3\CMS\Core\Authentication\AbstractUserAuthentication $that
 	 * @see t3lib_userauth::logoff()
 	 * @todo Define visibility
 	 */
@@ -48,11 +50,12 @@ class tx_beuser_switchbackuser {
 			'ses_userid' => $that->user['ses_backuserid'],
 			'ses_backuserid' => 0
 		);
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('be_sessions', (((('ses_id = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($GLOBALS['BE_USER']->id, 'be_sessions')) . ' AND ses_name = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr(t3lib_beUserAuth::getCookieName(), 'be_sessions')) . ' AND ses_userid=') . intval($GLOBALS['BE_USER']->user['uid']), $updateData);
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('be_sessions', (((('ses_id = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($GLOBALS['BE_USER']->id, 'be_sessions')) . ' AND ses_name = ') . $GLOBALS['TYPO3_DB']->fullQuoteStr(\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::getCookieName(), 'be_sessions')) . ' AND ses_userid=') . intval($GLOBALS['BE_USER']->user['uid']), $updateData);
 		$redirectUrl = ($GLOBALS['BACK_PATH'] . 'index.php') . ($GLOBALS['TYPO3_CONF_VARS']['BE']['interfaces'] ? '' : '?commandLI=1');
-		t3lib_utility_Http::redirect($redirectUrl);
+		\TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
 	}
 
 }
+
 
 ?>

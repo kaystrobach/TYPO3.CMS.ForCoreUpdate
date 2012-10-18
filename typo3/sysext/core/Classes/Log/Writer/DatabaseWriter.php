@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Writer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_writer_Database extends t3lib_log_writer_Abstract {
+class DatabaseWriter extends \TYPO3\CMS\Core\Log\Writer\AbstractWriter {
 
 	/**
 	 * Table to write the log records to.
@@ -41,7 +43,7 @@ class t3lib_log_writer_Database extends t3lib_log_writer_Abstract {
 	 * Set name of database log table
 	 *
 	 * @param string $tableName Database table name
-	 * @return t3lib_log_writer_Abstract
+	 * @return \TYPO3\CMS\Core\Log\Writer\AbstractWriter
 	 */
 	public function setLogTable($tableName) {
 		$this->logTable = $tableName;
@@ -60,11 +62,11 @@ class t3lib_log_writer_Database extends t3lib_log_writer_Abstract {
 	/**
 	 * Writes the log record
 	 *
-	 * @param t3lib_log_Record $record Log record
-	 * @return t3lib_log_writer_Writer $this
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record Log record
+	 * @return \TYPO3\CMS\Core\Log\Writer\Writer $this
 	 * @throws RuntimeException
 	 */
-	public function writeLog(t3lib_log_Record $record) {
+	public function writeLog(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		$data = array(
 			'request_id' => $record['requestId'],
 			'time_micro' => $record['created'],
@@ -74,11 +76,12 @@ class t3lib_log_writer_Database extends t3lib_log_writer_Abstract {
 			'data' => !empty($record['data']) ? json_encode($record['data']) : ''
 		);
 		if (FALSE === $GLOBALS['TYPO3_DB']->exec_INSERTquery($this->logTable, $data)) {
-			throw new RuntimeException('Could not write log record to database', 1345036334);
+			throw new \RuntimeException('Could not write log record to database', 1345036334);
 		}
 		return $this;
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Additional_Additional {
+class AdditionalAdditionalElement {
 
 	/**
 	 * Array with the additional objects of the element
@@ -48,7 +50,7 @@ class tx_form_Domain_Model_Additional_Additional {
 	public function addAdditional($class, $type, $value) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_Domain_Model_Additional_' . ucfirst($class);
-		$this->additional[$class] = t3lib_div::makeInstance($className, $type, $value);
+		$this->additional[$class] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $type, $value);
 		return $this;
 	}
 
@@ -65,7 +67,7 @@ class tx_form_Domain_Model_Additional_Additional {
 	 * Get a specific additional object by using the key
 	 *
 	 * @param string $key Key of the additional
-	 * @return tx_form_Domain_Model_Additional_Abstract The additional object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Additional\AbstractAdditionalElement The additional object
 	 */
 	public function getAdditionalObjectByKey($key) {
 		return $this->additional[$key];
@@ -104,5 +106,6 @@ class tx_form_Domain_Model_Additional_Additional {
 	}
 
 }
+
 
 ?>

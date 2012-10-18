@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\Wizard;
+
 /**
  * Script Class for rendering the Table Wizard
  *
@@ -6,13 +8,13 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_wizard_table {
+class TableController {
 
 	// Internal, dynamic:
 	/**
 	 * document template object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -91,15 +93,15 @@ class SC_wizard_table {
 	 */
 	public function init() {
 		// GPvars:
-		$this->P = t3lib_div::_GP('P');
-		$this->TABLECFG = t3lib_div::_GP('TABLE');
+		$this->P = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
+		$this->TABLECFG = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('TABLE');
 		// Setting options:
 		$this->xmlStorage = $this->P['params']['xmlOutput'];
-		$this->numNewRows = t3lib_utility_Math::forceIntegerInRange($this->P['params']['numNewRows'], 1, 50, 5);
+		$this->numNewRows = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->P['params']['numNewRows'], 1, 50, 5);
 		// Textareas or input fields:
 		$this->inputStyle = isset($this->TABLECFG['textFields']) ? $this->TABLECFG['textFields'] : 1;
 		// Document template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/wizard_table.html');
 		$this->doc->JScode = $this->doc->wrapScriptTags('
@@ -108,7 +110,7 @@ class SC_wizard_table {
 			}
 		');
 		// Setting form tag:
-		list($rUri) = explode('#', t3lib_div::getIndpEnv('REQUEST_URI'));
+		list($rUri) = explode('#', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'));
 		$this->doc->form = ('<form action="' . htmlspecialchars($rUri)) . '" method="post" name="wizardForm">';
 		$this->tableParsing_delimiter = '|';
 		$this->tableParsing_quote = '';
@@ -163,17 +165,17 @@ class SC_wizard_table {
 		);
 		if (($this->P['table'] && $this->P['field']) && $this->P['uid']) {
 			// CSH
-			$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_table_wiz', $GLOBALS['BACK_PATH'], '');
+			$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_table_wiz', $GLOBALS['BACK_PATH'], '');
 			// CSH Buttons
-			$buttons['csh_buttons'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_table_wiz_buttons', $GLOBALS['BACK_PATH'], '');
+			$buttons['csh_buttons'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_table_wiz_buttons', $GLOBALS['BACK_PATH'], '');
 			// Close
-			$buttons['close'] = ((('<a href="#" onclick="' . htmlspecialchars((('jumpToUrl(unescape(\'' . rawurlencode(t3lib_div::sanitizeLocalUrl($this->P['returnUrl']))) . '\')); return false;'))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-close', array('title' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)))) . '</a>';
+			$buttons['close'] = ((('<a href="#" onclick="' . htmlspecialchars((('jumpToUrl(unescape(\'' . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->P['returnUrl']))) . '\')); return false;'))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close', array('title' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)))) . '</a>';
 			// Save
-			$buttons['save'] = ((('<input type="image" class="c-inputButton" name="savedok"' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/savedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', 1)) . '" />';
+			$buttons['save'] = ((('<input type="image" class="c-inputButton" name="savedok"' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/savedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveDoc', 1)) . '" />';
 			// Save & Close
-			$buttons['save_close'] = ((('<input type="image" class="c-inputButton" name="saveandclosedok"' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/saveandclosedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', 1)) . '" />';
+			$buttons['save_close'] = ((('<input type="image" class="c-inputButton" name="saveandclosedok"' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/saveandclosedok.gif')) . ' title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.saveCloseDoc', 1)) . '" />';
 			// Reload
-			$buttons['reload'] = ((('<input type="image" class="c-inputButton" name="_refresh"' . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/refresh_n.gif')) . ' title="') . $GLOBALS['LANG']->getLL('forms_refresh', 1)) . '" />';
+			$buttons['reload'] = ((('<input type="image" class="c-inputButton" name="_refresh"' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/refresh_n.gif')) . ' title="') . $GLOBALS['LANG']->getLL('forms_refresh', 1)) . '" />';
 		}
 		return $buttons;
 	}
@@ -186,9 +188,9 @@ class SC_wizard_table {
 	 */
 	public function tableWizard() {
 		// First, check the references by selecting the record:
-		$row = t3lib_BEfunc::getRecord($this->P['table'], $this->P['uid']);
+		$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($this->P['table'], $this->P['uid']);
 		if (!is_array($row)) {
-			throw new RuntimeException('Wizard Error: No reference to record', 1294587125);
+			throw new \RuntimeException('Wizard Error: No reference to record', 1294587125);
 		}
 		// This will get the content of the form configuration code field to us - possibly cleaned up,
 		// saved to database etc. if the form has been submitted in the meantime.
@@ -215,7 +217,7 @@ class SC_wizard_table {
 	 */
 	public function getConfigCode($row) {
 		// Get delimiter settings
-		$flexForm = t3lib_div::xml2array($row['pi_flexform']);
+		$flexForm = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($row['pi_flexform']);
 		if (is_array($flexForm)) {
 			$this->tableParsing_quote = $flexForm['data']['s_parsing']['lDEF']['tableparsing_quote']['vDEF'] ? chr(intval($flexForm['data']['s_parsing']['lDEF']['tableparsing_quote']['vDEF'])) : '';
 			$this->tableParsing_delimiter = $flexForm['data']['s_parsing']['lDEF']['tableparsing_delimiter']['vDEF'] ? chr(intval($flexForm['data']['s_parsing']['lDEF']['tableparsing_delimiter']['vDEF'])) : '|';
@@ -227,7 +229,7 @@ class SC_wizard_table {
 			// Convert to string (either line based or XML):
 			if ($this->xmlStorage) {
 				// Convert the input array to XML:
-				$bodyText = t3lib_div::array2xml_cs($this->TABLECFG['c'], 'T3TableWizard');
+				$bodyText = \TYPO3\CMS\Core\Utility\GeneralUtility::array2xml_cs($this->TABLECFG['c'], 'T3TableWizard');
 				// Setting cfgArr directly from the input:
 				$cfgArr = $this->TABLECFG['c'];
 			} else {
@@ -239,7 +241,7 @@ class SC_wizard_table {
 			// If a save button has been pressed, then save the new field content:
 			if ($_POST['savedok_x'] || $_POST['saveandclosedok_x']) {
 				// Make TCEmain object:
-				$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+				$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 				$tce->stripslashes_values = 0;
 				// Put content into the data array:
 				$data = array();
@@ -249,13 +251,13 @@ class SC_wizard_table {
 				$tce->process_datamap();
 				// If the save/close button was pressed, then redirect the screen:
 				if ($_POST['saveandclosedok_x']) {
-					t3lib_utility_Http::redirect(t3lib_div::sanitizeLocalUrl($this->P['returnUrl']));
+					\TYPO3\CMS\Core\Utility\HttpUtility::redirect(\TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->P['returnUrl']));
 				}
 			}
 		} else {
 			// If nothing has been submitted, load the $bodyText variable from the selected database row:
 			if ($this->xmlStorage) {
-				$cfgArr = t3lib_div::xml2array($row[$this->P['field']]);
+				$cfgArr = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($row[$this->P['field']]);
 			} else {
 				// Regular linebased table configuration:
 				$cfgArr = $this->cfgString2CfgArray($row[$this->P['field']], $row[$this->colsFieldName]);
@@ -289,7 +291,7 @@ class SC_wizard_table {
 						$cells[] = ((((((('<input type="text"' . $this->doc->formWidth(20)) . ' name="TABLE[c][') . ($k + 1) * 2) . '][') . ($a + 1) * 2) . ']" value="') . htmlspecialchars($cellContent)) . '" />';
 					} else {
 						$cellContent = preg_replace('/<br[ ]?[\\/]?>/i', LF, $cellContent);
-						$cells[] = ((((((('<textarea ' . $this->doc->formWidth(20)) . ' rows="5" name="TABLE[c][') . ($k + 1) * 2) . '][') . ($a + 1) * 2) . ']">') . t3lib_div::formatForTextarea($cellContent)) . '</textarea>';
+						$cells[] = ((((((('<textarea ' . $this->doc->formWidth(20)) . ' rows="5" name="TABLE[c][') . ($k + 1) * 2) . '][') . ($a + 1) * 2) . ']">') . \TYPO3\CMS\Core\Utility\GeneralUtility::formatForTextarea($cellContent)) . '</textarea>';
 					}
 					// Increment counter:
 					$a++;
@@ -300,18 +302,18 @@ class SC_wizard_table {
 				$ctrl = '';
 				$brTag = $this->inputStyle ? '' : '<br />';
 				if ($k != 0) {
-					$ctrl .= ((((((('<input type="image" name="TABLE[row_up][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/pil2up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_up', 1)) . '" />') . $brTag;
+					$ctrl .= ((((((('<input type="image" name="TABLE[row_up][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/pil2up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_up', 1)) . '" />') . $brTag;
 				} else {
-					$ctrl .= ((((((('<input type="image" name="TABLE[row_bottom][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/turn_up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_bottom', 1)) . '" />') . $brTag;
+					$ctrl .= ((((((('<input type="image" name="TABLE[row_bottom][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/turn_up.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_bottom', 1)) . '" />') . $brTag;
 				}
-				$ctrl .= ((((((('<input type="image" name="TABLE[row_remove][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/garbage.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_removeRow', 1)) . '" />') . $brTag;
+				$ctrl .= ((((((('<input type="image" name="TABLE[row_remove][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/garbage.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_removeRow', 1)) . '" />') . $brTag;
 				// FIXME what is $tLines? See wizard_forms.php for the same.
 				if ($k + 1 != count($tLines)) {
-					$ctrl .= ((((((('<input type="image" name="TABLE[row_down][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/pil2down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_down', 1)) . '" />') . $brTag;
+					$ctrl .= ((((((('<input type="image" name="TABLE[row_down][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/pil2down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_down', 1)) . '" />') . $brTag;
 				} else {
-					$ctrl .= ((((((('<input type="image" name="TABLE[row_top][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/turn_down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_top', 1)) . '" />') . $brTag;
+					$ctrl .= ((((((('<input type="image" name="TABLE[row_top][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/turn_down.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_top', 1)) . '" />') . $brTag;
 				}
-				$ctrl .= ((((((('<input type="image" name="TABLE[row_add][' . ($k + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/add.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_addRow', 1)) . '" />') . $brTag;
+				$ctrl .= ((((((('<input type="image" name="TABLE[row_add][' . ($k + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/add.gif', '')) . $onClick) . ' title="') . $GLOBALS['LANG']->getLL('table_addRow', 1)) . '" />') . $brTag;
 				$tRows[] = ((((('
 					<tr class="bgColor4">
 						<td class="bgColor5"><a name="ANC_' . ($k + 1) * 2) . '"></a><span class="c-wizButtonsV">') . $ctrl) . '</span></td>
@@ -335,17 +337,17 @@ class SC_wizard_table {
 			foreach ($firstRow as $temp) {
 				$ctrl = '';
 				if ($a != 0) {
-					$ctrl .= ((((('<input type="image" name="TABLE[col_left][' . ($a + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/pil2left.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_left', 1)) . '" />';
+					$ctrl .= ((((('<input type="image" name="TABLE[col_left][' . ($a + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/pil2left.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_left', 1)) . '" />';
 				} else {
-					$ctrl .= ((((('<input type="image" name="TABLE[col_end][' . ($a + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/turn_left.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_end', 1)) . '" />';
+					$ctrl .= ((((('<input type="image" name="TABLE[col_end][' . ($a + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/turn_left.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_end', 1)) . '" />';
 				}
-				$ctrl .= ((((('<input type="image" name="TABLE[col_remove][' . ($a + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/garbage.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_removeColumn', 1)) . '" />';
+				$ctrl .= ((((('<input type="image" name="TABLE[col_remove][' . ($a + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/garbage.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_removeColumn', 1)) . '" />';
 				if ($a + 1 != $cols) {
-					$ctrl .= ((((('<input type="image" name="TABLE[col_right][' . ($a + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/pil2right.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_right', 1)) . '" />';
+					$ctrl .= ((((('<input type="image" name="TABLE[col_right][' . ($a + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/pil2right.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_right', 1)) . '" />';
 				} else {
-					$ctrl .= ((((('<input type="image" name="TABLE[col_start][' . ($a + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/turn_right.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_start', 1)) . '" />';
+					$ctrl .= ((((('<input type="image" name="TABLE[col_start][' . ($a + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/turn_right.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_start', 1)) . '" />';
 				}
-				$ctrl .= ((((('<input type="image" name="TABLE[col_add][' . ($a + 1) * 2) . ']"') . t3lib_iconWorks::skinImg($this->doc->backPath, 'gfx/add.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_addColumn', 1)) . '" />';
+				$ctrl .= ((((('<input type="image" name="TABLE[col_add][' . ($a + 1) * 2) . ']"') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->doc->backPath, 'gfx/add.gif', '')) . ' title="') . $GLOBALS['LANG']->getLL('table_addColumn', 1)) . '" />';
 				$cells[] = ('<span class="c-wizButtonsH">' . $ctrl) . '</span>';
 				// Incr. counter:
 				$a++;
@@ -428,7 +430,7 @@ class SC_wizard_table {
 			$kk = key($this->TABLECFG['row_down']);
 			$cmd = 'row_down';
 		}
-		if ($cmd && t3lib_utility_Math::canBeInterpretedAsInteger($kk)) {
+		if ($cmd && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($kk)) {
 			if (substr($cmd, 0, 4) == 'row_') {
 				switch ($cmd) {
 				case 'row_remove':
@@ -565,5 +567,6 @@ class SC_wizard_table {
 	}
 
 }
+
 
 ?>

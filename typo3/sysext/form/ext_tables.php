@@ -3,14 +3,14 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 // Add Default TS to Include static (from extensions)
-t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript/', 'Default TS');
+\TYPO3\CMS\Core\Extension\ExtensionManager::addStaticFile($_EXTKEY, 'Configuration/TypoScript/', 'Default TS');
 $TCA['tt_content']['columns']['bodytext']['config']['wizards']['forms'] = array(
 	'notNewRecords' => 1,
 	'enableByTypeConfig' => 1,
 	'type' => 'script',
 	'title' => 'Form wizard',
 	'icon' => 'wizard_forms.gif',
-	'script' => t3lib_extMgm::extRelPath('form') . 'Classes/Controller/Wizard.php',
+	'script' => \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath('form') . 'Classes/Controller/Wizard.php',
 	'params' => array(
 		'xmlOutput' => 0
 	)

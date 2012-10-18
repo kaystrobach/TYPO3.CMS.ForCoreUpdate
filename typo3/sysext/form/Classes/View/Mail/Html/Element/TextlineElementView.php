@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html_Element_Textline extends tx_form_View_Mail_Html_Element_Abstract {
+class TextlineElementView extends \TYPO3\CMS\Form\View\Mail\Html\Element\AbstractElementView {
 
 	/**
 	 * Default layout of this object
@@ -47,13 +49,14 @@ class tx_form_View_Mail_Html_Element_Textline extends tx_form_View_Mail_Html_Ele
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Textline $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\TextlineElement $model Model for this element
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Textline $model) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\TextlineElement $model) {
 		parent::__construct($model);
 	}
 
 }
+
 
 ?>

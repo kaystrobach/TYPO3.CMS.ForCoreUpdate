@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class for the "No-doc" display; This shows most recently edited records.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_alt_doc_nodoc {
+class NoDocumentsOpenController {
 
 	// Internal:
 	// Content accumulation
@@ -18,7 +20,7 @@ class SC_alt_doc_nodoc {
 	/**
 	 * Document template object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -26,7 +28,7 @@ class SC_alt_doc_nodoc {
 	/**
 	 * Object for backend modules.
 	 *
-	 * @var t3lib_loadModules
+	 * @var \TYPO3\CMS\Backend\Module\ModuleLoader
 	 * @todo Define visibility
 	 */
 	public $loadModules;
@@ -39,7 +41,7 @@ class SC_alt_doc_nodoc {
 	 */
 	public function init() {
 		// Start the template object:
-		$this->doc = t3lib_div::makeInstance('mediumDoc');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate');
 		$this->doc->bodyTagMargins['x'] = 5;
 		$this->doc->bodyTagMargins['y'] = 5;
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
@@ -61,7 +63,7 @@ class SC_alt_doc_nodoc {
 		$this->content = '';
 		$this->content .= $this->doc->startPage('TYPO3 Edit Document');
 		// Loads the backend modules available for the logged in user.
-		$this->loadModules = t3lib_div::makeInstance('t3lib_loadModules');
+		$this->loadModules = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 		$this->loadModules->load($GLOBALS['TBE_MODULES']);
 	}
 
@@ -77,10 +79,10 @@ class SC_alt_doc_nodoc {
 		$msg[] = ('<p>' . $GLOBALS['LANG']->getLL('noDocuments_msg', 1)) . '</p><br />';
 		// If another page module was specified, replace the default Page module with the new one
 		$newPageModule = trim($GLOBALS['BE_USER']->getTSConfigVal('options.overridePageModule'));
-		$pageModule = t3lib_BEfunc::isModuleSetInTBE_MODULES($newPageModule) ? $newPageModule : 'web_layout';
+		$pageModule = \TYPO3\CMS\Backend\Utility\BackendUtility::isModuleSetInTBE_MODULES($newPageModule) ? $newPageModule : 'web_layout';
 		// Perform some access checks:
 		$a_wl = $GLOBALS['BE_USER']->check('modules', 'web_list');
-		$a_wp = t3lib_extMgm::isLoaded('cms') && $GLOBALS['BE_USER']->check('modules', $pageModule);
+		$a_wp = \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms') && $GLOBALS['BE_USER']->check('modules', $pageModule);
 		// Finding module images: PAGE
 		$imgFile = $GLOBALS['LANG']->moduleLabels['tabs_images']['web_layout_tab'];
 		$imgInfo = @getimagesize($imgFile);
@@ -106,7 +108,7 @@ class SC_alt_doc_nodoc {
 			$msg[] = ('<p>' . sprintf($GLOBALS['LANG']->getLL('noDocuments_msg2', 1), implode(' ', $msg_2))) . '</p><br />';
 		}
 		// Display the list of the most recently edited documents:
-		$modObj = t3lib_div::makeInstance('tx_opendocs');
+		$modObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Opendocs\\Controller\\OpendocsController');
 		$msg[] = (('<p>' . $GLOBALS['LANG']->getLL('noDocuments_msg3', TRUE)) . '</p><br />') . $modObj->renderMenu();
 		// Adding the content:
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('noDocuments'), implode(' ', $msg), 0, 1);
@@ -125,5 +127,6 @@ class SC_alt_doc_nodoc {
 	}
 
 }
+
 
 ?>

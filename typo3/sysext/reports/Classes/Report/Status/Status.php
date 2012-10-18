@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Report\Status;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage reports
  */
-class tx_reports_reports_Status implements tx_reports_Report {
+class Status implements \TYPO3\CMS\Reports\ReportInterface {
 
 	/**
 	 * @var array
@@ -53,7 +55,7 @@ class tx_reports_reports_Status implements tx_reports_Report {
 		$status = $this->getSystemStatus();
 		$highestSeverity = $this->getHighestSeverity($status);
 		// Updating the registry
-		$registry = t3lib_div::makeInstance('t3lib_Registry');
+		$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$registry->set('tx_reports', 'status.highestSeverity', $highestSeverity);
 		$content .= ('<p class="help">' . $GLOBALS['LANG']->getLL('status_report_explanation')) . '</p>';
 		return $content . $this->renderStatus($status);
@@ -68,8 +70,8 @@ class tx_reports_reports_Status implements tx_reports_Report {
 		foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['reports']['tx_reports']['status']['providers'] as $key => $statusProvidersList) {
 			$this->statusProviders[$key] = array();
 			foreach ($statusProvidersList as $statusProvider) {
-				$statusProviderInstance = t3lib_div::makeInstance($statusProvider);
-				if ($statusProviderInstance instanceof tx_reports_StatusProvider) {
+				$statusProviderInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($statusProvider);
+				if ($statusProviderInstance instanceof \TYPO3\CMS\Reports\StatusProviderInterface) {
 					$this->statusProviders[$key][] = $statusProviderInstance;
 				}
 			}
@@ -100,14 +102,14 @@ class tx_reports_reports_Status implements tx_reports_Report {
 	 * @return integer The highest severity found from the statuses.
 	 */
 	public function getHighestSeverity(array $statusCollection) {
-		$highestSeverity = tx_reports_reports_status_Status::NOTICE;
+		$highestSeverity = \TYPO3\CMS\Reports\Status::NOTICE;
 		foreach ($statusCollection as $statusProvider => $providerStatuses) {
 			foreach ($providerStatuses as $status) {
 				if ($status->getSeverity() > $highestSeverity) {
 					$highestSeverity = $status->getSeverity();
 				}
 				// Reached the highest severity level, no need to go on
-				if ($highestSeverity == tx_reports_reports_status_Status::ERROR) {
+				if ($highestSeverity == \TYPO3\CMS\Reports\Status::ERROR) {
 					break;
 				}
 			}
@@ -137,14 +139,14 @@ class tx_reports_reports_Status implements tx_reports_Report {
 			$providerState = $this->sortStatuses($providerStatus);
 			$id = str_replace(' ', '-', $provider);
 			$classes = array(
-				tx_reports_reports_status_Status::NOTICE => 'notice',
-				tx_reports_reports_status_Status::INFO => 'information',
-				tx_reports_reports_status_Status::OK => 'ok',
-				tx_reports_reports_status_Status::WARNING => 'warning',
-				tx_reports_reports_status_Status::ERROR => 'error'
+				\TYPO3\CMS\Reports\Status::NOTICE => 'notice',
+				\TYPO3\CMS\Reports\Status::INFO => 'information',
+				\TYPO3\CMS\Reports\Status::OK => 'ok',
+				\TYPO3\CMS\Reports\Status::WARNING => 'warning',
+				\TYPO3\CMS\Reports\Status::ERROR => 'error'
 			);
-			$icon[tx_reports_reports_status_Status::WARNING] = t3lib_iconWorks::getSpriteIcon('status-dialog-warning');
-			$icon[tx_reports_reports_status_Status::ERROR] = t3lib_iconWorks::getSpriteIcon('status-dialog-error');
+			$icon[\TYPO3\CMS\Reports\Status::WARNING] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-dialog-warning');
+			$icon[\TYPO3\CMS\Reports\Status::ERROR] = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-dialog-error');
 			$messages = '';
 			$headerIcon = '';
 			$sectionSeverity = 0;
@@ -231,5 +233,6 @@ class tx_reports_reports_Status implements tx_reports_Report {
 	}
 
 }
+
 
 ?>

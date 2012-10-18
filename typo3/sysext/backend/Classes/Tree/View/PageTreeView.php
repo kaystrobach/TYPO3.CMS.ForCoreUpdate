@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\View;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_pageTree extends t3lib_treeView {
+class PageTreeView extends \TYPO3\CMS\Backend\Tree\View\AbstractTreeView {
 
 	/**
 	 * @todo Define visibility
@@ -76,7 +78,7 @@ class t3lib_pageTree extends t3lib_treeView {
 	 */
 	public function init($clause = '', $orderByFields = '') {
 		parent::init(' AND deleted=0 ' . $clause, 'sorting');
-		if (t3lib_extMgm::isLoaded('cms')) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms')) {
 			$this->fieldArray = array_merge($this->fieldArray, array(
 				'hidden',
 				'starttime',
@@ -119,7 +121,7 @@ class t3lib_pageTree extends t3lib_treeView {
 	public function PMicon($row, $a, $c, $nextCount, $exp) {
 		$PM = 'join';
 		$BTM = $a == $c ? 'bottom' : '';
-		$icon = ('<img' . t3lib_iconWorks::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' alt="" />';
+		$icon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' alt="" />';
 		return $icon;
 	}
 
@@ -136,5 +138,6 @@ class t3lib_pageTree extends t3lib_treeView {
 	}
 
 }
+
 
 ?>

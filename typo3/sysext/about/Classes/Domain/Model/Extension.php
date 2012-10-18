@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\About\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @entity
  * @author Felix Kopp <felix-source@phorax.com>
  */
-class Tx_About_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEntity {
+class Extension extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string
@@ -109,5 +111,6 @@ class Tx_About_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEn
 	}
 
 }
+
 
 ?>

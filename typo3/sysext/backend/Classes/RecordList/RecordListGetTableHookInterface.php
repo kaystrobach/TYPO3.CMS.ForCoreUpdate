@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\RecordList;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_localRecordListGetTableHook
+interface RecordListGetTableHookInterface
 {
 	/**
 	 * modifies the DB list query
@@ -40,10 +42,11 @@ interface t3lib_localRecordListGetTableHook
 	 * @param integer $pageId The record's page ID
 	 * @param string $additionalWhereClause An additional WHERE clause
 	 * @param string $selectedFieldsList Comma separated list of selected fields
-	 * @param localRecordList $parentObject Parent localRecordList object
+	 * @param \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList $parentObject Parent localRecordList object
 	 * @return void
 	 */
 	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject);
 
 }
+
 ?>

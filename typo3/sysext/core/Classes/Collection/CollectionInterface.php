@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,8 +38,9 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Collection extends Iterator, Serializable, Countable
+interface CollectionInterface extends Iterator, Serializable, Countable
 {
 
 }
+
 ?>

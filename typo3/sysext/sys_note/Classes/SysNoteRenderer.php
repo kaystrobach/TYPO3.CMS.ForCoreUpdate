@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\SysNote;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @subpackage sys_note
  * @author Georg Ringer <typo3@ringerge.org>
  */
-class Tx_SysNote_SysNote {
+class SysNoteRenderer {
 
 	/**
 	 * Render sys_notes by pid
@@ -37,14 +39,14 @@ class Tx_SysNote_SysNote {
 	 * @return string
 	 */
 	public function renderByPid($pidList) {
-		/** @var $repository Tx_SysNote_Domain_Repository_SysNoteRepository */
-		$repository = t3lib_div::makeInstance('Tx_SysNote_Domain_Repository_SysNoteRepository');
+		/** @var $repository \TYPO3\CMS\SysNote\Domain\Repository\SysNoteRepository */
+		$repository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\SysNote\\Domain\\Repository\\SysNoteRepository');
 		$notes = $repository->findAllByPidList($pidList);
 		$out = '';
 		if ($this->notesAvailable($notes)) {
-			/** @var $fluidView Tx_Fluid_View_StandaloneView */
-			$fluidView = t3lib_div::makeInstance('Tx_Fluid_View_StandaloneView');
-			$templatePathAndFilename = t3lib_extMgm::extPath('sys_note', 'Resources/Private/Template/List.html');
+			/** @var $fluidView \TYPO3\CMS\Fluid\View\StandaloneView */
+			$fluidView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+			$templatePathAndFilename = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('sys_note', 'Resources/Private/Template/List.html');
 			$fluidView->setTemplatePathAndFilename($templatePathAndFilename);
 			$fluidView->assign('notes', $notes);
 			$out = $fluidView->render();
@@ -67,5 +69,6 @@ class Tx_SysNote_SysNote {
 	}
 
 }
+
 
 ?>

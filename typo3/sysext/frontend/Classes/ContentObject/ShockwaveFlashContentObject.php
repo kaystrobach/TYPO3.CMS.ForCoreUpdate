@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_ShockwaveFlashObject extends tslib_content_Abstract {
+class ShockwaveFlashContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, SWFOBJECT
@@ -84,19 +86,19 @@ class tslib_content_ShockwaveFlashObject extends tslib_content_Abstract {
 		// Hook for manipulating the conf array, it's needed for some players like flowplayer
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['swfParamTransform'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/hooks/class.tx_cms_mediaitems.php']['swfParamTransform'] as $classRef) {
-				t3lib_div::callUserFunction($classRef, $conf, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($classRef, $conf, $this);
 			}
 		}
 		if (is_array($conf['flashvars.'])) {
-			t3lib_div::remapArrayKeys($conf['flashvars.'], $typeConf['mapping.']['flashvars.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['flashvars.'], $typeConf['mapping.']['flashvars.']);
 		}
 		$flashvars = ('var flashvars = ' . (count($conf['flashvars.']) ? json_encode($conf['flashvars.']) : '{}')) . ';';
 		if (is_array($conf['params.'])) {
-			t3lib_div::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
 		}
 		$params = ('var params = ' . (count($conf['params.']) ? json_encode($conf['params.']) : '{}')) . ';';
 		if (is_array($conf['attributes.'])) {
-			t3lib_div::remapArrayKeys($conf['attributes.'], $typeConf['attributes.']['params.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['attributes.'], $typeConf['attributes.']['params.']);
 		}
 		$attributes = ('var attributes = ' . (count($conf['attributes.']) ? json_encode($conf['attributes.']) : '{}')) . ';';
 		$flashVersion = isset($conf['flashVersion.']) ? $this->cObj->stdWrap($conf['flashVersion'], $conf['flashVersion.']) : $conf['flashVersion'];
@@ -128,5 +130,6 @@ class tslib_content_ShockwaveFlashObject extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Elementcounter implements t3lib_Singleton {
+class ElementCounter implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Counter
@@ -49,5 +51,6 @@ class tx_form_System_Elementcounter implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Domain\Repository\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,10 +33,10 @@
  * @package TYPO3
  * @subpackage core
  */
-class Typo3_Domain_Repository_BackendModuleRepository implements t3lib_Singleton {
+class BackendModuleRepository implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Typo3_ModuleStorage $moduleMenu
+	 * @var \TYPO3\CMS\Backend\Module\ModuleStorage $moduleMenu
 	 */
 	protected $moduleMenu;
 
@@ -42,7 +44,7 @@ class Typo3_Domain_Repository_BackendModuleRepository implements t3lib_Singleton
 	 * Constructs the module menu and gets the Singleton instance of the menu
 	 */
 	public function __construct() {
-		$this->moduleMenu = t3lib_div::makeInstance('Typo3_ModuleStorage');
+		$this->moduleMenu = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleStorage');
 	}
 
 	/**
@@ -64,7 +66,7 @@ class Typo3_Domain_Repository_BackendModuleRepository implements t3lib_Singleton
 	 * @param SplObjectStorage $entries
 	 * @return Typo3_Domain_Model_BackendModule|bool
 	 */
-	public function findByModuleNameInGivenEntries($name, SplObjectStorage $entries) {
+	public function findByModuleNameInGivenEntries($name, \SplObjectStorage $entries) {
 		foreach ($entries as $entry) {
 			if ($entry->getName() === $name) {
 				return $entry;
@@ -81,5 +83,6 @@ class Typo3_Domain_Repository_BackendModuleRepository implements t3lib_Singleton
 	}
 
 }
+
 
 ?>

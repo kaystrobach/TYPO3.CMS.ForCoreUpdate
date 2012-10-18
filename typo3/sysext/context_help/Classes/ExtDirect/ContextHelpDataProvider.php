@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\ContextHelp\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class extDirect_DataProvider_ContextHelp {
+class ContextHelpDataProvider {
 
 	/**
 	 * Fetch the context help for the given table/field parameters
@@ -41,8 +43,8 @@ class extDirect_DataProvider_ContextHelp {
 	 * @return array complete Help information
 	 */
 	public function getContextHelp($table, $field) {
-		$helpTextArray = t3lib_befunc::helpTextArray($table, $field);
-		$moreIcon = $helpTextArray['moreInfo'] ? t3lib_iconWorks::getSpriteIcon('actions-view-go-forward') : '';
+		$helpTextArray = \t3lib_befunc::helpTextArray($table, $field);
+		$moreIcon = $helpTextArray['moreInfo'] ? \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-view-go-forward') : '';
 		return array(
 			'title' => $helpTextArray['title'],
 			'description' => (((('<p class="t3-help-short' . ($moreIcon ? ' tipIsLinked' : '')) . '">') . $helpTextArray['description']) . $moreIcon) . '</p>',
@@ -63,7 +65,7 @@ class extDirect_DataProvider_ContextHelp {
 			$GLOBALS['LANG']->loadSingleTableDescription($table);
 		}
 		if (is_array($GLOBALS['TCA_DESCR'][$table]) && is_array($GLOBALS['TCA_DESCR'][$table]['columns'])) {
-			$arrow = t3lib_iconWorks::getSpriteIcon('actions-view-go-forward');
+			$arrow = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-view-go-forward');
 			foreach ($GLOBALS['TCA_DESCR'][$table]['columns'] as $field => $data) {
 				$output[$field] = array(
 					'description' => NULL,
@@ -89,5 +91,6 @@ class extDirect_DataProvider_ContextHelp {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Model
  */
-class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject_AbstractEntity {
+class Extension extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * Contains default categories.
@@ -67,7 +69,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	);
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
@@ -158,10 +160,10 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	protected $position = 0;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -290,7 +292,7 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 * @param DateTime $lastUpdated
 	 * @return void
 	 */
-	public function setLastUpdated(DateTime $lastUpdated) {
+	public function setLastUpdated(\DateTime $lastUpdated) {
 		$this->lastUpdated = $lastUpdated;
 	}
 
@@ -504,18 +506,18 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	 */
 	public function getDependencies() {
 		if (!is_object($this->dependencies)) {
-			/** @var $dependencyUtility Tx_Extensionmanager_Utility_Dependency */
-			$dependencyUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Dependency');
+			/** @var $dependencyUtility \TYPO3\CMS\Extensionmanager\Utility\DependencyUtility */
+			$dependencyUtility = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Utility\\DependencyUtility');
 			$this->setDependencies($dependencyUtility->convertDependenciesToObjects($this->getSerializedDependencies()));
 		}
 		return $this->dependencies;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Model_Dependency $dependency
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency
 	 * @return void
 	 */
-	public function addDependency(Tx_Extensionmanager_Domain_Model_Dependency $dependency) {
+	public function addDependency(\TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency) {
 		$this->dependencies->attach($dependency);
 	}
 
@@ -565,5 +567,6 @@ class Tx_Extensionmanager_Domain_Model_Extension extends Tx_Extbase_DomainObject
 	}
 
 }
+
 
 ?>

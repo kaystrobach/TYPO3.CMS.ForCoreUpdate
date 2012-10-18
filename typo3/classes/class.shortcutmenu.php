@@ -27,7 +27,7 @@
 if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_AJAX) {
 	$GLOBALS['LANG']->includeLLFile('EXT:lang/locallang_misc.xml');
 	// Needed to get the correct icons when reloading the menu after saving it
-	$loadModules = t3lib_div::makeInstance('t3lib_loadModules');
+	$loadModules = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 	$loadModules->load($GLOBALS['TBE_MODULES']);
 }
 /*
@@ -35,5 +35,5 @@ if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_AJAX) {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Toolbar/ShortcutToolbarItem.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Toolbar/ShortcutToolbarItem.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Toolbar/ShortcutToolbarItem.php';
 ?>

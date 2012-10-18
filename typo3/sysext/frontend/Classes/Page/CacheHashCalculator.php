@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Page;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @author Daniel Pötzinger <poetzinger@aoemedia.de>
  * @coauthor Tolleiv Nietsch <typo3@tolleiv.de>
  */
-class t3lib_cacheHash implements t3lib_Singleton {
+class CacheHashCalculator implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var array Parameters that are relevant for cacheHash calculation. Optional.
@@ -174,7 +176,7 @@ class t3lib_cacheHash implements t3lib_Singleton {
 	 * @return boolean
 	 */
 	protected function isCoreParameter($key) {
-		return t3lib_div::inList('id,type,no_cache,cHash,MP,ftu', $key);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::inList('id,type,no_cache,cHash,MP,ftu', $key);
 	}
 
 	/**
@@ -266,5 +268,6 @@ class t3lib_cacheHash implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

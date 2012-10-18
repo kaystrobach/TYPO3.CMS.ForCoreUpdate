@@ -28,9 +28,9 @@ $BE_USER->modAccess($MCONF, 1);
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/taskcenter/Classes/Controller/TaskModuleController.php
  */
-require_once t3lib_extMgm::extPath('taskcenter') . 'Classes/Controller/TaskModuleController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('taskcenter') . 'Classes/Controller/TaskModuleController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_mod_user_task_index');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Taskcenter\\Controller\\TaskModuleController');
 // Include files?
 foreach ($SOBE->include_once as $INC_FILE) {
 	include_once $INC_FILE;

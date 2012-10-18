@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Ernesto Baschny <ernst@cron-it.de>
  */
-class tx_coreupdates_flagsfromsprite extends Tx_Install_Updates_Base {
+class FlagsFromSpriteUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Update Graphics, Using Sprites for sys_language Records';
 
@@ -83,5 +85,6 @@ class tx_coreupdates_flagsfromsprite extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

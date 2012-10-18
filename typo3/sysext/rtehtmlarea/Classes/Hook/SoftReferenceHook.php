@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <stanislas.rolland@typo3.org>
  */
-class tx_rtehtmlarea_softrefproc extends t3lib_softrefproc {
+class SoftReferenceHook extends \TYPO3\CMS\Core\Database\SoftReferenceIndex {
 
 	// Token prefix
 	public $tokenID_basePrefix = '';
@@ -70,7 +72,7 @@ class tx_rtehtmlarea_softrefproc extends t3lib_softrefproc {
 	public function findRef_rtehtmlarea_images($content, $spParams) {
 		$retVal = FALSE;
 		// Start HTML parser and split content by image tag
-		$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
+		$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 		$imgTags = $htmlParser->splitTags('img', $content);
 		$elements = array();
 		// Traverse splitted parts
@@ -108,5 +110,6 @@ class tx_rtehtmlarea_softrefproc extends t3lib_softrefproc {
 	}
 
 }
+
 
 ?>

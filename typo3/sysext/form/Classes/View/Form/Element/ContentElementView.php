@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Form_Element_Content extends tx_form_View_Form_Element_Abstract {
+class ContentElementView extends \TYPO3\CMS\Form\View\Form\Element\AbstractElementView {
 
 	/**
 	 * Default layout of this object
@@ -40,5 +42,6 @@ class tx_form_View_Form_Element_Content extends tx_form_View_Form_Element_Abstra
 	';
 
 }
+
 
 ?>

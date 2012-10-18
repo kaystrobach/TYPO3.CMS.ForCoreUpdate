@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\MediaWizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @author Steffen Kamper <info@sk-typo3.de>
  * @author Ernesto Baschny <ernst@cron-it.de>
  */
-class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
+class MediaWizardProvider implements \TYPO3\CMS\Frontend\MediaWizard\MediaWizardProviderInterface {
 
 	/**
 	 * @var array List of providers we can handle in this class
@@ -65,7 +67,7 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 		if ($urlInfo === FALSE) {
 			return NULL;
 		}
-		$hostName = t3lib_div::trimExplode('.', $urlInfo['host'], TRUE);
+		$hostName = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $urlInfo['host'], TRUE);
 		foreach ($this->providers as $provider) {
 			$functionName = 'process_' . $provider;
 			if (in_array($provider, $hostName) && is_callable(array($this, $functionName))) {
@@ -266,5 +268,6 @@ class tslib_mediaWizardCoreProvider implements tslib_mediaWizardProvider {
 	}
 
 }
+
 
 ?>

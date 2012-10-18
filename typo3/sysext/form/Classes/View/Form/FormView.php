@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,12 +30,12 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Form extends tx_form_View_Form_Element_Container {
+class FormView extends \TYPO3\CMS\Form\View\Form\Element\ContainerElementView {
 
 	/**
 	 * @var string
 	 */
-	protected $expectedModelName = 'tx_form_Domain_Model_Form';
+	protected $expectedModelName = 'TYPO3\\CMS\\Form\\Domain\\Model\\Form';
 
 	/**
 	 * Default layout of this object
@@ -48,10 +50,10 @@ class tx_form_View_Form extends tx_form_View_Form_Element_Container {
 	/**
 	 * Set the data for the FORM tag
 	 *
-	 * @param tx_form_Domain_Model_Form $formModel The model of the form
+	 * @param \TYPO3\CMS\Form\Domain\Model\Form $formModel The model of the form
 	 * @return void
 	 */
-	public function setData(tx_form_Domain_Model_Form $model) {
+	public function setData(\TYPO3\CMS\Form\Domain\Model\Form $model) {
 		$this->model = (object) $model;
 	}
 
@@ -69,5 +71,6 @@ class tx_form_View_Form extends tx_form_View_Form_Element_Container {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Attributes_Label extends tx_form_Domain_Model_Attributes_Abstract {
+class LabelAttribute extends \TYPO3\CMS\Form\Domain\Model\Attribute\AbstractAttribute {
 
 	/**
 	 * Defines the label usage of the linked document.
@@ -48,5 +50,6 @@ class tx_form_Domain_Model_Attributes_Label extends tx_form_Domain_Model_Attribu
 	}
 
 }
+
 
 ?>

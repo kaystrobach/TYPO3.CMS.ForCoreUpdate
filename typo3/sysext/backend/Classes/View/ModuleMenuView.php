@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\View;
+
 /**
  * class to render the TYPO3 backend menu for the modules
  *
@@ -6,12 +8,12 @@
  * @package TYPO3
  * @subpackage core
  */
-class ModuleMenu {
+class ModuleMenuView {
 
 	/**
 	 * Module loading object
 	 *
-	 * @var t3lib_loadModules
+	 * @var \TYPO3\CMS\Backend\Module\ModuleLoader
 	 */
 	protected $moduleLoader;
 
@@ -28,7 +30,7 @@ class ModuleMenu {
 		$this->backPath = '';
 		$this->linkModules = TRUE;
 		// Loads the backend modules available for the logged in user.
-		$this->moduleLoader = t3lib_div::makeInstance('t3lib_loadModules');
+		$this->moduleLoader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 		$this->moduleLoader->observeWorkspaces = TRUE;
 		$this->moduleLoader->load($GLOBALS['TBE_MODULES']);
 		$this->loadedModules = $this->moduleLoader->modules;
@@ -43,7 +45,7 @@ class ModuleMenu {
 	 */
 	public function setBackPath($backPath) {
 		if (!is_string($backPath)) {
-			throw new InvalidArgumentException('parameter $backPath must be of type string', 1193315266);
+			throw new \InvalidArgumentException('parameter $backPath must be of type string', 1193315266);
 		}
 		$this->backPath = $backPath;
 	}
@@ -65,7 +67,7 @@ class ModuleMenu {
 	 * ModuleMenu Store loading data
 	 *
 	 * @param array $params
-	 * @param TYPO3AJAX $ajaxObj
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj
 	 * @return array
 	 */
 	public function getModuleData($params, $ajaxObj) {
@@ -124,12 +126,12 @@ class ModuleMenu {
 	 * saves the menu's toggle state in the backend user's uc
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return void
 	 */
 	public function saveMenuState($params, $ajaxObj) {
-		$menuItem = t3lib_div::_POST('menuid');
-		$state = t3lib_div::_POST('state') === 'true' ? 1 : 0;
+		$menuItem = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('menuid');
+		$state = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('state') === 'true' ? 1 : 0;
 		$GLOBALS['BE_USER']->uc['moduleData']['menuState'][$menuItem] = $state;
 		$GLOBALS['BE_USER']->writeUC();
 	}
@@ -150,7 +152,7 @@ class ModuleMenu {
 			if (!is_array($moduleData['sub'])) {
 				$moduleLink = $moduleData['script'];
 			}
-			$moduleLink = t3lib_div::resolveBackPath($moduleLink);
+			$moduleLink = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($moduleLink);
 			$moduleKey = 'modmenu_' . $moduleName;
 			$moduleIcon = $this->getModuleIcon($moduleKey);
 			$modules[$moduleKey] = array(
@@ -177,7 +179,7 @@ class ModuleMenu {
 				);
 			} elseif (is_array($moduleData['sub'])) {
 				foreach ($moduleData['sub'] as $submoduleName => $submoduleData) {
-					$submoduleLink = t3lib_div::resolveBackPath($submoduleData['script']);
+					$submoduleLink = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($submoduleData['script']);
 					$submoduleKey = (($moduleName . '_') . $submoduleName) . '_tab';
 					$submoduleIcon = $this->getModuleIcon($submoduleKey);
 					$submoduleDescription = $GLOBALS['LANG']->moduleLabels['labels'][$submoduleKey . 'label'];
@@ -239,7 +241,7 @@ class ModuleMenu {
 	 * @see getModuleIconRelative()
 	 */
 	protected function getModuleIconAbsolute($iconFilename) {
-		if (!t3lib_div::isAbsPath($iconFilename)) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($iconFilename)) {
 			$iconFilename = $this->backPath . $iconFilename;
 		}
 		return $iconFilename;
@@ -253,7 +255,7 @@ class ModuleMenu {
 	 * @see getModuleIconAbsolute()
 	 */
 	protected function getModuleIconRelative($iconFilename) {
-		if (t3lib_div::isAbsPath($iconFilename)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($iconFilename)) {
 			$iconFilename = '../' . substr($iconFilename, strlen(PATH_site));
 		}
 		return $this->backPath . $iconFilename;
@@ -295,11 +297,12 @@ class ModuleMenu {
 	 */
 	public function setLinkModules($linkModules) {
 		if (!is_bool($linkModules)) {
-			throw new InvalidArgumentException('parameter $linkModules must be of type bool', 1193326558);
+			throw new \InvalidArgumentException('parameter $linkModules must be of type bool', 1193326558);
 		}
 		$this->linkModules = $linkModules;
 	}
 
 }
+
 
 ?>

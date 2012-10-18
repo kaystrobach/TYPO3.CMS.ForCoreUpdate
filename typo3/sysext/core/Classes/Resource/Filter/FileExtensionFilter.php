@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Utility_FileExtensionFilter {
+class FileExtensionFilter {
 
 	/**
 	 * Allowed file extensions. If NULL, all extensions are allowed.
@@ -51,10 +53,10 @@ class t3lib_file_Utility_FileExtensionFilter {
 	 * Entry method for use as TCEMain "inline" field filter
 	 *
 	 * @param array $parameters
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain
 	 * @return array
 	 */
-	public function filterInlineChildren(array $parameters, t3lib_TCEmain $tceMain) {
+	public function filterInlineChildren(array $parameters, \TYPO3\CMS\Core\DataHandler\DataHandler $tceMain) {
 		$values = $parameters['values'];
 		if ($parameters['allowedFileExtensions']) {
 			$this->setAllowedFileExtensions($parameters['allowedFileExtensions']);
@@ -67,9 +69,9 @@ class t3lib_file_Utility_FileExtensionFilter {
 			if (empty($value)) {
 				continue;
 			}
-			$parts = t3lib_div::revExplode('_', $value, 2);
+			$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::revExplode('_', $value, 2);
 			$fileReferenceUid = $parts[count($parts) - 1];
-			$fileReference = t3lib_file_Factory::getInstance()->getFileReferenceObject($fileReferenceUid);
+			$fileReference = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getFileReferenceObject($fileReferenceUid);
 			$file = $fileReference->getOriginalFile();
 			if ($this->isAllowed($file)) {
 				$cleanValues[] = $value;
@@ -91,10 +93,10 @@ class t3lib_file_Utility_FileExtensionFilter {
 	 * @param string $itemIdentifier
 	 * @param string $parentIdentifier
 	 * @param array $additionalInformation Additional information about the inspected item
-	 * @param t3lib_file_Driver_AbstractDriver $driver
+	 * @param \TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driver
 	 * @return boolean|integer -1 if the file should not be included in a listing
 	 */
-	public function filterFileList($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, t3lib_file_Driver_AbstractDriver $driver) {
+	public function filterFileList($itemName, $itemIdentifier, $parentIdentifier, array $additionalInformation, \TYPO3\CMS\Core\Resource\Driver\AbstractDriver $driver) {
 		$returnCode = TRUE;
 		// Early return in case no file filters are set at all
 		if ($this->allowedFileExtensions === NULL && $this->disallowedFileExtensions === NULL) {
@@ -113,10 +115,10 @@ class t3lib_file_Utility_FileExtensionFilter {
 	/**
 	 * Checks whether a file is allowed according to the criteria defined in the class variables ($this->allowedFileExtensions etc.)
 	 *
-	 * @param t3lib_file_FileInterface $file
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return boolean
 	 */
-	protected function isAllowed(t3lib_file_FileInterface $file) {
+	protected function isAllowed(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		$result = TRUE;
 		$fileExt = $file->getExtension();
 		// Check allowed file extensions
@@ -159,11 +161,12 @@ class t3lib_file_Utility_FileExtensionFilter {
 		if (is_array($inputArgument)) {
 			$returnValue = $inputArgument;
 		} elseif (strlen($inputArgument) > 0) {
-			$returnValue = t3lib_div::trimExplode(',', $inputArgument);
+			$returnValue = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $inputArgument);
 		}
 		return $returnValue;
 	}
 
 }
+
 
 ?>

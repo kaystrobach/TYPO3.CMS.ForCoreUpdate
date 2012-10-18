@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Processor;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_log_processor_Abstract implements t3lib_log_processor_Processor {
+abstract class AbstractProcessor implements \TYPO3\CMS\Core\Log\Processor\Processor {
 
 	/**
 	 * Constructs this log processor
@@ -42,11 +44,12 @@ abstract class t3lib_log_processor_Abstract implements t3lib_log_processor_Proce
 			if (method_exists($this, $methodName)) {
 				$this->{$methodName}($optionValue);
 			} else {
-				throw new InvalidArgumentException(((('Invalid log processor option "' . $optionKey) . '" for log processor of type "') . get_class($this)) . '"', 1321696151);
+				throw new \InvalidArgumentException(((('Invalid log processor option "' . $optionKey) . '" for log processor of type "') . get_class($this)) . '"', 1321696151);
 			}
 		}
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Toolbar;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class LiveSearch implements backend_toolbarItem {
+class LiveSearchToolbarItem implements \TYPO3\CMS\Backend\Toolbar\ToolbarItemHookInterface {
 
 	/**
 	 * Reference back to the backend object
@@ -45,9 +47,9 @@ class LiveSearch implements backend_toolbarItem {
 	/**
 	 * Constructor
 	 *
-	 * @param TYPO3backend $backendReference TYPO3 backend object reference
+	 * @param \TYPO3\CMS\Backend\Controller\BackendController $backendReference TYPO3 backend object reference
 	 */
-	public function __construct(TYPO3backend &$backendReference = NULL) {
+	public function __construct(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
 	}
 
@@ -59,7 +61,7 @@ class LiveSearch implements backend_toolbarItem {
 	public function checkAccess() {
 		$access = FALSE;
 		// Loads the backend modules available for the logged in user.
-		$loadModules = t3lib_div::makeInstance('t3lib_loadModules');
+		$loadModules = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 		$loadModules->observeWorkspaces = TRUE;
 		$loadModules->load($GLOBALS['TBE_MODULES']);
 		// Live search is heavily dependent on the list module and only available when that module is.
@@ -102,5 +104,6 @@ class LiveSearch implements backend_toolbarItem {
 	}
 
 }
+
 
 ?>

@@ -38,7 +38,7 @@ require $BACK_PATH . 'init.php';
 $LANG->includeLLFile('EXT:rtehtmlarea/mod5/locallang.xml');
 $LANG->includeLLFile('EXT:rtehtmlarea/htmlarea/locallang_dialogs.xml');
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_rtehtmlarea_user');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rtehtmlarea\\User');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

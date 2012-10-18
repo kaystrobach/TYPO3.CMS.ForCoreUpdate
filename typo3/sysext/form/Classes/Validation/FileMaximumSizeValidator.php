@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Filemaximumsize extends tx_form_System_Validate_Abstract implements tx_form_System_Validate_Interface {
+class FileMaximumSizeValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator implements \TYPO3\CMS\Form\Validation\InterfaceValidator {
 
 	/**
 	 * Maximum value
@@ -85,10 +87,11 @@ class tx_form_System_Validate_Filemaximumsize extends tx_form_System_Validate_Ab
 	 * @return string Message text with substituted markers
 	 */
 	protected function substituteValues($message) {
-		$message = str_replace('%maximum', t3lib_div::formatSize($this->maximum), $message);
+		$message = str_replace('%maximum', \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($this->maximum), $message);
 		return $message;
 	}
 
 }
+
 
 ?>

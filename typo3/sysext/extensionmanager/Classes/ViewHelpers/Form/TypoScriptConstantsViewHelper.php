@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class TypoScriptConstantsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper {
 
 	public $viewHelperMapping = array(
 		'int' => 'renderIntegerField',
@@ -64,10 +66,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string the rendered tag
 	 */
-	public function render(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	public function render(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$input = '';
 		if (isset($this->viewHelperMapping[$configuration->getType()]) && method_exists($this, $this->viewHelperMapping[$configuration->getType()])) {
 			$input = $this->{$this->viewHelperMapping[$configuration->getType()]}($configuration);
@@ -78,10 +80,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type color picker
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderColorPicker(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderColorPicker(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->setTagName('input');
 		$this->tag->addAttribute('type', 'text');
 		$this->tag->addAttribute('name', $this->getName($configuration));
@@ -104,10 +106,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "offset"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderOffsetField(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderOffsetField(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->setTagName('input');
 		$this->tag->addAttribute('type', 'text');
 		$this->tag->addAttribute('name', $this->getName($configuration));
@@ -122,10 +124,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "wrap"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderWrapField(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderWrapField(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->setTagName('input');
 		$this->tag->addAttribute('type', 'text');
 		$this->tag->addAttribute('name', $this->getName($configuration));
@@ -140,10 +142,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "option"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderOptionSelect(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderOptionSelect(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('id', $configuration->getName());
 		$this->tag->setTagName('select');
@@ -163,10 +165,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "int+"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderPositiveIntegerField(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderPositiveIntegerField(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->setTagName('input');
 		$this->tag->addAttribute('type', 'number');
 		$this->tag->addAttribute('min', '0');
@@ -181,10 +183,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "integer"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderIntegerField(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderIntegerField(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->setTagName('input');
 		$this->tag->addAttribute('type', 'number');
 		$this->tag->addAttribute('name', $this->getName($configuration));
@@ -198,10 +200,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "text"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderTextField(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderTextField(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->setTagName('input');
 		$this->tag->addAttribute('type', 'text');
 		$this->tag->addAttribute('name', $this->getName($configuration));
@@ -215,10 +217,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "small text"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderSmallTextField(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderSmallTextField(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->addAttribute('class', 'small');
 		return $this->renderTextField($configuration);
 	}
@@ -226,10 +228,10 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "checkbox"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	public function renderCheckbox(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	public function renderCheckbox(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$this->tag->addAttribute('type', 'checkbox');
 		$this->tag->addAttribute('name', $this->getName($configuration));
 		$this->tag->addAttribute('value', 1);
@@ -244,39 +246,39 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Render field of type "userFunc"
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function renderUserFunction(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function renderUserFunction(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		$userFunction = $configuration->getGeneric();
 		$userFunctionParams = array(
 			'fieldName' => $this->getName($configuration),
 			'fieldValue' => $configuration->getValue(),
 			'propertyName' => $configuration->getName()
 		);
-		return t3lib_div::callUserFunction($userFunction, $userFunctionParams, $this, '');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($userFunction, $userFunctionParams, $this, '');
 	}
 
 	/**
 	 * Get Field Name
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
-	protected function getName(Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration) {
+	protected function getName(\TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration) {
 		return ('tx_extensionmanager_tools_extensionmanagerextensionmanager[config][' . $configuration->getName()) . '][value]';
 	}
 
 	/**
 	 * Render a hidden field for empty values
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_ConfigurationItem $configuration
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\ConfigurationItem $configuration
 	 * @return string
 	 */
 	protected function renderHiddenFieldForEmptyValue($configuration) {
 		$hiddenFieldNames = array();
-		if ($this->viewHelperVariableContainer->exists('Tx_Fluid_ViewHelpers_FormViewHelper', 'renderedHiddenFields')) {
-			$hiddenFieldNames = $this->viewHelperVariableContainer->get('Tx_Fluid_ViewHelpers_FormViewHelper', 'renderedHiddenFields');
+		if ($this->viewHelperVariableContainer->exists('TYPO3\\CMS\\Fluid\\ViewHelpers\\FormViewHelper', 'renderedHiddenFields')) {
+			$hiddenFieldNames = $this->viewHelperVariableContainer->get('TYPO3\\CMS\\Fluid\\ViewHelpers\\FormViewHelper', 'renderedHiddenFields');
 		}
 		$fieldName = $this->getName($configuration);
 		if (substr($fieldName, -2) === '[]') {
@@ -284,7 +286,7 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 		}
 		if (!in_array($fieldName, $hiddenFieldNames)) {
 			$hiddenFieldNames[] = $fieldName;
-			$this->viewHelperVariableContainer->addOrUpdate('Tx_Fluid_ViewHelpers_FormViewHelper', 'renderedHiddenFields', $hiddenFieldNames);
+			$this->viewHelperVariableContainer->addOrUpdate('TYPO3\\CMS\\Fluid\\ViewHelpers\\FormViewHelper', 'renderedHiddenFields', $hiddenFieldNames);
 			return ('<input type="hidden" name="' . htmlspecialchars($fieldName)) . '" value="0" />';
 		}
 		return '';
@@ -293,16 +295,17 @@ class Tx_Extensionmanager_ViewHelpers_Form_TypoScriptConstantsViewHelper extends
 	/**
 	 * Gets instance of template if exists or create a new one.
 	 *
-	 * @return template $doc
+	 * @return \TYPO3\CMS\Backend\Template\DocumentTemplate $doc
 	 */
 	public function getDocInstance() {
 		if (!isset($GLOBALS['SOBE']->doc)) {
-			$GLOBALS['SOBE']->doc = t3lib_div::makeInstance('template');
+			$GLOBALS['SOBE']->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$GLOBALS['SOBE']->doc->backPath = $GLOBALS['BACK_PATH'];
 		}
 		return $GLOBALS['SOBE']->doc;
 	}
 
 }
+
 
 ?>

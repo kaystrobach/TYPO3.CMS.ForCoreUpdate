@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Domain\Repository;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,16 +30,16 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_Domain_Repository_BackendUserSessionRepositoryTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class BackendUserSessionRepositoryTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Beuser_Domain_Repository_BackendUserSessionRepository
+	 * @var \TYPO3\CMS\Beuser\Domain\Repository\BackendUserSessionRepository
 	 */
 	protected $fixture;
 
 	public function setUp() {
-		$this->objectManager = $this->getMock('Tx_Extbase_Object_ObjectManagerInterface');
-		$this->fixture = new Tx_Beuser_Domain_Repository_BackendUserSessionRepository($this->objectManager);
+		$this->objectManager = $this->getMock('TYPO3\\CMS\\Extbase\\Object\\ObjectManagerInterface');
+		$this->fixture = new \TYPO3\CMS\Beuser\Domain\Repository\BackendUserSessionRepository($this->objectManager);
 	}
 
 	public function tearDown() {
@@ -53,5 +55,6 @@ class Tx_Beuser_Domain_Repository_BackendUserSessionRepositoryTest extends Tx_Ex
 	}
 
 }
+
 
 ?>

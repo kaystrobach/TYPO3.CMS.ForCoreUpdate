@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity\View;
+
 /**
  * Script class for the Config module
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class SC_mod_tools_config_index {
+class ConfigurationView {
 
 	/**
 	 * @todo Define visibility
@@ -26,7 +28,7 @@ class SC_mod_tools_config_index {
 	/**
 	 * Document template object
 	 *
-	 * @var noDoc
+	 * @var \TYPO3\CMS\Backend\Template\StandardDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -51,7 +53,7 @@ class SC_mod_tools_config_index {
 		global $BACK_PATH;
 		$this->MCONF = $GLOBALS['MCONF'];
 		$this->menuConfig();
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $BACK_PATH;
 		$this->doc->setModuleTemplate('templates/config.html');
 		// JavaScript
@@ -95,7 +97,7 @@ class SC_mod_tools_config_index {
 			'fixedLgd' => ''
 		);
 		// CLEANSE SETTINGS
-		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name']);
+		$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name']);
 	}
 
 	/**
@@ -105,68 +107,68 @@ class SC_mod_tools_config_index {
 	 * @todo Define visibility
 	 */
 	public function main() {
-		$arrayBrowser = t3lib_div::makeInstance('t3lib_arrayBrowser');
+		$arrayBrowser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Integrity\\Utility\\ArrayBrowser');
 		$this->content = $this->doc->header($GLOBALS['LANG']->getLL('configuration', TRUE));
 		$this->content .= ((((((('<div id="lowlevel-config">
 						<label for="search_field">' . $GLOBALS['LANG']->getLL('enterSearchPhrase', TRUE)) . '</label>
 						<input type="text" id="search_field" name="search_field" value="') . htmlspecialchars($search_field)) . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(20)) . ' />
 						<input type="submit" name="search" id="search" value="') . $GLOBALS['LANG']->getLL('search', TRUE)) . '" />';
-		$this->content .= ((t3lib_BEfunc::getFuncCheck(0, 'SET[regexsearch]', $this->MOD_SETTINGS['regexsearch'], '', '', 'id="checkRegexsearch"') . '<label for="checkRegexsearch">') . $GLOBALS['LANG']->getLL('useRegExp', TRUE)) . '</label>';
-		$this->content .= ((t3lib_BEfunc::getFuncCheck(0, 'SET[fixedLgd]', $this->MOD_SETTINGS['fixedLgd'], '', '', 'id="checkFixedLgd"') . '<label for="checkFixedLgd">') . $GLOBALS['LANG']->getLL('cropLines', TRUE)) . '</label>
+		$this->content .= ((\TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck(0, 'SET[regexsearch]', $this->MOD_SETTINGS['regexsearch'], '', '', 'id="checkRegexsearch"') . '<label for="checkRegexsearch">') . $GLOBALS['LANG']->getLL('useRegExp', TRUE)) . '</label>';
+		$this->content .= ((\TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck(0, 'SET[fixedLgd]', $this->MOD_SETTINGS['fixedLgd'], '', '', 'id="checkFixedLgd"') . '<label for="checkFixedLgd">') . $GLOBALS['LANG']->getLL('cropLines', TRUE)) . '</label>
 						</div>';
 		$this->content .= $this->doc->spacer(5);
 		switch ($this->MOD_SETTINGS['function']) {
 		case 0:
 			$theVar = $GLOBALS['TYPO3_CONF_VARS'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TYPO3_CONF_VARS';
 			break;
 		case 1:
 			foreach ($GLOBALS['TCA'] as $table => $config) {
-				t3lib_div::loadTCA($table);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			}
 			$theVar = $GLOBALS['TCA'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TCA';
 			break;
 		case 2:
 			$theVar = $GLOBALS['TCA_DESCR'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TCA_DESCR';
 			break;
 		case 3:
 			$theVar = $GLOBALS['TYPO3_LOADED_EXT'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TYPO3_LOADED_EXT';
 			break;
 		case 4:
 			$theVar = $GLOBALS['T3_SERVICES'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$T3_SERVICES';
 			break;
 		case 5:
 			$theVar = $GLOBALS['TBE_MODULES'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TBE_MODULES';
 			break;
 		case 6:
 			$theVar = $GLOBALS['TBE_MODULES_EXT'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TBE_MODULES_EXT';
 			break;
 		case 7:
 			$theVar = $GLOBALS['TBE_STYLES'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TBE_STYLES';
 			break;
 		case 8:
 			$theVar = $GLOBALS['BE_USER']->uc;
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$BE_USER->uc';
 			break;
 		case 9:
 			$theVar = $GLOBALS['TYPO3_USER_SETTINGS'];
-			t3lib_div::naturalKeySortRecursive($theVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::naturalKeySortRecursive($theVar);
 			$arrayBrowser->varName = '$TYPO3_USER_SETTINGS';
 			break;
 		default:
@@ -175,7 +177,7 @@ class SC_mod_tools_config_index {
 		}
 		// Update node:
 		$update = 0;
-		$node = t3lib_div::_GET('node');
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('node');
 		// If any plus-signs were clicked, it's registred.
 		if (is_array($node)) {
 			$this->MOD_SETTINGS['node_' . $this->MOD_SETTINGS['function']] = $arrayBrowser->depthKeys($node, $this->MOD_SETTINGS['node_' . $this->MOD_SETTINGS['function']]);
@@ -188,9 +190,9 @@ class SC_mod_tools_config_index {
 		$arrayBrowser->regexMode = $this->MOD_SETTINGS['regexsearch'];
 		$arrayBrowser->fixedLgd = $this->MOD_SETTINGS['fixedLgd'];
 		$arrayBrowser->searchKeysToo = TRUE;
-		$search_field = t3lib_div::_GP('search_field');
+		$search_field = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('search_field');
 		// If any POST-vars are send, update the condition array
-		if (t3lib_div::_POST('search') && trim($search_field)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('search') && trim($search_field)) {
 			$arrayBrowser->depthKeys = $arrayBrowser->getSearchKeys($theVar, '', $search_field, array());
 		}
 		// mask the encryption key to not show it as plaintext in the configuration module
@@ -201,22 +203,22 @@ class SC_mod_tools_config_index {
 		$label = $this->MOD_MENU['function'][$this->MOD_SETTINGS['function']];
 		$this->content .= $this->doc->sectionEnd();
 		// Variable name:
-		if (t3lib_div::_GP('varname')) {
-			$line = t3lib_div::_GP('_') ? t3lib_div::_GP('_') : t3lib_div::_GP('varname');
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('varname')) {
+			$line = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('_') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('_') : \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('varname');
 			// Write the line to extTables.php
-			if (t3lib_div::_GP('writetoexttables')) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('writetoexttables')) {
 				// change value to $GLOBALS
 				$length = strpos($line, '[');
 				$var = substr($line, 0, $length);
 				$changedLine = (('$GLOBALS[\'' . substr($line, 1, ($length - 1))) . '\']') . substr($line, $length);
 				// load current extTables.php
-				$extTables = t3lib_div::getUrl(PATH_typo3conf . TYPO3_extTableDef_script);
+				$extTables = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl(PATH_typo3conf . TYPO3_extTableDef_script);
 				if ($var === '$TCA') {
 					// check if we are editing the TCA
 					preg_match_all('/\\[\'([^\']+)\'\\]/', $line, $parts);
 					if ($parts[1][1] !== 'ctrl') {
 						// anything else than ctrl section requires to load TCA
-						$loadTCA = ('t3lib_div::loadTCA(\'' . $parts[1][0]) . '\');';
+						$loadTCA = ('TYPO3\\CMS\\Core\\Utility\\GeneralUtility::loadTCA(\'' . $parts[1][0]) . '\');';
 						if (strpos($extTables, $loadTCA) === FALSE) {
 							// check if the loadTCA statement is not already present in the file
 							$changedLine = ($loadTCA . LF) . $changedLine;
@@ -226,13 +228,13 @@ class SC_mod_tools_config_index {
 				// insert line in extTables.php
 				$extTables = preg_replace('/<\\?php|\\?>/is', '', $extTables);
 				$extTables = (((('<?php' . (empty($extTables) ? LF : '')) . $extTables) . $changedLine) . LF) . '?>';
-				$success = t3lib_div::writeFile(PATH_typo3conf . TYPO3_extTableDef_script, $extTables);
+				$success = \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_typo3conf . TYPO3_extTableDef_script, $extTables);
 				if ($success) {
 					// show flash message
-					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', '', sprintf($GLOBALS['LANG']->getLL('writeMessage', TRUE), TYPO3_extTableDef_script, '<br />', ('<strong>' . nl2br($changedLine)) . '</strong>'), t3lib_FlashMessage::OK);
+					$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', '', sprintf($GLOBALS['LANG']->getLL('writeMessage', TRUE), TYPO3_extTableDef_script, '<br />', ('<strong>' . nl2br($changedLine)) . '</strong>'), \TYPO3\CMS\Core\Messaging\FlashMessage::OK);
 				} else {
 					// Error: show flash message
-					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', '', sprintf($GLOBALS['LANG']->getLL('writeMessageFailed', TRUE), TYPO3_extTableDef_script), t3lib_FlashMessage::ERROR);
+					$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', '', sprintf($GLOBALS['LANG']->getLL('writeMessageFailed', TRUE), TYPO3_extTableDef_script), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 				}
 				$this->content .= $flashMessage->render();
 			}
@@ -301,10 +303,11 @@ class SC_mod_tools_config_index {
 	 * @return string HTML of the function menu
 	 */
 	protected function getFuncMenu() {
-		$funcMenu = t3lib_BEfunc::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
+		$funcMenu = \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
 		return $funcMenu;
 	}
 
 }
+
 
 ?>

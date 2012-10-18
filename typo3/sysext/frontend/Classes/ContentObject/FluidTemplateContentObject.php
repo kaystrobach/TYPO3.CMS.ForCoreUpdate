@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @author Steffen Kamper <steffen@typo3.org>
  * @author Bastian Waidelich <bastian@typo3.org>
  */
-class tslib_content_FluidTemplate extends tslib_content_Abstract {
+class FluidTemplateContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, FLUIDTEMPLATE
@@ -61,11 +63,11 @@ class tslib_content_FluidTemplate extends tslib_content_Abstract {
 	 */
 	public function render($conf = array()) {
 		// check if the needed extensions are installed
-		if (!t3lib_extMgm::isLoaded('fluid')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('fluid')) {
 			return 'You need to install "Fluid" in order to use the FLUIDTEMPLATE content element';
 		}
 		/** 1. initializing Fluid StandaloneView and setting configuration parameters */
-		$view = t3lib_div::makeInstance('Tx_Fluid_View_StandaloneView');
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
 		// Fetch the Fluid template
 		$file = isset($conf['file.']) ? $this->cObj->stdWrap($conf['file'], $conf['file.']) : $conf['file'];
 		$templatePathAndFilename = $GLOBALS['TSFE']->tmpl->getFileName($file);
@@ -73,13 +75,13 @@ class tslib_content_FluidTemplate extends tslib_content_Abstract {
 		// Override the default layout path via typoscript
 		$layoutRootPath = isset($conf['layoutRootPath.']) ? $this->cObj->stdWrap($conf['layoutRootPath'], $conf['layoutRootPath.']) : $conf['layoutRootPath'];
 		if ($layoutRootPath) {
-			$layoutRootPath = t3lib_div::getFileAbsFileName($layoutRootPath);
+			$layoutRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($layoutRootPath);
 			$view->setLayoutRootPath($layoutRootPath);
 		}
 		// Override the default partials path via typoscript
 		$partialRootPath = isset($conf['partialRootPath.']) ? $this->cObj->stdWrap($conf['partialRootPath'], $conf['partialRootPath.']) : $conf['partialRootPath'];
 		if ($partialRootPath) {
-			$partialRootPath = t3lib_div::getFileAbsFileName($partialRootPath);
+			$partialRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($partialRootPath);
 			$view->setPartialRootPath($partialRootPath);
 		}
 		// Override the default format
@@ -116,7 +118,7 @@ class tslib_content_FluidTemplate extends tslib_content_Abstract {
 			if (!in_array($variableName, $reservedVariables)) {
 				$view->assign($variableName, $this->cObj->cObjGetSingle($cObjType, $variables[$variableName . '.']));
 			} else {
-				throw new InvalidArgumentException(('Cannot use reserved name "' . $variableName) . '" as variable name in FLUIDTEMPLATE.', 1288095720);
+				throw new \InvalidArgumentException(('Cannot use reserved name "' . $variableName) . '" as variable name in FLUIDTEMPLATE.', 1288095720);
 			}
 		}
 		$view->assign('data', $this->cObj->data);
@@ -130,5 +132,6 @@ class tslib_content_FluidTemplate extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

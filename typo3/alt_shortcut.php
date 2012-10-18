@@ -42,9 +42,9 @@ $LANG->includeLLFile('EXT:lang/locallang_misc.xml');
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/ShortcutFrameController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/ShortcutFrameController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/ShortcutFrameController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_alt_shortcut');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\ShortcutFrameController');
 $SOBE->preinit();
 $SOBE->preprocess();
 $SOBE->init();

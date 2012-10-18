@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Tree\TableConfiguration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,16 +33,16 @@
  * @package TYPO3
  * @subpackage t3lib_tree
  */
-class t3lib_tree_Tca_ExtJsArrayRenderer extends t3lib_tree_Renderer_ExtJsJson {
+class ExtJsArrayTreeRenderer extends \TYPO3\CMS\Backend\Tree\Renderer\ExtJsJsonTreeRenderer {
 
 	/**
 	 * Gets the node array. If the TCA configuration has defined items,
 	 * they are added to rootlevel on top of the tree
 	 *
-	 * @param t3lib_tree_Tca_DatabaseNode $node
+	 * @param \TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeNode $node
 	 * @return array
 	 */
-	protected function getNodeArray(t3lib_tree_Tca_DatabaseNode $node) {
+	protected function getNodeArray(\TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeNode $node) {
 		$nodeArray = parent::getNodeArray($node);
 		$nodeArray = array_merge($nodeArray, array(
 			'expanded' => $node->getExpanded(),
@@ -56,16 +58,17 @@ class t3lib_tree_Tca_ExtJsArrayRenderer extends t3lib_tree_Renderer_ExtJsJson {
 	/**
 	 * Renders a node collection recursive or just a single instance
 	 *
-	 * @param t3lib_tree_NodeCollection $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $node
 	 * @param boolean $recursive
 	 * @return array
 	 */
-	public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE) {
+	public function renderTree(\TYPO3\CMS\Backend\Tree\AbstractTree $tree, $recursive = TRUE) {
 		$this->recursionLevel = 0;
 		$children = $this->renderNode($tree->getRoot(), $recursive);
 		return $children;
 	}
 
 }
+
 
 ?>

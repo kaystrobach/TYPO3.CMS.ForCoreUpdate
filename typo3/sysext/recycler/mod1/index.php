@@ -28,9 +28,9 @@ $BE_USER->modAccess($MCONF, 1);
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/recycler/Classes/Controller/RecyclerModuleController.php
  */
-require_once t3lib_extMgm::extPath('recycler') . 'Classes/Controller/RecyclerModuleController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler') . 'Classes/Controller/RecyclerModuleController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_recycler_module1');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Controller\\RecyclerModuleController');
 $SOBE->initialize();
 // Include files?
 foreach ($SOBE->include_once as $INC_FILE) {

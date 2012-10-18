@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\PostProcess;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,15 +30,15 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Postprocessor {
+class PostProcessor {
 
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Form $form Form domain model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Form $form Form domain model
 	 * @param array $typoScript Post processor TypoScript settings
 	 */
-	public function __construct(tx_form_Domain_Model_Form $form, array $typoScript) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Form $form, array $typoScript) {
 		$this->form = $form;
 		$this->typoScript = $typoScript;
 	}
@@ -65,14 +67,14 @@ class tx_form_System_Postprocessor {
 				if (class_exists($this->typoScript[$key], TRUE)) {
 					$className = $this->typoScript[$key];
 				} else {
-					$classNameExpanded = 'tx_form_System_Postprocessor_' . ucfirst(strtolower($this->typoScript[$key]));
+					$classNameExpanded = 'TYPO3\\CMS\\Form\\PostProcess\\PostProcessor_' . ucfirst(strtolower($this->typoScript[$key]));
 					if (class_exists($classNameExpanded, TRUE)) {
 						$className = $classNameExpanded;
 					}
 				}
 				if ($className !== FALSE) {
-					$processor = t3lib_div::makeInstance($className, $this->form, $processorArguments);
-					if ($processor instanceof tx_form_System_Postprocessor_Interface) {
+					$processor = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $this->form, $processorArguments);
+					if ($processor instanceof \TYPO3\CMS\Form\PostProcess\PostProcessorInterface) {
 						$html .= $processor->process();
 					}
 				}
@@ -88,9 +90,10 @@ class tx_form_System_Postprocessor {
 	 * @return array
 	 */
 	public function sortTypoScriptKeyList() {
-		return t3lib_TStemplate::sortedKeyList($this->typoScript);
+		return \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($this->typoScript);
 	}
 
 }
+
 
 ?>

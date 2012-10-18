@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_File extends t3lib_file_AbstractFile {
+class File extends \TYPO3\CMS\Core\Resource\AbstractFile {
 
 	/**
 	 * File indexing status. True, if the file is indexed in the database;
@@ -66,7 +68,7 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 	 * the corresponding factory methods instead.
 	 *
 	 * @param array $fileData
-	 * @param t3lib_file_Storage $storage
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storage
 	 */
 	public function __construct(array $fileData, $storage = NULL) {
 		if (isset($fileData['uid']) && intval($fileData['uid']) > 0) {
@@ -126,7 +128,7 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 	 * Replace the current file contents with the given string
 	 *
 	 * @param string $contents The contents to write to the file.
-	 * @return t3lib_file_File The file object (allows chaining).
+	 * @return \TYPO3\CMS\Core\Resource\File The file object (allows chaining).
 	 */
 	public function setContents($contents) {
 		$this->getStorage()->setFileContents($this, $contents);
@@ -156,8 +158,8 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 		if ($this->indexed !== NULL) {
 			return;
 		}
-		/** @var $repo t3lib_file_Repository_FileRepository */
-		$repo = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+		/** @var $repo \TYPO3\CMS\Core\Resource\FileRepository */
+		$repo = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$indexRecord = $repo->getFileIndexRecord($this);
 		if ($indexRecord === FALSE && $indexIfNotIndexed) {
 			$this->indexingInProgress = TRUE;
@@ -169,7 +171,7 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 			$this->mergeIndexRecord($indexRecord);
 			$this->indexed = TRUE;
 		} else {
-			throw new RuntimeException(('Could not load index record for "' . $this->getIdentifier()) . '"', 1321288316);
+			throw new \RuntimeException(('Could not load index record for "' . $this->getIdentifier()) . '"', 1321288316);
 		}
 	}
 
@@ -181,7 +183,7 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 	 */
 	protected function mergeIndexRecord(array $recordData) {
 		if ($this->properties['uid'] != 0) {
-			throw new InvalidArgumentException('uid property is already set. Cannot merge index record.', 1321023156);
+			throw new \InvalidArgumentException('uid property is already set. Cannot merge index record.', 1321023156);
 		}
 		$this->properties = array_merge($this->properties, $recordData);
 	}
@@ -264,7 +266,7 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 	 * used to generate a thumbnail, and this hash is checked if valid
 	 *
 	 * @todo maybe t3lib_div::hmac() could be used?
-	 * @param t3lib_file_File $file the file to create the checksum from
+	 * @param \TYPO3\CMS\Core\Resource\File $file the file to create the checksum from
 	 * @return string the MD5 hash
 	 */
 	public function calculateChecksum() {
@@ -276,7 +278,7 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 	 *
 	 * @param string $context the context of the configuration (see above)
 	 * @param array $configuration the processing configuration, see manual for that
-	 * @return t3lib_file_ProcessedFile The processed file
+	 * @return \TYPO3\CMS\Core\Resource\ProcessedFile The processed file
 	 */
 	public function process($context, array $configuration) {
 		return $this->getStorage()->processFile($this, $context, $configuration);
@@ -317,5 +319,6 @@ class t3lib_file_File extends t3lib_file_AbstractFile {
 	}
 
 }
+
 
 ?>

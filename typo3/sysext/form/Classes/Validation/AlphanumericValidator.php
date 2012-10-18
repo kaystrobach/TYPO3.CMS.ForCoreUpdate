@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstract {
+class AlphanumericValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Allow white space in the submitted value
@@ -58,8 +60,8 @@ class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstr
 		if ($this->requestHandler->has($this->fieldName)) {
 			$value = $this->requestHandler->getByMethod($this->fieldName);
 			if ($this->filter === NULL) {
-				$className = 'tx_form_System_Filter_Alphanumeric';
-				$this->filter = t3lib_div::makeInstance($className);
+				$className = 'TYPO3\\CMS\\Form\\Filter\\AlphanumericFilter';
+				$this->filter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
 			}
 			$this->filter->setAllowWhiteSpace($this->allowWhiteSpace);
 			if ($this->filter->filter($value) !== $value) {
@@ -102,5 +104,6 @@ class tx_form_System_Validate_Alphanumeric extends tx_form_System_Validate_Abstr
 	}
 
 }
+
 
 ?>

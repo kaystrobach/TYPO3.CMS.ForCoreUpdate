@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Lang;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage tx_Lang
  */
-class tx_lang_clearcachemenu implements backend_cacheActionsHook {
+class ClearLanguageCacheMenuItem implements \TYPO3\CMS\Backend\Toolbar\ClearCacheActionsHookInterface {
 
 	/**
 	 * Add cache menu item
@@ -55,5 +57,6 @@ class tx_lang_clearcachemenu implements backend_cacheActionsHook {
 	}
 
 }
+
 
 ?>

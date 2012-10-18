@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_plaintext extends tx_rtehtmlarea_api {
+class Plaintext extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -74,7 +76,7 @@ class tx_rtehtmlarea_plaintext extends tx_rtehtmlarea_api {
 		$registerRTEinJavascriptString = '';
 		$button = 'pastebehaviour';
 		// Get current TYPO3 User Setting, if available
-		if (((TYPO3_MODE === 'BE' && t3lib_extMgm::isLoaded('setup')) && is_array($GLOBALS['TYPO3_USER_SETTINGS'])) && is_object($GLOBALS['BE_USER'])) {
+		if (((TYPO3_MODE === 'BE' && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('setup')) && is_array($GLOBALS['TYPO3_USER_SETTINGS'])) && is_object($GLOBALS['BE_USER'])) {
 			if (!is_array($this->thisConfig['buttons.']) || !is_array($this->thisConfig['buttons.'][($button . '.')])) {
 				$registerRTEinJavascriptString .= ((('
 			RTEarea[' . $RTEcounter) . '].buttons.') . $button) . ' = new Object();';
@@ -98,12 +100,13 @@ class tx_rtehtmlarea_plaintext extends tx_rtehtmlarea_api {
 			$removeButtons[] = 'pastebehaviour';
 		}
 		// Remove pastebehaviour button if TYPO3 User Settings are available
-		if (((TYPO3_MODE === 'BE' && t3lib_extMgm::isLoaded('setup')) && is_array($GLOBALS['TYPO3_USER_SETTINGS'])) && is_object($GLOBALS['BE_USER'])) {
+		if (((TYPO3_MODE === 'BE' && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('setup')) && is_array($GLOBALS['TYPO3_USER_SETTINGS'])) && is_object($GLOBALS['BE_USER'])) {
 			$removeButtons[] = 'pastebehaviour';
 		}
 		return array_diff($show, $removeButtons);
 	}
 
 }
+
 
 ?>

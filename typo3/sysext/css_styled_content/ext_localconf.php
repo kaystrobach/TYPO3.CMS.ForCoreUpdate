@@ -5,10 +5,10 @@ if (!defined('TYPO3_MODE')) {
 // unserializing the configuration so we can use it here:
 $_EXTCONF = unserialize($_EXTCONF);
 if ($_EXTCONF['setPageTSconfig'] || !$_EXTCONF) {
-	t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:css_styled_content/pageTSconfig.txt">');
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:css_styled_content/pageTSconfig.txt">');
 }
 if ($_EXTCONF['removePositionTypes'] || !$_EXTCONF) {
-	t3lib_extMgm::addPageTSConfig('
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addPageTSConfig('
 		TCEFORM.tt_content.imageorient.types.image.removeItems = 8,9,10,17,18,25,26
 	');
 }

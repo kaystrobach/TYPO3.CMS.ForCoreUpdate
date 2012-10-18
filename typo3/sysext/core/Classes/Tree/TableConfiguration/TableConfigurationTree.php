@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Tree\TableConfiguration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,12 +33,12 @@
  * @package TYPO3
  * @subpackage t3lib_tree
  */
-class t3lib_tree_Tca_TcaTree extends t3lib_tree_AbstractTree {
+class TableConfigurationTree extends \TYPO3\CMS\Backend\Tree\AbstractTree {
 
 	/**
 	 * Returns the root node
 	 *
-	 * @return t3lib_tree_Node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNode
 	 */
 	public function getRoot() {
 		return $this->dataProvider->getRoot();
@@ -52,5 +54,6 @@ class t3lib_tree_Tca_TcaTree extends t3lib_tree_AbstractTree {
 	}
 
 }
+
 
 ?>

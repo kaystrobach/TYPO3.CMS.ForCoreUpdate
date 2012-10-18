@@ -36,15 +36,15 @@
  */
 $BACK_PATH = '';
 require 'init.php';
-$LANG->includeLLFile('EXT:lang/locallang_browse_links.xml');
+$LANG->includeLLFile('EXT:lang/locallang_TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser.xml');
 /*
  * @deprecated since 6.0, the classname SC_browse_links and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/recordlist/Classes/Controller/ElementBrowserController.php
  */
-require_once t3lib_extMgm::extPath('recordlist') . 'Classes/Controller/ElementBrowserController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recordlist') . 'Classes/Controller/ElementBrowserController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_browse_links');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('SC_TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

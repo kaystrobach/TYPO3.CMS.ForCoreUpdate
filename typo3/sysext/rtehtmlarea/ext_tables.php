@@ -3,13 +3,13 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 // Add static template for Click-enlarge rendering
-t3lib_extMgm::addStaticFile($_EXTKEY, 'static/clickenlarge/', 'Clickenlarge Rendering');
+\TYPO3\CMS\Core\Extension\ExtensionManager::addStaticFile($_EXTKEY, 'static/clickenlarge/', 'Clickenlarge Rendering');
 // Add configuration of soft references on image tags in RTE content
-require_once t3lib_extMgm::extPath($_EXTKEY) . 'hooks/softref/ext_tables.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'hooks/softref/ext_tables.php';
 // Add acronyms table
 $GLOBALS['TCA']['tx_rtehtmlarea_acronym'] = array(
 	'ctrl' => array(
-		'title' => 'LLL:EXT:rtehtmlarea/locallang_db.xml:tx_rtehtmlarea_acronym',
+		'title' => 'LLL:EXT:rtehtmlarea/locallang_db.xml:TYPO3\\CMS\\Rtehtmlarea\\Extension\\Acronym',
 		'label' => 'term',
 		'default_sortby' => 'ORDER BY term',
 		'sortby' => 'sorting',
@@ -19,12 +19,12 @@ $GLOBALS['TCA']['tx_rtehtmlarea_acronym'] = array(
 			'starttime' => 'starttime',
 			'endtime' => 'endtime'
 		),
-		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'tca.php',
-		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY) . 'extensions/Acronym/skin/images/acronym.gif'
+		'dynamicConfigFile' => \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'tca.php',
+		'iconfile' => \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($_EXTKEY) . 'extensions/Acronym/skin/images/acronym.gif'
 	)
 );
-t3lib_extMgm::allowTableOnStandardPages('tx_rtehtmlarea_acronym');
-t3lib_extMgm::addLLrefForTCAdescr('tx_rtehtmlarea_acronym', ('EXT:' . $_EXTKEY) . '/locallang_csh_abbreviation.xml');
+\TYPO3\CMS\Core\Extension\ExtensionManager::allowTableOnStandardPages('tx_rtehtmlarea_acronym');
+\TYPO3\CMS\Core\Extension\ExtensionManager::addLLrefForTCAdescr('tx_rtehtmlarea_acronym', ('EXT:' . $_EXTKEY) . '/locallang_csh_abbreviation.xml');
 // Add contextual help files
 $htmlAreaRteContextHelpFiles = array(
 	'General' => ('EXT:' . $_EXTKEY) . '/locallang_csh.xlf',
@@ -37,11 +37,11 @@ $htmlAreaRteContextHelpFiles = array(
 	'TableOperations' => ('EXT:' . $_EXTKEY) . '/extensions/TableOperations/locallang_csh.xlf'
 );
 foreach ($htmlAreaRteContextHelpFiles as $key => $file) {
-	t3lib_extMgm::addLLrefForTCAdescr((('xEXT_' . $_EXTKEY) . '_') . $key, $file);
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addLLrefForTCAdescr((('xEXT_' . $_EXTKEY) . '_') . $key, $file);
 }
 unset($htmlAreaRteContextHelpFiles);
 // Extend TYPO3 User Settings Configuration
-if ((TYPO3_MODE === 'BE' && t3lib_extMgm::isLoaded('setup')) && is_array($GLOBALS['TYPO3_USER_SETTINGS'])) {
+if ((TYPO3_MODE === 'BE' && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('setup')) && is_array($GLOBALS['TYPO3_USER_SETTINGS'])) {
 	$GLOBALS['TYPO3_USER_SETTINGS']['columns'] = array_merge($GLOBALS['TYPO3_USER_SETTINGS']['columns'], array(
 		'rteWidth' => array(
 			'type' => 'text',

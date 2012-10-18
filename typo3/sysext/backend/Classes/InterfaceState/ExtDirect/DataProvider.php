@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\InterfaceState\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class extDirect_DataProvider_State {
+class DataProvider {
 
 	/**
 	 * @var extDirect_DataProvider_BackenduserSettings
@@ -45,7 +47,7 @@ class extDirect_DataProvider_State {
 	 */
 	public function __construct() {
 		// All data is saved in BE_USER->uc
-		$this->userSettings = t3lib_div::makeInstance('extDirect_DataProvider_BackenduserSettings');
+		$this->userSettings = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('extDirect_DataProvider_BackenduserSettings');
 	}
 
 	/**
@@ -80,5 +82,6 @@ class extDirect_DataProvider_State {
 	}
 
 }
+
 
 ?>

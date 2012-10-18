@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\SysAction;
+
 /*************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class tx_sysaction_list extends localRecordList {
+class ActionList extends \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList {
 
 	/**
 	 * Creates the URL to this script, including all relevant GPvars
@@ -74,21 +76,22 @@ class tx_sysaction_list extends localRecordList {
 		if ($this->firstElementNumber) {
 			$urlParameters['pointer'] = $this->firstElementNumber;
 		}
-		if ((!$exclList || !t3lib_div::inList($exclList, 'sortField')) && $this->sortField) {
+		if ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'sortField')) && $this->sortField) {
 			$urlParameters['sortField'] = $this->sortField;
 		}
-		if ((!$exclList || !t3lib_div::inList($exclList, 'sortRev')) && $this->sortRev) {
+		if ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'sortRev')) && $this->sortRev) {
 			$urlParameters['sortRev'] = $this->sortRev;
 		}
-		if (t3lib_div::_GP('SET')) {
-			$urlParameters['SET'] = t3lib_div::_GP('SET');
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET')) {
+			$urlParameters['SET'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET');
 		}
-		if (t3lib_div::_GP('show')) {
-			$urlParameters['show'] = intval(t3lib_div::_GP('show'));
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('show')) {
+			$urlParameters['show'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('show'));
 		}
-		return t3lib_BEfunc::getModuleUrl('user_task', $urlParameters);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('user_task', $urlParameters);
 	}
 
 }
+
 
 ?>

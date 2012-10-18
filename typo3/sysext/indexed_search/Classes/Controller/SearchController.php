@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @author 	Christian Jul Jensen <christian@typo3.com>
  * @author 	Benjamin Mack <benni@typo3.org>
  */
-class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Controller_ActionController {
+class SearchController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	// previously known as $this->piVars['sword']
 	protected $sword = NULL;
@@ -53,14 +55,14 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	/**
 	 * Lexer object
 	 *
-	 * @var Tx_IndexedSearch_Domain_Repository_IndexSearchRepository
+	 * @var \TYPO3\CMS\IndexedSearch\Domain\Repository\IndexSearchRepository
 	 */
 	protected $searchRepository = NULL;
 
 	/**
 	 * Lexer object
 	 *
-	 * @var tx_indexedsearch_lexer
+	 * @var \TYPO3\CMS\IndexedSearch\Lexer
 	 */
 	protected $lexerObj;
 
@@ -114,7 +116,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		if ($searchData['_freeIndexUid'] !== '' && $searchData['_freeIndexUid'] !== '_') {
 			$searchData['freeIndexUid'] = $searchData['_freeIndexUid'];
 		}
-		$searchData['results'] = t3lib_utility_Math::forceIntegerInRange($searchData['results'], 1, 100000, $this->defaultResultNumber);
+		$searchData['results'] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($searchData['results'], 1, 100000, $this->defaultResultNumber);
 		// This gets the search-words into the $searchWordArray
 		$this->sword = $searchData['sword'];
 		// Add previous search words to current
@@ -134,9 +136,9 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		// of this kind of searching here. Thus a general search will lookup in
 		// the WHOLE database while a specific section search will take the current sections.
 		if ($this->settings['rootPidList']) {
-			$this->searchRootPageIdList = implode(',', t3lib_div::intExplode(',', $this->settings['rootPidList']));
+			$this->searchRootPageIdList = implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->settings['rootPidList']));
 		}
-		$this->searchRepository = t3lib_div::makeInstance('Tx_IndexedSearch_Domain_Repository_IndexSearchRepository');
+		$this->searchRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\IndexedSearch\\Domain\\Repository\\IndexSearchRepository');
 		$this->searchRepository->initialize($this->settings, $searchData, $this->externalParsers, $this->searchRootPageIdList);
 		$this->searchData = $searchData;
 		// Calling hook for modification of initialized content
@@ -163,31 +165,31 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 			// index configuration is disabled
 			$freeIndexUid = -1;
 		}
-		$indexCfgs = t3lib_div::intExplode(',', $freeIndexUid);
+		$indexCfgs = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $freeIndexUid);
 		$resultsets = array();
 		foreach ($indexCfgs as $freeIndexUid) {
 			// Get result rows
-			$tstamp1 = t3lib_div::milliseconds();
+			$tstamp1 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 			if ($hookObj = $this->hookRequest('getResultRows')) {
 				$resultData = $hookObj->getResultRows($this->searchWords, $freeIndexUid);
 			} else {
 				$resultData = $this->searchRepository->doSearch($this->searchWords, $freeIndexUid);
 			}
 			// Display search results
-			$tstamp2 = t3lib_div::milliseconds();
+			$tstamp2 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 			if ($hookObj = $this->hookRequest('getDisplayResults')) {
 				$resultsets[$freeIndexUid] = $hookObj->getDisplayResults($this->searchWords, $resultData, $freeIndexUid);
 			} else {
 				$resultsets[$freeIndexUid] = $this->getDisplayResults($this->searchWords, $resultData, $freeIndexUid);
 			}
-			$tstamp3 = t3lib_div::milliseconds();
+			$tstamp3 = \TYPO3\CMS\Core\Utility\GeneralUtility::milliseconds();
 			// Create header if we are searching more than one indexing configuration
 			if (count($indexCfgs) > 1) {
 				if ($freeIndexUid > 0) {
 					$indexCfgRec = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('title', 'index_config', ('uid=' . intval($freeIndexUid)) . $GLOBALS['TSFE']->cObj->enableFields('index_config'));
 					$categoryTitle = $indexCfgRec['title'];
 				} else {
-					$categoryTitle = Tx_Extbase_Utility_Localization::translate('indexingConfigurationHeader.' . $freeIndexUid, 'indexed_search');
+					$categoryTitle = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('indexingConfigurationHeader.' . $freeIndexUid, 'indexed_search');
 				}
 				$resultsets[$freeIndexUid]['categoryTitle'] = $categoryTitle;
 			}
@@ -227,13 +229,13 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 			if ($resultData['count']) {
 				// could we get this in the view?
 				if ($this->searchData['group'] == 'sections' && $freeIndexUid <= 0) {
-					$result['sectionText'] = sprintf(Tx_Extbase_Utility_Localization::translate('result.' . (count($this->resultSections) > 1 ? 'inNsections' : 'inNsection'), 'indexed_search'), count($this->resultSections));
+					$result['sectionText'] = sprintf(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.' . (count($this->resultSections) > 1 ? 'inNsections' : 'inNsection'), 'indexed_search'), count($this->resultSections));
 				}
 			}
 		}
 		// Print a message telling which words in which sections we searched for
 		if (substr($this->searchData['sections'], 0, 2) == 'rl') {
-			$result['searchedInSectionInfo'] = ((Tx_Extbase_Utility_Localization::translate('result.inSection', 'indexed_search') . ' "') . substr($this->getPathFromPageId(substr($this->searchData['sections'], 4)), 1)) . '"';
+			$result['searchedInSectionInfo'] = ((\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.inSection', 'indexed_search') . ' "') . substr($this->getPathFromPageId(substr($this->searchData['sections'], 4)), 1)) . '"';
 		}
 		return $result;
 	}
@@ -295,7 +297,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 				$sectionName = $this->getPathFromPageId($theId);
 				$sectionName = ltrim($sectionName, '/');
 				if (!trim($sectionName)) {
-					$sectionTitleLinked = Tx_Extbase_Utility_Localization::translate('result.unnamedSection', 'indexed_search') . ':';
+					$sectionTitleLinked = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.unnamedSection', 'indexed_search') . ':';
 				} else {
 					$onclick = ((((((('document.' . $this->prefixId) . '[\'') . $this->prefixId) . '[_sections]\'].value=\'') . $theRLid) . '\';document.') . $this->prefixId) . '.submit();return false;';
 					$sectionTitleLinked = ((('<a href="#" onclick="' . htmlspecialchars($onclick)) . '">') . htmlspecialchars($sectionName)) . ':</a>';
@@ -338,9 +340,9 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 			$dat = unserialize($row['cHashParams']);
 			$pp = explode('-', $dat['key']);
 			if ($pp[0] != $pp[1]) {
-				$resultData['titleaddition'] = ((', ' . Tx_Extbase_Utility_Localization::translate('result.page', 'indexed_search')) . ' ') . $dat['key'];
+				$resultData['titleaddition'] = ((', ' . \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.page', 'indexed_search')) . ' ') . $dat['key'];
 			} else {
-				$resultData['titleaddition'] = ((', ' . Tx_Extbase_Utility_Localization::translate('result.pages', 'indexed_search')) . ' ') . $pp[0];
+				$resultData['titleaddition'] = ((', ' . \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.pages', 'indexed_search')) . ' ') . $pp[0];
 			}
 		}
 		$title = $resultData['item_title'] . $resultData['titleaddition'];
@@ -378,7 +380,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$resultData['rating'] = $this->makeRating($row);
 		$resultData['description'] = $this->makeDescription($row, $this->searchData['extResume'] && !$headerOnly ? 0 : 1);
 		$resultData['language'] = $this->makeLanguageIndication($row);
-		$resultData['size'] = t3lib_div::formatSize($row['item_size']);
+		$resultData['size'] = \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($row['item_size']);
 		$resultData['created'] = $row['item_crdate'];
 		$resultData['modified'] = $row['item_mtime'];
 		$pI = parse_url($row['data_filename']);
@@ -400,7 +402,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 			));
 			// check if the access is restricted
 			if (is_array($this->requiredFrontendUsergroups[$id]) && count($this->requiredFrontendUsergroups[$id])) {
-				$resultData['access'] = ((('<img src="' . t3lib_extMgm::siteRelPath('indexed_search')) . 'pi/res/locked.gif" width="12" height="15" vspace="5" title="') . sprintf(Tx_Extbase_Utility_Localization::translate('result.memberGroups', 'indexed_search'), implode(',', array_unique($this->requiredFrontendUsergroups[$id])))) . '" alt="" />';
+				$resultData['access'] = ((('<img src="' . \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('indexed_search')) . 'pi/res/locked.gif" width="12" height="15" vspace="5" title="') . sprintf(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.memberGroups', 'indexed_search'), implode(',', array_unique($this->requiredFrontendUsergroups[$id])))) . '" alt="" />';
 			}
 		}
 		// If there are subrows (eg. subpages in a PDF-file or if a duplicate page
@@ -408,13 +410,13 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		if (is_array($row['_sub'])) {
 			$resultData['subresults'] = array();
 			if ($this->multiplePagesType($row['item_type'])) {
-				$resultData['subresults']['header'] = Tx_Extbase_Utility_Localization::translate('result.otherMatching', 'indexed_search');
+				$resultData['subresults']['header'] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.otherMatching', 'indexed_search');
 				foreach ($row['_sub'] as $subRow) {
 					$resultData['subresults']['items'][] = $this->compileSingleResultRow($subRow, 1);
 				}
 			} else {
-				$resultData['subresults']['header'] = Tx_Extbase_Utility_Localization::translate('result.otherMatching', 'indexed_search');
-				$resultData['subresults']['info'] = Tx_Extbase_Utility_Localization::translate('result.otherPageAsWell', 'indexed_search');
+				$resultData['subresults']['header'] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.otherMatching', 'indexed_search');
+				$resultData['subresults']['info'] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.otherPageAsWell', 'indexed_search');
 			}
 		}
 		return $resultData;
@@ -454,10 +456,10 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	protected function makeRating($row) {
 		switch ((string) $this->searchData['sortOrder']) {
 		case 'rank_count':
-			return ($row['order_val'] . ' ') . Tx_Extbase_Utility_Localization::translate('result.ratingMatches', 'indexed_search');
+			return ($row['order_val'] . ' ') . \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.ratingMatches', 'indexed_search');
 			break;
 		case 'rank_first':
-			return ceil((t3lib_utility_Math::forceIntegerInRange((255 - $row['order_val']), 1, 255) / 255) * 100) . '%';
+			return ceil((\TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange((255 - $row['order_val']), 1, 255) / 255) * 100) . '%';
 			break;
 		case 'rank_flag':
 			if ($this->firstRow['order_val2']) {
@@ -465,13 +467,13 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 				$base = $row['order_val1'] * 256;
 				// 15-3 MSB = 12
 				$freqNumber = ($row['order_val2'] / $this->firstRow['order_val2']) * pow(2, 12);
-				$total = t3lib_utility_Math::forceIntegerInRange($base + $freqNumber, 0, 32767);
+				$total = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($base + $freqNumber, 0, 32767);
 				return ceil((log($total) / log(32767)) * 100) . '%';
 			}
 			break;
 		case 'rank_freq':
 			$max = 10000;
-			$total = t3lib_utility_Math::forceIntegerInRange($row['order_val'], 0, $max);
+			$total = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($row['order_val'], 0, $max);
 			return ceil((log($total) / log($max)) * 100) . '%';
 			break;
 		case 'crdate':
@@ -498,7 +500,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		if ((string) $row['item_type'] === '0') {
 			// If TypoScript is used to render the flag:
 			if (is_array($this->settings['flagRendering.'])) {
-				$cObj = t3lib_div::makeInstance('tslib_cObj');
+				$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 				$cObj->setCurrentVal($row['sys_language_uid']);
 				$output = $cObj->cObjGetSingle($this->settings['flagRendering'], $this->settings['flagRendering.']);
 			} else {
@@ -554,7 +556,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 					$icon = $this->externalParsers[$imageType]->getIcon($imageType);
 				}
 				if ($icon) {
-					$fullPath = t3lib_div::getFileAbsFileName($icon);
+					$fullPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($icon);
 					if ($fullPath) {
 						$info = @getimagesize($fullPath);
 						$iconPath = substr($fullPath, strlen(PATH_site));
@@ -594,7 +596,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 			$output = $outputStr ? $outputStr : $markedSW;
 			$output = $GLOBALS['TSFE']->csConv($output, 'utf-8');
 		} else {
-			$output = ('<span class="noResume">' . Tx_Extbase_Utility_Localization::translate('result.noResume', 'indexed_search')) . '</span>';
+			$output = ('<span class="noResume">' . \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('result.noResume', 'indexed_search')) . '</span>';
 		}
 		return $output;
 	}
@@ -607,7 +609,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	 */
 	protected function markupSWpartsOfString($str) {
 		// Init:
-		$str = str_replace('&nbsp;', ' ', t3lib_parsehtml::bidir_htmlspecialchars($str, -1));
+		$str = str_replace('&nbsp;', ' ', \TYPO3\CMS\Core\Html\HtmlParser::bidir_htmlspecialchars($str, -1));
 		$str = preg_replace('/\\s\\s+/', ' ', $str);
 		$swForReg = array();
 		// Prepare search words for regex:
@@ -624,7 +626,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$divider = ' ... ';
 		$occurencies = (count($parts) - 1) / 2;
 		if ($occurencies) {
-			$postPreLgd = t3lib_utility_Math::forceIntegerInRange($summaryMax / $occurencies, $postPreLgd, $summaryMax / 2);
+			$postPreLgd = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($summaryMax / $occurencies, $postPreLgd, $summaryMax / 2);
 		}
 		// Variable:
 		$summaryLgd = 0;
@@ -684,7 +686,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 			// cookie as set or retrieved. If people has cookies disabled this will vary all the time
 			'cookie' => $GLOBALS['TSFE']->fe_user->id,
 			// Remote IP address
-			'IP' => t3lib_div::getIndpEnv('REMOTE_ADDR'),
+			'IP' => \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'),
 			// Number of hits on the search
 			'hits' => intval($count),
 			// Time stamp
@@ -749,11 +751,11 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 					array('-', 'AND NOT'),
 					// Add operators for various languages
 					// Converts the operators to UTF-8 and lowercase
-					array($GLOBALS['TSFE']->csConvObj->conv_case('utf-8', $GLOBALS['TSFE']->csConvObj->utf8_encode(Tx_Extbase_Utility_Localization::translate('localizedOperandAnd', 'indexed_search'), $GLOBALS['TSFE']->renderCharset), 'toLower'), 'AND'),
-					array($GLOBALS['TSFE']->csConvObj->conv_case('utf-8', $GLOBALS['TSFE']->csConvObj->utf8_encode(Tx_Extbase_Utility_Localization::translate('localizedOperandOr', 'indexed_search'), $GLOBALS['TSFE']->renderCharset), 'toLower'), 'OR'),
-					array($GLOBALS['TSFE']->csConvObj->conv_case('utf-8', $GLOBALS['TSFE']->csConvObj->utf8_encode(Tx_Extbase_Utility_Localization::translate('localizedOperandNot', 'indexed_search'), $GLOBALS['TSFE']->renderCharset), 'toLower'), 'AND NOT')
+					array($GLOBALS['TSFE']->csConvObj->conv_case('utf-8', $GLOBALS['TSFE']->csConvObj->utf8_encode(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('localizedOperandAnd', 'indexed_search'), $GLOBALS['TSFE']->renderCharset), 'toLower'), 'AND'),
+					array($GLOBALS['TSFE']->csConvObj->conv_case('utf-8', $GLOBALS['TSFE']->csConvObj->utf8_encode(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('localizedOperandOr', 'indexed_search'), $GLOBALS['TSFE']->renderCharset), 'toLower'), 'OR'),
+					array($GLOBALS['TSFE']->csConvObj->conv_case('utf-8', $GLOBALS['TSFE']->csConvObj->utf8_encode(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('localizedOperandNot', 'indexed_search'), $GLOBALS['TSFE']->renderCharset), 'toLower'), 'AND NOT')
 				);
-				$search = t3lib_div::makeInstance('tslib_search');
+				$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\SearchResultContentObject');
 				$search->default_operator = $defaultOperator == 1 ? 'OR' : 'AND';
 				$search->operator_translate_table = $operatorTranslateTable;
 				$search->register_and_explode_search_string($searchWords);
@@ -775,8 +777,8 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	protected function procSearchWordsByLexer($searchWords) {
 		$newSearchWords = array();
 		// Init lexer (used to post-processing of search words)
-		$lexerObjRef = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['lexer'] ? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['lexer'] : 'EXT:indexed_search/class.lexer.php:&tx_indexedsearch_lexer';
-		$this->lexerObj = t3lib_div::getUserObj($lexerObjRef);
+		$lexerObjRef = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['lexer'] ? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['lexer'] : 'EXT:indexed_search/class.lexer.php:&TYPO3\\CMS\\IndexedSearch\\Controller\\SearchFormController_lexer';
+		$this->lexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($lexerObjRef);
 		// Traverse the search word array
 		foreach ($searchWords as $wordDef) {
 			// No space in word (otherwise it might be a sentense in quotes like "there is").
@@ -865,7 +867,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['searchType']) {
 			foreach ($types as $typeNum) {
-				$allOptions[$typeNum] = Tx_Extbase_Utility_Localization::translate('searchTypes.' . $typeNum, 'indexed_search');
+				$allOptions[$typeNum] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('searchTypes.' . $typeNum, 'indexed_search');
 			}
 		}
 		// Remove this option if metaphone search is disabled)
@@ -887,8 +889,8 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['defaultOperand']) {
 			$allOptions = array(
-				0 => Tx_Extbase_Utility_Localization::translate('defaultOperands.0', 'indexed_search'),
-				1 => Tx_Extbase_Utility_Localization::translate('defaultOperands.1', 'indexed_search')
+				0 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('defaultOperands.0', 'indexed_search'),
+				1 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('defaultOperands.1', 'indexed_search')
 			);
 		}
 		// disable single entries by TypoScript
@@ -907,12 +909,12 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['mediaType']) {
 			foreach ($mediaTypes as $mediaType) {
-				$allOptions[$mediaType] = Tx_Extbase_Utility_Localization::translate('mediaTypes.' . $mediaType, 'indexed_search');
+				$allOptions[$mediaType] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('mediaTypes.' . $mediaType, 'indexed_search');
 			}
 			// Add media to search in:
 			$additionalMedia = trim($this->settings['mediaList']);
 			if (strlen($additionalMedia) > 0) {
-				$additionalMedia = t3lib_div::trimExplode(',', $additionalMedia, TRUE);
+				$additionalMedia = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $additionalMedia, TRUE);
 			}
 			foreach ($this->externalParsers as $extension => $obj) {
 				// Skip unwanted extensions
@@ -920,7 +922,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 					continue;
 				}
 				if ($name = $obj->searchTypeMediaTitle($extension)) {
-					$allOptions[$extension] = Tx_Extbase_Utility_Localization::translate('mediaTypes.' . $extension, $name);
+					$allOptions[$extension] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('mediaTypes.' . $extension, $name);
 				}
 			}
 		}
@@ -936,8 +938,8 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	 */
 	protected function getAllAvailableLanguageOptions() {
 		$allOptions = array(
-			'-1' => Tx_Extbase_Utility_Localization::translate('languageUids.-1', 'indexed_search'),
-			'0' => Tx_Extbase_Utility_Localization::translate('languageUids.0', 'indexed_search')
+			'-1' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('languageUids.-1', 'indexed_search'),
+			'0' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('languageUids.0', 'indexed_search')
 		);
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['languageUid']) {
@@ -971,15 +973,15 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['sections']) {
 			foreach ($sections as $section) {
-				$allOptions[$section] = Tx_Extbase_Utility_Localization::translate('sections.' . $section, 'indexed_search');
+				$allOptions[$section] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sections.' . $section, 'indexed_search');
 			}
 		}
 		// Creating levels for section menu:
 		// This selects the first and secondary menus for the "sections" selector - so we can search in sections and sub sections.
 		if ($this->settings['displayLevel1Sections']) {
 			$firstLevelMenu = $this->getMenuOfPages($this->searchRootPageIdList);
-			$labelLevel1 = Tx_Extbase_Utility_Localization::translate('sections.Rl1', 'indexed_search');
-			$labelLevel2 = Tx_Extbase_Utility_Localization::translate('sections.Rl2', 'indexed_search');
+			$labelLevel1 = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sections.Rl1', 'indexed_search');
+			$labelLevel2 = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sections.Rl2', 'indexed_search');
 			foreach ($firstLevelMenu as $firstLevelKey => $menuItem) {
 				if (!$menuItem['nav_hide']) {
 					$allOptions['rl1_' . $menuItem['uid']] = trim(($labelLevel1 . ' ') . $menuItem['title']);
@@ -992,13 +994,13 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 								unset($secondLevelMenu[$secondLevelKey]);
 							}
 						}
-						$allOptions['rl2_' . implode(',', array_keys($secondLevelMenu))] = Tx_Extbase_Utility_Localization::translate('sections.Rl2All', 'indexed_search');
+						$allOptions['rl2_' . implode(',', array_keys($secondLevelMenu))] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sections.Rl2All', 'indexed_search');
 					}
 				} else {
 					unset($firstLevelMenu[$firstLevelKey]);
 				}
 			}
-			$allOptions['rl1_' . implode(',', array_keys($firstLevelMenu))] = Tx_Extbase_Utility_Localization::translate('sections.Rl1All', 'indexed_search');
+			$allOptions['rl1_' . implode(',', array_keys($firstLevelMenu))] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sections.Rl1All', 'indexed_search');
 		}
 		// disable single entries by TypoScript
 		$allOptions = $this->removeOptionsFromOptionList($allOptions, $blindSettings['sections.']);
@@ -1012,15 +1014,15 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	 */
 	protected function getAllAvailableIndexConfigurationsOptions() {
 		$allOptions = array(
-			'-1' => Tx_Extbase_Utility_Localization::translate('indexingConfigurations.-1', 'indexed_search'),
-			'-2' => Tx_Extbase_Utility_Localization::translate('indexingConfigurations.-2', 'indexed_search'),
-			'0' => Tx_Extbase_Utility_Localization::translate('indexingConfigurations.0', 'indexed_search')
+			'-1' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('indexingConfigurations.-1', 'indexed_search'),
+			'-2' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('indexingConfigurations.-2', 'indexed_search'),
+			'0' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('indexingConfigurations.0', 'indexed_search')
 		);
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['indexingConfigurations']) {
 			// add an additional index configuration
 			if ($this->settings['defaultFreeIndexUidList']) {
-				$uidList = t3lib_div::intExplode(',', $this->settings['defaultFreeIndexUidList']);
+				$uidList = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->settings['defaultFreeIndexUidList']);
 				$indexCfgRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,title', 'index_config', (('uid IN (' . implode(',', $uidList)) . ')') . $GLOBALS['TSFE']->cObj->enableFields('index_config'), '', '', '', 'uid');
 				foreach ($uidList as $uidValue) {
 					if (is_array($indexCfgRecords[$uidValue])) {
@@ -1051,7 +1053,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['sortOrder']) {
 			foreach ($sortOrders as $order) {
-				$allOptions[$order] = Tx_Extbase_Utility_Localization::translate('sortOrders.' . $order, 'indexed_search');
+				$allOptions[$order] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sortOrders.' . $order, 'indexed_search');
 			}
 		}
 		// disable single entries by TypoScript
@@ -1069,8 +1071,8 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['groupBy']) {
 			$allOptions = array(
-				'sections' => Tx_Extbase_Utility_Localization::translate('groupBy.sections', 'indexed_search'),
-				'flat' => Tx_Extbase_Utility_Localization::translate('groupBy.flat', 'indexed_search')
+				'sections' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('groupBy.sections', 'indexed_search'),
+				'flat' => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('groupBy.flat', 'indexed_search')
 			);
 		}
 		// disable single entries by TypoScript
@@ -1088,8 +1090,8 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		$blindSettings = $this->settings['blind.'];
 		if (!$blindSettings['descending']) {
 			$allOptions = array(
-				0 => Tx_Extbase_Utility_Localization::translate('sortOrders.descending', 'indexed_search'),
-				1 => Tx_Extbase_Utility_Localization::translate('sortOrders.ascending', 'indexed_search')
+				0 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sortOrders.descending', 'indexed_search'),
+				1 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('sortOrders.ascending', 'indexed_search')
 			);
 		}
 		// disable single entries by TypoScript
@@ -1165,12 +1167,12 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		}
 		// If external domain, then link to that:
 		if (count($this->domainRecords[$pageUid])) {
-			$scheme = t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://';
+			$scheme = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://';
 			$firstDomain = reset($this->domainRecords[$pageUid]);
 			$additionalParams = '';
 			if (is_array($urlParameters)) {
 				if (count($urlParameters)) {
-					$additionalParams = t3lib_div::implodeArrayForUrl('', $urlParameters);
+					$additionalParams = \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', $urlParameters);
 				}
 			}
 			$uri = ((($scheme . $firstDomain) . '/index.php?id=') . $pageUid) . $additionalParams;
@@ -1268,7 +1270,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 		// Initialize external document parsers for icon display and other soft operations
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['external_parsers'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['external_parsers'] as $extension => $_objRef) {
-				$this->externalParsers[$extension] = t3lib_div::getUserObj($_objRef);
+				$this->externalParsers[$extension] = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_objRef);
 				// Init parser and if it returns FALSE, unset its entry again
 				if (!$this->externalParsers[$extension]->softInit($extension)) {
 					unset($this->externalParsers[$extension]);
@@ -1286,7 +1288,7 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	protected function hookRequest($functionName) {
 		// Hook: menuConfig_preProcessModMenu
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['pi1_hooks'][$functionName]) {
-			$hookObj = t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['pi1_hooks'][$functionName]);
+			$hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['pi1_hooks'][$functionName]);
 			if (method_exists($hookObj, $functionName)) {
 				$hookObj->pObj = $this;
 				return $hookObj;
@@ -1306,5 +1308,6 @@ class Tx_IndexedSearch_Controller_SearchController extends Tx_Extbase_MVC_Contro
 	}
 
 }
+
 
 ?>

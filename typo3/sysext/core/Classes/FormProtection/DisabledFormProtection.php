@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FormProtection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @subpackage t3lib
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
-class t3lib_formprotection_DisabledFormProtection extends t3lib_formprotection_Abstract {
+class DisabledFormProtection extends \TYPO3\CMS\Core\FormProtection\AbstractFormProtection {
 
 	/**
 	 * Disable parent constructor
@@ -79,5 +81,6 @@ class t3lib_formprotection_DisabledFormProtection extends t3lib_formprotection_A
 	}
 
 }
+
 
 ?>

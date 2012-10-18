@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_contextmenu_AbstractDataProvider {
+abstract class AbstractContextMenuDataProvider {
 
 	/**
 	 * List of actions that are generally disabled
@@ -69,10 +71,10 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 	/**
 	 * Returns the actions of the node
 	 *
-	 * @param t3lib_tree_Node $node
-	 * @return t3lib_contextmenu_ActionCollection
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
+	 * @return \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection
 	 */
-	abstract public function getActionsForNode(t3lib_tree_Node $node);
+	abstract public function getActionsForNode(\TYPO3\CMS\Backend\Tree\TreeNode $node);
 
 	/**
 	 * Returns the configuration of the specified context menu type
@@ -92,11 +94,11 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 	 * isLeafNode:1
 	 * isLeafNode:1 && isInCutMode:1
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @param string $displayCondition
 	 * @return boolean
 	 */
-	protected function evaluateDisplayCondition(t3lib_tree_Node $node, $displayCondition) {
+	protected function evaluateDisplayCondition(\TYPO3\CMS\Backend\Tree\TreeNode $node, $displayCondition) {
 		if ($displayCondition === '') {
 			return TRUE;
 		}
@@ -155,13 +157,13 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 	 * Returns the next context menu level
 	 *
 	 * @param array $actions
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @param integer $level
-	 * @return t3lib_contextmenu_ActionCollection
+	 * @return \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection
 	 */
-	protected function getNextContextMenuLevel(array $actions, t3lib_tree_Node $node, $level = 0) {
-		/** @var $actionCollection t3lib_contextmenu_ActionCollection */
-		$actionCollection = t3lib_div::makeInstance('t3lib_contextmenu_ActionCollection');
+	protected function getNextContextMenuLevel(array $actions, \TYPO3\CMS\Backend\Tree\TreeNode $node, $level = 0) {
+		/** @var $actionCollection \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection */
+		$actionCollection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\ContextMenu\\ContextMenuActionCollection');
 		if ($level > 5) {
 			return $actionCollection;
 		}
@@ -176,8 +178,8 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 			if (!in_array($type, array('DIVIDER', 'SUBMENU', 'ITEM'))) {
 				continue;
 			}
-			/** @var $action t3lib_contextmenu_Action */
-			$action = t3lib_div::makeInstance('t3lib_contextmenu_Action');
+			/** @var $action \TYPO3\CMS\Backend\ContextMenu\ContextMenuAction */
+			$action = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\ContextMenu\\ContextMenuAction');
 			$action->setId($index);
 			if ($type === 'DIVIDER') {
 				$action->setType('divider');
@@ -201,7 +203,7 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 				if (isset($actionConfiguration['icon']) && trim($actionConfiguration['icon']) !== '') {
 					$action->setIcon($actionConfiguration['icon']);
 				} elseif (isset($actionConfiguration['spriteIcon'])) {
-					$action->setClass(t3lib_iconWorks::getSpriteIconClasses($actionConfiguration['spriteIcon']));
+					$action->setClass(\TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconClasses($actionConfiguration['spriteIcon']));
 				}
 			}
 			$actionCollection->offsetSet($level . intval($index), $action);
@@ -211,5 +213,6 @@ abstract class t3lib_contextmenu_AbstractDataProvider {
 	}
 
 }
+
 
 ?>

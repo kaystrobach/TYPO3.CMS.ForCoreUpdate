@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Json;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_JSON_Fieldset extends tx_form_Domain_Model_JSON_Container {
+class FieldsetJsonElement extends \TYPO3\CMS\Form\Domain\Model\Json\ContainerJsonElement {
 
 	/**
 	 * The ExtJS xtype of the element
@@ -89,5 +91,6 @@ class tx_form_Domain_Model_JSON_Fieldset extends tx_form_Domain_Model_JSON_Conta
 	}
 
 }
+
 
 ?>

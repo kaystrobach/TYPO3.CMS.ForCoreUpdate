@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Confirmation\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Confirmation_Element_Checkboxgroup extends tx_form_View_Confirmation_Element_Fieldset {
+class CheckboxGroupElementView extends \TYPO3\CMS\Form\View\Confirmation\Element\FieldsetElementView {
 
 	/**
 	 * Default layout of this object
@@ -45,13 +47,14 @@ class tx_form_View_Confirmation_Element_Checkboxgroup extends tx_form_View_Confi
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Checkboxgroup $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\CheckboxGroupElement $model Model for this element
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Checkboxgroup $model) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\CheckboxGroupElement $model) {
 		parent::__construct($model);
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -78,7 +80,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_modSettings {
+class ModuleSettings {
 
 	/**
 	 * If type is set 'ses' then the module data will be stored into the session and will be lost with logout.
@@ -179,9 +181,9 @@ class t3lib_modSettings {
 	 * @todo Define visibility
 	 */
 	public function setStoreList($storeList) {
-		$this->storeList = is_array($storeList) ? $storeList : t3lib_div::trimExplode(',', $storeList, 1);
+		$this->storeList = is_array($storeList) ? $storeList : \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storeList, 1);
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Store list:' . implode(',', $this->storeList), 't3lib_modSettings', 0);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Store list:' . implode(',', $this->storeList), 'TYPO3\\CMS\\Backend\\ModuleSettings', 0);
 		}
 	}
 
@@ -193,10 +195,10 @@ class t3lib_modSettings {
 	 * @todo Define visibility
 	 */
 	public function addToStoreList($storeList) {
-		$storeList = is_array($storeList) ? $storeList : t3lib_div::trimExplode(',', $storeList, 1);
+		$storeList = is_array($storeList) ? $storeList : \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storeList, 1);
 		$this->storeList = array_merge($this->storeList, $storeList);
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Store list:' . implode(',', $this->storeList), 't3lib_modSettings', 0);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Store list:' . implode(',', $this->storeList), 'TYPO3\\CMS\\Backend\\ModuleSettings', 0);
 		}
 	}
 
@@ -216,7 +218,7 @@ class t3lib_modSettings {
 		}
 		unset($this->storeList[$this->prefix . '_storedSettings']);
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Store list:' . implode(',', $this->storeList), 't3lib_modSettings', 0);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Store list:' . implode(',', $this->storeList), 'TYPO3\\CMS\\Backend\\ModuleSettings', 0);
 		}
 	}
 
@@ -310,14 +312,14 @@ class t3lib_modSettings {
 	 */
 	public function processStoreControl($mconfName = '') {
 		$this->initStorage();
-		$storeControl = t3lib_div::_GP('storeControl');
+		$storeControl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('storeControl');
 		$storeIndex = $storeControl['STORE'];
 		$msg = '';
 		$saveSettings = FALSE;
 		$writeArray = array();
 		if (is_array($storeControl)) {
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('Store command: ' . t3lib_div::arrayToLogString($storeControl), 't3lib_modSettings', 0);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Store command: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($storeControl), 'TYPO3\\CMS\\Backend\\ModuleSettings', 0);
 			}
 			// Processing LOAD
 			if ($storeControl['LOAD'] and $storeIndex) {
@@ -330,7 +332,7 @@ class t3lib_modSettings {
 					$newEntry = $this->compileEntry($storeControl);
 					// Create an index for the storage array
 					if (!$storeIndex) {
-						$storeIndex = t3lib_div::shortMD5($newEntry['title']);
+						$storeIndex = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5($newEntry['title']);
 					}
 					// Add data to the storage array
 					$this->storedSettings[$storeIndex] = $newEntry;
@@ -366,9 +368,9 @@ class t3lib_modSettings {
 		unset($this->storedSettings[0]);
 		!($this->storedSettings = $this->cleanupStorageArray($this->storedSettings));
 		$writeArray[$this->prefix . '_storedSettings'] = serialize($this->storedSettings);
-		$GLOBALS['SOBE']->MOD_SETTINGS = t3lib_BEfunc::getModuleData($GLOBALS['SOBE']->MOD_MENU, $writeArray, $mconfName ? $mconfName : $GLOBALS['SOBE']->MCONF['name'], $this->type);
+		$GLOBALS['SOBE']->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($GLOBALS['SOBE']->MOD_MENU, $writeArray, $mconfName ? $mconfName : $GLOBALS['SOBE']->MCONF['name'], $this->type);
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Settings stored:' . $this->msg, 't3lib_modSettings', 0);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Settings stored:' . $this->msg, 'TYPO3\\CMS\\Backend\\ModuleSettings', 0);
 		}
 	}
 
@@ -386,7 +388,7 @@ class t3lib_modSettings {
 	 * @todo Define visibility
 	 */
 	public function getStoreControl($showElements = 'load,remove,save', $useOwnForm = TRUE) {
-		$showElements = t3lib_div::trimExplode(',', $showElements, 1);
+		$showElements = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $showElements, 1);
 		$this->initStorage();
 		// Preset selector
 		$opt = array();
@@ -446,7 +448,7 @@ class t3lib_modSettings {
 		// TODO need to add parameters
 		if ($useOwnForm and trim($code)) {
 			$code = ((((((('
-		<form action="' . t3lib_div::getIndpEnv('SCRIPT_NAME')) . '" method="post" name="') . $this->formName) . '" enctype="') . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype']) . '">') . $code) . '</form>';
+		<form action="' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME')) . '" method="post" name="') . $this->formName) . '" enctype="') . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype']) . '">') . $code) . '</form>';
 		}
 		return $code;
 	}
@@ -469,5 +471,6 @@ class t3lib_modSettings {
 	}
 
 }
+
 
 ?>

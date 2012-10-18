@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_usersetuphook {
+class UserSetupHook {
 
 	/**
 	 * Decrypt the password fields if they are filled.
@@ -41,9 +43,9 @@ class tx_rsaauth_usersetuphook {
 		if ($this->isRsaAvailable()) {
 			$be_user_data =& $parameters['be_user_data'];
 			if (substr($be_user_data['password'], 0, 4) === 'rsa:' && substr($be_user_data['password2'], 0, 4) === 'rsa:') {
-				$backend = tx_rsaauth_backendfactory::getBackend();
-				/** @var $storage tx_rsaauth_abstract_storage */
-				$storage = tx_rsaauth_storagefactory::getStorage();
+				$backend = \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend();
+				/** @var $storage \TYPO3\CMS\Rsaauth\Storage\AbstractStorage */
+				$storage = \TYPO3\CMS\Rsaauth\Storage\StorageFactory::getStorage();
 				$key = $storage->get();
 				$password = $backend->decrypt($key, substr($be_user_data['password'], 4));
 				$password2 = $backend->decrypt($key, substr($be_user_data['password2'], 4));
@@ -57,15 +59,15 @@ class tx_rsaauth_usersetuphook {
 	 * Provides form code and javascript for the user setup.
 	 *
 	 * @param array $parameters Parameters to the script
-	 * @param SC_index $userSetupObject Calling object: user setup module
+	 * @param \TYPO3\CMS\Backend\Controller\LoginController $userSetupObject Calling object: user setup module
 	 * @return string The code for the user setup
 	 */
-	public function getLoginScripts(array $parameters, SC_mod_user_setup_index $userSetupObject) {
+	public function getLoginScripts(array $parameters, \TYPO3\CMS\Setup\Controller\SetupModuleController $userSetupObject) {
 		$content = '';
 		if ($this->isRsaAvailable()) {
 			// If we can get the backend, we can proceed
-			$backend = tx_rsaauth_backendfactory::getBackend();
-			$javascriptPath = t3lib_extMgm::siteRelPath('rsaauth') . 'resources/';
+			$backend = \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend();
+			$javascriptPath = \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('rsaauth') . 'resources/';
 			$files = array(
 				'jsbn/jsbn.js',
 				'jsbn/prng4.js',
@@ -76,16 +78,16 @@ class tx_rsaauth_usersetuphook {
 			);
 			$content = '';
 			foreach ($files as $file) {
-				$content .= ((('<script type="text/javascript" src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL')) . $javascriptPath) . $file) . '"></script>';
+				$content .= ((('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL')) . $javascriptPath) . $file) . '"></script>';
 			}
 			// Generate a new key pair
 			$keyPair = $backend->createNewKeyPair();
 			// Save private key
-			$storage = tx_rsaauth_storagefactory::getStorage();
-			/** @var $storage tx_rsaauth_abstract_storage */
+			$storage = \TYPO3\CMS\Rsaauth\Storage\StorageFactory::getStorage();
+			/** @var $storage \TYPO3\CMS\Rsaauth\Storage\AbstractStorage */
 			$storage->put($keyPair->getPrivateKey());
 			// Add form tag
-			$form = ('<form action="' . t3lib_BEfunc::getModuleUrl('user_setup')) . '" method="post" name="usersetup" enctype="application/x-www-form-urlencoded" onsubmit="tx_rsaauth_encryptUserSetup();">';
+			$form = ('<form action="' . \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('user_setup')) . '" method="post" name="usersetup" enctype="application/x-www-form-urlencoded" onsubmit="tx_rsaauth_encryptUserSetup();">';
 			// Add RSA hidden fields
 			$form .= ('<input type="hidden" id="rsa_n" name="n" value="' . htmlspecialchars($keyPair->getPublicKeyModulus())) . '" />';
 			$form .= ('<input type="hidden" id="rsa_e" name="e" value="' . sprintf('%x', $keyPair->getExponent())) . '" />';
@@ -100,9 +102,10 @@ class tx_rsaauth_usersetuphook {
 	 * @return boolean
 	 */
 	protected function isRsaAvailable() {
-		return trim($GLOBALS['TYPO3_CONF_VARS']['BE']['loginSecurityLevel']) === 'rsa' && tx_rsaauth_backendfactory::getBackend() !== NULL;
+		return trim($GLOBALS['TYPO3_CONF_VARS']['BE']['loginSecurityLevel']) === 'rsa' && \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend() !== NULL;
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /*                                                                        *
  * This script belongs to the FLOW3 framework.                            *
  *                                                                        *
@@ -16,7 +18,7 @@
  * @subpackage t3lib_cache
  * @api
  */
-class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_PhpCapableBackend {
+class SimpleFileBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\PhpCapableBackendInterface {
 
 	const SEPARATOR = '^';
 	const EXPIRYTIME_FORMAT = 'YmdHis';
@@ -82,11 +84,11 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * because the Environment class to get the path to a temporary directory
 	 * does not exist in v4.
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The cache frontend
-	 * @throws \t3lib_cache_Exception
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The cache frontend
+	 * @throws \TYPO3\CMS\Core\Cache\Exception
 	 * @return void
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache) {
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		parent::setCache($cache);
 		if (empty($this->temporaryCacheDirectory)) {
 			// If no cache directory was given with cacheDirectory
@@ -95,16 +97,16 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 		} else {
 			$temporaryCacheDirectory = $this->temporaryCacheDirectory;
 		}
-		$codeOrData = $cache instanceof t3lib_cache_frontend_PhpFrontend ? 'Code' : 'Data';
+		$codeOrData = $cache instanceof \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend ? 'Code' : 'Data';
 		$finalCacheDirectory = (((($temporaryCacheDirectory . 'Cache/') . $codeOrData) . '/') . $this->cacheIdentifier) . '/';
 		if (!is_dir($finalCacheDirectory)) {
 			$this->createFinalCacheDirectory($finalCacheDirectory);
 		}
 		unset($this->temporaryCacheDirectory);
 		$this->cacheDirectory = $finalCacheDirectory;
-		$this->cacheEntryFileExtension = $cache instanceof t3lib_cache_frontend_PhpFrontend ? '.php' : '';
-		if (strlen($this->cacheDirectory) + 23 > t3lib_div::getMaximumPathLength()) {
-			throw new \t3lib_cache_Exception(((((('The length of the temporary cache file path "' . $this->cacheDirectory) . '" exceeds the ') . 'maximum path length of ') . (t3lib_div::getMaximumPathLength() - 23)) . '. Please consider ') . 'setting the temporaryDirectoryBase option to a shorter path.', 1248710426);
+		$this->cacheEntryFileExtension = $cache instanceof \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend ? '.php' : '';
+		if (strlen($this->cacheDirectory) + 23 > \TYPO3\CMS\Core\Utility\GeneralUtility::getMaximumPathLength()) {
+			throw new \TYPO3\CMS\Core\Cache\Exception(((((('The length of the temporary cache file path "' . $this->cacheDirectory) . '" exceeds the ') . 'maximum path length of ') . (\TYPO3\CMS\Core\Utility\GeneralUtility::getMaximumPathLength() - 23)) . '. Please consider ') . 'setting the temporaryDirectoryBase option to a shorter path.', 1248710426);
 		}
 	}
 
@@ -121,7 +123,7 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 *
 	 * @param string $cacheDirectory The cache base directory. If a relative path
 	 * @return void
-	 * @throws \t3lib_cache_Exception if the directory is not within allowed
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if the directory is not within allowed
 	 */
 	public function setCacheDirectory($cacheDirectory) {
 		// Skip handling if directory is a stream ressource
@@ -154,7 +156,7 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 				if ($basedir[strlen($basedir) - 1] !== '/') {
 					$basedir .= '/';
 				}
-				if (t3lib_div::isFirstPartOfStr($cacheDirectory, $basedir)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($cacheDirectory, $basedir)) {
 					$documentRoot = $basedir;
 					$cacheDirectory = str_replace($basedir, '', $cacheDirectory);
 					$cacheDirectoryInBaseDir = TRUE;
@@ -162,7 +164,7 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 				}
 			}
 			if (!$cacheDirectoryInBaseDir) {
-				throw new \t3lib_cache_Exception(('Open_basedir restriction in effect. The directory "' . $cacheDirectory) . '" is not in an allowed path.');
+				throw new \TYPO3\CMS\Core\Cache\Exception(('Open_basedir restriction in effect. The directory "' . $cacheDirectory) . '" is not in an allowed path.');
 			}
 		} else {
 			if ($cacheDirectory[0] == '/') {
@@ -188,16 +190,16 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 *
 	 * @param string $finalCacheDirectory Absolute path to final cache directory
 	 * @return void
-	 * @throws \t3lib_cache_Exception If directory is not writable after creation
+	 * @throws \TYPO3\CMS\Core\Cache\Exception If directory is not writable after creation
 	 */
 	protected function createFinalCacheDirectory($finalCacheDirectory) {
 		try {
-			t3lib_div::mkdir_deep($finalCacheDirectory);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep($finalCacheDirectory);
 		} catch (\RuntimeException $e) {
-			throw new \t3lib_cache_Exception(('The directory "' . $finalCacheDirectory) . '" can not be created.', 1303669848, $e);
+			throw new \TYPO3\CMS\Core\Cache\Exception(('The directory "' . $finalCacheDirectory) . '" can not be created.', 1303669848, $e);
 		}
 		if (!is_writable($finalCacheDirectory)) {
-			throw new \t3lib_cache_Exception(('The directory "' . $finalCacheDirectory) . '" is not writable.', 1203965200);
+			throw new \TYPO3\CMS\Core\Cache\Exception(('The directory "' . $finalCacheDirectory) . '" is not writable.', 1203965200);
 		}
 	}
 
@@ -219,8 +221,8 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * @param array $tags Tags to associate with this cache entry
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited lifetime.
 	 * @return void
-	 * @throws \t3lib_cache_Exception if the directory does not exist or is not writable or exceeds the maximum allowed path length, or if no cache frontend has been set.
-	 * @throws \t3lib_cache_exception_InvalidData if the data to bes stored is not a string.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if the directory does not exist or is not writable or exceeds the maximum allowed path length, or if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if the data to bes stored is not a string.
 	 * @throws \InvalidArgumentException
 	 * @api
 	 */
@@ -236,9 +238,9 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 		}
 		$temporaryCacheEntryPathAndFilename = ($this->cacheDirectory . uniqid()) . '.temp';
 		$result = file_put_contents($temporaryCacheEntryPathAndFilename, $data);
-		t3lib_div::fixPermissions($temporaryCacheEntryPathAndFilename);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($temporaryCacheEntryPathAndFilename);
 		if ($result === FALSE) {
-			throw new t3lib_cache_Exception(('The temporary cache file "' . $temporaryCacheEntryPathAndFilename) . '" could not be written.', 1334756737);
+			throw new \TYPO3\CMS\Core\Cache\Exception(('The temporary cache file "' . $temporaryCacheEntryPathAndFilename) . '" could not be written.', 1334756737);
 		}
 		$cacheEntryPathAndFilename = ($this->cacheDirectory . $entryIdentifier) . $this->cacheEntryFileExtension;
 		rename($temporaryCacheEntryPathAndFilename, $cacheEntryPathAndFilename);
@@ -309,7 +311,7 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	 * @api
 	 */
 	public function flush() {
-		t3lib_div::rmdir($this->cacheDirectory, TRUE);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::rmdir($this->cacheDirectory, TRUE);
 		$this->createFinalCacheDirectory($this->cacheDirectory);
 	}
 
@@ -363,5 +365,6 @@ class t3lib_cache_backend_SimpleFileBackend extends t3lib_cache_backend_Abstract
 	}
 
 }
+
 
 ?>

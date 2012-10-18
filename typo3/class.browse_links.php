@@ -4,7 +4,7 @@
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/RecordList/ElementBrowserRecordList.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/RecordList/ElementBrowserRecordList.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/RecordList/ElementBrowserRecordList.php';
 /**
  * Class which generates the page tree
  *
@@ -12,7 +12,7 @@ require_once t3lib_extMgm::extPath('backend') . 'Classes/RecordList/ElementBrows
  * @package TYPO3
  * @subpackage core
  */
-class localPageTree extends t3lib_browseTree {
+class localPageTree extends \TYPO3\CMS\Backend\Tree\View\BrowseTreeView {
 
 	/**
 	 * whether the page ID should be shown next to the title, activate through
@@ -28,9 +28,9 @@ class localPageTree extends t3lib_browseTree {
 	 * @todo Define visibility
 	 */
 	public function __construct() {
-		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
+		$this->thisScript = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME');
 		$this->init();
-		$this->clause = (' AND doktype!=' . t3lib_pageSelect::DOKTYPE_RECYCLER) . $this->clause;
+		$this->clause = (' AND doktype!=' . \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_RECYCLER) . $this->clause;
 	}
 
 	/**
@@ -69,13 +69,13 @@ class localPageTree extends t3lib_browseTree {
 			$c++;
 			$bgColorClass = ($c + 1) % 2 ? 'bgColor' : 'bgColor-10';
 			if (($GLOBALS['SOBE']->browser->curUrlInfo['act'] == 'page' && $GLOBALS['SOBE']->browser->curUrlInfo['pageid'] == $v['row']['uid']) && $GLOBALS['SOBE']->browser->curUrlInfo['pageid']) {
-				$arrCol = ('<td><img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/blinkarrow_right.gif', 'width="5" height="9"')) . ' class="c-blinkArrowR" alt="" /></td>';
+				$arrCol = ('<td><img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/blinkarrow_right.gif', 'width="5" height="9"')) . ' class="c-blinkArrowR" alt="" /></td>';
 				$bgColorClass = 'bgColor4';
 			} else {
 				$arrCol = '<td></td>';
 			}
 			$aOnClick = ((((((('return jumpToUrl(\'' . $this->thisScript) . '?act=') . $GLOBALS['SOBE']->browser->act) . '&mode=') . $GLOBALS['SOBE']->browser->mode) . '&expandPage=') . $v['row']['uid']) . '\');';
-			$cEbullet = $this->ext_isLinkable($v['row']['doktype'], $v['row']['uid']) ? ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '"><img') . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/ol/arrowbullet.gif', 'width="18" height="16"')) . ' alt="" /></a>' : '';
+			$cEbullet = $this->ext_isLinkable($v['row']['doktype'], $v['row']['uid']) ? ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '"><img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/ol/arrowbullet.gif', 'width="18" height="16"')) . ' alt="" /></a>' : '';
 			$out .= (((((((((('
 				<tr class="' . $bgColorClass) . '">
 					<td nowrap="nowrap"') . ($v['row']['_CSSCLASS'] ? (' class="' . $v['row']['_CSSCLASS']) . '"' : '')) . '>') . $v['HTML']) . $this->wrapTitle($this->getTitleStr($v['row'], $titleLen), $v['row'], $this->ext_pArrPages)) . '</td>') . $arrCol) . '<td>') . $cEbullet) . '</td>
@@ -187,8 +187,8 @@ class TBE_PageTree extends localPageTree {
 	 */
 	public function wrapTitle($title, $v, $ext_pArrPages) {
 		if ($ext_pArrPages) {
-			$ficon = t3lib_iconWorks::getIcon('pages', $v);
-			$onClick = ((((('return insertElement(\'pages\', \'' . $v['uid']) . '\', \'db\', ') . t3lib_div::quoteJSvalue($v['title'])) . ', \'\', \'\', \'') . $ficon) . '\',\'\',1);';
+			$ficon = \TYPO3\CMS\Backend\Utility\IconUtility::getIcon('pages', $v);
+			$onClick = ((((('return insertElement(\'pages\', \'' . $v['uid']) . '\', \'db\', ') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($v['title'])) . ', \'\', \'\', \'') . $ficon) . '\',\'\',1);';
 		} else {
 			$onClick = htmlspecialchars(((((((('return jumpToUrl(\'' . $this->thisScript) . '?act=') . $GLOBALS['SOBE']->browser->act) . '&mode=') . $GLOBALS['SOBE']->browser->mode) . '&expandPage=') . $v['uid']) . '\');');
 		}
@@ -206,7 +206,7 @@ class TBE_PageTree extends localPageTree {
  * @package TYPO3
  * @subpackage core
  */
-class localFolderTree extends t3lib_folderTree {
+class localFolderTree extends \TYPO3\CMS\Backend\Tree\View\FolderTreeView {
 
 	/**
 	 * @todo Define visibility
@@ -219,7 +219,7 @@ class localFolderTree extends t3lib_folderTree {
 	 * @todo Define visibility
 	 */
 	public function __construct() {
-		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
+		$this->thisScript = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME');
 		parent::__construct();
 	}
 
@@ -227,11 +227,11 @@ class localFolderTree extends t3lib_folderTree {
 	 * Wrapping the title in a link, if applicable.
 	 *
 	 * @param string $title Title, ready for output.
-	 * @param t3lib_file_Folder $folderObject The "record
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The "record
 	 * @return string Wrapping title string.
 	 * @todo Define visibility
 	 */
-	public function wrapTitle($title, t3lib_file_Folder $folderObject) {
+	public function wrapTitle($title, \TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		if ($this->ext_isLinkable($folderObject)) {
 			$aOnClick = ((((((('return jumpToUrl(\'' . $this->thisScript) . '?act=') . $GLOBALS['SOBE']->browser->act) . '&mode=') . $GLOBALS['SOBE']->browser->mode) . '&expandFolder=') . rawurlencode($folderObject->getCombinedIdentifier())) . '\');';
 			return ((('<a href="#" onclick="' . htmlspecialchars($aOnClick)) . '">') . $title) . '</a>';
@@ -243,11 +243,11 @@ class localFolderTree extends t3lib_folderTree {
 	/**
 	 * Returns TRUE if the input "record" contains a folder which can be linked.
 	 *
-	 * @param t3lib_file_Folder $folderObject Object with information about the folder element. Contains keys like title, uid, path, _title
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject Object with information about the folder element. Contains keys like title, uid, path, _title
 	 * @return boolean TRUE is returned if the path is found in the web-part of the server and is NOT a recycler or temp folder
 	 * @todo Define visibility
 	 */
-	public function ext_isLinkable(t3lib_file_Folder $folderObject) {
+	public function ext_isLinkable(\TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		if ((!$folderObject->getStorage()->isPublic() || strstr($folderObject->getIdentifier(), '_recycler_')) || strstr($folderObject->getIdentifier(), '_temp_')) {
 			return FALSE;
 		} else {
@@ -306,7 +306,7 @@ class TBE_FolderTree extends localFolderTree {
 	/**
 	 * Returns TRUE if the input "record" contains a folder which can be linked.
 	 *
-	 * @param t3lib_file_Folder $folderObject object with information about the folder element. Contains keys like title, uid, path, _title
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject object with information about the folder element. Contains keys like title, uid, path, _title
 	 * @return boolean TRUE is returned if the path is NOT a recycler or temp folder AND if ->ext_noTempRecyclerDirs is not set.
 	 * @todo Define visibility
 	 */
@@ -322,7 +322,7 @@ class TBE_FolderTree extends localFolderTree {
 	 * Wrapping the title in a link, if applicable.
 	 *
 	 * @param string $title Title, ready for output.
-	 * @param t3lib_file_Folder $folderObject The folderObject 'record'
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The folderObject 'record'
 	 * @return string Wrapping title string.
 	 * @todo Define visibility
 	 */
@@ -342,5 +342,5 @@ class TBE_FolderTree extends localFolderTree {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/recordlist/Classes/Browser/ElementBrowser.php
  */
-require_once t3lib_extMgm::extPath('recordlist') . 'Classes/Browser/ElementBrowser.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recordlist') . 'Classes/Browser/ElementBrowser.php';
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,15 +33,15 @@
  * @package TYPO3
  * @subpackage core
  */
-class Typo3_Utility_BackendModuleUtility {
+class ModuleController {
 
 	/**
-	 * @var Typo3_ModuleStorage
+	 * @var \TYPO3\CMS\Backend\Module\ModuleStorage
 	 */
 	protected $moduleMenu;
 
 	/**
-	 * @var Typo3_Domain_Repository_BackendModuleRepository
+	 * @var \TYPO3\CMS\Backend\Domain\Repository\Module\BackendModuleRepository
 	 */
 	protected $moduleMenuRepository;
 
@@ -47,8 +49,8 @@ class Typo3_Utility_BackendModuleUtility {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->moduleMenu = t3lib_div::makeInstance('Typo3_ModuleStorage');
-		$this->moduleMenuRepository = t3lib_div::makeInstance('Typo3_Domain_Repository_BackendModuleRepository');
+		$this->moduleMenu = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleStorage');
+		$this->moduleMenuRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Domain\\Repository\\Module\\BackendModuleRepository');
 	}
 
 	/**
@@ -60,8 +62,8 @@ class Typo3_Utility_BackendModuleUtility {
 	 */
 	public function createModuleMenu() {
 		if (count($this->moduleMenu->getEntries()) === 0) {
-			/** @var $moduleMenu ModuleMenu */
-			$moduleMenu = t3lib_div::makeInstance('ModuleMenu');
+			/** @var $moduleMenu \TYPO3\CMS\Backend\View\ModuleMenuView */
+			$moduleMenu = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\ModuleMenuView');
 			$rawData = $moduleMenu->getRawModuleData();
 			$this->convertRawModuleDataToModuleMenuObject($rawData);
 			$this->createMenuEntriesForTbeModulesExt();
@@ -92,11 +94,11 @@ class Typo3_Utility_BackendModuleUtility {
 	 * Creates a menu entry object from an array
 	 *
 	 * @param array $module
-	 * @return Typo3_Domain_Model_BackendModule
+	 * @return \TYPO3\CMS\Backend\Domain\Model\Module\BackendModule
 	 */
 	protected function createEntryFromRawData(array $module) {
-		/** @var $entry Typo3_Domain_Model_BackendModule */
-		$entry = t3lib_div::makeInstance('Typo3_Domain_Model_BackendModule');
+		/** @var $entry \TYPO3\CMS\Backend\Domain\Model\Module\BackendModule */
+		$entry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Domain\\Model\\Module\\BackendModule');
 		if (!empty($module['name']) && is_string($module['name'])) {
 			$entry->setName($module['name']);
 		}
@@ -152,5 +154,6 @@ class Typo3_Utility_BackendModuleUtility {
 	}
 
 }
+
 
 ?>

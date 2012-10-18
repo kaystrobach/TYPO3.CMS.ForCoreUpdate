@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,10 +33,10 @@
  * @package TYPO3
  * @subpackage tx_indexedsearch_mysql
  */
-class tx_indexedsearch_mysql {
+class MysqlFulltextIndexHook {
 
 	/**
-	 * @var tx_indexedsearch
+	 * @var \TYPO3\CMS\IndexedSearch\Controller\SearchFormController
 	 */
 	public $pObj;
 
@@ -101,9 +103,9 @@ class tx_indexedsearch_mysql {
 				$searchBoolean = TRUE;
 				break;
 			case self::SOUNDS_LIKE:
-				$indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+				$indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_indexedsearch_indexer');
 				// Initialize the indexer-class
-				/** @var tx_indexedsearch_indexer $indexerObj */
+				/** @var \TYPO3\CMS\IndexedSearch\Indexer $indexerObj */
 				$searchWord = $indexerObj->metaphone($searchWord, $indexerObj->storeMetaphoneInfoAsWords);
 				unset($indexerObj);
 				$fulltextIndex = 'index_fulltext.metaphonedata';
@@ -170,11 +172,11 @@ class tx_indexedsearch_mysql {
 			';
 		} elseif ($this->pObj->wholeSiteIdList >= 0) {
 			// Collecting all pages IDs in which to search; filtering out ALL pages that are not accessible due to enableFields. Does NOT look for "no_search" field!
-			$siteIdNumbers = t3lib_div::intExplode(',', $this->pObj->wholeSiteIdList);
+			$siteIdNumbers = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->pObj->wholeSiteIdList);
 			$idList = array();
 			foreach ($siteIdNumbers as $rootId) {
-				$cObj = t3lib_div::makeInstance('tslib_cObj');
-				/** @var tslib_cObj $cObj */
+				$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+				/** @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $cObj */
 				$idList[] = $cObj->getTreeList($rootId, 9999, 0, 0, '', '') . $rootId;
 			}
 			$pageWhere = (' ISEC.page_id IN (' . implode(',', $idList)) . ')';
@@ -194,5 +196,6 @@ class tx_indexedsearch_mysql {
 	}
 
 }
+
 
 ?>

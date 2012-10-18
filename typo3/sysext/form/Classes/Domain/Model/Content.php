@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @subpackage form
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
-class tx_form_Domain_Model_Content {
+class Content {
 
 	/**
 	 * The uid
@@ -110,5 +112,6 @@ class tx_form_Domain_Model_Content {
 	}
 
 }
+
 
 ?>

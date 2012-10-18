@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class Typo3_ModuleStorage implements t3lib_Singleton {
+class ModuleStorage implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var SplObjectStorage
@@ -42,7 +44,7 @@ class Typo3_ModuleStorage implements t3lib_Singleton {
 	 * construct
 	 */
 	public function __construct() {
-		$this->entries = new SplObjectStorage();
+		$this->entries = new \SplObjectStorage();
 	}
 
 	/**
@@ -67,13 +69,14 @@ class Typo3_ModuleStorage implements t3lib_Singleton {
 	/**
 	 * Attach Entry
 	 *
-	 * @param Typo3_Domain_Model_BackendModule $entry
+	 * @param \TYPO3\CMS\Backend\Domain\Model\Module\BackendModule $entry
 	 * @return void
 	 */
-	public function attachEntry(Typo3_Domain_Model_BackendModule $entry) {
+	public function attachEntry(\TYPO3\CMS\Backend\Domain\Model\Module\BackendModule $entry) {
 		$this->entries->attach($entry);
 	}
 
 }
+
 
 ?>

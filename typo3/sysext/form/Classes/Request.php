@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Request implements t3lib_Singleton {
+class Request implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Prefix for the name attributes
@@ -285,9 +287,9 @@ class tx_form_System_Request implements t3lib_Singleton {
 		if (isset($_FILES[$this->prefix]) && is_array($_FILES[$this->prefix])) {
 			foreach ($_FILES[$this->prefix]['tmp_name'] as $fieldName => $uploadedFile) {
 				if (is_uploaded_file($uploadedFile)) {
-					$tempFilename = t3lib_div::upload_to_tempfile($uploadedFile);
+					$tempFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::upload_to_tempfile($uploadedFile);
 					if (TYPO3_OS === 'WIN') {
-						$tempFilename = t3lib_div::fixWindowsFilePath($tempFilename);
+						$tempFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::fixWindowsFilePath($tempFilename);
 					}
 					if ($tempFilename !== '') {
 						// Use finfo to get the mime type
@@ -327,12 +329,13 @@ class tx_form_System_Request implements t3lib_Singleton {
 		if (is_array($values)) {
 			foreach ($values as $value) {
 				if (is_array($value) && isset($value['tempFilename'])) {
-					t3lib_div::unlink_tempfile($value['tempFilename']);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::unlink_tempfile($value['tempFilename']);
 				}
 			}
 		}
 	}
 
 }
+
 
 ?>

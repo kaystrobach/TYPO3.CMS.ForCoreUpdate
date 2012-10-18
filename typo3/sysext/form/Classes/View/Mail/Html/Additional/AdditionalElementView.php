@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html_Additional extends tx_form_View_Mail_Html_Element_Abstract {
+class AdditionalElementView extends \TYPO3\CMS\Form\View\Mail\Html\Element\AbstractElementView {
 
 	/**
 	 * The model for the current object
@@ -53,9 +55,10 @@ class tx_form_View_Mail_Html_Additional extends tx_form_View_Mail_Html_Element_A
 	 * @return string The value of the additional
 	 */
 	public function getAdditionalValue() {
-		return htmlspecialchars($this->model->getAdditionalValue(tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE)), ENT_QUOTES);
+		return htmlspecialchars($this->model->getAdditionalValue(\TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this, TRUE)), ENT_QUOTES);
 	}
 
 }
+
 
 ?>

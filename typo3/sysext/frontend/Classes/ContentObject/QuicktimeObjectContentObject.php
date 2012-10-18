@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_QuicktimeObject extends tslib_content_Abstract {
+class QuicktimeObjectContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, QTOBJECT
@@ -58,7 +60,7 @@ class tslib_content_QuicktimeObject extends tslib_content_Abstract {
 		// Merge with default parameters
 		$conf['params.'] = array_merge((array) $typeConf['default.']['params.'], (array) $conf['params.']);
 		if (is_array($conf['params.'])) {
-			t3lib_div::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::remapArrayKeys($conf['params.'], $typeConf['mapping.']['params.']);
 			foreach ($conf['params.'] as $key => $value) {
 				$params .= ((((($qtObject . '.addParam("') . $key) . '", "') . $value) . '");') . LF;
 			}
@@ -94,5 +96,6 @@ class tslib_content_QuicktimeObject extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

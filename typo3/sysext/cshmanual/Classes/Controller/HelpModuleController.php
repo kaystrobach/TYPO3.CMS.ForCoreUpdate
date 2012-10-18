@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Cshmanual\Controller;
+
 /**
  * Script Class for rendering the Context Sensitive Help documents, either the single display in the small pop-up window or the full-table view in the larger window.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_view_help {
+class HelpModuleController {
 
 	/**
 	 * @todo Define visibility
@@ -80,13 +82,13 @@ class SC_view_help {
 	 */
 	public function init() {
 		// Setting GPvars:
-		$this->tfID = t3lib_div::_GP('tfID');
+		$this->tfID = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('tfID');
 		// Sanitizes the tfID using whitelisting.
 		if (!preg_match('/^[a-zA-Z0-9_\\-\\.\\*]*$/', $this->tfID)) {
 			$this->tfID = '';
 		}
-		$this->back = t3lib_div::_GP('back');
-		$this->renderALL = t3lib_div::_GP('renderALL');
+		$this->back = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('back');
+		$this->renderALL = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('renderALL');
 		// Set internal table/field to the parts of "tfID" incoming var.
 		$identifierParts = explode('.', $this->tfID);
 		// The table is the first item
@@ -100,7 +102,7 @@ class SC_view_help {
 			$extraIdentifierInformation = array();
 			$extraIdentifierInformation[] = array_shift($identifierParts);
 			// Load the TCA details of the table
-			t3lib_div::loadTCA($this->table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($this->table);
 			// If the ds_pointerField contains a comma, it means the choice of FlexForm DS
 			// is determined by 2 parameters. In this case we have an extra identifier part
 			if (strpos($GLOBALS['TCA'][$this->table]['columns'][$this->field]['config']['ds_pointerField'], ',') !== FALSE) {
@@ -117,7 +119,7 @@ class SC_view_help {
 			$this->field = $flexFormField;
 		}
 		// limitAccess is checked if the $this->table really IS a table (and if the user is NOT a translator who should see all!)
-		$showAllToUser = t3lib_BEfunc::isModuleSetInTBE_MODULES('txllxmltranslateM1') && $GLOBALS['BE_USER']->check('modules', 'txllxmltranslateM1');
+		$showAllToUser = \TYPO3\CMS\Backend\Utility\BackendUtility::isModuleSetInTBE_MODULES('txllxmltranslateM1') && $GLOBALS['BE_USER']->check('modules', 'txllxmltranslateM1');
 		$this->limitAccess = isset($GLOBALS['TCA'][$this->table]) ? !$showAllToUser : FALSE;
 		$GLOBALS['LANG']->includeLLFile('EXT:lang/locallang_view_help.xlf', 1);
 	}
@@ -180,7 +182,7 @@ class SC_view_help {
 		$GLOBALS['LANG']->loadSingleTableDescription('xMOD_csh_corebe');
 		$this->render_TOC_el('xMOD_csh_corebe', 'core', $outputSections, $tocArray, $CSHkeys);
 		// Backend Modules:
-		$loadModules = t3lib_div::makeInstance('t3lib_loadModules');
+		$loadModules = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 		$loadModules->load($GLOBALS['TBE_MODULES']);
 		foreach ($loadModules->modules as $mainMod => $info) {
 			$cshKey = '_MOD_' . $mainMod;
@@ -208,21 +210,21 @@ class SC_view_help {
 		}
 		// Extensions
 		foreach ($CSHkeys as $cshKey => $value) {
-			if (t3lib_div::isFirstPartOfStr($cshKey, 'xEXT_') && !isset($GLOBALS['TCA'][$cshKey])) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($cshKey, 'xEXT_') && !isset($GLOBALS['TCA'][$cshKey])) {
 				$GLOBALS['LANG']->loadSingleTableDescription($cshKey);
 				$this->render_TOC_el($cshKey, 'extensions', $outputSections, $tocArray, $CSHkeys);
 			}
 		}
 		// Glossary
 		foreach ($CSHkeys as $cshKey => $value) {
-			if (t3lib_div::isFirstPartOfStr($cshKey, 'xGLOSSARY_') && !isset($GLOBALS['TCA'][$cshKey])) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($cshKey, 'xGLOSSARY_') && !isset($GLOBALS['TCA'][$cshKey])) {
 				$GLOBALS['LANG']->loadSingleTableDescription($cshKey);
 				$this->render_TOC_el($cshKey, 'glossary', $outputSections, $tocArray, $CSHkeys);
 			}
 		}
 		// Other:
 		foreach ($CSHkeys as $cshKey => $value) {
-			if (!t3lib_div::isFirstPartOfStr($cshKey, '_MOD_') && !isset($GLOBALS['TCA'][$cshKey])) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($cshKey, '_MOD_') && !isset($GLOBALS['TCA'][$cshKey])) {
 				$GLOBALS['LANG']->loadSingleTableDescription($cshKey);
 				$this->render_TOC_el($cshKey, 'other', $outputSections, $tocArray, $CSHkeys);
 			}
@@ -253,7 +255,7 @@ class SC_view_help {
 				<!-- NEW SECTION: -->
 				', $outputSections);
 		}
-		$output .= ('<hr /><p class="manual-title">' . t3lib_BEfunc::TYPO3_copyRightNotice()) . '</p>';
+		$output .= ('<hr /><p class="manual-title">' . \TYPO3\CMS\Backend\Utility\BackendUtility::TYPO3_copyRightNotice()) . '</p>';
 		return $output;
 	}
 
@@ -342,7 +344,7 @@ class SC_view_help {
 			$table = $key;
 		}
 		// Load table TCA
-		t3lib_div::loadTCA($key);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($key);
 		// Load descriptions for table $table
 		$GLOBALS['LANG']->loadSingleTableDescription($key);
 		if (is_array($GLOBALS['TCA_DESCR'][$key]['columns']) && (!$this->limitAccess || $GLOBALS['BE_USER']->check('tables_select', $table))) {
@@ -425,19 +427,19 @@ class SC_view_help {
 			$val = trim($val);
 			if ($val) {
 				$iP = explode(':', $val);
-				$iPUrl = t3lib_div::trimExplode('|', $val);
+				$iPUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $val);
 				// URL reference:
 				if (substr($iPUrl[1], 0, 4) == 'http') {
 					$lines[] = ((('<a href="' . htmlspecialchars($iPUrl[1])) . '" target="_blank"><em>') . htmlspecialchars($iPUrl[0])) . '</em></a>';
 				} elseif (substr($iPUrl[1], 0, 5) == 'FILE:') {
-					$fileName = t3lib_div::getFileAbsFileName(substr($iPUrl[1], 5), 1, 1);
+					$fileName = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(substr($iPUrl[1], 5), 1, 1);
 					if ($fileName && @is_file($fileName)) {
 						$fileName = '../' . substr($fileName, strlen(PATH_site));
 						$lines[] = ((('<a href="' . htmlspecialchars($fileName)) . '" target="_blank"><em>') . htmlspecialchars($iPUrl[0])) . '</em></a>';
 					}
 				} else {
 					// "table" reference
-					t3lib_div::loadTCA($iP[0]);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($iP[0]);
 					if (!isset($GLOBALS['TCA'][$iP[0]]) || (!$iP[1] || is_array($GLOBALS['TCA'][$iP[0]]['columns'][$iP[1]])) && (!$this->limitAccess || $GLOBALS['BE_USER']->check('tables_select', $iP[0]) && ((!$iP[1] || !$GLOBALS['TCA'][$iP[0]]['columns'][$iP[1]]['exclude']) || $GLOBALS['BE_USER']->check('non_exclude_fields', ($iP[0] . ':') . $iP[1])))) {
 						// Checking read access:
 						if (isset($GLOBALS['TCA_DESCR'][$iP[0]])) {
@@ -464,12 +466,12 @@ class SC_view_help {
 	public function printImage($images, $descr) {
 		$code = '';
 		// Splitting:
-		$imgArray = t3lib_div::trimExplode(',', $images, 1);
+		$imgArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $images, 1);
 		if (count($imgArray)) {
 			$descrArray = explode(LF, $descr, count($imgArray));
 			foreach ($imgArray as $k => $image) {
 				$descr = $descrArray[$k];
-				$absImagePath = t3lib_div::getFileAbsFileName($image, 1, 1);
+				$absImagePath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($image, 1, 1);
 				if ($absImagePath && @is_file($absImagePath)) {
 					$imgFile = substr($absImagePath, strlen(PATH_site));
 					$imgInfo = @getimagesize($absImagePath);
@@ -537,7 +539,7 @@ class SC_view_help {
 	public function printItem($key, $field, $anchors = FALSE) {
 		$out = '';
 		// Load full table definition in $GLOBALS['TCA']
-		t3lib_div::loadTCA($key);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($key);
 		if ($key && (!$field || is_array($GLOBALS['TCA_DESCR'][$key]['columns'][$field]))) {
 			// Make seeAlso references.
 			$seeAlsoRes = $this->make_seeAlso($GLOBALS['TCA_DESCR'][$key]['columns'][$field]['seeAlso'], $anchors ? $key : '');
@@ -616,7 +618,7 @@ class SC_view_help {
 	public function createGlossaryIndex() {
 		// Create hash string and try to retrieve glossary array:
 		$hash = md5('typo3/mod.php?M=help_cshmanual:glossary');
-		list($this->glossaryWords, $this->substWords) = unserialize(t3lib_BEfunc::getHash($hash));
+		list($this->glossaryWords, $this->substWords) = unserialize(\TYPO3\CMS\Backend\Utility\BackendUtility::getHash($hash));
 		// Generate glossary words if not found:
 		if (!is_array($this->glossaryWords)) {
 			// Initialize:
@@ -625,7 +627,7 @@ class SC_view_help {
 			$CSHkeys = array_flip(array_keys($GLOBALS['TCA_DESCR']));
 			// Glossary
 			foreach ($CSHkeys as $cshKey => $value) {
-				if (t3lib_div::isFirstPartOfStr($cshKey, 'xGLOSSARY_') && !isset($GLOBALS['TCA'][$cshKey])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($cshKey, 'xGLOSSARY_') && !isset($GLOBALS['TCA'][$cshKey])) {
 					$GLOBALS['LANG']->loadSingleTableDescription($cshKey);
 					if (is_array($GLOBALS['TCA_DESCR'][$cshKey]['columns'])) {
 						// Traverse table columns as listed in TCA_DESCR
@@ -650,7 +652,7 @@ class SC_view_help {
 				}
 			}
 			krsort($this->substWords);
-			t3lib_BEfunc::storeHash($hash, serialize(array($this->glossaryWords, $this->substWords)), 'Glossary');
+			\TYPO3\CMS\Backend\Utility\BackendUtility::storeHash($hash, serialize(array($this->glossaryWords, $this->substWords)), 'Glossary');
 		}
 	}
 
@@ -663,7 +665,7 @@ class SC_view_help {
 	 * @todo Define visibility
 	 */
 	public function substituteGlossaryWords($code) {
-		$htmlParser = t3lib_div::makeInstance('local_t3lib_parsehtml');
+		$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('local_TYPO3\\CMS\\Core\\Html\\HtmlParser');
 		$htmlParser->pObj = $this;
 		$code = $htmlParser->HTMLcleaner($code, array(), 1);
 		return $code;
@@ -685,7 +687,7 @@ class SC_view_help {
 				// quoteMeta used so special chars (which should not occur though) in words will not break the regex. Seemed to work (- kasper)
 				$parts = preg_split(('/( |[\\(])(' . quoteMeta($wordSet['title'])) . ')([\\.\\!\\)\\?\\:\\,]+| )/i', (' ' . $code) . ' ', 2, PREG_SPLIT_DELIM_CAPTURE);
 				if (count($parts) == 5) {
-					$parts[2] = ((((('<a class="glossary-term" href="' . htmlspecialchars(((('mod.php?M=help_cshmanual&tfID=' . rawurlencode($wordSet['key'])) . '&back=') . $this->tfID))) . '" title="') . rawurlencode(htmlspecialchars(t3lib_div::fixed_lgd_cs(rawurldecode($wordSet['description']), 80)))) . '">') . htmlspecialchars($parts[2])) . '</a>';
+					$parts[2] = ((((('<a class="glossary-term" href="' . htmlspecialchars(((('mod.php?M=help_cshmanual&tfID=' . rawurlencode($wordSet['key'])) . '&back=') . $this->tfID))) . '" title="') . rawurlencode(htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(rawurldecode($wordSet['description']), 80)))) . '">') . htmlspecialchars($parts[2])) . '</a>';
 					$code = substr(implode('', $parts), 1, -1);
 					// Disable entry so it doesn't get used next time:
 					unset($this->substWords[$wordKey]);
@@ -697,5 +699,6 @@ class SC_view_help {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_ViewHelpers_FormatDetailsViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class FormatDetailsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Create formatted detail string from log row.
@@ -41,10 +43,10 @@ class Tx_Belog_ViewHelpers_FormatDetailsViewHelper extends Tx_Fluid_Core_ViewHel
 	 * Furthermore, possible files in logData are stripped to their basename if
 	 * the action logged was a file action
 	 *
-	 * @param Tx_Belog_Domain_Model_LogEntry $logEntry
+	 * @param \TYPO3\CMS\Belog\Domain\Model\LogEntry $logEntry
 	 * @return string Formatted details
 	 */
-	public function render(Tx_Belog_Domain_Model_LogEntry $logEntry) {
+	public function render(\TYPO3\CMS\Belog\Domain\Model\LogEntry $logEntry) {
 		$detailString = $logEntry->getDetails();
 		$substitutes = $logEntry->getLogData();
 		// Strip pathes from file names if the log was a file action
@@ -72,5 +74,6 @@ class Tx_Belog_ViewHelpers_FormatDetailsViewHelper extends Tx_Fluid_Core_ViewHel
 	}
 
 }
+
 
 ?>

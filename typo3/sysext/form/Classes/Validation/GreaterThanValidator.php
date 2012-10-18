@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Greaterthan extends tx_form_System_Validate_Abstract {
+class GreaterThanValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Minimum value
@@ -88,5 +90,6 @@ class tx_form_System_Validate_Greaterthan extends tx_form_System_Validate_Abstra
 	}
 
 }
+
 
 ?>

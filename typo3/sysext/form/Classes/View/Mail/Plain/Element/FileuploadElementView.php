@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Plain\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,20 +30,20 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Plain_Element_Fileupload extends tx_form_View_Mail_Plain_Element_Container {
+class FileuploadElementView extends \TYPO3\CMS\Form\View\Mail\Plain\Element\ContainerElementView {
 
 	/**
-	 * @var tx_form_Domain_Model_Element_Fileupload
+	 * @var \TYPO3\CMS\Form\Domain\Model\Element\FileuploadElement
 	 */
 	protected $model;
 
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Fileupload $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\FileuploadElement $model Model for this element
 	 * @param integer $spaces
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Fileupload $model, $spaces) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\FileuploadElement $model, $spaces) {
 		parent::__construct($model, $spaces);
 	}
 
@@ -66,5 +68,6 @@ class tx_form_View_Mail_Plain_Element_Fileupload extends tx_form_View_Mail_Plain
 	}
 
 }
+
 
 ?>

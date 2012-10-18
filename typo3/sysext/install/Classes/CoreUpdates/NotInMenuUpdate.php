@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @author Sebastian Kurfürst <sebastian@garbage-group.de>
  * @author Steffen Kamper <info@sk-typo3.de>
  */
-class tx_coreupdates_notinmenu extends Tx_Install_Updates_Base {
+class NotInMenuUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Update Pages with Doktype "Not in menu"';
 
@@ -79,5 +81,6 @@ class tx_coreupdates_notinmenu extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

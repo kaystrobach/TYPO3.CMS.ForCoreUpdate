@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\View;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @subpackage t3lib
  * @see class t3lib_treeView
  */
-class t3lib_folderTree extends t3lib_treeView {
+class FolderTreeView extends \TYPO3\CMS\Backend\Tree\View\AbstractTreeView {
 
 	/**
 	 * The users' file Storages
@@ -78,7 +80,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Generate the plus/minus icon for the browsable tree.
 	 *
-	 * @param t3lib_file_Folder $folderObject Entry folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject Entry folder object
 	 * @param integer $subFolderCounter The current entry number
 	 * @param integer $totalSubFolders The total number of entries. If equal to $a, a "bottom" element is returned.
 	 * @param integer $nextCount The number of sub-elements to the current element.
@@ -87,10 +89,10 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @internal
 	 * @see t3lib_pageTree::PMicon()
 	 */
-	public function PMicon(t3lib_file_Folder $folderObject, $subFolderCounter, $totalSubFolders, $nextCount, $isExpanded) {
+	public function PMicon(\TYPO3\CMS\Core\Resource\Folder $folderObject, $subFolderCounter, $totalSubFolders, $nextCount, $isExpanded) {
 		$PM = $nextCount ? ($isExpanded ? 'minus' : 'plus') : 'join';
 		$BTM = $subFolderCounter == $totalSubFolders ? 'bottom' : '';
-		$icon = ('<img' . t3lib_iconWorks::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' alt="" />';
+		$icon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' alt="" />';
 		if ($nextCount) {
 			$cmd = $this->generateExpandCollapseParameter($this->bank, !$isExpanded, $folderObject);
 			$icon = $this->PMiconATagWrap($icon, $cmd, !$isExpanded);
@@ -121,11 +123,11 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * Wrapping the folder icon
 	 *
 	 * @param string $icon The image tag for the icon
-	 * @param t3lib_file_Folder $folderObject The row for the current element
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The row for the current element
 	 * @return string The processed icon input value.
 	 * @internal
 	 */
-	public function wrapIcon($icon, t3lib_file_Folder $folderObject) {
+	public function wrapIcon($icon, \TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		// Add title attribute to input icon tag
 		$theFolderIcon = $this->addTagAttributes($icon, $this->titleAttrib ? (($this->titleAttrib . '="') . $this->getTitleAttrib($folderObject)) . '"' : '');
 		// Wrap icon in click-menu link.
@@ -147,7 +149,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @return string
 	 * @internal
 	 */
-	public function wrapTitle($title, t3lib_file_Folder $folderObject, $bank = 0) {
+	public function wrapTitle($title, \TYPO3\CMS\Core\Resource\Folder $folderObject, $bank = 0) {
 		$aOnClick = (((((('return jumpTo(\'' . $this->getJumpToParam($folderObject)) . '\', this, \'') . $this->domIdPrefix) . $this->getId($folderObject)) . '\', ') . $bank) . ');';
 		$CSM = (' oncontextmenu="' . htmlspecialchars($GLOBALS['TBE_TEMPLATE']->wrapClickMenuOnIcon('', $folderObject->getCombinedIdentifier(), '', 0, ('&bank=' . $this->bank), '', TRUE))) . '"';
 		return ((((((('<a href="#" title="' . htmlspecialchars($title)) . '" onclick="') . htmlspecialchars($aOnClick)) . '"') . $CSM) . '>') . $title) . '</a>';
@@ -156,20 +158,20 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Returns the id from the record - for folders, this is an md5 hash.
 	 *
-	 * @param t3lib_file_Folder $folderObject The folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The folder object
 	 * @return integer The "uid" field value.
 	 */
-	public function getId(t3lib_file_Folder $folderObject) {
-		return t3lib_div::md5Int($folderObject->getCombinedIdentifier());
+	public function getId(\TYPO3\CMS\Core\Resource\Folder $folderObject) {
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::md5Int($folderObject->getCombinedIdentifier());
 	}
 
 	/**
 	 * Returns jump-url parameter value.
 	 *
-	 * @param t3lib_file_Folder $folderObject The folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The folder object
 	 * @return string The jump-url parameter.
 	 */
-	public function getJumpToParam(t3lib_file_Folder $folderObject) {
+	public function getJumpToParam(\TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		return rawurlencode($folderObject->getCombinedIdentifier());
 	}
 
@@ -188,11 +190,11 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Returns the value for the image "title" attribute
 	 *
-	 * @param t3lib_file_Folder $folderObject The folder to be used
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The folder to be used
 	 * @return 	string The attribute value (is htmlspecialchared() already)
 	 * @todo Define visibility
 	 */
-	public function getTitleAttrib(t3lib_file_Folder $folderObject) {
+	public function getTitleAttrib(\TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		return htmlspecialchars($folderObject->getName());
 	}
 
@@ -224,10 +226,10 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Get a tree for one storage
 	 *
-	 * @param t3lib_file_Storage $storageObject
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storageObject
 	 * @return void
 	 */
-	public function getBrowseableTreeForStorage(t3lib_file_Storage $storageObject) {
+	public function getBrowseableTreeForStorage(\TYPO3\CMS\Core\Resource\ResourceStorage $storageObject) {
 		// If there are filemounts, show each, otherwise just the rootlevel folder
 		$fileMounts = $storageObject->getFileMounts();
 		$rootLevelFolders = array();
@@ -248,10 +250,10 @@ class t3lib_folderTree extends t3lib_treeView {
 		$this->reset();
 		// Go through all "root level folders" of this tree (can be the rootlevel folder or any file mount points)
 		foreach ($rootLevelFolders as $rootLevelFolderInfo) {
-			/** @var $rootLevelFolder t3lib_file_Folder */
+			/** @var $rootLevelFolder \TYPO3\CMS\Core\Resource\Folder */
 			$rootLevelFolder = $rootLevelFolderInfo['folder'];
 			$rootLevelFolderName = $rootLevelFolderInfo['name'];
-			$folderHashSpecUID = t3lib_div::md5int($rootLevelFolder->getCombinedIdentifier());
+			$folderHashSpecUID = \TYPO3\CMS\Core\Utility\GeneralUtility::md5int($rootLevelFolder->getCombinedIdentifier());
 			$this->specUIDmap[$folderHashSpecUID] = $rootLevelFolder->getCombinedIdentifier();
 			// Hash key
 			$storageHashNumber = $this->getShortHashNumberForStorage($storageObject, $rootLevelFolder);
@@ -267,7 +269,7 @@ class t3lib_folderTree extends t3lib_treeView {
 			} else {
 				$rootIcon = 'minusonly';
 			}
-			$icon = ('<img' . t3lib_iconWorks::skinImg($this->backPath, (('gfx/ol/' . $rootIcon) . '.gif'))) . ' alt="" />';
+			$icon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, (('gfx/ol/' . $rootIcon) . '.gif'))) . ' alt="" />';
 			$firstHtml = $this->PM_ATagWrap($icon, $cmd);
 			// @todo: create sprite icons for user/group mounts etc
 			if ($storageObject->isBrowsable() === FALSE) {
@@ -281,7 +283,7 @@ class t3lib_folderTree extends t3lib_treeView {
 				$rootLevelFolderName .= (' (' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file.xlf:sys_file_storage.isOffline')) . ')';
 			}
 			// Preparing rootRec for the mount
-			$firstHtml .= $this->wrapIcon(t3lib_iconWorks::getSpriteIcon($icon), $rootLevelFolder);
+			$firstHtml .= $this->wrapIcon(\TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon($icon), $rootLevelFolder);
 			$row = array(
 				'uid' => $folderHashSpecUID,
 				'title' => $rootLevelFolderName,
@@ -307,13 +309,13 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Fetches the data for the tree
 	 *
-	 * @param t3lib_file_Folder $folderObject the folderobject
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject the folderobject
 	 * @param integer $depth Max depth (recursivity limit)
 	 * @param string $type HTML-code prefix for recursive calls.
 	 * @return integer The count of items on the level
 	 * @see getBrowsableTree()
 	 */
-	public function getFolderTree(t3lib_file_Folder $folderObject, $depth = 999, $type = '') {
+	public function getFolderTree(\TYPO3\CMS\Core\Resource\Folder $folderObject, $depth = 999, $type = '') {
 		$depth = intval($depth);
 		// This generates the directory tree
 		$subFolders = $folderObject->getSubfolders();
@@ -328,7 +330,7 @@ class t3lib_folderTree extends t3lib_treeView {
 			// Get the key for this space
 			end($this->tree);
 			$treeKey = key($this->tree);
-			$specUID = t3lib_div::md5int($subFolder->getCombinedIdentifier());
+			$specUID = \TYPO3\CMS\Core\Utility\GeneralUtility::md5int($subFolder->getCombinedIdentifier());
 			$this->specUIDmap[$specUID] = $subFolder->getCombinedIdentifier();
 			$row = array(
 				'uid' => $specUID,
@@ -371,7 +373,7 @@ class t3lib_folderTree extends t3lib_treeView {
 					$row['title'] = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:recycler', TRUE);
 					$row['_title'] = ('<strong>' . $row['title']) . '</strong>';
 				}
-				$icon = t3lib_iconWorks::getSpriteIcon($icon, array('title' => $subFolder->getIdentifier()), $overlays);
+				$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon($icon, array('title' => $subFolder->getIdentifier()), $overlays);
 				$HTML .= $this->wrapIcon($icon, $subFolder);
 			}
 			// Finally, add the row/HTML content to the ->tree array in the reserved key.
@@ -424,12 +426,12 @@ class t3lib_folderTree extends t3lib_treeView {
 		// so we know how many we have to close when all children are done rendering
 		$closeDepth = array();
 		foreach ($treeItems as $treeItem) {
-			/** @var $folderObject t3lib_file_Folder */
+			/** @var $folderObject \TYPO3\CMS\Core\Resource\Folder */
 			$folderObject = $treeItem['row']['folder'];
 			$classAttr = $treeItem['row']['_CSSCLASS'];
 			$folderIdentifier = $folderObject->getCombinedIdentifier();
 			// this is set if the AJAX request has just opened this folder (via the PM command)
-			$isExpandedFolderIdentifier = $expandedFolderHash == t3lib_div::md5int($folderIdentifier);
+			$isExpandedFolderIdentifier = $expandedFolderHash == \TYPO3\CMS\Core\Utility\GeneralUtility::md5int($folderIdentifier);
 			$idAttr = htmlspecialchars((($this->domIdPrefix . $this->getId($folderObject)) . '_') . $treeItem['bank']);
 			$itemHTML = '';
 			// If this item is the start of a new level,
@@ -503,9 +505,9 @@ class t3lib_folderTree extends t3lib_treeView {
 	 * @deprecated since TYPO3 6.0, as the folder objects do the counting automatically
 	 */
 	public function getCount($file) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		// This generates the directory tree
-		$dirs = t3lib_div::get_dirs($file);
+		$dirs = \TYPO3\CMS\Core\Utility\GeneralUtility::get_dirs($file);
 		$c = 0;
 		if (is_array($dirs)) {
 			$c = count($dirs);
@@ -516,10 +518,10 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Counts the number of directories in a file path.
 	 *
-	 * @param t3lib_file_Folder $folderObject File path.
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject File path.
 	 * @return integer
 	 */
-	public function getNumberOfSubfolders(t3lib_file_Folder $folderObject) {
+	public function getNumberOfSubfolders(\TYPO3\CMS\Core\Resource\Folder $folderObject) {
 		$subFolders = $folderObject->getSubfolders();
 		return count($subFolders);
 	}
@@ -557,11 +559,11 @@ class t3lib_folderTree extends t3lib_treeView {
 	/**
 	 * Helper method to map md5-hash to shorter number
 	 *
-	 * @param t3lib_file_Storage $storageObject
-	 * @param t3lib_file_Folder $startingPointFolder
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storageObject
+	 * @param \TYPO3\CMS\Core\Resource\Folder $startingPointFolder
 	 * @return integer
 	 */
-	protected function getShortHashNumberForStorage(t3lib_file_Storage $storageObject = NULL, t3lib_file_Folder $startingPointFolder = NULL) {
+	protected function getShortHashNumberForStorage(\TYPO3\CMS\Core\Resource\ResourceStorage $storageObject = NULL, \TYPO3\CMS\Core\Resource\Folder $startingPointFolder = NULL) {
 		if (!$this->storageHashNumbers) {
 			$this->storageHashNumbers = array();
 			// Mapping md5-hash to shorter number:
@@ -570,12 +572,12 @@ class t3lib_folderTree extends t3lib_treeView {
 				$fileMounts = $storage->getFileMounts();
 				if (count($fileMounts)) {
 					foreach ($fileMounts as $fileMount) {
-						$nkey = hexdec(substr(t3lib_div::md5int($fileMount['folder']->getCombinedIdentifier()), 0, 4));
+						$nkey = hexdec(substr(\TYPO3\CMS\Core\Utility\GeneralUtility::md5int($fileMount['folder']->getCombinedIdentifier()), 0, 4));
 						$this->storageHashNumbers[$storageUid . $fileMount['folder']->getCombinedIdentifier()] = $nkey;
 					}
 				} else {
 					$folder = $storage->getRootLevelFolder();
-					$nkey = hexdec(substr(t3lib_div::md5int($folder->getCombinedIdentifier()), 0, 4));
+					$nkey = hexdec(substr(\TYPO3\CMS\Core\Utility\GeneralUtility::md5int($folder->getCombinedIdentifier()), 0, 4));
 					$this->storageHashNumbers[$storageUid . $folder->getCombinedIdentifier()] = $nkey;
 				}
 			}
@@ -604,7 +606,7 @@ class t3lib_folderTree extends t3lib_treeView {
 	 */
 	protected function evaluateExpandCollapseParameter($PM = NULL) {
 		if ($PM === NULL) {
-			$PM = t3lib_div::_GP('PM');
+			$PM = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('PM');
 			// IE takes anchor as parameter
 			if (($PMpos = strpos($PM, '#')) !== FALSE) {
 				$PM = substr($PM, 0, $PMpos);
@@ -613,7 +615,7 @@ class t3lib_folderTree extends t3lib_treeView {
 		// Take the first three parameters
 		list($mountKey, $doExpand, $folderIdentifier) = explode('_', $PM, 3);
 		// In case the folder identifier contains "_", we just need to get the fourth/last parameter
-		list($folderIdentifier, $treeName) = t3lib_div::revExplode('_', $folderIdentifier, 2);
+		list($folderIdentifier, $treeName) = \TYPO3\CMS\Core\Utility\GeneralUtility::revExplode('_', $folderIdentifier, 2);
 		return array(
 			$mountKey,
 			$doExpand,
@@ -627,15 +629,15 @@ class t3lib_folderTree extends t3lib_treeView {
 	 *
 	 * @param string $mountKey The mount key / storage UID
 	 * @param boolean $doExpand Whether to expand/collapse
-	 * @param t3lib_file_Folder $folderObject The folder object
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folderObject The folder object
 	 * @param string $treeName The name of the tree
 	 * @return string
 	 */
-	protected function generateExpandCollapseParameter($mountKey = NULL, $doExpand = FALSE, t3lib_file_Folder $folderObject = NULL, $treeName = NULL) {
+	protected function generateExpandCollapseParameter($mountKey = NULL, $doExpand = FALSE, \TYPO3\CMS\Core\Resource\Folder $folderObject = NULL, $treeName = NULL) {
 		$parts = array(
 			$mountKey !== NULL ? $mountKey : $this->bank,
 			$doExpand == 1 ? 1 : 0,
-			$folderObject !== NULL ? t3lib_div::md5int($folderObject->getCombinedIdentifier()) : '',
+			$folderObject !== NULL ? \TYPO3\CMS\Core\Utility\GeneralUtility::md5int($folderObject->getCombinedIdentifier()) : '',
 			$treeName !== NULL ? $treeName : $this->treeName
 		);
 		return implode('_', $parts);
@@ -651,5 +653,6 @@ class t3lib_folderTree extends t3lib_treeView {
 	}
 
 }
+
 
 ?>

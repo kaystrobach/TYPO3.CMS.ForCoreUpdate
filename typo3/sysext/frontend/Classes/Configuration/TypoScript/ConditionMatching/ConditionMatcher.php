@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Configuration\TypoScript\ConditionMatching;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
+class ConditionMatcher extends \TYPO3\CMS\Core\Configuration\TypoScript\ConditionMatching\AbstractConditionMatcher {
 
 	/**
 	 * Evaluates a TypoScript condition given as input, eg. "[browser=net][...(other conditions)...]"
@@ -44,7 +46,7 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 	 * @see t3lib_tsparser::parse()
 	 */
 	protected function evaluateCondition($string) {
-		list($key, $value) = t3lib_div::trimExplode('=', $string, FALSE, 2);
+		list($key, $value) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('=', $string, FALSE, 2);
 		$result = parent::evaluateConditionCommon($key, $value);
 		if (is_bool($result)) {
 			return $result;
@@ -54,16 +56,16 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 				$groupList = $this->getGroupList();
 				// '0,-1' is the default usergroups when not logged in!
 				if ($groupList != '0,-1') {
-					$values = t3lib_div::trimExplode(',', $value, TRUE);
+					$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 					foreach ($values as $test) {
-						if ($test == '*' || t3lib_div::inList($groupList, $test)) {
+						if ($test == '*' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($groupList, $test)) {
 							return TRUE;
 						}
 					}
 				}
 				break;
 			case 'treeLevel':
-				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 				$treeLevel = count($this->rootline) - 1;
 				foreach ($values as $test) {
 					if ($test == $treeLevel) {
@@ -74,7 +76,7 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 			case 'PIDupinRootline':
 
 			case 'PIDinRootline':
-				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 				if ($key == 'PIDinRootline' || !in_array($this->pageId, $values)) {
 					foreach ($values as $test) {
 						foreach ($this->rootline as $rl_dat) {
@@ -187,5 +189,6 @@ class t3lib_matchCondition_frontend extends t3lib_matchCondition_abstract {
 	}
 
 }
+
 
 ?>

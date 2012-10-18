@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject\Menu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_gmenu_foldout extends tslib_gmenu {
+class GraphicalMenuFoldout extends \TYPO3\CMS\Frontend\ContentObject\Menu\GraphicalMenuContentObject {
 
 	/**
 	 * @todo Define visibility
@@ -155,18 +157,18 @@ class tslib_gmenu_foldout extends tslib_gmenu {
 	 * @todo Define visibility
 	 */
 	public function extProc_finish() {
-		$bHeight = t3lib_utility_Math::forceIntegerInRange($this->mconf['bottomHeight'] ? $this->mconf['bottomHeight'] : 100, 0, 3000);
+		$bHeight = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['bottomHeight'] ? $this->mconf['bottomHeight'] : 100, 0, 3000);
 		$bottomContent = $this->mconf['bottomContent'] ? $GLOBALS['TSFE']->cObj->cObjGetSingle($this->mconf['bottomContent'], $this->mconf['bottomContent.'], '/GMENU_FOLDOUT/.bottomContent') : '';
 		$adjustTopHeights = intval($this->mconf['adjustItemsH']);
 		$adjustSubHeights = intval($this->mconf['adjustSubItemsH']);
-		$mWidth = t3lib_utility_Math::forceIntegerInRange($this->mconf['menuWidth'] ? $this->mconf['menuWidth'] : 170, 0, 3000);
-		$mHeight = t3lib_utility_Math::forceIntegerInRange($this->mconf['menuHeight'] ? $this->mconf['menuHeight'] : 400, 0, 3000);
+		$mWidth = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['menuWidth'] ? $this->mconf['menuWidth'] : 170, 0, 3000);
+		$mHeight = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['menuHeight'] ? $this->mconf['menuHeight'] : 400, 0, 3000);
 		$insertmColor = $this->mconf['menuBackColor'] ? (('BACKGROUND-COLOR: ' . $this->mconf['menuBackColor']) . '; layer-background-color: ') . $this->mconf['menuBackColor'] : '';
 		$insertBottomColor = $this->mconf['bottomBackColor'] ? (('BACKGROUND-COLOR: ' . $this->mconf['bottomBackColor']) . '; layer-background-color: ') . $this->mconf['bottomBackColor'] : '';
-		$menuOffset = t3lib_div::intExplode(',', $this->mconf['menuOffset'] . ',');
-		$subOffset = t3lib_div::intExplode(',', $this->mconf['subMenuOffset'] . ',');
-		$GLOBALS['TSFE']->additionalHeaderData['gmenu_layer_shared'] = ('<script type="text/javascript" src="' . t3lib_extMgm::siteRelPath('statictemplates')) . 'media/scripts/jsfunc.layermenu.js"></script>';
-		$GLOBALS['TSFE']->additionalHeaderData['gmenu_foldout'] = ('<script type="text/javascript" src="' . t3lib_extMgm::siteRelPath('statictemplates')) . 'media/scripts/jsfunc.foldout.js"></script>';
+		$menuOffset = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->mconf['menuOffset'] . ',');
+		$subOffset = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->mconf['subMenuOffset'] . ',');
+		$GLOBALS['TSFE']->additionalHeaderData['gmenu_layer_shared'] = ('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('statictemplates')) . 'media/scripts/jsfunc.layermenu.js"></script>';
+		$GLOBALS['TSFE']->additionalHeaderData['gmenu_foldout'] = ('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('statictemplates')) . 'media/scripts/jsfunc.foldout.js"></script>';
 		$GLOBALS['TSFE']->additionalHeaderData[] .= ((((((((((((((((((((((((((((((((((((((((((((((('
 <style type="text/css">
 	/*<![CDATA[*/
@@ -188,8 +190,8 @@ class tslib_gmenu_foldout extends tslib_gmenu {
 /*<![CDATA[*/
 <!--
 GFV_foldNumber=') . $this->WMmenuItems) . ';          //How many toplinks do you have?
-GFV_foldTimer=') . t3lib_utility_Math::forceIntegerInRange(($this->mconf['foldTimer'] ? $this->mconf['foldTimer'] : 40), 1, 3000)) . ';          //The timeout in the animation, these are milliseconds.
-GFV_foldSpeed=') . t3lib_utility_Math::forceIntegerInRange($this->mconf['foldSpeed'], 1, 100)) . ';           //How many steps in an animation?
+GFV_foldTimer=') . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(($this->mconf['foldTimer'] ? $this->mconf['foldTimer'] : 40), 1, 3000)) . ';          //The timeout in the animation, these are milliseconds.
+GFV_foldSpeed=') . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->mconf['foldSpeed'], 1, 100)) . ';           //How many steps in an animation?
 GFV_stayFolded=') . ($this->mconf['stayFolded'] ? 'true' : 'false')) . ';      //Stay open when you click a new toplink?
 GFV_foldImg=') . $this->WMimagesFlag) . ';             //Do you want images (if not set to 0 and remove the images from the body)?
 GFV_currentFold=null;
@@ -231,5 +233,6 @@ GFV_exImg.src="') . $GLOBALS['TSFE']->absRefPrefix) . $this->WMarrowACT[3]) . '"
 	}
 
 }
+
 
 ?>

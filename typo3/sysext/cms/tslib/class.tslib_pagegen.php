@@ -4,7 +4,7 @@
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/frontend/Classes/Page/PageGenerator.php
  */
-require_once t3lib_extMgm::extPath('frontend') . 'Classes/Page/PageGenerator.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('frontend') . 'Classes/Page/PageGenerator.php';
 /**
  * Class for fetching record relations for the frontend.
  *
@@ -13,7 +13,7 @@ require_once t3lib_extMgm::extPath('frontend') . 'Classes/Page/PageGenerator.php
  * @subpackage tslib
  * @see tslib_cObj::RECORDS()
  */
-class FE_loadDBGroup extends t3lib_loadDBGroup {
+class FE_loadDBGroup extends \TYPO3\CMS\Core\Database\RelationHandler {
 
 	// Means that everything is returned instead of only uid and label-field
 	/**

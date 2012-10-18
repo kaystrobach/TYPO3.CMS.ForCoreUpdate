@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Attributes_Id extends tx_form_Domain_Model_Attributes_Abstract {
+class IdAttribute extends \TYPO3\CMS\Form\Domain\Model\Attribute\AbstractAttribute {
 
 	/**
 	 * Gets the attribute 'id'.
@@ -42,7 +44,7 @@ class tx_form_Domain_Model_Attributes_Id extends tx_form_Domain_Model_Attributes
 	 */
 	public function getValue() {
 		$value = (string) $this->value;
-		if ($this->elementClassName === 'tx_form_Domain_Model_Form') {
+		if ($this->elementClassName === 'TYPO3\\CMS\\Form\\Domain\\Model\\Form') {
 			if (empty($value)) {
 				$value = 'form-' . $GLOBALS['TSFE']->id;
 			}
@@ -64,5 +66,6 @@ class tx_form_Domain_Model_Attributes_Id extends tx_form_Domain_Model_Attributes
 	}
 
 }
+
 
 ?>

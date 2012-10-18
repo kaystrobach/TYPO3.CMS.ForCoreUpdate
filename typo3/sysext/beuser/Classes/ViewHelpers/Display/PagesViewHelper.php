@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\ViewHelpers\Display;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_ViewHelpers_Display_PagesViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class PagesViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @param string $uids
@@ -49,5 +51,6 @@ class Tx_Beuser_ViewHelpers_Display_PagesViewHelper extends Tx_Fluid_Core_ViewHe
 	}
 
 }
+
 
 ?>

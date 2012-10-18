@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Model_HistoryEntry extends Tx_Extbase_DomainObject_AbstractEntity {
+class HistoryEntry extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * list of changed fields
@@ -60,5 +62,6 @@ class Tx_Belog_Domain_Model_HistoryEntry extends Tx_Extbase_DomainObject_Abstrac
 	}
 
 }
+
 
 ?>

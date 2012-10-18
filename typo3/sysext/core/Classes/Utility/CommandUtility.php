@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Steffen Kamper <steffen@typo3.org>
  */
-final class t3lib_utility_Command {
+final class CommandUtility {
 
 	/**
 	 * Wrapper function for php exec function
@@ -61,7 +63,7 @@ final class t3lib_utility_Command {
 		if (!$path) {
 			$path = $gfxConf['im_path'];
 		}
-		$path = t3lib_div::fixWindowsFilePath($path);
+		$path = \TYPO3\CMS\Core\Utility\GeneralUtility::fixWindowsFilePath($path);
 		$im_version = strtolower($gfxConf['im_version_5']);
 		$combineScript = $gfxConf['im_combine_filename'] ? trim($gfxConf['im_combine_filename']) : 'combine';
 		// This is only used internally, has no effect outside
@@ -93,7 +95,7 @@ final class t3lib_utility_Command {
 		// Because of some weird incompatibilities between ImageMagick 4 and 6 (plus GraphicsMagick),
 		// it is needed to change the parameters order under some preconditions
 		if ($command == 'composite' && $switchCompositeParameters) {
-			$paramsArr = t3lib_div::unQuoteFilenames($parameters);
+			$paramsArr = \TYPO3\CMS\Core\Utility\GeneralUtility::unQuoteFilenames($parameters);
 			// The mask image has been specified => swap the parameters
 			if (count($paramsArr) > 5) {
 				$tmp = $paramsArr[count($paramsArr) - 3];
@@ -106,5 +108,6 @@ final class t3lib_utility_Command {
 	}
 
 }
+
 
 ?>

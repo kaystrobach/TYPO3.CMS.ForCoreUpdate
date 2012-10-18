@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Tests\Unit\Controller;
+
 /***************************************************************
  * Copyright notice
  *
@@ -27,7 +29,7 @@
  * @package Extension Manager
  * @subpackage Tests
  */
-class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class UpdateFromTerControllerTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
 	 * Enable backup of global and system variables
@@ -49,14 +51,14 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 	 * @return void
 	 */
 	public function updateExtensionListFromTerCallsUpdateExtListIfLastUpdateIsMoreThan24HoursAgo() {
-		$controllerMock = $this->getAccessibleMock('Tx_Extensionmanager_Controller_UpdateFromTerController', array('dummy'));
-		$repositoryRepositoryMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Repository_RepositoryRepository', array('findOneByUid'));
-		$repositoryModelMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_Repository', array('getLastUpdate'));
-		$repositoryHelperMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_Repository_Helper', array('updateExtList'));
-		$viewMock = $this->getAccessibleMock('Tx_Fluid_View_TemplateView', array('assign'));
-		$requestMock = $this->getAccessibleMock('Tx_Extbase_MVC_Request', array('hasArgument', 'getArgument'));
+		$controllerMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Controller\\UpdateFromTerController', array('dummy'));
+		$repositoryRepositoryMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\RepositoryRepository', array('findOneByUid'));
+		$repositoryModelMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Repository', array('getLastUpdate'));
+		$repositoryHelperMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Utility\\Repository\\Helper', array('updateExtList'));
+		$viewMock = $this->getAccessibleMock('TYPO3\\CMS\\Fluid\\View\\TemplateView', array('assign'));
+		$requestMock = $this->getAccessibleMock('TYPO3\\CMS\\Extbase\\Mvc\\Request', array('hasArgument', 'getArgument'));
 		$viewMock->expects($this->any())->method('assign')->will($this->returnValue($viewMock));
-		$lastUpdateDate = new DateTime();
+		$lastUpdateDate = new \DateTime();
 		// Wed Jul 25 18:40:02 CEST 2012
 		$lastUpdateDate->setTimestamp(1343234402);
 		$repositoryModelMock->expects($this->once())->method('getLastUpdate')->will($this->returnValue($lastUpdateDate));
@@ -77,14 +79,14 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 	 * @return void
 	 */
 	public function updateExtensionListFromTerDoesNotCallUpdateExtListIfLastUpdateIsLessThan24HoursAgo() {
-		$controllerMock = $this->getAccessibleMock('Tx_Extensionmanager_Controller_UpdateFromTerController', array('dummy'));
-		$repositoryRepositoryMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Repository_RepositoryRepository', array('findOneByUid'));
-		$repositoryModelMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_Repository', array('getLastUpdate'));
-		$repositoryHelperMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_Repository_Helper', array('updateExtList'));
-		$viewMock = $this->getAccessibleMock('Tx_Fluid_View_TemplateView', array('assign'));
-		$requestMock = $this->getAccessibleMock('Tx_Extbase_MVC_Request', array('hasArgument', 'getArgument'));
+		$controllerMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Controller\\UpdateFromTerController', array('dummy'));
+		$repositoryRepositoryMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\RepositoryRepository', array('findOneByUid'));
+		$repositoryModelMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Repository', array('getLastUpdate'));
+		$repositoryHelperMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Utility\\Repository\\Helper', array('updateExtList'));
+		$viewMock = $this->getAccessibleMock('TYPO3\\CMS\\Fluid\\View\\TemplateView', array('assign'));
+		$requestMock = $this->getAccessibleMock('TYPO3\\CMS\\Extbase\\Mvc\\Request', array('hasArgument', 'getArgument'));
 		$viewMock->expects($this->any())->method('assign')->will($this->returnValue($viewMock));
-		$lastUpdateDate = new DateTime();
+		$lastUpdateDate = new \DateTime();
 		// Wed Jul 25 18:40:02 CEST 2012
 		$lastUpdateDate->setTimestamp(1343493602);
 		$repositoryModelMock->expects($this->once())->method('getLastUpdate')->will($this->returnValue($lastUpdateDate));
@@ -105,13 +107,13 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 	 * @return void
 	 */
 	public function updateExtensionListFromTerCallsUpdateExtListIfForceUpdateCheckIsSet() {
-		$controllerMock = $this->getAccessibleMock('Tx_Extensionmanager_Controller_UpdateFromTerController', array('dummy'));
-		$repositoryRepositoryMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Repository_RepositoryRepository', array('findOneByUid'));
-		$repositoryModelMock = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Model_Repository', array('getLastUpdate'));
-		$repositoryHelperMock = $this->getAccessibleMock('Tx_Extensionmanager_Utility_Repository_Helper', array('updateExtList'));
-		$viewMock = $this->getAccessibleMock('Tx_Fluid_View_TemplateView', array('assign'));
+		$controllerMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Controller\\UpdateFromTerController', array('dummy'));
+		$repositoryRepositoryMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\RepositoryRepository', array('findOneByUid'));
+		$repositoryModelMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Repository', array('getLastUpdate'));
+		$repositoryHelperMock = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Utility\\Repository\\Helper', array('updateExtList'));
+		$viewMock = $this->getAccessibleMock('TYPO3\\CMS\\Fluid\\View\\TemplateView', array('assign'));
 		$viewMock->expects($this->any())->method('assign')->will($this->returnValue($viewMock));
-		$lastUpdateDate = new DateTime();
+		$lastUpdateDate = new \DateTime();
 		// Wed Jul 25 18:40:02 CEST 2012
 		$lastUpdateDate->setTimestamp(1343234402);
 		$repositoryModelMock->expects($this->once())->method('getLastUpdate')->will($this->returnValue($lastUpdateDate));
@@ -128,5 +130,6 @@ class Tx_Extensionmanager_Controller_UpdateFromTerControllerTest extends Tx_Extb
 	}
 
 }
+
 
 ?>

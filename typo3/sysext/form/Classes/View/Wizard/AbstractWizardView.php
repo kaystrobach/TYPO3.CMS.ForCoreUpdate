@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Wizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @subpackage form
  * @author Oliver Hader <oliver.hader@typo3.org>
  */
-abstract class tx_form_View_Wizard_Abstract {
+abstract class AbstractWizardView {
 
 	/**
 	 * Is the referenced record available
@@ -39,26 +41,26 @@ abstract class tx_form_View_Wizard_Abstract {
 	protected $recordIsAvailable = FALSE;
 
 	/**
-	 * @var tx_form_Domain_Repository_Content
+	 * @var \TYPO3\CMS\Form\Domain\Repository\ContentRepository
 	 */
 	protected $repository;
 
 	/**
 	 * Creates the object and calls the initialize() method.
 	 *
-	 * @param tx_form_Domain_Repository_Content $repository
+	 * @param \TYPO3\CMS\Form\Domain\Repository\ContentRepository $repository
 	 */
-	public function __construct(tx_form_Domain_Repository_Content $repository) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Repository\ContentRepository $repository) {
 		$this->setRepository($repository);
 	}
 
 	/**
 	 * Sets the content repository to be used.
 	 *
-	 * @param tx_form_Domain_Repository_Content $repository
+	 * @param \TYPO3\CMS\Form\Domain\Repository\ContentRepository $repository
 	 * @return void
 	 */
-	public function setRepository(tx_form_Domain_Repository_Content $repository) {
+	public function setRepository(\TYPO3\CMS\Form\Domain\Repository\ContentRepository $repository) {
 		$this->repository = $repository;
 	}
 
@@ -70,5 +72,6 @@ abstract class tx_form_View_Wizard_Abstract {
 	abstract public function render();
 
 }
+
 
 ?>

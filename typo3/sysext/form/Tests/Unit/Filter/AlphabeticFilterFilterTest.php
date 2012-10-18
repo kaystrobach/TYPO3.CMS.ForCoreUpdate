@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Tests\Unit\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,15 +31,15 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_AlphabeticTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class AlphabeticFilterFilterTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var tx_form_System_Filter_Alphabetic
+	 * @var \TYPO3\CMS\Form\Filter\AlphabeticFilter
 	 */
 	protected $fixture;
 
 	public function setUp() {
-		$this->fixture = new tx_form_System_Filter_Alphabetic();
+		$this->fixture = new \TYPO3\CMS\Form\Filter\AlphabeticFilter();
 	}
 
 	public function tearDown() {
@@ -65,5 +67,6 @@ class tx_form_System_Filter_AlphabeticTest extends Tx_Extbase_Tests_Unit_BaseTes
 	}
 
 }
+
 
 ?>

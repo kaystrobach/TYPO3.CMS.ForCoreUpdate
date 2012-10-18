@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage scheduler
  */
-class tx_scheduler_CachingFrameworkGarbageCollection extends tx_scheduler_Task {
+class CachingFrameworkGarbageCollectionTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * Backend types that should be cleaned up,
@@ -65,5 +67,6 @@ class tx_scheduler_CachingFrameworkGarbageCollection extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Sv\Report;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,12 +31,12 @@
  * @package TYPO3
  * @subpackage sv
  */
-class tx_sv_reports_ServicesList implements tx_reports_Report {
+class ServicesListReport implements \TYPO3\CMS\Reports\ReportInterface {
 
 	/**
 	 * Back-reference to the calling reports module
 	 *
-	 * @var Tx_Reports_Controller_ReportController
+	 * @var \TYPO3\CMS\Reports\Controller\ReportController
 	 */
 	protected $reportsModule;
 
@@ -43,7 +45,7 @@ class tx_sv_reports_ServicesList implements tx_reports_Report {
 	 *
 	 * @param tx_reports_Module $reportsModule Back-reference to the calling reports module
 	 */
-	public function __construct(Tx_Reports_Controller_ReportController $reportsModule) {
+	public function __construct(\TYPO3\CMS\Reports\Controller\ReportController $reportsModule) {
 		$this->reportsModule = $reportsModule;
 		$GLOBALS['LANG']->includeLLFile('EXT:sv/reports/locallang.xml');
 	}
@@ -136,12 +138,12 @@ class tx_sv_reports_ServicesList implements tx_reports_Report {
 		$serviceAvailabilityClass = 'typo3-message message-error';
 		$serviceAvailable = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no');
 		try {
-			$serviceDetails = t3lib_extmgm::findServiceByKey($serviceKey);
+			$serviceDetails = \t3lib_extmgm::findServiceByKey($serviceKey);
 			if ($serviceDetails['available']) {
 				$serviceAvailabilityClass = 'typo3-message message-ok';
 				$serviceAvailable = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes');
 			}
-		} catch (t3lib_exception $e) {
+		} catch (\TYPO3\CMS\Core\Exception $e) {
 
 		}
 		$serviceRow = ((((((((((((((((((((((((((('
@@ -163,7 +165,7 @@ class tx_sv_reports_ServicesList implements tx_reports_Report {
 	 * @return string HTML to display
 	 */
 	protected function renderExecutablesSearchPathList() {
-		$searchPaths = t3lib_exec::getPaths(TRUE);
+		$searchPaths = \TYPO3\CMS\Core\Utility\CommandUtility::getPaths(TRUE);
 		$content = ('<br /><h3 class="divider">' . $GLOBALS['LANG']->getLL('search_paths')) . '</h3>';
 		if (count($searchPaths) == 0) {
 			$content .= ('<p>' . $GLOBALS['LANG']->getLL('no_search_paths')) . '</p>';
@@ -186,7 +188,7 @@ class tx_sv_reports_ServicesList implements tx_reports_Report {
 				}
 				$content .= ((((((('
 					<tr>
-						<td class="first-cell ' . $pathAccessibleClass) . '">') . t3lib_div::fixWindowsFilePath($path)) . '</td>
+						<td class="first-cell ' . $pathAccessibleClass) . '">') . \TYPO3\CMS\Core\Utility\GeneralUtility::fixWindowsFilePath($path)) . '</td>
 						<td class="last-cell ') . $pathAccessibleClass) . '">') . $pathAccessible) . '</td>
 					</tr>';
 			}
@@ -249,5 +251,6 @@ class tx_sv_reports_ServicesList implements tx_reports_Report {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Saltedpasswords;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -24,30 +26,28 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Autoloader included from Install Tool that lets saltedpasswords load itself
  *
  * @author Helmut Hummel <helmut.hummel@typo3.org>
- *
  * @package TYPO3
  * @subpackage saltedpasswords
  */
-class tx_saltedpasswords_autoloader {
+class Autoloader {
 
 	/**
 	 * Activates saltedpasswords if it is supported.
 	 *
-	 * @param tx_install $instObj
+	 * @param \TYPO3\CMS\Install\Installer $instObj
 	 * @return void
 	 */
-	public function execute(tx_install $instObj) {
+	public function execute(\TYPO3\CMS\Install\Installer $instObj) {
 		switch ($instObj->step) {
-			case 4:
-				if (!t3lib_extMgm::isLoaded('saltedpasswords') && $this->isSaltedPasswordsSupported()) {
-					$this->activateSaltedPasswords();
-				}
-				break;
+		case 4:
+			if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('saltedpasswords') && $this->isSaltedPasswordsSupported()) {
+				$this->activateSaltedPasswords();
+			}
+			break;
 		}
 	}
 
@@ -64,7 +64,6 @@ class tx_saltedpasswords_autoloader {
 	 */
 	protected function isSaltedPasswordsSupported() {
 		$isSupported = FALSE;
-
 		if (is_callable('openssl_pkey_new')) {
 			$testKey = @openssl_pkey_new();
 			if (is_resource($testKey)) {
@@ -72,7 +71,6 @@ class tx_saltedpasswords_autoloader {
 				$isSupported = TRUE;
 			}
 		}
-
 		return $isSupported;
 	}
 
@@ -82,22 +80,18 @@ class tx_saltedpasswords_autoloader {
 	 * @return void
 	 */
 	protected function activateSaltedPasswords() {
-		if (!t3lib_extMgm::isLoaded('rsaauth')) {
-			t3lib_extMgm::loadExtension('rsaauth');
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('rsaauth')) {
+			\TYPO3\CMS\Core\Extension\ExtensionManager::loadExtension('rsaauth');
 		}
-		if (!t3lib_extMgm::isLoaded('saltedpasswords')) {
-			t3lib_extMgm::loadExtension('saltedpasswords');
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('saltedpasswords')) {
+			\TYPO3\CMS\Core\Extension\ExtensionManager::loadExtension('saltedpasswords');
 		}
-		t3lib_Configuration::setLocalConfigurationValueByPath(
-			'EXT/extConf/saltedpasswords',
-			'a:2:{s:3:"FE.";a:2:{s:7:"enabled";s:1:"1";s:21:"saltedPWHashingMethod";s:28:"tx_saltedpasswords_salts_md5";}s:3:"BE.";a:2:{s:7:"enabled";s:1:"1";s:21:"saltedPWHashingMethod";s:28:"tx_saltedpasswords_salts_md5";}}'
-		);
-		t3lib_Configuration::setLocalConfigurationValueByPath('BE/loginSecurityLevel', 'rsa');
-		t3lib_Configuration::setLocalConfigurationValueByPath('FE/loginSecurityLevel', 'rsa');
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('EXT/extConf/saltedpasswords', 'a:2:{s:3:"FE.";a:2:{s:7:"enabled";s:1:"1";s:21:"saltedPWHashingMethod";s:28:"tx_saltedpasswords_salts_md5";}s:3:"BE.";a:2:{s:7:"enabled";s:1:"1";s:21:"saltedPWHashingMethod";s:28:"tx_saltedpasswords_salts_md5";}}');
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('BE/loginSecurityLevel', 'rsa');
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('FE/loginSecurityLevel', 'rsa');
 	}
+
 }
 
-/** @var $SOBE tx_saltedpasswords_autoloader */
-$SOBE = t3lib_div::makeInstance('tx_saltedpasswords_autoloader');
-$SOBE->execute($this);
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage reports
  */
-class tx_reports_tasks_SystemStatusUpdateTask extends tx_scheduler_Task {
+class SystemStatusUpdateTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * Email address to send email notification to in case we find problems with
@@ -46,12 +48,12 @@ class tx_reports_tasks_SystemStatusUpdateTask extends tx_scheduler_Task {
 	 * @see typo3/sysext/scheduler/tx_scheduler_Task::execute()
 	 */
 	public function execute() {
-		$registry = t3lib_div::makeInstance('t3lib_Registry');
-		$statusReport = t3lib_div::makeInstance('tx_reports_reports_Status');
+		$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
+		$statusReport = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status');
 		$systemStatus = $statusReport->getSystemStatus();
 		$highestSeverity = $statusReport->getHighestSeverity($systemStatus);
 		$registry->set('tx_reports', 'status.highestSeverity', $highestSeverity);
-		if ($highestSeverity > tx_reports_reports_status_Status::OK) {
+		if ($highestSeverity > \TYPO3\CMS\Reports\Status::OK) {
 			$this->sendNotificationEmail($systemStatus);
 		}
 		return TRUE;
@@ -84,7 +86,7 @@ class tx_reports_tasks_SystemStatusUpdateTask extends tx_scheduler_Task {
 		$systemIssues = array();
 		foreach ($systemStatus as $statusProvider) {
 			foreach ($statusProvider as $status) {
-				if ($status->getSeverity() > tx_reports_reports_status_Status::OK) {
+				if ($status->getSeverity() > \TYPO3\CMS\Reports\Report\Status\Status::OK) {
 					$systemIssues[] = (string) $status;
 				}
 			}
@@ -97,8 +99,8 @@ class tx_reports_tasks_SystemStatusUpdateTask extends tx_scheduler_Task {
 		$message .= ($GLOBALS['LANG']->getLL('status_updateTask_email_issues') . ': ') . CRLF;
 		$message .= implode(CRLF, $systemIssues);
 		$message .= CRLF . CRLF;
-		$from = t3lib_utility_Mail::getSystemFrom();
-		$mail = t3lib_div::makeInstance('t3lib_mail_Message');
+		$from = \TYPO3\CMS\Core\Utility\MailUtility::getSystemFrom();
+		$mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
 		$mail->setFrom($from);
 		$mail->setTo($this->notificationEmail);
 		$mail->setSubject($subject);
@@ -107,5 +109,6 @@ class tx_reports_tasks_SystemStatusUpdateTask extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,9 +32,10 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Controller_ToolsController extends Tx_Belog_Controller_AbstractController {
+class ToolsController extends \TYPO3\CMS\Belog\Controller\AbstractController {
 
 
 }
+
 
 ?>

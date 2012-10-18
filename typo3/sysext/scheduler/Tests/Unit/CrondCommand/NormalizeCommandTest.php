@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Tests\Unit\CrondCommand;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage tx_scheduler
  */
-class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
+class NormalizeCommandTest extends tx_phpunit_testcase {
 
 	/**
 	 * Create a subclass of tx_scheduler_CronCmd_Normalize with
@@ -37,9 +39,9 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	 * @return string Name of the accessible proxy class
 	 */
 	protected function getAccessibleProxy() {
-		$className = 'tx_scheduler_CronCmd_NormalizeAccessibleProxy';
+		$className = 'TYPO3\\CMS\\Scheduler\\CronCommand\\CronCommand_NormalizeAccessibleProxy';
 		if (!class_exists($className, FALSE)) {
-			eval((((((((((((((((((((((((((((((((('class ' . $className) . ' extends tx_scheduler_CronCmd_Normalize {') . '  public static function convertKeywordsToCronCommand($cronCommand) {') . '    return parent::convertKeywordsToCronCommand($cronCommand);') . '  }') . '  public static function normalizeFields($cronCommand) {') . '    return parent::normalizeFields($cronCommand);') . '  }') . '  public static function normalizeMonthAndWeekdayField($expression, $isMonthField = TRUE) {') . '    return parent::normalizeMonthAndWeekdayField($expression, $isMonthField);') . '  }') . '  public static function normalizeIntegerField($expression, $lowerBound = 0, $upperBound = 59) {') . '    return parent::normalizeIntegerField($expression, $lowerBound, $upperBound);') . '  }') . '  public static function splitFields($cronCommand) {') . '    return parent::splitFields($cronCommand);') . '  }') . '  public static function convertRangeToListOfValues($range) {') . '    return parent::convertRangeToListOfValues($range);') . '  }') . '  public static function reduceListOfValuesByStepValue($stepExpression) {') . '    return parent::reduceListOfValuesByStepValue($stepExpression);') . '  }') . '  public static function normalizeMonthAndWeekday($expression, $isMonth = TRUE) {') . '    return parent::normalizeMonthAndWeekday($expression, $isMonth);') . '  }') . '  public static function normalizeMonth($month) {') . '    return parent::normalizeMonth($month);') . '  }') . '  public static function normalizeWeekday($weekday) {') . '    return parent::normalizeWeekday($weekday);') . '  }') . '}');
+			eval((((((((((((((((((((((((((((((((('class ' . $className) . ' extends TYPO3\\CMS\\Scheduler\\CronCommand\\CronCommand_Normalize {') . '  public static function convertKeywordsToCronCommand($cronCommand) {') . '    return parent::convertKeywordsToCronCommand($cronCommand);') . '  }') . '  public static function normalizeFields($cronCommand) {') . '    return parent::normalizeFields($cronCommand);') . '  }') . '  public static function normalizeMonthAndWeekdayField($expression, $isMonthField = TRUE) {') . '    return parent::normalizeMonthAndWeekdayField($expression, $isMonthField);') . '  }') . '  public static function normalizeIntegerField($expression, $lowerBound = 0, $upperBound = 59) {') . '    return parent::normalizeIntegerField($expression, $lowerBound, $upperBound);') . '  }') . '  public static function splitFields($cronCommand) {') . '    return parent::splitFields($cronCommand);') . '  }') . '  public static function convertRangeToListOfValues($range) {') . '    return parent::convertRangeToListOfValues($range);') . '  }') . '  public static function reduceListOfValuesByStepValue($stepExpression) {') . '    return parent::reduceListOfValuesByStepValue($stepExpression);') . '  }') . '  public static function normalizeMonthAndWeekday($expression, $isMonth = TRUE) {') . '    return parent::normalizeMonthAndWeekday($expression, $isMonth);') . '  }') . '  public static function normalizeMonth($month) {') . '    return parent::normalizeMonth($month);') . '  }') . '  public static function normalizeWeekday($weekday) {') . '    return parent::normalizeWeekday($weekday);') . '  }') . '}');
 		}
 		return $className;
 	}
@@ -79,7 +81,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	 * @param string $expected Expected result (normalized cron command syntax)
 	 */
 	public function normalizeConvertsCronCommand($expression, $expected) {
-		$result = tx_scheduler_CronCmd_Normalize::normalize($expression);
+		$result = \TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand::normalize($expression);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -496,7 +498,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	public function normalizeMonthReturnsInteger($monthName, $expectedInteger) {
 		$accessibleProxyClassName = $this->getAccessibleProxy();
 		$result = $accessibleProxyClassName::normalizeMonth($monthName);
-		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_INT, $result);
+		$this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT, $result);
 	}
 
 	/**
@@ -592,7 +594,7 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	public function normalizeWeekdayReturnsInteger($weekday, $expectedInteger) {
 		$accessibleProxyClassName = $this->getAccessibleProxy();
 		$result = $accessibleProxyClassName::normalizeWeekday($weekday);
-		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_INT, $result);
+		$this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT, $result);
 	}
 
 	/**
@@ -633,5 +635,6 @@ class tx_scheduler_CronCmd_NormalizeTest extends tx_phpunit_testcase {
 	}
 
 }
+
 
 ?>

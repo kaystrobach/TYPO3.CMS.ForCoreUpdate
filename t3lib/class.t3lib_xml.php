@@ -59,7 +59,7 @@ class t3lib_xml {
 	 * @return void
 	 */
 	public function __construct($topLevelName) {
-		t3lib_div::deprecationLog('Class t3lib_div is deprecated since TYPO3 6.0. ' . 'It will be removed with TYPO3 6.2, please use other xml helper solutions instead.');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('Class TYPO3\\CMS\\Core\\Utility\\GeneralUtility is deprecated since TYPO3 6.0. ' . 'It will be removed with TYPO3 6.2, please use other xml helper solutions instead.');
 		$this->topLevelName = $topLevelName;
 	}
 
@@ -217,7 +217,7 @@ class t3lib_xml {
 	 * @access private
 	 */
 	public function getRowInXML($table, $row) {
-		$fields = t3lib_div::trimExplode(',', $this->XML_recFields[$table], 1);
+		$fields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->XML_recFields[$table], 1);
 		foreach ($fields as $field) {
 			if ($row[$field] || $this->includeNonEmptyValues) {
 				$this->lines[] = $this->Icode . $this->fieldWrap($field, $this->substNewline($this->utf8(htmlspecialchars($row[$field]))));

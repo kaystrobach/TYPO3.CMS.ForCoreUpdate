@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  *
  * @author Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-class t3lib_TCEforms_FE extends t3lib_TCEforms {
+class FrontendFormEngine extends \TYPO3\CMS\Backend\Form\FormEngine {
 
 	/**
 	 * Constructs this object.
@@ -108,7 +110,7 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	 * @return void
 	 */
 	public function loadJavascriptLib($lib) {
-		/** @var $pageRenderer t3lib_PageRenderer */
+		/** @var $pageRenderer \TYPO3\CMS\Core\Page\PageRenderer */
 		$pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
 		$pageRenderer->addJsLibrary($lib, $this->prependBackPath($lib));
 	}
@@ -123,7 +125,7 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	 * @return void
 	 */
 	public function addStyleSheet($key, $href, $title = '', $relation = 'stylesheet') {
-		/** @var $pageRenderer t3lib_PageRenderer */
+		/** @var $pageRenderer \TYPO3\CMS\Core\Page\PageRenderer */
 		$pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
 		$pageRenderer->addCssFile($this->prependBackPath($href), $relation, 'screen', $title);
 	}
@@ -135,9 +137,9 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	 * @return void
 	 */
 	public function initializeTemplateContainer() {
-		$GLOBALS['TBE_TEMPLATE'] = t3lib_div::makeInstance('frontendDoc');
-		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->addInlineSetting('', 'PATH_typo3', (t3lib_div::dirname(t3lib_div::getIndpEnv('SCRIPT_NAME')) . '/') . TYPO3_mainDir);
-		$GLOBALS['SOBE'] = new stdClass();
+		$GLOBALS['TBE_TEMPLATE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\FrontendDocumentTemplate');
+		$GLOBALS['TBE_TEMPLATE']->getPageRenderer()->addInlineSetting('', 'PATH_typo3', (\TYPO3\CMS\Core\Utility\GeneralUtility::dirname(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME')) . '/') . TYPO3_mainDir);
+		$GLOBALS['SOBE'] = new \stdClass();
 		$GLOBALS['SOBE']->doc = $GLOBALS['TBE_TEMPLATE'];
 	}
 
@@ -156,5 +158,6 @@ class t3lib_TCEforms_FE extends t3lib_TCEforms {
 	}
 
 }
+
 
 ?>

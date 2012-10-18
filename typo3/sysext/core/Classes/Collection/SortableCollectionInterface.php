@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Sortable
+interface SortableCollectionInterface
 {
 	/**
 	 * Sorts collection via given callBackFunction
@@ -64,4 +66,5 @@ interface t3lib_collection_Sortable
 	public function moveItemAt($currentPosition, $newPosition = 0);
 
 }
+
 ?>

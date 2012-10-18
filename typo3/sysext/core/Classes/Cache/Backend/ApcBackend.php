@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -51,7 +53,7 @@
  * @author Dmitry Dulepov <dmitry@typo3.org>
  * @api
  */
-class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_TaggableBackend {
+class ApcBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * A prefix to seperate stored data from other data possible stored in the APC
@@ -65,11 +67,11 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 *
 	 * @param string $context FLOW3's application context
 	 * @param array $options Configuration options - unused here
-	 * @throws \t3lib_cache_Exception
+	 * @throws \TYPO3\CMS\Core\Cache\Exception
 	 */
 	public function __construct($context, array $options = array()) {
 		if (!extension_loaded('apc')) {
-			throw new \t3lib_cache_Exception('The PHP extension "apc" must be installed and loaded in order to use the APC backend.', 1232985414);
+			throw new \TYPO3\CMS\Core\Cache\Exception('The PHP extension "apc" must be installed and loaded in order to use the APC backend.', 1232985414);
 		}
 		parent::__construct($context, $options);
 	}
@@ -77,13 +79,13 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	/**
 	 * Initializes the identifier prefix when setting the cache.
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache
 	 * @return void
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache) {
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		parent::setCache($cache);
 		$processUser = extension_loaded('posix') ? posix_getpwuid(posix_geteuid()) : array('name' => 'default');
-		$pathHash = t3lib_div::shortMD5((PATH_site . $processUser['name']) . $this->context, 12);
+		$pathHash = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5((PATH_site . $processUser['name']) . $this->context, 12);
 		$this->identifierPrefix = 'TYPO3_' . $pathHash;
 	}
 
@@ -95,16 +97,16 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 * @param array $tags Tags to associate with this cache entry
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited liftime.
 	 * @return void
-	 * @throws \t3lib_cache_Exception if no cache frontend has been set.
-	 * @throws \t3lib_cache_exception_InvalidData if $data is not a string
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if $data is not a string
 	 * @api
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1232986818);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('No cache frontend has been set yet via setCache().', 1232986818);
 		}
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1232986825);
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidDataException(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1232986825);
 		}
 		$tags[] = '%APCBE%' . $this->cacheIdentifier;
 		$expiration = $lifetime !== NULL ? $lifetime : $this->defaultLifetime;
@@ -113,7 +115,7 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 			$this->removeIdentifierFromAllTags($entryIdentifier);
 			$this->addIdentifierToTags($entryIdentifier, $tags);
 		} else {
-			throw new \t3lib_cache_Exception('Could not set value.', 1232986877);
+			throw new \TYPO3\CMS\Core\Cache\Exception('Could not set value.', 1232986877);
 		}
 	}
 
@@ -192,12 +194,12 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	 * Removes all cache entries of this cache.
 	 *
 	 * @return void
-	 * @throws \t3lib_cache_Exception
+	 * @throws \TYPO3\CMS\Core\Cache\Exception
 	 * @api
 	 */
 	public function flush() {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('Yet no cache frontend has been set via setCache().', 1232986971);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('Yet no cache frontend has been set via setCache().', 1232986971);
 		}
 		$this->flushByTag('%APCBE%' . $this->cacheIdentifier);
 	}
@@ -279,5 +281,6 @@ class t3lib_cache_backend_ApcBackend extends t3lib_cache_backend_AbstractBackend
 	}
 
 }
+
 
 ?>

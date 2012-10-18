@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Perm\Controller;
+
 /**
  * This class extends the permissions module in the TYPO3 Backend to provide
  * convenient methods of editing of page permissions (including page ownership
@@ -10,7 +12,7 @@
  * @license GPL
  * @since TYPO3_4-2
  */
-class SC_mod_web_perm_ajax {
+class PermissionAjaxController {
 
 	// The local configuration array
 	protected $conf = array();
@@ -28,24 +30,24 @@ class SC_mod_web_perm_ajax {
 	 */
 	public function __construct() {
 		// Configuration, variable assignment
-		$this->conf['page'] = t3lib_div::_POST('page');
-		$this->conf['who'] = t3lib_div::_POST('who');
-		$this->conf['mode'] = t3lib_div::_POST('mode');
-		$this->conf['bits'] = intval(t3lib_div::_POST('bits'));
-		$this->conf['permissions'] = intval(t3lib_div::_POST('permissions'));
-		$this->conf['action'] = t3lib_div::_POST('action');
-		$this->conf['ownerUid'] = intval(t3lib_div::_POST('ownerUid'));
-		$this->conf['username'] = t3lib_div::_POST('username');
-		$this->conf['groupUid'] = intval(t3lib_div::_POST('groupUid'));
-		$this->conf['groupname'] = t3lib_div::_POST('groupname');
-		$this->conf['editLockState'] = intval(t3lib_div::_POST('editLockState'));
+		$this->conf['page'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('page');
+		$this->conf['who'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('who');
+		$this->conf['mode'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('mode');
+		$this->conf['bits'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('bits'));
+		$this->conf['permissions'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('permissions'));
+		$this->conf['action'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('action');
+		$this->conf['ownerUid'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('ownerUid'));
+		$this->conf['username'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('username');
+		$this->conf['groupUid'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('groupUid'));
+		$this->conf['groupname'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('groupname');
+		$this->conf['editLockState'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('editLockState'));
 		// User: Replace some parts of the posted values
-		$this->conf['new_owner_uid'] = intval(t3lib_div::_POST('newOwnerUid'));
-		$temp_owner_data = t3lib_BEfunc::getUserNames('username, uid', ' AND uid = ' . $this->conf['new_owner_uid']);
+		$this->conf['new_owner_uid'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('newOwnerUid'));
+		$temp_owner_data = \TYPO3\CMS\Backend\Utility\BackendUtility::getUserNames('username, uid', ' AND uid = ' . $this->conf['new_owner_uid']);
 		$this->conf['new_owner_username'] = htmlspecialchars($temp_owner_data[$this->conf['new_owner_uid']]['username']);
 		// Group: Replace some parts of the posted values
-		$this->conf['new_group_uid'] = intval(t3lib_div::_POST('newGroupUid'));
-		$temp_group_data = t3lib_BEfunc::getGroupNames('title,uid', ' AND uid = ' . $this->conf['new_group_uid']);
+		$this->conf['new_group_uid'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('newGroupUid'));
+		$temp_group_data = \TYPO3\CMS\Backend\Utility\BackendUtility::getGroupNames('title,uid', ' AND uid = ' . $this->conf['new_group_uid']);
 		$this->conf['new_group_username'] = htmlspecialchars($temp_group_data[$this->conf['new_group_uid']]['title']);
 	}
 
@@ -58,16 +60,16 @@ class SC_mod_web_perm_ajax {
 	 * The main dispatcher function. Collect data and prepare HTML output.
 	 *
 	 * @param array $params array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj object of type TYPO3AJAX
 	 * @return void
 	 */
-	public function dispatch($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
+	public function dispatch($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
 		$content = '';
 		// Basic test for required value
 		if ($this->conf['page'] > 0) {
 			// Init TCE for execution of update
-			/** @var $tce t3lib_TCEmain */
-			$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+			/** @var $tce \TYPO3\CMS\Core\DataHandler\DataHandler */
+			$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 			$tce->stripslashes_values = 1;
 			// Determine the scripts to execute
 			switch ($this->conf['action']) {
@@ -147,11 +149,11 @@ class SC_mod_web_perm_ajax {
 	 */
 	protected function renderUserSelector($page, $ownerUid, $username = '') {
 		// Get usernames
-		$beUsers = t3lib_BEfunc::getUserNames();
+		$beUsers = \TYPO3\CMS\Backend\Utility\BackendUtility::getUserNames();
 		// Init groupArray
 		$groups = array();
 		if (!$GLOBALS['BE_USER']->isAdmin()) {
-			$beUsers = t3lib_BEfunc::blindUserNames($beUsers, $groups, 1);
+			$beUsers = \TYPO3\CMS\Backend\Utility\BackendUtility::blindUserNames($beUsers, $groups, 1);
 		}
 		// Owner selector:
 		$options = '';
@@ -163,8 +165,8 @@ class SC_mod_web_perm_ajax {
 		$elementId = 'o_' . $page;
 		$options = '<option value="0"></option>' . $options;
 		$selector = ('<select name="new_page_owner" id="new_page_owner">' . $options) . '</select>';
-		$saveButton = ((((((('<a onclick="WebPermissions.changeOwner(' . $page) . ', ') . $ownerUid) . ', \'') . $elementId) . '\');" title="Change owner">') . t3lib_iconWorks::getSpriteIcon('actions-document-save')) . '</a>';
-		$cancelButton = ((((((((('<a onclick="WebPermissions.restoreOwner(' . $page) . ', ') . $ownerUid) . ', \'') . ($username == '' ? '<span class=not_set>[not set]</span>' : htmlspecialchars($username))) . '\', \'') . $elementId) . '\');" title="Cancel">') . t3lib_iconWorks::getSpriteIcon('actions-document-close')) . '</a>';
+		$saveButton = ((((((('<a onclick="WebPermissions.changeOwner(' . $page) . ', ') . $ownerUid) . ', \'') . $elementId) . '\');" title="Change owner">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save')) . '</a>';
+		$cancelButton = ((((((((('<a onclick="WebPermissions.restoreOwner(' . $page) . ', ') . $ownerUid) . ', \'') . ($username == '' ? '<span class=not_set>[not set]</span>' : htmlspecialchars($username))) . '\', \'') . $elementId) . '\');" title="Cancel">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close')) . '</a>';
 		$ret = ($selector . $saveButton) . $cancelButton;
 		return $ret;
 	}
@@ -179,11 +181,11 @@ class SC_mod_web_perm_ajax {
 	 */
 	protected function renderGroupSelector($page, $groupUid, $groupname = '') {
 		// Get usernames
-		$beGroups = t3lib_BEfunc::getListGroupNames('title,uid');
+		$beGroups = \TYPO3\CMS\Backend\Utility\BackendUtility::getListGroupNames('title,uid');
 		$beGroupKeys = array_keys($beGroups);
-		$beGroupsO = ($beGroups = t3lib_BEfunc::getGroupNames());
+		$beGroupsO = ($beGroups = \TYPO3\CMS\Backend\Utility\BackendUtility::getGroupNames());
 		if (!$GLOBALS['BE_USER']->isAdmin()) {
-			$beGroups = t3lib_BEfunc::blindGroupNames($beGroupsO, $beGroupKeys, 1);
+			$beGroups = \TYPO3\CMS\Backend\Utility\BackendUtility::blindGroupNames($beGroupsO, $beGroupKeys, 1);
 		}
 		// Group selector:
 		$options = '';
@@ -206,8 +208,8 @@ class SC_mod_web_perm_ajax {
 		$elementId = 'g_' . $page;
 		$options = '<option value="0"></option>' . $options;
 		$selector = ('<select name="new_page_group" id="new_page_group">' . $options) . '</select>';
-		$saveButton = ((((((('<a onclick="WebPermissions.changeGroup(' . $page) . ', ') . $groupUid) . ', \'') . $elementId) . '\');" title="Change group">') . t3lib_iconWorks::getSpriteIcon('actions-document-save')) . '</a>';
-		$cancelButton = ((((((((('<a onclick="WebPermissions.restoreGroup(' . $page) . ', ') . $groupUid) . ', \'') . ($groupname == '' ? '<span class=not_set>[not set]</span>' : htmlspecialchars($groupname))) . '\', \'') . $elementId) . '\');" title="Cancel">') . t3lib_iconWorks::getSpriteIcon('actions-document-close')) . '</a>';
+		$saveButton = ((((((('<a onclick="WebPermissions.changeGroup(' . $page) . ', ') . $groupUid) . ', \'') . $elementId) . '\');" title="Change group">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-save')) . '</a>';
+		$cancelButton = ((((((((('<a onclick="WebPermissions.restoreGroup(' . $page) . ', ') . $groupUid) . ', \'') . ($groupname == '' ? '<span class=not_set>[not set]</span>' : htmlspecialchars($groupname))) . '\', \'') . $elementId) . '\');" title="Cancel">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close')) . '</a>';
 		$ret = ($selector . $saveButton) . $cancelButton;
 		return $ret;
 	}
@@ -223,7 +225,7 @@ class SC_mod_web_perm_ajax {
 	 */
 	static public function renderOwnername($page, $ownerUid, $username, $validUser = TRUE) {
 		$elementId = 'o_' . $page;
-		$ret = ((((((((((('<span id="' . $elementId) . '"><a class="ug_selector" onclick="WebPermissions.showChangeOwnerSelector(') . $page) . ', ') . $ownerUid) . ', \'') . $elementId) . '\', \'') . htmlspecialchars($username)) . '\');">') . ($validUser ? ($username == '' ? ('<span class=not_set>[' . $GLOBALS['LANG']->getLL('notSet')) . ']</span>' : htmlspecialchars(t3lib_div::fixed_lgd_cs($username, 20))) : ((('<span class=not_set title="' . htmlspecialchars(t3lib_div::fixed_lgd_cs($username, 20))) . '">[') . $GLOBALS['LANG']->getLL('deleted')) . ']</span>')) . '</a></span>';
+		$ret = ((((((((((('<span id="' . $elementId) . '"><a class="ug_selector" onclick="WebPermissions.showChangeOwnerSelector(') . $page) . ', ') . $ownerUid) . ', \'') . $elementId) . '\', \'') . htmlspecialchars($username)) . '\');">') . ($validUser ? ($username == '' ? ('<span class=not_set>[' . $GLOBALS['LANG']->getLL('notSet')) . ']</span>' : htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($username, 20))) : ((('<span class=not_set title="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($username, 20))) . '">[') . $GLOBALS['LANG']->getLL('deleted')) . ']</span>')) . '</a></span>';
 		return $ret;
 	}
 
@@ -238,7 +240,7 @@ class SC_mod_web_perm_ajax {
 	 */
 	static public function renderGroupname($page, $groupUid, $groupname, $validGroup = TRUE) {
 		$elementId = 'g_' . $page;
-		$ret = ((((((((((('<span id="' . $elementId) . '"><a class="ug_selector" onclick="WebPermissions.showChangeGroupSelector(') . $page) . ', ') . $groupUid) . ', \'') . $elementId) . '\', \'') . htmlspecialchars($groupname)) . '\');">') . ($validGroup ? ($groupname == '' ? ('<span class=not_set>[' . $GLOBALS['LANG']->getLL('notSet')) . ']</span>' : htmlspecialchars(t3lib_div::fixed_lgd_cs($groupname, 20))) : ((('<span class=not_set title="' . htmlspecialchars(t3lib_div::fixed_lgd_cs($groupname, 20))) . '">[') . $GLOBALS['LANG']->getLL('deleted')) . ']</span>')) . '</a></span>';
+		$ret = ((((((((((('<span id="' . $elementId) . '"><a class="ug_selector" onclick="WebPermissions.showChangeGroupSelector(') . $page) . ', ') . $groupUid) . ', \'') . $elementId) . '\', \'') . htmlspecialchars($groupname)) . '\');">') . ($validGroup ? ($groupname == '' ? ('<span class=not_set>[' . $GLOBALS['LANG']->getLL('notSet')) . ']</span>' : htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($groupname, 20))) : ((('<span class=not_set title="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($groupname, 20))) . '">[') . $GLOBALS['LANG']->getLL('deleted')) . ']</span>')) . '</a></span>';
 		return $ret;
 	}
 
@@ -251,7 +253,7 @@ class SC_mod_web_perm_ajax {
 	 */
 	protected function renderToggleEditLock($page, $editLockState) {
 		if ($editLockState === 1) {
-			$ret = ((('<a class="editlock" onclick="WebPermissions.toggleEditLock(' . $page) . ', 1);" title="The page and all content is locked for editing by all non-Admin users.">') . t3lib_iconWorks::getSpriteIcon('status-warning-lock')) . '</a>';
+			$ret = ((('<a class="editlock" onclick="WebPermissions.toggleEditLock(' . $page) . ', 1);" title="The page and all content is locked for editing by all non-Admin users.">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-warning-lock')) . '</a>';
 		} else {
 			$ret = ('<a class="editlock" onclick="WebPermissions.toggleEditLock(' . $page) . ', 0);" title="Enable the &raquo;Admin-only&laquo; edit lock for this page">[+]</a>';
 		}
@@ -271,14 +273,14 @@ class SC_mod_web_perm_ajax {
 		$permissions = array(1, 16, 2, 4, 8);
 		foreach ($permissions as $permission) {
 			if ($int & $permission) {
-				$str .= t3lib_iconWorks::getSpriteIcon('status-status-permission-granted', array(
+				$str .= \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-status-permission-granted', array(
 					'tag' => 'a',
 					'title' => $GLOBALS['LANG']->getLL($permission, TRUE),
 					'onclick' => ((((((('WebPermissions.setPermissions(' . $pageId) . ', ') . $permission) . ', \'delete\', \'') . $who) . '\', ') . $int) . ');',
 					'style' => 'cursor:pointer'
 				));
 			} else {
-				$str .= t3lib_iconWorks::getSpriteIcon('status-status-permission-denied', array(
+				$str .= \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-status-permission-denied', array(
 					'tag' => 'a',
 					'title' => $GLOBALS['LANG']->getLL($permission, TRUE),
 					'onclick' => ((((((('WebPermissions.setPermissions(' . $pageId) . ', ') . $permission) . ', \'add\', \'') . $who) . '\', ') . $int) . ');',
@@ -290,5 +292,6 @@ class SC_mod_web_perm_ajax {
 	}
 
 }
+
 
 ?>

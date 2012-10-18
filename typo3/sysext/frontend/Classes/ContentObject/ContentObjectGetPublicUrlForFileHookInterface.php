@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,17 +33,18 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface tslib_content_getPublicUrlForFileHook
+interface ContentObjectGetPublicUrlForFileHookInterface
 {
 	/**
 	 * Post-processes a public URL.
 	 *
-	 * @param tslib_cObj $parent The current content object (context)
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parent The current content object (context)
 	 * @param array $configuration TypoScript configuration
-	 * @param t3lib_file_File $file The file object to be used
+	 * @param \TYPO3\CMS\Core\Resource\File $file The file object to be used
 	 * @param string $pubicUrl Reference to the public URL
 	 */
-	public function postProcess(tslib_cObj $parent, array $configuration, t3lib_file_File $file, &$pubicUrl);
+	public function postProcess(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parent, array $configuration, \TYPO3\CMS\Core\Resource\File $file, &$pubicUrl);
 
 }
+
 ?>

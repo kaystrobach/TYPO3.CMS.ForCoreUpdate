@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recordlist\RecordList;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface localRecordList_actionsHook
+interface RecordListHookInterface
 {
 	/**
 	 * Modifies Web>List clip icons (copy, cut, paste, etc.) of a displayed row
@@ -78,4 +80,5 @@ interface localRecordList_actionsHook
 	public function renderListHeaderActions($table, $currentIdList, $cells, &$parentObject);
 
 }
+
 ?>

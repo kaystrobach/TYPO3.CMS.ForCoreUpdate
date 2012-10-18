@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
+class TreeNode implements \TYPO3\CMS\Backend\Tree\ComparableNodeInterface, \Serializable {
 
 	/**
 	 * Node Identifier
@@ -44,14 +46,14 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	/**
 	 * Parent Node
 	 *
-	 * @var t3lib_tree_Node
+	 * @var \TYPO3\CMS\Backend\Tree\TreeNode
 	 */
 	protected $parentNode = NULL;
 
 	/**
 	 * Child Nodes
 	 *
-	 * @var t3lib_tree_NodeCollection
+	 * @var \TYPO3\CMS\Backend\Tree\TreeNodeCollection
 	 */
 	protected $childNodes = NULL;
 
@@ -73,10 +75,10 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	/**
 	 * Sets the child nodes collection
 	 *
-	 * @param t3lib_tree_NodeCollection $childNodes
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $childNodes
 	 * @return void
 	 */
-	public function setChildNodes(t3lib_tree_NodeCollection $childNodes) {
+	public function setChildNodes(\TYPO3\CMS\Backend\Tree\TreeNodeCollection $childNodes) {
 		$this->childNodes = $childNodes;
 	}
 
@@ -95,7 +97,7 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	/**
 	 * Returns child nodes collection
 	 *
-	 * @return t3lib_tree_NodeCollection
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNodeCollection
 	 */
 	public function getChildNodes() {
 		return $this->childNodes;
@@ -135,17 +137,17 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	/**
 	 * Sets the parent node
 	 *
-	 * @param t3lib_tree_Node $parentNode
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $parentNode
 	 * @return void
 	 */
-	public function setParentNode(t3lib_tree_Node $parentNode = NULL) {
+	public function setParentNode(\TYPO3\CMS\Backend\Tree\TreeNode $parentNode = NULL) {
 		$this->parentNode = $parentNode;
 	}
 
 	/**
 	 * Returns the parent node
 	 *
-	 * @return t3lib_tree_Node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNode
 	 */
 	public function getParentNode() {
 		return $this->parentNode;
@@ -154,10 +156,10 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	/**
 	 * Compares a node if it's identical to another node by the id property.
 	 *
-	 * @param t3lib_tree_Node $other
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $other
 	 * @return boolean
 	 */
-	public function equals(t3lib_tree_Node $other) {
+	public function equals(\TYPO3\CMS\Backend\Tree\TreeNode $other) {
 		return $this->id == $other->getId();
 	}
 
@@ -169,7 +171,7 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	 * -1 if its smaller than the other one
 	 * 0 if its equal
 	 *
-	 * @param t3lib_tree_Node $other
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $other
 	 * @return integer See description above
 	 */
 	public function compareTo($other) {
@@ -212,10 +214,10 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	public function dataFromArray($data) {
 		$this->setId($data['id']);
 		if (isset($data['parentNode']) && $data['parentNode'] !== '') {
-			$this->setParentNode(t3lib_div::makeInstance($data['parentNode']['serializeClassName'], $data['parentNode']));
+			$this->setParentNode(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($data['parentNode']['serializeClassName'], $data['parentNode']));
 		}
 		if (isset($data['childNodes']) && $data['childNodes'] !== '') {
-			$this->setChildNodes(t3lib_div::makeInstance($data['childNodes']['serializeClassName'], $data['childNodes']));
+			$this->setChildNodes(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($data['childNodes']['serializeClassName'], $data['childNodes']));
 		}
 	}
 
@@ -231,18 +233,19 @@ class t3lib_tree_Node implements t3lib_tree_ComparableNode, Serializable {
 	/**
 	 * Fills the current node with the given serialized informations
 	 *
-	 * @throws t3lib_exception if the deserialized object type is not identical to the current one
+	 * @throws \TYPO3\CMS\Core\Exception if the deserialized object type is not identical to the current one
 	 * @param string $serializedString
 	 * @return void
 	 */
 	public function unserialize($serializedString) {
 		$arrayRepresentation = unserialize($serializedString);
 		if ($arrayRepresentation['serializeClassName'] !== get_class($this)) {
-			throw new t3lib_exception('Deserialized object type is not identical!', 1294586646);
+			throw new \TYPO3\CMS\Core\Exception('Deserialized object type is not identical!', 1294586646);
 		}
 		$this->dataFromArray($arrayRepresentation);
 	}
 
 }
+
 
 ?>

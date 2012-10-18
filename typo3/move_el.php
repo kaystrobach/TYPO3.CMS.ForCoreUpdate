@@ -44,7 +44,7 @@ $LANG->includeLLFile('EXT:lang/locallang_misc.xml');
  * @package TYPO3
  * @subpackage core
  */
-class localPageTree extends t3lib_pageTree {
+class localPageTree extends \TYPO3\CMS\Backend\Tree\View\PageTreeView {
 
 	/**
 	 * Inserting uid-information in title-text for an icon
@@ -67,7 +67,7 @@ class localPageTree extends t3lib_pageTree {
  * @package TYPO3
  * @subpackage core
  */
-class ext_posMap_pages extends t3lib_positionMap {
+class ext_posMap_pages extends \TYPO3\CMS\Backend\Tree\View\PagePositionMap {
 
 	/**
 	 * @todo Define visibility
@@ -83,7 +83,7 @@ class ext_posMap_pages extends t3lib_positionMap {
 	 * @todo Define visibility
 	 */
 	public function onClickEvent($pid, $newPagePID) {
-		return (((((((((('window.location.href=\'tce_db.php?cmd[pages][' . $GLOBALS['SOBE']->moveUid) . '][') . $this->moveOrCopy) . ']=') . $pid) . '&redirect=') . rawurlencode($this->R_URI)) . '&prErr=1&uPT=1&vC=') . $GLOBALS['BE_USER']->veriCode()) . t3lib_BEfunc::getUrlToken('tceAction')) . '\';return false;';
+		return (((((((((('window.location.href=\'tce_db.php?cmd[pages][' . $GLOBALS['SOBE']->moveUid) . '][') . $this->moveOrCopy) . ']=') . $pid) . '&redirect=') . rawurlencode($this->R_URI)) . '&prErr=1&uPT=1&vC=') . $GLOBALS['BE_USER']->veriCode()) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction')) . '\';return false;';
 	}
 
 	/**
@@ -95,7 +95,7 @@ class ext_posMap_pages extends t3lib_positionMap {
 	 * @todo Define visibility
 	 */
 	public function linkPageTitle($str, $rec) {
-		$url = t3lib_div::linkThisScript(array('uid' => intval($rec['uid']), 'moveUid' => $GLOBALS['SOBE']->moveUid));
+		$url = \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('uid' => intval($rec['uid']), 'moveUid' => $GLOBALS['SOBE']->moveUid));
 		return ((('<a href="' . htmlspecialchars($url)) . '">') . $str) . '</a>';
 	}
 
@@ -121,7 +121,7 @@ class ext_posMap_pages extends t3lib_positionMap {
  * @package TYPO3
  * @subpackage core
  */
-class ext_posMap_tt_content extends t3lib_positionMap {
+class ext_posMap_tt_content extends \TYPO3\CMS\Backend\Tree\View\PagePositionMap {
 
 	/**
 	 * @todo Define visibility
@@ -137,7 +137,7 @@ class ext_posMap_tt_content extends t3lib_positionMap {
 	 * @todo Define visibility
 	 */
 	public function linkPageTitle($str, $rec) {
-		$url = t3lib_div::linkThisScript(array('uid' => intval($rec['uid']), 'moveUid' => $GLOBALS['SOBE']->moveUid));
+		$url = \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('uid' => intval($rec['uid']), 'moveUid' => $GLOBALS['SOBE']->moveUid));
 		return ((('<a href="' . htmlspecialchars($url)) . '">') . $str) . '</a>';
 	}
 
@@ -163,9 +163,9 @@ class ext_posMap_tt_content extends t3lib_positionMap {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/ContentElement/MoveElementController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/ContentElement/MoveElementController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/ContentElement/MoveElementController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_move_el');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\ContentElement\\MoveElementController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

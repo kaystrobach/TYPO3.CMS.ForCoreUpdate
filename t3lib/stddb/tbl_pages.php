@@ -22,12 +22,12 @@ $TCA['pages'] = array(
 					),
 					array(
 						'LLL:EXT:lang/locallang_tca.php:doktype.I.0',
-						(string) t3lib_pageSelect::DOKTYPE_DEFAULT,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_DEFAULT,
 						'i/pages.gif'
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.doktype.I.4',
-						(string) t3lib_pageSelect::DOKTYPE_BE_USER_SECTION,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_BE_USER_SECTION,
 						'i/be_users_section.gif'
 					),
 					array(
@@ -36,17 +36,17 @@ $TCA['pages'] = array(
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.doktype.I.2',
-						(string) t3lib_pageSelect::DOKTYPE_SHORTCUT,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SHORTCUT,
 						'i/pages_shortcut.gif'
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.doktype.I.5',
-						(string) t3lib_pageSelect::DOKTYPE_MOUNTPOINT,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_MOUNTPOINT,
 						'i/pages_mountpoint.gif'
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.doktype.I.8',
-						(string) t3lib_pageSelect::DOKTYPE_LINK,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_LINK,
 						'i/pages_link.gif'
 					),
 					array(
@@ -55,21 +55,21 @@ $TCA['pages'] = array(
 					),
 					array(
 						'LLL:EXT:lang/locallang_tca.xml:doktype.I.folder',
-						(string) t3lib_pageSelect::DOKTYPE_SYSFOLDER,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SYSFOLDER,
 						'i/sysf.gif'
 					),
 					array(
 						'LLL:EXT:lang/locallang_tca.xml:doktype.I.2',
-						(string) t3lib_pageSelect::DOKTYPE_RECYCLER,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_RECYCLER,
 						'i/recycler.gif'
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.doktype.I.7',
-						(string) t3lib_pageSelect::DOKTYPE_SPACER,
+						(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SPACER,
 						'i/spacer_icon.gif'
 					)
 				),
-				'default' => (string) t3lib_pageSelect::DOKTYPE_DEFAULT,
+				'default' => (string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_DEFAULT,
 				'iconsInOptionTags' => 1,
 				'noIconsBelowSelect' => 1
 			)
@@ -93,7 +93,7 @@ $TCA['pages'] = array(
 				'wizards' => array(
 					'_PADDING' => 4,
 					'0' => array(
-						'type' => t3lib_extMgm::isLoaded('tsconfig_help') ? 'popup' : '',
+						'type' => \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('tsconfig_help') ? 'popup' : '',
 						'title' => 'TSconfig QuickReference',
 						'script' => 'wizard_tsconfig.php?mode=page',
 						'icon' => 'wizard_tsconfig.gif',
@@ -134,7 +134,7 @@ $TCA['pages'] = array(
 				)
 			)
 		),
-		'tx_impexp_origuid' => array('config' => array('type' => 'passthrough')),
+		'TYPO3\\CMS\\Impexp\\ImportExport_origuid' => array('config' => array('type' => 'passthrough')),
 		't3ver_label' => array(
 			'label' => 'LLL:EXT:lang/locallang_general.php:LGL.versionLabel',
 			'config' => array(
@@ -506,19 +506,19 @@ $TCA['pages'] = array(
 				'items' => array(
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.shortcut_mode.I.0',
-						t3lib_pageSelect::SHORTCUT_MODE_NONE
+						\TYPO3\CMS\Frontend\Page\PageRepository::SHORTCUT_MODE_NONE
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.shortcut_mode.I.1',
-						t3lib_pageSelect::SHORTCUT_MODE_FIRST_SUBPAGE
+						\TYPO3\CMS\Frontend\Page\PageRepository::SHORTCUT_MODE_FIRST_SUBPAGE
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.shortcut_mode.I.2',
-						t3lib_pageSelect::SHORTCUT_MODE_RANDOM_SUBPAGE
+						\TYPO3\CMS\Frontend\Page\PageRepository::SHORTCUT_MODE_RANDOM_SUBPAGE
 					),
 					array(
 						'LLL:EXT:cms/locallang_tca.xml:pages.shortcut_mode.I.3',
-						t3lib_pageSelect::SHORTCUT_MODE_PARENT_PAGE
+						\TYPO3\CMS\Frontend\Page\PageRepository::SHORTCUT_MODE_PARENT_PAGE
 					)
 				),
 				'default' => '0'
@@ -609,7 +609,7 @@ $TCA['pages'] = array(
 		'media' => array(
 			'exclude' => 1,
 			'label' => 'LLL:EXT:cms/locallang_tca.xml:pages.media',
-			'config' => t3lib_extMgm::getFileFieldTCAConfig('media')
+			'config' => \TYPO3\CMS\Core\Extension\ExtensionManager::getFileFieldTCAConfig('media')
 		),
 		'is_siteroot' => array(
 			'exclude' => 1,
@@ -741,7 +741,7 @@ $TCA['pages'] = array(
 	),
 	'types' => array(
 		// normal
-		(string) t3lib_pageSelect::DOKTYPE_DEFAULT => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_DEFAULT => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -768,7 +768,7 @@ $TCA['pages'] = array(
 		'
 		),
 		// external URL
-		(string) t3lib_pageSelect::DOKTYPE_LINK => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_LINK => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.external;external,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -791,7 +791,7 @@ $TCA['pages'] = array(
 		'
 		),
 		// shortcut
-		(string) t3lib_pageSelect::DOKTYPE_SHORTCUT => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SHORTCUT => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.shortcut;shortcut,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.shortcutpage;shortcutpage,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
@@ -815,7 +815,7 @@ $TCA['pages'] = array(
 				'
 		),
 		// mount page
-		(string) t3lib_pageSelect::DOKTYPE_MOUNTPOINT => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_MOUNTPOINT => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.mountpoint;mountpoint,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.mountpage;mountpage,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
@@ -838,7 +838,7 @@ $TCA['pages'] = array(
 		'
 		),
 		// spacer
-		(string) t3lib_pageSelect::DOKTYPE_SPACER => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SPACER => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;titleonly,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -850,7 +850,7 @@ $TCA['pages'] = array(
 			'
 		),
 		// Folder
-		(string) t3lib_pageSelect::DOKTYPE_SYSFOLDER => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SYSFOLDER => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;titleonly,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -866,7 +866,7 @@ $TCA['pages'] = array(
 		'
 		),
 		// trash
-		(string) t3lib_pageSelect::DOKTYPE_RECYCLER => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_RECYCLER => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;titleonly,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -1004,7 +1004,7 @@ $TCA['pages'] = array(
 );
 // if the compat version is less than 4.2, pagetype 2 ("Advanced")
 // and pagetype 5 ("Not in menu") are added to TCA.
-if (!t3lib_div::compat_version('4.2')) {
+if (!\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('4.2')) {
 	// Merging in CMS doktypes
 	array_splice($TCA['pages']['columns']['doktype']['config']['items'], 2, 0, array(
 		array(
@@ -1047,8 +1047,8 @@ if (!t3lib_div::compat_version('4.2')) {
 // keep old code (pre-FAL) for installations that haven't upgraded yet. please remove this code in TYPO3 7.0
 // @deprecated since TYPO3 6.0, please remove in TYPO3 7.0
 // existing installation - and files are merged, nothing to do
-if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'pages:media')) && !t3lib_div::compat_version('6.0')) {
-	t3lib_div::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[pages][columns][media] yet. Please do so before TYPO3 v7.');
+if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['TYPO3\\CMS\\Install\\Updates\\TceformsUpdateWizard']) || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['TYPO3\\CMS\\Install\\Updates\\TceformsUpdateWizard'], 'pages:media')) && !\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6.0')) {
+	\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[pages][columns][media] yet. Please do so before TYPO3 v7.');
 	// existing installation and no upgrade wizard was executed - and files haven't been merged: use the old code
 	$TCA['pages']['columns']['media']['config'] = array(
 		'type' => 'group',

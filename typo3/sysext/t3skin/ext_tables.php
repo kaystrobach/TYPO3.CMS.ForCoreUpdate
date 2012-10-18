@@ -66,7 +66,7 @@ if (TYPO3_MODE == 'BE' || TYPO3_MODE == 'FE' && isset($GLOBALS['BE_USER'])) {
 	$TBE_STYLES['borderschemes'][4] = array('', '', '', 'wrapperTable4');
 	$TBE_STYLES['borderschemes'][5] = array('', '', '', 'wrapperTable5');
 	// Setting the relative path to the extension in temp. variable:
-	$temp_eP = t3lib_extMgm::extRelPath($_EXTKEY);
+	$temp_eP = \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($_EXTKEY);
 	// Alternative dimensions for frameset sizes:
 	// Left menu frame width
 	$TBE_STYLES['dims']['leftMenuFrameW'] = 190;
@@ -79,8 +79,8 @@ if (TYPO3_MODE == 'BE' || TYPO3_MODE == 'FE' && isset($GLOBALS['BE_USER'])) {
 	$TBE_STYLES['scriptIDindex']['typo3/alt_clickmenu.php']['mainColors']['bgColor5'] = '#dedede';
 	// Setting up auto detection of alternative icons:
 	$TBE_STYLES['skinImgAutoCfg'] = array(
-		'absDir' => t3lib_extMgm::extPath($_EXTKEY) . 'icons/',
-		'relDir' => t3lib_extMgm::extRelPath($_EXTKEY) . 'icons/',
+		'absDir' => \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'icons/',
+		'relDir' => \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath($_EXTKEY) . 'icons/',
 		'forceFileExtension' => 'gif',
 		// Force to look for PNG alternatives...
 		'iconSizeWidth' => 16,
@@ -89,7 +89,7 @@ if (TYPO3_MODE == 'BE' || TYPO3_MODE == 'FE' && isset($GLOBALS['BE_USER'])) {
 	// Changing icon for filemounts, needs to be done here as overwriting the original icon would also change the filelist tree's root icon
 	$TCA['sys_filemounts']['ctrl']['iconfile'] = '_icon_ftp_2.gif';
 	// Adding flags to sys_language
-	t3lib_div::loadTCA('sys_language');
+	\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('sys_language');
 	$TCA['sys_language']['ctrl']['typeicon_column'] = 'flag';
 	$TCA['sys_language']['ctrl']['typeicon_classes'] = array(
 		'default' => 'mimetypes-x-sys_language',
@@ -392,9 +392,9 @@ if (TYPO3_MODE == 'BE' || TYPO3_MODE == 'FE' && isset($GLOBALS['BE_USER'])) {
 	$TBE_STYLES['extJS']['theme'] = $temp_eP . 'extjs/xtheme-t3skin.css';
 	// Adding HTML template for login screen
 	$TBE_STYLES['htmlTemplates']['templates/login.html'] = 'sysext/t3skin/templates/login.html';
-	$GLOBALS['TBE_STYLES']['stylesheets']['admPanel'] = t3lib_extMgm::siteRelPath('t3skin') . 'stylesheets/standalone/admin_panel.css';
+	$GLOBALS['TBE_STYLES']['stylesheets']['admPanel'] = \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('t3skin') . 'stylesheets/standalone/admin_panel.css';
 	foreach ($flagNames as $flagName) {
-		t3lib_SpriteManager::addIconSprite(array(
+		\TYPO3\CMS\Backend\Sprite\SpriteManager::addIconSprite(array(
 			'flags-' . $flagName,
 			('flags-' . $flagName) . '-overlay'
 		));

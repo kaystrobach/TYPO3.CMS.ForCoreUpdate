@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface
+interface FolderInterface extends \TYPO3\CMS\Core\Resource\ResourceInterface
 {
 	/**
 	 * Returns a list of all subfolders
@@ -44,7 +46,7 @@ interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface
 	 * Returns the object for a subfolder of the current folder, if it exists.
 	 *
 	 * @param string $name Name of the subfolder
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getSubfolder($name);
 
@@ -68,7 +70,7 @@ interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface
 	 * Renames this folder.
 	 *
 	 * @param string $newName
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function rename($newName);
 
@@ -80,4 +82,5 @@ interface t3lib_file_FolderInterface extends t3lib_file_ResourceInterface
 	public function delete();
 
 }
+
 ?>

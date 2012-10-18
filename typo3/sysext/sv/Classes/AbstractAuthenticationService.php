@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Sv;
+
 /**
  * Authentication services class
  *
@@ -6,12 +8,12 @@
  * @package TYPO3
  * @subpackage tx_sv
  */
-class tx_sv_authbase extends t3lib_svbase {
+class AbstractAuthenticationService extends \TYPO3\CMS\Core\Service\AbstractService {
 
 	/**
 	 * User object
 	 *
-	 * @var t3lib_userAuth
+	 * @var \TYPO3\CMS\Core\Authentication\AbstractUserAuthentication
 	 * @todo Define visibility
 	 */
 	public $pObj;
@@ -146,5 +148,6 @@ class tx_sv_authbase extends t3lib_svbase {
 	}
 
 }
+
 
 ?>

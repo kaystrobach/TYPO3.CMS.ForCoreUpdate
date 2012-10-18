@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Category;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_category_Registry implements t3lib_Singleton {
+class CategoryRegistry implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var array
@@ -47,10 +49,10 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	/**
 	 * Returns a class instance
 	 *
-	 * @return t3lib_category_Registry
+	 * @return \TYPO3\CMS\Core\Category\CategoryRegistry
 	 */
 	static public function getInstance() {
-		return t3lib_div::makeInstance('t3lib_category_Registry');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Category\\CategoryRegistry');
 	}
 
 	/**
@@ -147,5 +149,6 @@ class t3lib_category_Registry implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

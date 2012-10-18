@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Page;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,17 +33,18 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_pageSelect_getPageOverlayHook
+interface PageRepositoryGetPageOverlayHookInterface
 {
 	/**
 	 * enables to preprocess the pageoverlay
 	 *
 	 * @param array $pageInput The page record
 	 * @param integer $lUid The overlay language
-	 * @param t3lib_pageSelect $parent The calling parent object
+	 * @param \TYPO3\CMS\Frontend\Page\PageRepository $parent The calling parent object
 	 * @return void
 	 */
-	public function getPageOverlay_preProcess(&$pageInput, &$lUid, t3lib_pageSelect $parent);
+	public function getPageOverlay_preProcess(&$pageInput, &$lUid, \TYPO3\CMS\Frontend\Page\PageRepository $parent);
 
 }
+
 ?>

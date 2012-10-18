@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Sv;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,16 +31,16 @@
  * @package TYPO3
  * @subpackage tx_sv
  */
-class tx_sv_loginformhook {
+class LoginFormHook {
 
 	/**
 	 * Provides form code for the superchallenged authentication.
 	 *
 	 * @param array $params Parameters to the script
-	 * @param SC_index $pObj Calling object
+	 * @param \TYPO3\CMS\Backend\Controller\LoginController $pObj Calling object
 	 * @return string The code for the login form
 	 */
-	public function getLoginFormTag(array $params, SC_index &$pObj) {
+	public function getLoginFormTag(array $params, \TYPO3\CMS\Backend\Controller\LoginController &$pObj) {
 		// Get the code according to the login level
 		switch ($pObj->loginSecurityLevel) {
 		case 'challenged':
@@ -61,10 +63,10 @@ class tx_sv_loginformhook {
 	 * Provides form code for the superchallenged authentication.
 	 *
 	 * @param array $params Parameters to the script
-	 * @param SC_index $pObj Calling object
+	 * @param \TYPO3\CMS\Backend\Controller\LoginController $pObj Calling object
 	 * @return string The code for the login form
 	 */
-	public function getLoginScripts(array $params, SC_index &$pObj) {
+	public function getLoginScripts(array $params, \TYPO3\CMS\Backend\Controller\LoginController &$pObj) {
 		$content = '';
 		if ($pObj->loginSecurityLevel == 'superchallenged' || $pObj->loginSecurityLevel == 'challenged') {
 			$content = '
@@ -98,5 +100,6 @@ class tx_sv_loginformhook {
 	}
 
 }
+
 
 ?>

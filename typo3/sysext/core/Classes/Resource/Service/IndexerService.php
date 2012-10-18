@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Service;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,15 +34,15 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Service_IndexerService implements t3lib_Singleton {
+class IndexerService implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var t3lib_file_Repository_FileRepository
+	 * @var \TYPO3\CMS\Core\Resource\FileRepository
 	 */
 	protected $repository;
 
 	/**
-	 * @var t3lib_file_Factory
+	 * @var \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected $factory;
 
@@ -55,11 +57,11 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * Internal function to retrieve the file repository,
 	 * if it does not exist, an instance will be created
 	 *
-	 * @return t3lib_file_Repository_FileRepository
+	 * @return \TYPO3\CMS\Core\Resource\FileRepository
 	 */
 	protected function getRepository() {
 		if ($this->repository === NULL) {
-			$this->repository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+			$this->repository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		}
 		return $this->repository;
 	}
@@ -68,10 +70,10 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * Setter function for the fileFactory
 	 * returns the object itself for chaining purposes
 	 *
-	 * @param t3lib_file_Factory $factory
-	 * @return t3lib_file_Service_IndexerService
+	 * @param \TYPO3\CMS\Core\Resource\ResourceFactory $factory
+	 * @return \TYPO3\CMS\Core\Resource\Service\IndexerService
 	 */
-	public function setFactory(t3lib_file_Factory $factory) {
+	public function setFactory(\TYPO3\CMS\Core\Resource\ResourceFactory $factory) {
 		$this->factory = $factory;
 		return $this;
 	}
@@ -79,11 +81,11 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	/**
 	 * Creates or updates a file index entry from a file object.
 	 *
-	 * @param t3lib_file_File $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\File $fileObject
 	 * @param bool $updateObject Set this to FALSE to get the indexed values. You have to take care of updating the object yourself then!
 	 * @return t3lib_file_File|array the indexed $fileObject or an array of indexed properties.
 	 */
-	public function indexFile(t3lib_file_File $fileObject, $updateObject = TRUE) {
+	public function indexFile(\TYPO3\CMS\Core\Resource\File $fileObject, $updateObject = TRUE) {
 		// Get the file information of this object
 		$fileInfo = $this->gatherFileInformation($fileObject);
 		// Signal slot BEFORE the file was indexed
@@ -103,7 +105,7 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 			// orphaned index record in this case we could update
 			$otherFiles = $this->getRepository()->findBySha1Hash($fileInfo['sha1']);
 			$movedFile = FALSE;
-			/** @var $otherFile t3lib_file_File */
+			/** @var $otherFile \TYPO3\CMS\Core\Resource\File */
 			foreach ($otherFiles as $otherFile) {
 				if (!$otherFile->exists()) {
 					// @todo: create a log entry
@@ -133,7 +135,7 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 		// Check for an error during the execution and throw an exception
 		$error = $GLOBALS['TYPO3_DB']->sql_error();
 		if ($error) {
-			throw new RuntimeException(('Error during file indexing: "' . $error) . '"', 1314455642);
+			throw new \RuntimeException(('Error during file indexing: "' . $error) . '"', 1314455642);
 		}
 		// Signal slot AFTER the file was indexed
 		$this->emitPostFileIndexSignal($fileObject, $fileInfo);
@@ -166,10 +168,10 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * Indexes all files in a given storage folder.
 	 * currently this is done in a simple way, however could be changed to be more performant
 	 *
-	 * @param t3lib_file_Folder $folder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return int The number of indexed files.
 	 */
-	public function indexFilesInFolder(t3lib_file_Folder $folder) {
+	public function indexFilesInFolder(\TYPO3\CMS\Core\Resource\Folder $folder) {
 		$numberOfIndexedFiles = 0;
 		// Index all files in this folder
 		$fileObjects = $folder->getFiles();
@@ -195,12 +197,12 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * this function shouldn't be used, if someone needs to fetch the file information
 	 * from a file object, should be done by getProperties etc
 	 *
-	 * @param t3lib_file_File $file the file to fetch the information from
+	 * @param \TYPO3\CMS\Core\Resource\File $file the file to fetch the information from
 	 * @return array the file information as an array
 	 */
-	protected function gatherFileInformation(t3lib_file_File $file) {
-		$fileInfo = new ArrayObject(array());
-		$gatherDefaultInformation = new stdClass();
+	protected function gatherFileInformation(\TYPO3\CMS\Core\Resource\File $file) {
+		$fileInfo = new \ArrayObject(array());
+		$gatherDefaultInformation = new \stdClass();
 		$gatherDefaultInformation->getDefaultFileInfo = 1;
 		// signal before the files are modified
 		$this->emitPreGatherFileInformationSignal($file, $fileInfo, $gatherDefaultInformation);
@@ -224,7 +226,7 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 				'extension' => $file->getExtension()
 			);
 			$fileInfo = array_merge($defaultFileInfo, $fileInfo->getArrayCopy());
-			$fileInfo = new ArrayObject($fileInfo);
+			$fileInfo = new \ArrayObject($fileInfo);
 		}
 		// signal after the file information is fetched
 		$this->emitPostGatherFileInformationSignal($file, $fileInfo, $gatherDefaultInformation);
@@ -235,25 +237,25 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * Signal that is called before the file information is fetched
 	 * helpful if somebody wants to preprocess the record information
 	 *
-	 * @param t3lib_file_File $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\File $fileObject
 	 * @param array $fileInfo
 	 * @param boolean $gatherDefaultInformation
 	 * @signal
 	 */
-	protected function emitPreGatherFileInformationSignal(t3lib_file_File $fileObject, $fileInfo, $gatherDefaultInformation) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Service_IndexerService', 'preGatherFileInformation', array($fileObject, $fileInfo, $gatherDefaultInformation));
+	protected function emitPreGatherFileInformationSignal(\TYPO3\CMS\Core\Resource\File $fileObject, $fileInfo, $gatherDefaultInformation) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService', 'preGatherFileInformation', array($fileObject, $fileInfo, $gatherDefaultInformation));
 	}
 
 	/**
 	 * Signal that is called after a file object was indexed
 	 *
-	 * @param t3lib_file_File $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\File $fileObject
 	 * @param array $fileInfo
 	 * @param boolean $hasGatheredDefaultInformation
 	 * @signal
 	 */
-	protected function emitPostGatherFileInformationSignal(t3lib_file_File $fileObject, $fileInfo, $hasGatheredDefaultInformation) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Service_IndexerService', 'postGatherFileInformation', array($fileObject, $fileInfo, $hasGatheredDefaultInformation));
+	protected function emitPostGatherFileInformationSignal(\TYPO3\CMS\Core\Resource\File $fileObject, $fileInfo, $hasGatheredDefaultInformation) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService', 'postGatherFileInformation', array($fileObject, $fileInfo, $hasGatheredDefaultInformation));
 	}
 
 	/**
@@ -263,7 +265,7 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * @signal
 	 */
 	protected function emitPreMultipleFilesIndexSignal(array $fileObjectsToIndex) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Service_IndexerService', 'preMultipleFileIndex', array($fileObjectsToIndex));
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService', 'preMultipleFileIndex', array($fileObjectsToIndex));
 	}
 
 	/**
@@ -273,49 +275,50 @@ class t3lib_file_Service_IndexerService implements t3lib_Singleton {
 	 * @signal
 	 */
 	protected function emitPostMultipleFilesIndexSignal(array $fileObjectsToIndex) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Service_IndexerService', 'postMultipleFileIndex', array($fileObjectsToIndex));
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService', 'postMultipleFileIndex', array($fileObjectsToIndex));
 	}
 
 	/**
 	 * Signal that is called before a file object was indexed
 	 *
-	 * @param t3lib_file_File $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\File $fileObject
 	 * @param array $fileInfo
 	 * @signal
 	 */
-	protected function emitPreFileIndexSignal(t3lib_file_File $fileObject, $fileInfo) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Service_IndexerService', 'preFileIndex', array($fileObject, $fileInfo));
+	protected function emitPreFileIndexSignal(\TYPO3\CMS\Core\Resource\File $fileObject, $fileInfo) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService', 'preFileIndex', array($fileObject, $fileInfo));
 	}
 
 	/**
 	 * Signal that is called after a file object was indexed
 	 *
-	 * @param t3lib_file_File $fileObject
+	 * @param \TYPO3\CMS\Core\Resource\File $fileObject
 	 * @param array $fileInfo
 	 * @signal
 	 */
-	protected function emitPostFileIndexSignal(t3lib_file_File $fileObject, $fileInfo) {
-		$this->getSignalSlotDispatcher()->dispatch('t3lib_file_Service_IndexerService', 'postFileIndex', array($fileObject, $fileInfo));
+	protected function emitPostFileIndexSignal(\TYPO3\CMS\Core\Resource\File $fileObject, $fileInfo) {
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Core\\Resource\\Service\\IndexerService', 'postFileIndex', array($fileObject, $fileInfo));
 	}
 
 	/**
 	 * Get the SignalSlot dispatcher
 	 *
-	 * @return Tx_Extbase_SignalSlot_Dispatcher
+	 * @return \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
 	 */
 	protected function getSignalSlotDispatcher() {
-		return $this->getObjectManager()->get('Tx_Extbase_SignalSlot_Dispatcher');
+		return $this->getObjectManager()->get('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
 	}
 
 	/**
 	 * Get the ObjectManager
 	 *
-	 * @return Tx_Extbase_Object_ObjectManager
+	 * @return \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected function getObjectManager() {
-		return t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 	}
 
 }
+
 
 ?>

@@ -41,32 +41,32 @@ define('TYPO3_MODE', 'FE');
 // Prevent any output until AJAX/compression is initialized to stop
 // AJAX/compression data corruption
 ob_start();
-Typo3_Bootstrap::getInstance()->registerExtDirectComponents()->populateLocalConfiguration()->initializeCachingFramework()->registerAutoloader()->checkUtf8DatabaseSettingsOrDie()->transferDeprecatedCurlSettings()->setCacheHashOptions()->enforceCorrectProxyAuthScheme()->setDefaultTimezone()->initializeL10nLocales()->configureImageProcessingOptions()->convertPageNotFoundHandlingToBoolean()->registerGlobalDebugFunctions()->registerSwiftMailer()->configureExceptionHandling()->setMemoryLimit()->defineTypo3RequestTypes()->populateTypo3LoadedExtGlobal(TRUE)->loadAdditionalConfigurationFromExtensions(TRUE)->deprecationLogForOldExtCacheSetting()->initializeExceptionHandling()->requireAdditionalExtensionFiles()->setFinalCachingFrameworkCacheConfiguration()->defineLoggingAndExceptionConstants()->unsetReservedGlobalVariables();
-if (!t3lib_extMgm::isLoaded('cms')) {
+\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->registerExtDirectComponents()->populateLocalConfiguration()->initializeCachingFramework()->registerAutoloader()->checkUtf8DatabaseSettingsOrDie()->transferDeprecatedCurlSettings()->setCacheHashOptions()->enforceCorrectProxyAuthScheme()->setDefaultTimezone()->initializeL10nLocales()->configureImageProcessingOptions()->convertPageNotFoundHandlingToBoolean()->registerGlobalDebugFunctions()->registerSwiftMailer()->configureExceptionHandling()->setMemoryLimit()->defineTypo3RequestTypes()->populateTypo3LoadedExtGlobal(TRUE)->loadAdditionalConfigurationFromExtensions(TRUE)->deprecationLogForOldExtCacheSetting()->initializeExceptionHandling()->requireAdditionalExtensionFiles()->setFinalCachingFrameworkCacheConfiguration()->defineLoggingAndExceptionConstants()->unsetReservedGlobalVariables();
+if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms')) {
 	die('<strong>Error:</strong> The main frontend extension "cms" was not loaded. Enable it in the extension manager in the backend.');
 }
 // Timetracking started
-if ($_COOKIE[t3lib_beUserAuth::getCookieName()]) {
+if ($_COOKIE[\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::getCookieName()]) {
 	require_once PATH_t3lib . 'class.t3lib_timetrack.php';
-	$TT = new t3lib_timeTrack();
+	$TT = new \TYPO3\CMS\Core\TimeTracker\TimeTracker();
 } else {
 	require_once PATH_t3lib . 'class.t3lib_timetracknull.php';
 	$TT = new t3lib_timeTrackNull();
 }
 $TT->start();
-Typo3_Bootstrap::getInstance()->initializeTypo3DbGlobal(FALSE);
+\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->initializeTypo3DbGlobal(FALSE);
 // Hook to preprocess the current request:
 if (is_array($TYPO3_CONF_VARS['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'])) {
 	foreach ($TYPO3_CONF_VARS['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'] as $hookFunction) {
 		$hookParameters = array();
-		t3lib_div::callUserFunction($hookFunction, $hookParameters, $hookParameters);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hookFunction, $hookParameters, $hookParameters);
 	}
 	unset($hookFunction);
 	unset($hookParameters);
 }
 // Look for extension ID which will launch alternative output engine
-if ($temp_extId = t3lib_div::_GP('eID')) {
-	if ($classPath = t3lib_div::getFileAbsFileName($TYPO3_CONF_VARS['FE']['eID_include'][$temp_extId])) {
+if ($temp_extId = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('eID')) {
+	if ($classPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($TYPO3_CONF_VARS['FE']['eID_include'][$temp_extId])) {
 		// Remove any output produced until now
 		ob_clean();
 		require $classPath;
@@ -76,10 +76,10 @@ if ($temp_extId = t3lib_div::_GP('eID')) {
 // Create $TSFE object (TSFE = TypoScript Front End)
 // Connecting to database
 /**
- * @var $TSFE tslib_fe
+ * @var $TSFE \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
  */
-$TSFE = t3lib_div::makeInstance('tslib_fe', $TYPO3_CONF_VARS, t3lib_div::_GP('id'), t3lib_div::_GP('type'), t3lib_div::_GP('no_cache'), t3lib_div::_GP('cHash'), t3lib_div::_GP('jumpurl'), t3lib_div::_GP('MP'), t3lib_div::_GP('RDCT'));
-if ($TYPO3_CONF_VARS['FE']['pageUnavailable_force'] && !t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
+$TSFE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', $TYPO3_CONF_VARS, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'), \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('type'), \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('no_cache'), \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cHash'), \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('jumpurl'), \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('MP'), \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('RDCT'));
+if ($TYPO3_CONF_VARS['FE']['pageUnavailable_force'] && !\TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
 	$TSFE->pageUnavailableAndExit('This page is temporarily unavailable.');
 }
 $TSFE->connectToDB();
@@ -88,22 +88,22 @@ $TSFE->sendRedirect();
 // Remove any output produced until now
 ob_clean();
 if ($TYPO3_CONF_VARS['FE']['compressionLevel'] && extension_loaded('zlib')) {
-	if (t3lib_utility_Math::canBeInterpretedAsInteger($TYPO3_CONF_VARS['FE']['compressionLevel'])) {
+	if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($TYPO3_CONF_VARS['FE']['compressionLevel'])) {
 		// Prevent errors if ini_set() is unavailable (safe mode)
 		@ini_set('zlib.output_compression_level', $TYPO3_CONF_VARS['FE']['compressionLevel']);
 	}
-	ob_start(array(t3lib_div::makeInstance('tslib_fecompression'), 'compressionOutputHandler'));
+	ob_start(array(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendControllercompression'), 'compressionOutputHandler'));
 }
 // FE_USER
 $TT->push('Front End user initialized', '');
 /**
- * @var $TSFE tslib_fe
+ * @var $TSFE \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
  */
 $TSFE->initFEuser();
 $TT->pull();
 // BE_USER
 /**
- * @var $BE_USER t3lib_tsfeBeUserAuth
+ * @var $BE_USER \TYPO3\CMS\Backend\FrontendBackendUserAuthentication
  */
 $BE_USER = $TSFE->initializeBackendUser();
 // Process the ID, type and other parameters
@@ -117,7 +117,7 @@ $TSFE->checkAlternativeIdMethods();
 $TSFE->clear_preview();
 $TSFE->determineId();
 // Now, if there is a backend user logged in and he has NO access to this page, then re-evaluate the id shown!
-if ($TSFE->isBackendUserLoggedIn() && (!$BE_USER->extPageReadAccess($TSFE->page) || t3lib_div::_GP('ADMCMD_noBeUser'))) {
+if ($TSFE->isBackendUserLoggedIn() && (!$BE_USER->extPageReadAccess($TSFE->page) || \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('ADMCMD_noBeUser'))) {
 	// t3lib_div::_GP('ADMCMD_noBeUser') is placed here because workspacePreviewInit() might need to know if a backend user is logged in!
 	// Remove user
 	unset($BE_USER);
@@ -132,10 +132,10 @@ $TT->pull();
 // Admin Panel & Frontend editing
 if ($TSFE->isBackendUserLoggedIn()) {
 	$BE_USER->initializeFrontendEdit();
-	if ($BE_USER->adminPanel instanceof tslib_AdminPanel) {
-		Typo3_Bootstrap::getInstance()->initializeLanguageObject();
+	if ($BE_USER->adminPanel instanceof \TYPO3\CMS\Frontend\View\AdminPanelView) {
+		\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->initializeLanguageObject();
 	}
-	if ($BE_USER->frontendEdit instanceof t3lib_frontendedit) {
+	if ($BE_USER->frontendEdit instanceof \TYPO3\CMS\Core\FrontendEditing\FrontendEditingController) {
 		$BE_USER->frontendEdit->initConfigOptions();
 	}
 }
@@ -219,7 +219,7 @@ $TSFE->hook_eofe();
 // Finish timetracking
 $TT->pull();
 // Check memory usage
-t3lib_utility_Monitor::peakMemoryUsage();
+\TYPO3\CMS\Core\Utility\MonitorUtility::peakMemoryUsage();
 // beLoginLinkIPList
 echo $TSFE->beLoginLinkIPList();
 // Admin panel
@@ -235,7 +235,7 @@ if ((isset($error) && is_object($error)) && @is_callable(array($error, 'debugOut
 	$error->debugOutput();
 }
 if (TYPO3_DLOG) {
-	t3lib_div::devLog('END of FRONTEND session', 'cms', 0, array('_FLUSH' => TRUE));
+	\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('END of FRONTEND session', 'cms', 0, array('_FLUSH' => TRUE));
 }
-Typo3_Bootstrap::getInstance()->shutdown();
+\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->shutdown();
 ?>

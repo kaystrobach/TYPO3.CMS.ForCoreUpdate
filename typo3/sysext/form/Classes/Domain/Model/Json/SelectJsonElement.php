@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Json;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_JSON_Select extends tx_form_Domain_Model_JSON_Element {
+class SelectJsonElement extends \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement {
 
 	/**
 	 * The ExtJS xtype of the element
@@ -93,7 +95,7 @@ class tx_form_Domain_Model_JSON_Select extends tx_form_Domain_Model_JSON_Element
 	 */
 	protected function setOptions(array $parameters) {
 		if (is_array($parameters)) {
-			$keys = t3lib_TStemplate::sortedKeyList($parameters);
+			$keys = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($parameters);
 			foreach ($keys as $key) {
 				$class = $parameters[$key];
 				if (intval($key) && !strstr($key, '.')) {
@@ -111,5 +113,6 @@ class tx_form_Domain_Model_JSON_Select extends tx_form_Domain_Model_JSON_Element
 	}
 
 }
+
 
 ?>

@@ -17,7 +17,7 @@ $TCA['static_template'] = array(
 		'default_sortby' => 'ORDER BY title',
 		'crdate' => 'crdate',
 		'iconfile' => 'template_standard.gif',
-		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'tca.php'
+		'dynamicConfigFile' => \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'tca.php'
 	)
 );
 $tempField = array(
@@ -33,7 +33,7 @@ $tempField = array(
 		)
 	)
 );
-t3lib_div::loadTCA('sys_template');
-t3lib_extMgm::addTCAcolumns('sys_template', $tempField, 1);
-t3lib_extMgm::addToAllTCAtypes('sys_template', 'include_static;;2;;5-5-5', '', 'before:includeStaticAfterBasedOn');
+\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('sys_template');
+\TYPO3\CMS\Core\Extension\ExtensionManager::addTCAcolumns('sys_template', $tempField, 1);
+\TYPO3\CMS\Core\Extension\ExtensionManager::addToAllTCAtypes('sys_template', 'include_static;;2;;5-5-5', '', 'before:includeStaticAfterBasedOn');
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,27 +33,27 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Utility_FileInfo {
+class FileInfoHook {
 
 	/**
 	 * User function for sys_file (element)
 	 *
 	 * @param array $PA the array with additional configuration options.
-	 * @param t3lib_TCEforms $tceformsObj the TCEforms parent object
+	 * @param \TYPO3\CMS\Backend\Form\FormEngine $tceformsObj the TCEforms parent object
 	 * @return string The HTML code for the TCEform field
 	 */
-	public function renderFileInfo(array $PA, t3lib_TCEforms $tceformsObj) {
+	public function renderFileInfo(array $PA, \TYPO3\CMS\Backend\Form\FormEngine $tceformsObj) {
 		$fileRecord = $PA['row'];
 		if ($fileRecord['uid'] > 0) {
-			$fileObject = t3lib_file_Factory::getInstance()->getFileObject($fileRecord['uid']);
-			$processedFile = $fileObject->process(t3lib_file_ProcessedFile::CONTEXT_IMAGEPREVIEW, array('width' => 150, 'height' => 150));
+			$fileObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getFileObject($fileRecord['uid']);
+			$processedFile = $fileObject->process(\TYPO3\CMS\Core\Resource\ProcessedFile::CONTEXT_IMAGEPREVIEW, array('width' => 150, 'height' => 150));
 			$previewImage = $processedFile->getPublicUrl(TRUE);
 			$content = '';
 			if ($previewImage) {
 				$content .= ('<img src="' . htmlspecialchars($previewImage)) . '" alt="" class="t3-tceforms-sysfile-imagepreview" />';
 			}
-			$content .= ((('<strong>' . htmlspecialchars($fileObject->getName())) . '</strong> (') . htmlspecialchars(t3lib_div::formatSize($fileObject->getSize()))) . ')<br />';
-			$content .= ((t3lib_BEfunc::getProcessedValue($PA['table'], 'type', $fileObject->getType()) . ' (') . $fileObject->getMimeType()) . ')<br />';
+			$content .= ((('<strong>' . htmlspecialchars($fileObject->getName())) . '</strong> (') . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($fileObject->getSize()))) . ')<br />';
+			$content .= ((\TYPO3\CMS\Backend\Utility\BackendUtility::getProcessedValue($PA['table'], 'type', $fileObject->getType()) . ' (') . $fileObject->getMimeType()) . ')<br />';
 			$content .= (((($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.xlf:fileMetaDataLocation', TRUE) . ': ') . htmlspecialchars($fileObject->getStorage()->getName())) . ' - ') . htmlspecialchars($fileObject->getIdentifier())) . '<br />';
 			$content .= '<br />';
 		} else {
@@ -61,5 +63,6 @@ class t3lib_file_Utility_FileInfo {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Toolbar;
+
 /**
  * Class to render the shortcut menu
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class ShortcutMenu implements backend_toolbarItem {
+class ShortcutToolbarItem implements \TYPO3\CMS\Backend\Toolbar\ToolbarItemHookInterface {
 
 	protected $shortcutGroups;
 
@@ -35,9 +37,9 @@ class ShortcutMenu implements backend_toolbarItem {
 	/**
 	 * Constructor
 	 *
-	 * @param TYPO3backend $backendReference TYPO3 backend object reference
+	 * @param \TYPO3\CMS\Backend\Controller\BackendController $backendReference TYPO3 backend object reference
 	 */
-	public function __construct(TYPO3backend &$backendReference = NULL) {
+	public function __construct(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
 		$this->shortcuts = array();
 		// By default, 5 groups are set
@@ -70,7 +72,7 @@ class ShortcutMenu implements backend_toolbarItem {
 		$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:toolbarItems.bookmarks', TRUE);
 		$this->addJavascriptToBackend();
 		$shortcutMenu = array();
-		$shortcutMenu[] = ('<a href="#" class="toolbar-item">' . t3lib_iconWorks::getSpriteIcon('apps-toolbar-menu-shortcut', array('title' => $title))) . '</a>';
+		$shortcutMenu[] = ('<a href="#" class="toolbar-item">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-toolbar-menu-shortcut', array('title' => $title))) . '</a>';
 		$shortcutMenu[] = '<div class="toolbar-item-menu" style="display: none;">';
 		$shortcutMenu[] = $this->renderMenu();
 		$shortcutMenu[] = '</div>';
@@ -86,9 +88,9 @@ class ShortcutMenu implements backend_toolbarItem {
 		$shortcutGroup = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:toolbarItems.bookmarksGroup', TRUE);
 		$shortcutEdit = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:toolbarItems.bookmarksEdit', TRUE);
 		$shortcutDelete = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:toolbarItems.bookmarksDelete', TRUE);
-		$groupIcon = ((((('<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/i/sysf.gif', 'width="18" height="16"')) . ' title="') . $shortcutGroup) . '" alt="') . $shortcutGroup) . '" />';
-		$editIcon = ((((('<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/edit2.gif', 'width="11" height="12"')) . ' title="') . $shortcutEdit) . '" alt="') . $shortcutEdit) . '"';
-		$deleteIcon = ((((('<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/garbage.gif', 'width="11" height="12"')) . ' title="') . $shortcutDelete) . '" alt="') . $shortcutDelete) . '" />';
+		$groupIcon = ((((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/i/sysf.gif', 'width="18" height="16"')) . ' title="') . $shortcutGroup) . '" alt="') . $shortcutGroup) . '" />';
+		$editIcon = ((((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/edit2.gif', 'width="11" height="12"')) . ' title="') . $shortcutEdit) . '" alt="') . $shortcutEdit) . '"';
+		$deleteIcon = ((((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/garbage.gif', 'width="11" height="12"')) . ' title="') . $shortcutDelete) . '" alt="') . $shortcutDelete) . '" />';
 		$shortcutMenu[] = '<table border="0" cellspacing="0" cellpadding="0" class="shortcut-list">';
 		// Render shortcuts with no group (group id = 0) first
 		$noGroupShortcuts = $this->getShortcutsByGroup(0);
@@ -138,7 +140,7 @@ class ShortcutMenu implements backend_toolbarItem {
 		if (count($shortcutMenu) == 1) {
 			// No shortcuts added yet, show a small help message how to add shortcuts
 			$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:toolbarItems.bookmarks', TRUE);
-			$icon = t3lib_iconWorks::getSpriteIcon('actions-system-shortcut-new', array(
+			$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-shortcut-new', array(
 				'title' => $title
 			));
 			$label = str_replace('%icon%', $icon, $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.php:bookmarkDescription'));
@@ -153,10 +155,10 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * Renders the menu so that it can be returned as response to an AJAX call
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return void
 	 */
-	public function renderAjax($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
+	public function renderAjax($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
 		$menuContent = $this->renderMenu();
 		$ajaxObj->addContent('shortcutMenu', $menuContent);
 	}
@@ -196,7 +198,7 @@ class ShortcutMenu implements backend_toolbarItem {
 			$row['M_module_name'] = $moduleParts[1];
 			$moduleParts = explode('_', $row['M_module_name'] ? $row['M_module_name'] : $row['module_name']);
 			$queryParts = parse_url($row['url']);
-			$queryParameters = t3lib_div::explodeUrl2Array($queryParts['query'], 1);
+			$queryParameters = \TYPO3\CMS\Core\Utility\GeneralUtility::explodeUrl2Array($queryParts['query'], 1);
 			if ($row['module_name'] == 'xMOD_alt_doc.php' && is_array($queryParameters['edit'])) {
 				$shortcut['table'] = key($queryParameters['edit']);
 				$shortcut['recordid'] = key($queryParameters['edit'][$shortcut['table']]);
@@ -219,13 +221,13 @@ class ShortcutMenu implements backend_toolbarItem {
 					// - otherwise the translation label would not have been loaded :-)
 					continue;
 				}
-				if (t3lib_utility_Math::canBeInterpretedAsInteger($pageId)) {
+				if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($pageId)) {
 					// Check for webmount access
 					if (!$GLOBALS['BE_USER']->isInWebMount($pageId)) {
 						continue;
 					}
 					// Check for record access
-					$pageRow = t3lib_BEfunc::getRecord('pages', $pageId);
+					$pageRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $pageId);
 					if (!$GLOBALS['BE_USER']->doesUserHaveAccess($pageRow, ($perms = 1))) {
 						continue;
 					}
@@ -238,7 +240,7 @@ class ShortcutMenu implements backend_toolbarItem {
 			if ($row['description']) {
 				$shortcut['label'] = $row['description'];
 			} else {
-				$shortcut['label'] = t3lib_div::fixed_lgd_cs(rawurldecode($queryParts['query']), 150);
+				$shortcut['label'] = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(rawurldecode($queryParts['query']), 150);
 			}
 			$shortcut['group'] = $shortcutGroup;
 			$shortcut['icon'] = $this->getShortcutIcon($row, $shortcut);
@@ -288,10 +290,10 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * and global groups
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return array
 	 */
-	protected function initShortcutGroups($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
+	protected function initShortcutGroups($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
 		// Groups from TSConfig
 		$bookmarkGroups = $GLOBALS['BE_USER']->getTSConfigProp('options.bookmarkGroups');
 		if (is_array($bookmarkGroups) && count($bookmarkGroups)) {
@@ -338,10 +340,10 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * gets the available shortcut groups
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return void
 	 */
-	public function getAjaxShortcutGroups($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
+	public function getAjaxShortcutGroups($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
 		$shortcutGroups = $this->shortcutGroups;
 		if (!$GLOBALS['BE_USER']->isAdmin()) {
 			foreach ($shortcutGroups as $groupId => $groupName) {
@@ -358,11 +360,11 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * Deletes a shortcut through an AJAX call
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return void
 	 */
-	public function deleteAjaxShortcut($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
-		$shortcutId = (int) t3lib_div::_POST('shortcutId');
+	public function deleteAjaxShortcut($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
+		$shortcutId = (int) \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('shortcutId');
 		$fullShortcut = $this->getShortcutById($shortcutId);
 		$ajaxReturn = 'failed';
 		if ($fullShortcut['raw']['userid'] == $GLOBALS['BE_USER']->user['uid']) {
@@ -378,20 +380,20 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * Creates a shortcut through an AJAX call
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Oject of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Oject of type TYPO3AJAX
 	 * @return void
 	 */
-	public function createAjaxShortcut($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
+	public function createAjaxShortcut($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
 		$shortcutCreated = 'failed';
 		// Default name
 		$shortcutName = 'Shortcut';
 		$shortcutNamePrepend = '';
-		$url = t3lib_div::_POST('url');
-		$module = t3lib_div::_POST('module');
-		$motherModule = t3lib_div::_POST('motherModName');
+		$url = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('url');
+		$module = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('module');
+		$motherModule = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('motherModName');
 		// Determine shortcut type
 		$queryParts = parse_url($url);
-		$queryParameters = t3lib_div::explodeUrl2Array($queryParts['query'], 1);
+		$queryParameters = \TYPO3\CMS\Core\Utility\GeneralUtility::explodeUrl2Array($queryParts['query'], 1);
 		// Proceed only if no scheme is defined, as URL is expected to be relative
 		if (empty($queryParts['scheme'])) {
 			if (is_array($queryParameters['edit'])) {
@@ -409,8 +411,8 @@ class ShortcutMenu implements backend_toolbarItem {
 			}
 			// Lookup the title of this page and use it as default description
 			$pageId = $shortcut['recordid'] ? $shortcut['recordid'] : $this->getLinkedPageId($url);
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($pageId)) {
-				$page = t3lib_BEfunc::getRecord('pages', $pageId);
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($pageId)) {
+				$page = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $pageId);
 				if (count($page)) {
 					// Set the name to the title of the page
 					if ($shortcut['type'] == 'other') {
@@ -451,13 +453,13 @@ class ShortcutMenu implements backend_toolbarItem {
 	 * permissions to do so and saves the changes if everything is ok
 	 *
 	 * @param array $params Array of parameters from the AJAX interface, currently unused
-	 * @param TYPO3AJAX $ajaxObj Object of type TYPO3AJAX
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj Object of type TYPO3AJAX
 	 * @return void
 	 */
-	public function setAjaxShortcut($params = array(), TYPO3AJAX &$ajaxObj = NULL) {
-		$shortcutId = (int) t3lib_div::_POST('shortcutId');
-		$shortcutName = strip_tags(t3lib_div::_POST('value'));
-		$shortcutGroupId = (int) t3lib_div::_POST('shortcut-group');
+	public function setAjaxShortcut($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
+		$shortcutId = (int) \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('shortcutId');
+		$shortcutName = strip_tags(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('value'));
+		$shortcutGroupId = (int) \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('shortcut-group');
 		if ($shortcutGroupId > 0 || $GLOBALS['BE_USER']->isAdmin()) {
 			// Users can delete only their own shortcuts (except admins)
 			$addUserWhere = !$GLOBALS['BE_USER']->isAdmin() ? ' AND userid=' . intval($GLOBALS['BE_USER']->user['uid']) : '';
@@ -539,7 +541,7 @@ class ShortcutMenu implements backend_toolbarItem {
 				$selectFields[] = 'uid';
 				$selectFields[] = 'pid';
 				if ($table == 'pages') {
-					if (t3lib_extMgm::isLoaded('cms')) {
+					if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms')) {
 						$selectFields[] = 'module';
 						$selectFields[] = 'extendToSubpages';
 					}
@@ -563,15 +565,15 @@ class ShortcutMenu implements backend_toolbarItem {
 				$sqlQueryParts = array(
 					'SELECT' => implode(',', $selectFields),
 					'FROM' => $table,
-					'WHERE' => (((('uid IN (' . $recordid) . ') ') . $permissionClause) . t3lib_BEfunc::deleteClause($table)) . t3lib_BEfunc::versioningPlaceholderClause($table)
+					'WHERE' => (((('uid IN (' . $recordid) . ') ') . $permissionClause) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table)) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($table)
 				);
 				$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($sqlQueryParts);
 				$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result);
-				$icon = t3lib_iconWorks::getIcon($table, $row, $this->backPath);
+				$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getIcon($table, $row, $this->backPath);
 			} elseif ($shortcut['type'] == 'new') {
-				$icon = t3lib_iconWorks::getIcon($table, '', $this->backPath);
+				$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getIcon($table, '', $this->backPath);
 			}
-			$icon = t3lib_iconWorks::skinImg($this->backPath, $icon, '', 1);
+			$icon = \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, $icon, '', 1);
 			break;
 		case 'xMOD_file_edit.php':
 			$icon = 'gfx/edit_file.gif';
@@ -584,7 +586,7 @@ class ShortcutMenu implements backend_toolbarItem {
 				$icon = $GLOBALS['LANG']->moduleLabels['tabs_images'][$row['module_name'] . '_tab'];
 				// Change icon of fileadmin references - otherwise it doesn't differ with Web->List
 				$icon = str_replace('mod/file/list/list.gif', 'mod/file/file.gif', $icon);
-				if (t3lib_div::isAbsPath($icon)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($icon)) {
 					$icon = '../' . substr($icon, strlen(PATH_site));
 				}
 			} else {
@@ -631,5 +633,6 @@ class ShortcutMenu implements backend_toolbarItem {
 	}
 
 }
+
 
 ?>

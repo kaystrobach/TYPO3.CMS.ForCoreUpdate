@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Configuration\FlexForm;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_flexformtools {
+class FlexFormTools {
 
 	// If set, the charset of data XML is converted to system charset.
 	/**
@@ -111,21 +113,21 @@ class t3lib_flexformtools {
 		}
 		$this->callBackObj = $callBackObj;
 		// Get Data Structure:
-		$dataStructArray = t3lib_BEfunc::getFlexFormDS($GLOBALS['TCA'][$table]['columns'][$field]['config'], $row, $table);
+		$dataStructArray = \TYPO3\CMS\Backend\Utility\BackendUtility::getFlexFormDS($GLOBALS['TCA'][$table]['columns'][$field]['config'], $row, $table);
 		// If data structure was ok, proceed:
 		if (is_array($dataStructArray)) {
 			// Get flexform XML data:
 			$xmlData = $row[$field];
 			// Convert charset:
 			if ($this->convertCharset) {
-				$xmlHeaderAttributes = t3lib_div::xmlGetHeaderAttribs($xmlData);
+				$xmlHeaderAttributes = \TYPO3\CMS\Core\Utility\GeneralUtility::xmlGetHeaderAttribs($xmlData);
 				$storeInCharset = strtolower($xmlHeaderAttributes['encoding']);
 				if ($storeInCharset) {
 					$currentCharset = $GLOBALS['LANG']->charSet;
 					$xmlData = $GLOBALS['LANG']->csConvObj->conv($xmlData, $storeInCharset, $currentCharset, 1);
 				}
 			}
-			$editData = t3lib_div::xml2array($xmlData);
+			$editData = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($xmlData);
 			if (!is_array($editData)) {
 				return 'Parsing error: ' . $editData;
 			}
@@ -160,7 +162,7 @@ class t3lib_flexformtools {
 			foreach ($lKeys as $lKey) {
 				foreach ($sKeys as $sheet) {
 					$sheetCfg = $dataStructArray['sheets'][$sheet];
-					list($dataStruct, $sheet) = t3lib_div::resolveSheetDefInDS($dataStructArray, $sheet);
+					list($dataStruct, $sheet) = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveSheetDefInDS($dataStructArray, $sheet);
 					// Render sheet:
 					if (is_array($dataStruct['ROOT']) && is_array($dataStruct['ROOT']['el'])) {
 						// Separate language key
@@ -251,9 +253,9 @@ class t3lib_flexformtools {
 	 * @todo Define visibility
 	 */
 	public function getAvailableLanguages() {
-		$isL = t3lib_extMgm::isLoaded('static_info_tables');
+		$isL = \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables');
 		// Find all language records in the system
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('static_lang_isocode,title,uid', 'sys_language', 'pid=0' . t3lib_BEfunc::deleteClause('sys_language'), '', 'title');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('static_lang_isocode,title,uid', 'sys_language', 'pid=0' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_language'), '', 'title');
 		// Traverse them
 		$output = array();
 		$output[0] = array(
@@ -264,7 +266,7 @@ class t3lib_flexformtools {
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$output[$row['uid']] = $row;
 			if ($isL && $row['static_lang_isocode']) {
-				$rr = t3lib_BEfunc::getRecord('static_languages', $row['static_lang_isocode'], 'lg_iso_2');
+				$rr = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('static_languages', $row['static_lang_isocode'], 'lg_iso_2');
 				if ($rr['lg_iso_2']) {
 					$output[$row['uid']]['ISOcode'] = $rr['lg_iso_2'];
 				}
@@ -296,7 +298,7 @@ class t3lib_flexformtools {
 		// New structure:
 		$this->cleanFlexFormXML = array();
 		// Create and call iterator object:
-		$flexObj = t3lib_div::makeInstance('t3lib_flexformtools');
+		$flexObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 		$flexObj->reNumberIndexesOfSectionData = TRUE;
 		$flexObj->traverseFlexFormXMLData($table, $field, $row, $this, 'cleanFlexFormXML_callBackFunction');
 		return $this->flexArray2Xml($this->cleanFlexFormXML, TRUE);
@@ -404,7 +406,7 @@ class t3lib_flexformtools {
 		}
 		$options = $GLOBALS['TYPO3_CONF_VARS']['BE']['niceFlexFormXMLtags'] ? $this->flexArray2Xml_options : array();
 		$spaceInd = $GLOBALS['TYPO3_CONF_VARS']['BE']['compactFlexFormXML'] ? -1 : 4;
-		$output = t3lib_div::array2xml($array, '', 0, 'T3FlexForms', $spaceInd, $options);
+		$output = \TYPO3\CMS\Core\Utility\GeneralUtility::array2xml($array, '', 0, 'T3FlexForms', $spaceInd, $options);
 		if ($addPrologue) {
 			$output = ((('<?xml version="1.0" encoding="' . $GLOBALS['LANG']->charSet) . '" standalone="yes" ?>') . LF) . $output;
 		}
@@ -412,5 +414,6 @@ class t3lib_flexformtools {
 	}
 
 }
+
 
 ?>

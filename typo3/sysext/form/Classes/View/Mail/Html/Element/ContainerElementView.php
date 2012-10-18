@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html_Element_Container extends tx_form_View_Mail_Html_Element_Abstract {
+class ContainerElementView extends \TYPO3\CMS\Form\View\Mail\Html\Element\AbstractElementView {
 
 	/**
 	 * Default layout of the container
@@ -48,7 +50,7 @@ class tx_form_View_Mail_Html_Element_Container extends tx_form_View_Mail_Html_El
 	 * @param DOMDocument $dom DOMDocument
 	 * @return DOMDocumentFragment
 	 */
-	public function getChildElements(DOMDocument $dom) {
+	public function getChildElements(\DOMDocument $dom) {
 		$modelChildren = $this->model->getElements();
 		$documentFragment = NULL;
 		foreach ($modelChildren as $key => $modelChild) {
@@ -78,18 +80,19 @@ class tx_form_View_Mail_Html_Element_Container extends tx_form_View_Mail_Html_El
 	 * Create child object from the classname of the model
 	 *
 	 * @param object $modelChild The childs model
-	 * @return tx_form_View_Mail_Html_Element_Abstract
+	 * @return \TYPO3\CMS\Form\View\Mail\Html\Element\AbstractElementView
 	 */
 	public function createChildElementFromModel($modelChild) {
 		$childElement = NULL;
-		$class = tx_form_Common::getInstance()->getLastPartOfClassName($modelChild);
-		$className = 'tx_form_View_Mail_Html_Element_' . ucfirst($class);
+		$class = \TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($modelChild);
+		$className = 'TYPO3\\CMS\\Form\\View\\Mail\\Html\\HtmlView_Element_' . ucfirst($class);
 		if (class_exists($className)) {
-			$childElement = t3lib_div::makeInstance($className, $modelChild);
+			$childElement = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $modelChild);
 		}
 		return $childElement;
 	}
 
 }
+
 
 ?>

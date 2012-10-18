@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Utility;
+
 // VERSION DoubleMetaphone Class 1.01
 //
 // DESCRIPTION
@@ -35,7 +37,7 @@
 // TYPO3: Had to change name to "user_DoubleMetaPhone" from just "DoubleMetaPhone" because TYPO3 requires a user class to be prefixed so:
 // TYPO3: If you want to use this metaphone method instead of the default in the class.indexer.php you can enable it in the extension configuration
 // TYPO3: Of course you can write your own metaphone hook methods by taking this class and configuration as example (also see ext_localconf.php)
-class user_DoubleMetaPhone {
+class DoubleMetaPhoneUtility {
 
 	//  properties
 	/**
@@ -826,5 +828,6 @@ class user_DoubleMetaPhone {
 	}
 
 }
+
 
 ?>

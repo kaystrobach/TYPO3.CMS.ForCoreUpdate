@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Wizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @subpackage form
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
-class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
+class WizardView extends \TYPO3\CMS\Form\View\Wizard\AbstractWizardView {
 
 	/**
 	 * The document template object
@@ -37,7 +39,7 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 	 * Needs to be a local variable of the class, because this will be used by
 	 * the TYPO3 Backend Template Class typo3/template.php
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 */
 	public $doc;
 
@@ -52,12 +54,12 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 	 *
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Repository_Content $repository) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Repository\ContentRepository $repository) {
 		parent::__construct($repository);
 		$GLOBALS['LANG']->includeLLFile('EXT:form/Resources/Private/Language/locallang_wizard.xml');
 		$GLOBALS['SOBE'] = $this;
 		// Define the document template object
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('EXT:form/Resources/Private/Templates/Wizard.html');
 		$this->doc->JScode = $this->doc->wrapScriptTags('
@@ -117,7 +119,7 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 	 */
 	protected function loadJavascript() {
 		$compress = TRUE;
-		$baseUrl = t3lib_div::resolveBackPath(('../../../../../' . t3lib_extMgm::siteRelPath('form')) . 'Resources/Public/JavaScript/Wizard/');
+		$baseUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath(('../../../../../' . \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('form')) . 'Resources/Public/JavaScript/Wizard/');
 		$javascriptFiles = array(
 			'Initialize.js',
 			'Ux/Ext.ux.merge.js',
@@ -233,7 +235,7 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 	protected function loadCss() {
 		// TODO Set to TRUE when finished
 		$compress = FALSE;
-		$baseUrl = t3lib_div::resolveBackPath(('../../../../../' . t3lib_extMgm::siteRelPath('form')) . 'Resources/Public/CSS/');
+		$baseUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath(('../../../../../' . \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('form')) . 'Resources/Public/CSS/');
 		$cssFiles = array(
 			'Wizard/Form.css',
 			'Wizard/Wizard.css'
@@ -254,7 +256,7 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 	protected function loadSettings() {
 		$record = $this->repository->getRecord();
 		$pageId = $record->getPageId();
-		$modTSconfig = t3lib_BEfunc::getModTSconfig($pageId, 'mod.wizards.form');
+		$modTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($pageId, 'mod.wizards.form');
 		$settings = $modTSconfig['properties'];
 		$this->removeTrailingDotsFromTyposcript($settings);
 		$this->doc->JScode .= $this->doc->wrapScriptTags(('TYPO3.Form.Wizard.Settings = ' . json_encode($settings)) . ';');
@@ -268,7 +270,7 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 	protected function loadLocalization() {
 		$wizardLabels = $GLOBALS['LANG']->includeLLFile('EXT:form/Resources/Private/Language/locallang_wizard.xml', FALSE, TRUE);
 		$controllerLabels = $GLOBALS['LANG']->includeLLFile('EXT:form/Resources/Private/Language/locallang_controller.xml', FALSE, TRUE);
-		$labels = t3lib_div::array_merge_recursive_overrule($controllerLabels, $wizardLabels);
+		$labels = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($controllerLabels, $wizardLabels);
 		$this->pageRenderer->addInlineLanguageLabelArray($labels['default']);
 	}
 
@@ -284,7 +286,7 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 		$params = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['form']['hooks']['renderWizard'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['form']['hooks']['renderWizard'] as $funcRef) {
-				t3lib_div::callUserFunction($funcRef, $params, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($funcRef, $params, $this);
 			}
 		}
 	}
@@ -323,12 +325,12 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 			'reload' => ''
 		);
 		// CSH
-		$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz', $GLOBALS['BACK_PATH'], '');
+		$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz', $GLOBALS['BACK_PATH'], '');
 		// CSH Buttons
-		$buttons['csh_buttons'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz_buttons', $GLOBALS['BACK_PATH'], '');
+		$buttons['csh_buttons'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'wizard_forms_wiz_buttons', $GLOBALS['BACK_PATH'], '');
 		// Close
-		$getPostVariables = t3lib_div::_GP('P');
-		$buttons['close'] = ((('<a href="#" onclick="' . htmlspecialchars((('jumpToUrl(unescape(\'' . rawurlencode(t3lib_div::sanitizeLocalUrl($getPostVariables['returnUrl']))) . '\')); return false;'))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-close', array(
+		$getPostVariables = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
+		$buttons['close'] = ((('<a href="#" onclick="' . htmlspecialchars((('jumpToUrl(unescape(\'' . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($getPostVariables['returnUrl']))) . '\')); return false;'))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close', array(
 			'title' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.closeDoc', TRUE)
 		))) . '</a>';
 		return $buttons;
@@ -346,13 +348,14 @@ class tx_form_View_Wizard_Wizard extends tx_form_View_Wizard_Abstract {
 		if ($this->recordIsAvailable) {
 			$bodyContent = '';
 		} else {
-			/** @var $flashMessage t3lib_FlashMessage */
-			$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->getLL('errorMessage', 1), $GLOBALS['LANG']->getLL('errorTitle', 1), t3lib_FlashMessage::ERROR);
+			/** @var $flashMessage \TYPO3\CMS\Core\Messaging\FlashMessage */
+			$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $GLOBALS['LANG']->getLL('errorMessage', 1), $GLOBALS['LANG']->getLL('errorTitle', 1), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 			$bodyContent = $flashMessage->render();
 		}
 		return $bodyContent;
 	}
 
 }
+
 
 ?>

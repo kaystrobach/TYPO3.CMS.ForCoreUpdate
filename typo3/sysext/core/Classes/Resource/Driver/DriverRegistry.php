@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Driver;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
+class DriverRegistry implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var array
@@ -66,13 +68,13 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 	public function registerDriverClass($className, $shortName = NULL, $label = NULL, $flexFormDataStructurePathAndFilename = NULL) {
 		// check if the class is available for TYPO3 before registering the driver
 		if (!class_exists($className)) {
-			throw new InvalidArgumentException(('Class ' . $className) . ' does not exist.', 1314979197);
+			throw new \InvalidArgumentException(('Class ' . $className) . ' does not exist.', 1314979197);
 		}
 		if ($shortName === '') {
 			$shortName = $className;
 		}
 		if (array_key_exists($shortName, $this->drivers)) {
-			throw new InvalidArgumentException(('Driver ' . $shortName) . ' is already registered.', 1314979451);
+			throw new \InvalidArgumentException(('Driver ' . $shortName) . ' is already registered.', 1314979451);
 		}
 		$this->drivers[$shortName] = $className;
 		$this->driverConfigurations[$shortName] = array(
@@ -94,7 +96,7 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 		}
 		foreach ($this->driverConfigurations as $driver) {
 			$label = $driver['label'] ?: $driver['class'];
-			t3lib_div::loadTCA('sys_file_storage');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('sys_file_storage');
 			$driverFieldConfig =& $GLOBALS['TCA']['sys_file_storage']['columns']['driver']['config'];
 			$driverFieldConfig['items'][] = array($label, $driver['shortName']);
 			if ($driver['flexFormDS']) {
@@ -115,11 +117,12 @@ class t3lib_file_Driver_DriverRegistry implements t3lib_Singleton {
 			return $shortName;
 		}
 		if (!array_key_exists($shortName, $this->drivers)) {
-			throw new InvalidArgumentException('Desired storage is not in the list of available storages.', 1314085990);
+			throw new \InvalidArgumentException('Desired storage is not in the list of available storages.', 1314085990);
 		}
 		return $this->drivers[$shortName];
 	}
 
 }
+
 
 ?>

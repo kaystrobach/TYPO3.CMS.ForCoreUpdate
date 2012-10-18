@@ -30,15 +30,15 @@
  * @author 	Kasper Skårhøj <kasperYYYY@typo3.com>
  */
 $BE_USER->modAccess($MCONF, 1);
-t3lib_extMgm::isLoaded('indexed_search', 1);
+\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('indexed_search', 1);
 /*
  * @deprecated since 6.0, the classname SC_mod_tools_isearch_index and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/indexed_search/Classes/Controller/ModuleController.php
  */
-require_once t3lib_extMgm::extPath('indexed_search') . 'Classes/Controller/ModuleController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('indexed_search') . 'Classes/Controller/ModuleController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_mod_tools_isearch_index');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\IndexedSearch\\Controller\\ModuleController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

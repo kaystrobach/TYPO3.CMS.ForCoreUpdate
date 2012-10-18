@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author 	Steffen Ritter <info@rs-websystems.de>
  */
-class tx_coreupdates_t3skin extends Tx_Install_Updates_Base {
+class T3skinUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	/**
 	 * @var string
@@ -47,7 +49,7 @@ class tx_coreupdates_t3skin extends Tx_Install_Updates_Base {
 		$description[] = '<strong>The backend skin "t3skin" is not loaded.</strong>
 		TYPO3 4.4 introduced many changes in backend skinning and old backend skins are now incompatible.
 		<strong>Without "t3skin" the backend may be unusable.</strong> Install extension "t3skin".';
-		if (!t3lib_extMgm::isLoaded('t3skin')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('t3skin')) {
 			$result = TRUE;
 		}
 		return $result;
@@ -73,14 +75,14 @@ class tx_coreupdates_t3skin extends Tx_Install_Updates_Base {
 	 */
 	public function performUpdate(array &$dbQueries, &$customMessages) {
 		$result = FALSE;
-		if ($this->versionNumber >= 4004000 && !t3lib_extMgm::isLoaded('t3skin')) {
+		if ($this->versionNumber >= 4004000 && !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('t3skin')) {
 			// check wether the table can be truncated or if sysext with tca has to be installed
 			if ($this->checkForUpdate($customMessages)) {
 				try {
-					t3lib_extMgm::loadExtension('t3skin');
+					\TYPO3\CMS\Core\Extension\ExtensionManager::loadExtension('t3skin');
 					$customMessages = 'The system extension "t3skin" was successfully loaded.';
 					$result = TRUE;
-				} catch (RuntimeException $e) {
+				} catch (\RuntimeException $e) {
 					$result = FALSE;
 				}
 			}
@@ -89,5 +91,6 @@ class tx_coreupdates_t3skin extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

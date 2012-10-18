@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Sql;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_install_Sql {
+class SchemaMigrator {
 
 	/**
 	 * @var string Prefix of deleted tables
@@ -86,7 +88,7 @@ class t3lib_install_Sql {
 	 * @return array Array with information about table.
 	 */
 	public function getFieldDefinitions_fileContent($fileContent) {
-		$lines = t3lib_div::trimExplode(LF, $fileContent, 1);
+		$lines = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $fileContent, 1);
 		$table = '';
 		$total = array();
 		foreach ($lines as $value) {
@@ -95,7 +97,7 @@ class t3lib_install_Sql {
 				continue;
 			}
 			if (!strlen($table)) {
-				$parts = t3lib_div::trimExplode(' ', $value, TRUE);
+				$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $value, TRUE);
 				if (strtoupper($parts[0]) === 'CREATE' && strtoupper($parts[1]) === 'TABLE') {
 					$table = str_replace('`', '', $parts[2]);
 					// tablenames are always lowercase on windows!
@@ -183,8 +185,8 @@ class t3lib_install_Sql {
 	protected function getFieldDefinitions_sqlContent_parseTypes(&$total) {
 		$mSize = (double) $this->multiplySize;
 		if ($mSize > 1) {
-			/** @var $sqlParser t3lib_sqlparser */
-			$sqlParser = t3lib_div::makeInstance('t3lib_sqlparser');
+			/** @var $sqlParser \TYPO3\CMS\Core\Database\SqlParser */
+			$sqlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\SqlParser');
 			foreach ($total as $table => $cfg) {
 				if (is_array($cfg['fields'])) {
 					foreach ($cfg['fields'] as $fN => $fType) {
@@ -212,7 +214,7 @@ class t3lib_install_Sql {
 										$match = array();
 										preg_match('/^([^(]*)\\(([^)]+)\\)(.*)/', $kType, $match);
 										$keys = array();
-										foreach (t3lib_div::trimExplode(',', $match[2]) as $kfN) {
+										foreach (\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $match[2]) as $kfN) {
 											if ($fN == $kfN) {
 												$kfN .= ('(' . $newSize) . ')';
 											}
@@ -229,7 +231,7 @@ class t3lib_install_Sql {
 						}
 						$total[$table]['fields'][$fN] = $sqlParser->compileFieldCfg($fInfo);
 						if ($sqlParser->parse_error) {
-							throw new RuntimeException('TYPO3 Fatal Error: ' . $sqlParser->parse_error, 1270853961);
+							throw new \RuntimeException('TYPO3 Fatal Error: ' . $sqlParser->parse_error, 1270853961);
 						}
 					}
 				}
@@ -341,7 +343,7 @@ class t3lib_install_Sql {
 		$diffArr = array();
 		if (is_array($FDsrc)) {
 			foreach ($FDsrc as $table => $info) {
-				if (!strlen($onlyTableList) || t3lib_div::inList($onlyTableList, $table)) {
+				if (!strlen($onlyTableList) || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($onlyTableList, $table)) {
 					if (!isset($FDcomp[$table])) {
 						// If the table was not in the FDcomp-array, the result array is loaded with that table.
 						$extraArr[$table] = $info;
@@ -705,5 +707,6 @@ class t3lib_install_Sql {
 	}
 
 }
+
 
 ?>

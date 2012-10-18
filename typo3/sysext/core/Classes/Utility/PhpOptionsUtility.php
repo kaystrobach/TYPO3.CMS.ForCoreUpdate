@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_utility_PhpOptions {
+final class PhpOptionsUtility {
 
 	/**
 	 * Check if php safe_mode is enabled
@@ -86,5 +88,6 @@ final class t3lib_utility_PhpOptions {
 	}
 
 }
+
 
 ?>

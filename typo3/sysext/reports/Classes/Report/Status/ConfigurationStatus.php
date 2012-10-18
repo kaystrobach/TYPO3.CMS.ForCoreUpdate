@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Report\Status;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackag reports
  */
-class tx_reports_reports_status_ConfigurationStatus implements tx_reports_StatusProvider {
+class ConfigurationStatus implements \TYPO3\CMS\Reports\StatusProviderInterface {
 
 	/**
 	 * 10MB
@@ -81,56 +83,56 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	/**
 	 * Checks if sys_refindex is empty.
 	 *
-	 * @return tx_reports_reports_status_Status An tx_reports_reports_status_Status object representing whether the reference index is empty or not
+	 * @return \TYPO3\CMS\Reports\Status An tx_reports_reports_status_Status object representing whether the reference index is empty or not
 	 */
 	protected function getReferenceIndexStatus() {
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('*', 'sys_refindex');
-		$registry = t3lib_div::makeInstance('t3lib_Registry');
+		$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$lastRefIndexUpdate = $registry->get('core', 'sys_refindex_lastUpdate');
 		if (!$count && $lastRefIndexUpdate) {
 			$value = $GLOBALS['LANG']->getLL('status_empty');
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$url = 'sysext/lowlevel/dbint/index.php?&id=0&SET[function]=refindex';
-			$message = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.backend_reference_index'), ('<a href="' . $url) . '">', '</a>', t3lib_BeFunc::dateTime($lastRefIndexUpdate));
+			$message = sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.backend_reference_index'), ('<a href="' . $url) . '">', '</a>', \t3lib_BeFunc::dateTime($lastRefIndexUpdate));
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_referenceIndex'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_referenceIndex'), $value, $message, $severity);
 	}
 
 	/**
 	 * Checks if PHP safe_mode is enabled.
 	 *
-	 * @return tx_reports_reports_status_Status A tx_reports_reports_status_Status object representing whether the safe_mode is enabled or not
+	 * @return \TYPO3\CMS\Reports\Status A tx_reports_reports_status_Status object representing whether the safe_mode is enabled or not
 	 */
 	protected function getPhpSafeModeStatus() {
 		$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
-		if (t3lib_utility_PhpOptions::isSafeModeEnabled()) {
+		$severity = \TYPO3\CMS\Reports\Status::OK;
+		if (\TYPO3\CMS\Core\Utility\PhpOptionsUtility::isSafeModeEnabled()) {
 			$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$message = $GLOBALS['LANG']->getLL('status_configuration_PhpSafeModeEnabled');
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_PhpSafeMode'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_PhpSafeMode'), $value, $message, $severity);
 	}
 
 	/**
 	 * Checks if PHP magic_quotes_gpc is enabled.
 	 *
-	 * @return tx_reports_reports_status_Status A tx_reports_reports_status_Status object representing whether the magic_quote_gpc is enabled or not
+	 * @return \TYPO3\CMS\Reports\Status A tx_reports_reports_status_Status object representing whether the magic_quote_gpc is enabled or not
 	 */
 	protected function getPhpMagicQuotesGpcStatus() {
 		$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
-		if (t3lib_utility_PhpOptions::isMagicQuotesGpcEnabled()) {
+		$severity = \TYPO3\CMS\Reports\Status::OK;
+		if (\TYPO3\CMS\Core\Utility\PhpOptionsUtility::isMagicQuotesGpcEnabled()) {
 			$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$message = $GLOBALS['LANG']->getLL('status_configuration_PhpMagicQuotesGpcEnabled');
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_PhpMagicQuotesGpc'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_PhpMagicQuotesGpc'), $value, $message, $severity);
 	}
 
 	/**
@@ -158,7 +160,7 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] as $table => $conf) {
 				if (is_array($conf)) {
 					foreach ($conf as $key => $value) {
-						if (!is_array($value) && $value === 't3lib_cache_backend_MemcachedBackend') {
+						if (!is_array($value) && $value === 'TYPO3\\CMS\\Core\\Cache\\Backend\\MemcachedBackend') {
 							$memcachedServers = $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'][$table]['options']['servers'];
 							break;
 						}
@@ -172,12 +174,12 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	/**
 	 * Checks whether TYPO3 can connect to the configured memcached servers.
 	 *
-	 * @return tx_reports_reports_status_Status An tx_reports_reports_status_Status object representing whether TYPO3 can connect to the configured memcached servers
+	 * @return \TYPO3\CMS\Reports\Status An tx_reports_reports_status_Status object representing whether TYPO3 can connect to the configured memcached servers
 	 */
 	protected function getMemcachedConnectionStatus() {
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		$failedConnections = array();
 		$defaultMemcachedPort = ini_get('memcache.default_port');
 		$memcachedServers = $this->getConfiguredMemcachedServers();
@@ -208,77 +210,77 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 		}
 		if (count($failedConnections)) {
 			$value = $GLOBALS['LANG']->getLL('status_connectionFailed');
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$message = ((($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:warning.memcache_not_usable') . '<br /><br />') . '<ul><li>') . implode('</li><li>', $failedConnections)) . '</li></ul>';
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_memcachedConfiguration'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_memcachedConfiguration'), $value, $message, $severity);
 	}
 
 	/**
 	 * Provides status information on the deprecation log, whether it's enabled
 	 * and if so whether certain limits in file size are reached.
 	 *
-	 * @return tx_reports_reports_status_Status The deprecation log status.
+	 * @return \TYPO3\CMS\Reports\Status The deprecation log status.
 	 */
 	protected function getDeprecationLogStatus() {
 		$title = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLog');
 		$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:disabled');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['enableDeprecationLog']) {
 			$value = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:enabled');
 			$message = ('<p>' . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogEnabled')) . '</p>';
-			$severity = tx_reports_reports_status_Status::NOTICE;
-			$logFile = t3lib_div::getDeprecationLogFileName();
+			$severity = \TYPO3\CMS\Reports\Status::NOTICE;
+			$logFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getDeprecationLogFileName();
 			$logFileSize = 0;
 			if (@file_exists($logFile)) {
 				$logFileSize = filesize($logFile);
 				$message .= ('<p>' . sprintf($GLOBALS['LANG']->getLL('status_configuration_DeprecationLogFile'), $this->getDeprecationLogFileLink())) . '</p>';
-				$removeDeprecationLogFileUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL') . '&amp;adminCmd=removeDeprecationLogFile';
-				$message .= ((((('<p>' . sprintf($GLOBALS['LANG']->getLL('status_configuration_DeprecationLogSize'), t3lib_div::formatSize($logFileSize))) . ' <a href="') . $removeDeprecationLogFileUrl) . '">') . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeleteLink')) . '</a></p>';
+				$removeDeprecationLogFileUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL') . '&amp;adminCmd=removeDeprecationLogFile';
+				$message .= ((((('<p>' . sprintf($GLOBALS['LANG']->getLL('status_configuration_DeprecationLogSize'), \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($logFileSize))) . ' <a href="') . $removeDeprecationLogFileUrl) . '">') . $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeleteLink')) . '</a></p>';
 			}
 			if ($logFileSize > $this->deprecationLogFileSizeWarningThreshold) {
-				$severity = tx_reports_reports_status_Status::WARNING;
+				$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			}
 			if ($logFileSize > $this->deprecationLogFileSizeErrorThreshold) {
-				$severity = tx_reports_reports_status_Status::ERROR;
+				$severity = \TYPO3\CMS\Reports\Status::ERROR;
 			}
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $title, $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $title, $value, $message, $severity);
 	}
 
 	/**
 	 * Warning, if fileCreateMask has write bit for 'others' set.
 	 *
-	 * @return tx_reports_reports_status_Status The writable status for 'others'
+	 * @return \TYPO3\CMS\Reports\Status The writable status for 'others'
 	 */
 	protected function getCreatedFilesWorldWritableStatus() {
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		if ((int) $GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'] % 10 & 2) {
 			$value = $GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'];
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$message = $GLOBALS['LANG']->getLL('status_CreatedFilePermissions.writable');
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_CreatedFilePermissions'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_CreatedFilePermissions'), $value, $message, $severity);
 	}
 
 	/**
 	 * Warning, if folderCreateMask has write bit for 'others' set.
 	 *
-	 * @return tx_reports_reports_status_Status The writable status for 'others'
+	 * @return \TYPO3\CMS\Reports\Status The writable status for 'others'
 	 */
 	protected function getCreatedDirectoriesWorldWritableStatus() {
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		if ((int) $GLOBALS['TYPO3_CONF_VARS']['BE']['folderCreateMask'] % 10 & 2) {
 			$value = $GLOBALS['TYPO3_CONF_VARS']['BE']['folderCreateMask'];
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$message = $GLOBALS['LANG']->getLL('status_CreatedDirectoryPermissions.writable');
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_CreatedDirectoryPermissions'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_CreatedDirectoryPermissions'), $value, $message, $severity);
 	}
 
 	/**
@@ -288,8 +290,8 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return string Link to the deprecation log file
 	 */
 	protected function getDeprecationLogFileLink() {
-		$logFile = t3lib_div::getDeprecationLogFileName();
-		$relativePath = t3lib_div::resolveBackPath($this->backPath . substr($logFile, strlen(PATH_site)));
+		$logFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getDeprecationLogFileName();
+		$relativePath = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($this->backPath . substr($logFile, strlen(PATH_site)));
 		$link = ((('<a href="' . $relativePath) . '">') . $logFile) . '</a>';
 		return $link;
 	}
@@ -303,7 +305,7 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return void
 	 */
 	protected function executeAdminCommand() {
-		$command = t3lib_div::_GET('adminCmd');
+		$command = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('adminCmd');
 		switch ($command) {
 		case 'removeDeprecationLogFile':
 			self::removeDeprecationLogFile();
@@ -320,16 +322,17 @@ class tx_reports_reports_status_ConfigurationStatus implements tx_reports_Status
 	 * @return void
 	 */
 	static protected function removeDeprecationLogFile() {
-		if (@unlink(t3lib_div::getDeprecationLogFileName())) {
+		if (@unlink(\TYPO3\CMS\Core\Utility\GeneralUtility::getDeprecationLogFileName())) {
 			$message = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeletedSuccessful');
-			$severity = t3lib_FlashMessage::OK;
+			$severity = \TYPO3\CMS\Core\Messaging\FlashMessage::OK;
 		} else {
 			$message = $GLOBALS['LANG']->getLL('status_configuration_DeprecationLogDeletionFailed');
-			$severity = t3lib_FlashMessage::ERROR;
+			$severity = \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR;
 		}
-		t3lib_FlashMessageQueue::addMessage(t3lib_div::makeInstance('t3lib_FlashMessage', $message, '', $severity, TRUE));
+		\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $message, '', $severity, TRUE));
 	}
 
 }
+
 
 ?>

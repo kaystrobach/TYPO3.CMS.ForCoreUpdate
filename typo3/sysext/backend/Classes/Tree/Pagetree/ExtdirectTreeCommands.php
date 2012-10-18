@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_pagetree_extdirect_Commands {
+class ExtdirectTreeCommands {
 
 	/**
 	 * Visibly the page
@@ -40,14 +42,14 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function visiblyNode($nodeData) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::visiblyNode($node);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($node->getId());
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::visiblyNode($node);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($node->getId());
 			$newNode->setLeaf($node->isLeafNode());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'error' => $exception->getMessage()
@@ -63,14 +65,14 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function disableNode($nodeData) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::disableNode($node);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($node->getId());
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::disableNode($node);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($node->getId());
 			$newNode->setLeaf($node->isLeafNode());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -86,19 +88,19 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function deleteNode($nodeData) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::deleteNode($node);
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::deleteNode($node);
 			$returnValue = array();
 			if ($GLOBALS['BE_USER']->workspace) {
-				$record = t3lib_tree_pagetree_Commands::getNodeRecord($node->getId());
+				$record = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNodeRecord($node->getId());
 				if ($record['_ORIG_uid']) {
-					$newNode = t3lib_tree_pagetree_Commands::getNewNode($record);
+					$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNewNode($record);
 					$returnValue = $newNode->toArray();
 				}
 			}
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -115,13 +117,13 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function restoreNode($nodeData, $destination) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::restoreNode($node, $destination);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($node->getId());
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::restoreNode($node, $destination);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($node->getId());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -142,16 +144,16 @@ class t3lib_tree_pagetree_extdirect_Commands {
 		if ($updatedLabel === '') {
 			return array();
 		}
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::updateNodeLabel($node, $updatedLabel);
-			$shortendedText = t3lib_div::fixed_lgd_cs($updatedLabel, intval($GLOBALS['BE_USER']->uc['titleLen']));
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::updateNodeLabel($node, $updatedLabel);
+			$shortendedText = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($updatedLabel, intval($GLOBALS['BE_USER']->uc['titleLen']));
 			$returnValue = array(
 				'editableText' => $updatedLabel,
 				'updatedText' => htmlspecialchars($shortendedText)
 			);
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -167,11 +169,11 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	static public function setTemporaryMountPoint($nodeData) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		$GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint'] = $node->getId();
 		$GLOBALS['BE_USER']->writeUC($GLOBALS['BE_USER']->uc);
-		return t3lib_tree_pagetree_Commands::getMountPointPath();
+		return \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getMountPointPath();
 	}
 
 	/**
@@ -182,14 +184,14 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function moveNodeToFirstChildOfDestination($nodeData, $destination) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::moveNode($node, $destination);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($node->getId(), FALSE);
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::moveNode($node, $destination);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($node->getId(), FALSE);
 			$newNode->setLeaf($node->isLeafNode());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -206,14 +208,14 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return void
 	 */
 	public function moveNodeAfterDestination($nodeData, $destination) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
 		try {
-			t3lib_tree_pagetree_Commands::moveNode($node, -$destination);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($node->getId(), FALSE);
+			\TYPO3\CMS\Backend\Tree\Pagetree\Commands::moveNode($node, -$destination);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($node->getId(), FALSE);
 			$newNode->setLeaf($node->isLeafNode());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -231,16 +233,16 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function copyNodeToFirstChildOfDestination($nodeData, $destination) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
-		/** @var $dataProvider t3lib_tree_pagetree_DataProvider */
-		$dataProvider = t3lib_div::makeInstance('t3lib_tree_pagetree_DataProvider');
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
+		/** @var $dataProvider \TYPO3\CMS\Backend\Tree\Pagetree\DataProvider */
+		$dataProvider = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\DataProvider');
 		try {
-			$newPageId = t3lib_tree_pagetree_Commands::copyNode($node, $destination);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($newPageId);
+			$newPageId = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::copyNode($node, $destination);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($newPageId);
 			$newNode->setLeaf($node->isLeafNode());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -258,16 +260,16 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function copyNodeAfterDestination($nodeData, $destination) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
-		/** @var $dataProvider t3lib_tree_pagetree_DataProvider */
-		$dataProvider = t3lib_div::makeInstance('t3lib_tree_pagetree_DataProvider');
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
+		/** @var $dataProvider \TYPO3\CMS\Backend\Tree\Pagetree\DataProvider */
+		$dataProvider = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\DataProvider');
 		try {
-			$newPageId = t3lib_tree_pagetree_Commands::copyNode($node, -$destination);
-			$newNode = t3lib_tree_pagetree_Commands::getNode($newPageId);
+			$newPageId = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::copyNode($node, -$destination);
+			$newNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($newPageId);
 			$newNode->setLeaf($node->isLeafNode());
 			$returnValue = $newNode->toArray();
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -284,12 +286,12 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function insertNodeToFirstChildOfDestination($parentNodeData, $pageType) {
-		/** @var $parentNode t3lib_tree_pagetree_Node */
-		$parentNode = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $parentNodeData);
+		/** @var $parentNode \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$parentNode = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $parentNodeData);
 		try {
-			$newPageId = t3lib_tree_pagetree_Commands::createNode($parentNode, $parentNode->getId(), $pageType);
-			$returnValue = t3lib_tree_pagetree_Commands::getNode($newPageId)->toArray();
-		} catch (Exception $exception) {
+			$newPageId = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::createNode($parentNode, $parentNode->getId(), $pageType);
+			$returnValue = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($newPageId)->toArray();
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -307,12 +309,12 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return array
 	 */
 	public function insertNodeAfterDestination($parentNodeData, $destination, $pageType) {
-		/** @var $parentNode t3lib_tree_pagetree_Node */
-		$parentNode = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $parentNodeData);
+		/** @var $parentNode \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$parentNode = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $parentNodeData);
 		try {
-			$newPageId = t3lib_tree_pagetree_Commands::createNode($parentNode, -$destination, $pageType);
-			$returnValue = t3lib_tree_pagetree_Commands::getNode($newPageId)->toArray();
-		} catch (Exception $exception) {
+			$newPageId = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::createNode($parentNode, -$destination, $pageType);
+			$returnValue = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNode($newPageId)->toArray();
+		} catch (\Exception $exception) {
 			$returnValue = array(
 				'success' => FALSE,
 				'message' => $exception->getMessage()
@@ -328,9 +330,9 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	 * @return string
 	 */
 	static public function getViewLink($nodeData) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
-		$javascriptLink = t3lib_BEfunc::viewOnClick($node->getId());
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
+		$javascriptLink = \TYPO3\CMS\Backend\Utility\BackendUtility::viewOnClick($node->getId());
 		preg_match('/window\\.open\\(\'([^\']+)\'/i', $javascriptLink, $match);
 		return $match[1];
 	}
@@ -353,10 +355,10 @@ class t3lib_tree_pagetree_extdirect_Commands {
 		$mountPoints[] = intval($GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint']);
 		$mountPoints = array_unique($mountPoints);
 		/** @var $userSettings extDirect_DataProvider_BackenduserSettings */
-		$userSettings = t3lib_div::makeInstance('extDirect_DataProvider_BackenduserSettings');
+		$userSettings = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('extDirect_DataProvider_BackenduserSettings');
 		$state = $userSettings->get('BackendComponents.States.' . $stateId);
 		$state->stateHash = (object) $state->stateHash;
-		$rootline = t3lib_BEfunc::BEgetRootLine($nodeId, '', $GLOBALS['BE_USER']->workspace != 0);
+		$rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($nodeId, '', $GLOBALS['BE_USER']->workspace != 0);
 		$rootlineIds = array();
 		foreach ($rootline as $pageData) {
 			$rootlineIds[] = intval($pageData['uid']);
@@ -367,7 +369,7 @@ class t3lib_tree_pagetree_extdirect_Commands {
 			}
 			$isFirstNode = TRUE;
 			foreach ($rootline as $pageData) {
-				$node = t3lib_tree_pagetree_Commands::getNewNode($pageData, $mountPoint);
+				$node = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNewNode($pageData, $mountPoint);
 				if ($isFirstNode) {
 					$isFirstNode = FALSE;
 					$state->stateHash->lastSelectedNode = $node->calculateNodeId();
@@ -381,5 +383,6 @@ class t3lib_tree_pagetree_extdirect_Commands {
 	}
 
 }
+
 
 ?>

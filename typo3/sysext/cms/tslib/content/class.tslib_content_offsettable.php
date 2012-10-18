@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_OffsetTable extends tslib_content_Abstract {
+class OffsetTableContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, OTABLE
@@ -40,8 +42,8 @@ class tslib_content_OffsetTable extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-		/** @var $controlTable tslib_tableOffset */
-		$controlTable = t3lib_div::makeInstance('tslib_tableOffset');
+		/** @var $controlTable \TYPO3\CMS\Frontend\ContentObject\OffsetTableContentObject */
+		$controlTable = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\OffsetTableContentObject');
 		$tableParams = isset($conf['tableParams.']) ? $this->cObj->stdWrap($conf['tableParams'], $conf['tableParams.']) : $conf['tableParams'];
 		if ($tableParams) {
 			$controlTable->tableParams = $tableParams;
@@ -55,5 +57,6 @@ class tslib_content_OffsetTable extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

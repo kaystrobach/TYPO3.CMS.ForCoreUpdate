@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -53,7 +55,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_DB {
+class DatabaseConnection {
 
 	// Set "TRUE" or "1" if you want database errors outputted. Set to "2" if you also want successful database actions outputted.
 	/**
@@ -465,7 +467,7 @@ class t3lib_DB {
 			}
 			return $query;
 		} else {
-			throw new InvalidArgumentException('TYPO3 Fatal Error: "Where" clause argument for UPDATE query was not a string in $this->UPDATEquery() !', 1270853880);
+			throw new \InvalidArgumentException('TYPO3 Fatal Error: "Where" clause argument for UPDATE query was not a string in $this->UPDATEquery() !', 1270853880);
 		}
 	}
 
@@ -489,7 +491,7 @@ class t3lib_DB {
 			}
 			return $query;
 		} else {
-			throw new InvalidArgumentException('TYPO3 Fatal Error: "Where" clause argument for DELETE query was not a string in $this->DELETEquery() !', 1270853881);
+			throw new \InvalidArgumentException('TYPO3 Fatal Error: "Where" clause argument for DELETE query was not a string in $this->DELETEquery() !', 1270853881);
 		}
 	}
 
@@ -579,7 +581,7 @@ class t3lib_DB {
 	public function listQuery($field, $value, $table) {
 		$value = (string) $value;
 		if (strpos(',', $value) !== FALSE) {
-			throw new InvalidArgumentException('$value must not contain a comma (,) in $this->listQuery() !', 1294585862);
+			throw new \InvalidArgumentException('$value must not contain a comma (,) in $this->listQuery() !', 1294585862);
 		}
 		$pattern = $this->quoteStr($value, $table);
 		$where = ((('FIND_IN_SET(\'' . $pattern) . '\',') . $field) . ')';
@@ -620,15 +622,15 @@ class t3lib_DB {
 	 * @param string $orderBy See exec_SELECTquery()
 	 * @param string $limit See exec_SELECTquery()
 	 * @param array $input_parameters An array of values with as many elements as there are bound parameters in the SQL statement being executed. All values are treated as t3lib_db_PreparedStatement::PARAM_AUTOTYPE.
-	 * @return t3lib_db_PreparedStatement Prepared statement
+	 * @return \TYPO3\CMS\Core\Database\PreparedStatement Prepared statement
 	 */
 	public function prepare_SELECTquery($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '', array $input_parameters = array()) {
 		$query = $this->SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit);
-		/** @var $preparedStatement t3lib_db_PreparedStatement */
-		$preparedStatement = t3lib_div::makeInstance('t3lib_db_PreparedStatement', $query, $from_table, array());
+		/** @var $preparedStatement \TYPO3\CMS\Core\Database\PreparedStatement */
+		$preparedStatement = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\PreparedStatement', $query, $from_table, array());
 		// Bind values to parameters
 		foreach ($input_parameters as $key => $value) {
-			$preparedStatement->bindValue($key, $value, t3lib_db_PreparedStatement::PARAM_AUTOTYPE);
+			$preparedStatement->bindValue($key, $value, \TYPO3\CMS\Core\Database\PreparedStatement::PARAM_AUTOTYPE);
 		}
 		// Return prepared statement
 		return $preparedStatement;
@@ -639,7 +641,7 @@ class t3lib_DB {
 	 *
 	 * @param array $queryParts Query parts array
 	 * @param array $input_parameters An array of values with as many elements as there are bound parameters in the SQL statement being executed. All values are treated as t3lib_db_PreparedStatement::PARAM_AUTOTYPE.
-	 * @return t3lib_db_PreparedStatement Prepared statement
+	 * @return \TYPO3\CMS\Core\Database\PreparedStatement Prepared statement
 	 */
 	public function prepare_SELECTqueryArray(array $queryParts, array $input_parameters = array()) {
 		return $this->prepare_SELECTquery($queryParts['SELECT'], $queryParts['FROM'], $queryParts['WHERE'], $queryParts['GROUPBY'], $queryParts['ORDERBY'], $queryParts['LIMIT'], $input_parameters);
@@ -762,7 +764,7 @@ class t3lib_DB {
 	 * @todo Define visibility
 	 */
 	public function cleanIntList($list) {
-		return implode(',', t3lib_div::intExplode(',', $list));
+		return implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $list));
 	}
 
 	/**
@@ -1039,7 +1041,7 @@ class t3lib_DB {
 		// Check if MySQL extension is loaded
 		if (!extension_loaded('mysql')) {
 			$message = 'Database Error: It seems that MySQL support for PHP is not installed!';
-			throw new RuntimeException($message, 1271492606);
+			throw new \RuntimeException($message, 1271492606);
 		}
 		// Check for client compression
 		$isLocalhost = $TYPO3_db_host == 'localhost' || $TYPO3_db_host == '127.0.0.1';
@@ -1064,12 +1066,12 @@ class t3lib_DB {
 		@ini_restore('track_errors');
 		@ini_restore('html_errors');
 		if (!$this->link) {
-			t3lib_div::sysLog((((('Could not connect to MySQL server ' . $TYPO3_db_host) . ' with user ') . $TYPO3_db_username) . ': ') . $error_msg, 'Core', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog((((('Could not connect to MySQL server ' . $TYPO3_db_host) . ' with user ') . $TYPO3_db_username) . ': ') . $error_msg, 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
 		} else {
-			$setDBinit = t3lib_div::trimExplode(LF, str_replace('\' . LF . \'', LF, $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']), TRUE);
+			$setDBinit = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, str_replace('\' . LF . \'', LF, $GLOBALS['TYPO3_CONF_VARS']['SYS']['setDBinit']), TRUE);
 			foreach ($setDBinit as $v) {
 				if (mysql_query($v, $this->link) === FALSE) {
-					t3lib_div::sysLog((('Could not initialize DB connection with query "' . $v) . '": ') . mysql_error($this->link), 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog((('Could not initialize DB connection with query "' . $v) . '": ') . mysql_error($this->link), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 				}
 			}
 			$this->setSqlMode();
@@ -1087,10 +1089,10 @@ class t3lib_DB {
 		if (is_resource($resource)) {
 			$result = $this->sql_fetch_row($resource);
 			if ((isset($result[0]) && $result[0]) && strpos($result[0], 'NO_BACKSLASH_ESCAPES') !== FALSE) {
-				$modes = array_diff(t3lib_div::trimExplode(',', $result[0]), array('NO_BACKSLASH_ESCAPES'));
+				$modes = array_diff(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $result[0]), array('NO_BACKSLASH_ESCAPES'));
 				$query = ('SET sql_mode=\'' . mysql_real_escape_string(implode(',', $modes))) . '\';';
 				$success = $this->sql_query($query);
-				t3lib_div::sysLog('NO_BACKSLASH_ESCAPES could not be removed from SQL mode: ' . $this->sql_error(), 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('NO_BACKSLASH_ESCAPES could not be removed from SQL mode: ' . $this->sql_error(), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 			}
 		}
 	}
@@ -1106,7 +1108,7 @@ class t3lib_DB {
 	public function sql_select_db($TYPO3_db) {
 		$ret = @mysql_select_db($TYPO3_db, $this->link);
 		if (!$ret) {
-			t3lib_div::sysLog((('Could not select MySQL database ' . $TYPO3_db) . ': ') . mysql_error(), 'Core', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog((('Could not select MySQL database ' . $TYPO3_db) . ': ') . mysql_error(), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
 		}
 		return $ret;
 	}
@@ -1256,28 +1258,28 @@ class t3lib_DB {
 		// If no db is given we throw immediately. This is a sign for a fresh (not configured)
 		// TYPO3 installation and is used in FE to redirect to 1-2-3 install tool
 		if (!$db) {
-			throw new RuntimeException('TYPO3 Fatal Error: No database selected!', 1270853882);
+			throw new \RuntimeException('TYPO3 Fatal Error: No database selected!', 1270853882);
 		}
 		if ($this->sql_pconnect($host, $user, $password)) {
 			if (!$this->sql_select_db($db)) {
-				throw new RuntimeException(('TYPO3 Fatal Error: Cannot connect to the current database, "' . $db) . '"!', 1270853883);
+				throw new \RuntimeException(('TYPO3 Fatal Error: Cannot connect to the current database, "' . $db) . '"!', 1270853883);
 			}
 		} else {
-			throw new RuntimeException('TYPO3 Fatal Error: The current username, password or host was not accepted when the connection to the database was attempted to be established!', 1270853884);
+			throw new \RuntimeException('TYPO3 Fatal Error: The current username, password or host was not accepted when the connection to the database was attempted to be established!', 1270853884);
 		}
 		// Prepare user defined objects (if any) for hooks which extend query methods
 		$this->preProcessHookObjects = array();
 		$this->postProcessHookObjects = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'] as $classRef) {
-				$hookObject = t3lib_div::getUserObj($classRef);
-				if (!($hookObject instanceof t3lib_DB_preProcessQueryHook || $hookObject instanceof t3lib_DB_postProcessQueryHook)) {
-					throw new UnexpectedValueException('$hookObject must either implement interface t3lib_DB_preProcessQueryHook or interface t3lib_DB_postProcessQueryHook', 1299158548);
+				$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+				if (!($hookObject instanceof \TYPO3\CMS\Core\Database\PreProcessQueryHookInterface || $hookObject instanceof \TYPO3\CMS\Core\Database\PostProcessQueryHookInterface)) {
+					throw new \UnexpectedValueException('$hookObject must either implement interface TYPO3\\CMS\\Core\\Database\\PreProcessQueryHookInterface or interface TYPO3\\CMS\\Core\\Database\\PostProcessQueryHookInterface', 1299158548);
 				}
-				if ($hookObject instanceof t3lib_DB_preProcessQueryHook) {
+				if ($hookObject instanceof \TYPO3\CMS\Core\Database\PreProcessQueryHookInterface) {
 					$this->preProcessHookObjects[] = $hookObject;
 				}
-				if ($hookObject instanceof t3lib_DB_postProcessQueryHook) {
+				if ($hookObject instanceof \TYPO3\CMS\Core\Database\PostProcessQueryHookInterface) {
 					$this->postProcessHookObjects[] = $hookObject;
 				}
 			}
@@ -1309,11 +1311,11 @@ class t3lib_DB {
 	public function debug($func, $query = '') {
 		$error = $this->sql_error();
 		if ($error || (int) $this->debugOutput === 2) {
-			debug(array(
-				'caller' => 't3lib_DB::' . $func,
+			\TYPO3\CMS\Core\Utility\DebugUtility::debug(array(
+				'caller' => 'TYPO3\\CMS\\Core\\Database\\DatabaseConnection::' . $func,
 				'ERROR' => $error,
 				'lastBuiltQuery' => $query ? $query : $this->debug_lastBuiltQuery,
-				'debug_backtrace' => t3lib_utility_Debug::debugTrail()
+				'debug_backtrace' => \TYPO3\CMS\Core\Utility\DebugUtility::debugTrail()
 			), $func, is_object($GLOBALS['error']) && @is_callable(array($GLOBALS['error'], 'debug')) ? '' : 'DB Error');
 		}
 	}
@@ -1339,8 +1341,8 @@ class t3lib_DB {
 				unset($trace['object']);
 			}
 		}
-		$msg .= ((((': function t3lib_DB->' . $trace[0]['function']) . ' called from file ') . substr($trace[0]['file'], (strlen(PATH_site) + 2))) . ' in line ') . $trace[0]['line'];
-		t3lib_div::sysLog($msg . '. Use a devLog extension to get more details.', 'Core/t3lib_db', t3lib_div::SYSLOG_SEVERITY_ERROR);
+		$msg .= ((((': function TYPO3\\CMS\\Core\\Database\\DatabaseConnection->' . $trace[0]['function']) . ' called from file ') . substr($trace[0]['file'], (strlen(PATH_site) + 2))) . ' in line ') . $trace[0]['line'];
+		\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog($msg . '. Use a devLog extension to get more details.', 'Core/t3lib_db', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 		// Send to devLog if enabled
 		if (TYPO3_DLOG) {
 			$debugLogData = array(
@@ -1350,7 +1352,7 @@ class t3lib_DB {
 			if ($this->debug_lastBuiltQuery) {
 				$debugLogData = array('SQL Query' => $this->debug_lastBuiltQuery) + $debugLogData;
 			}
-			t3lib_div::devLog($msg . '.', 'Core/t3lib_db', 3, $debugLogData);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog($msg . '.', 'Core/t3lib_db', 3, $debugLogData);
 		}
 		return FALSE;
 	}
@@ -1368,7 +1370,7 @@ class t3lib_DB {
 	 * @return boolean TRUE if explain was run, FALSE otherwise
 	 */
 	protected function explain($query, $from_table, $row_count) {
-		if ((int) $this->explainOutput == 1 || (int) $this->explainOutput == 2 && t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
+		if ((int) $this->explainOutput == 1 || (int) $this->explainOutput == 2 && \TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
 			// Raw HTML output
 			$explainMode = 1;
 		} elseif ((int) $this->explainOutput == 3 && is_object($GLOBALS['TT'])) {
@@ -1378,7 +1380,7 @@ class t3lib_DB {
 			return FALSE;
 		}
 		$error = $this->sql_error();
-		$trail = t3lib_utility_Debug::debugTrail();
+		$trail = \TYPO3\CMS\Core\Utility\DebugUtility::debugTrail();
 		$explain_tables = array();
 		$explain_output = array();
 		$res = $this->sql_query('EXPLAIN ' . $query, $this->link);
@@ -1391,7 +1393,7 @@ class t3lib_DB {
 		}
 		$indices_output = array();
 		// Notice: Rows are skipped if there is only one result, or if no conditions are set
-		if ($explain_output[0]['rows'] > 1 || t3lib_div::inList('ALL', $explain_output[0]['type'])) {
+		if ($explain_output[0]['rows'] > 1 || \TYPO3\CMS\Core\Utility\GeneralUtility::inList('ALL', $explain_output[0]['type'])) {
 			// Only enable output if it's really useful
 			$debug = TRUE;
 			foreach ($explain_tables as $table) {
@@ -1427,7 +1429,7 @@ class t3lib_DB {
 					$data['indices'] = $indices_output;
 				}
 				if ($explainMode == 1) {
-					t3lib_utility_Debug::debug($data, 'Tables: ' . $from_table, 'DB SQL EXPLAIN');
+					\TYPO3\CMS\Core\Utility\DebugUtility::debug($data, 'Tables: ' . $from_table, 'DB SQL EXPLAIN');
 				} elseif ($explainMode == 2) {
 					$GLOBALS['TT']->setTSselectQuery($data);
 				}
@@ -1438,5 +1440,6 @@ class t3lib_DB {
 	}
 
 }
+
 
 ?>

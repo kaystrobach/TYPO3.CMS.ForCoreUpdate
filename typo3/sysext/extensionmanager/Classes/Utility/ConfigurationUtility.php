@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,31 +33,31 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
+class ConfigurationUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ConfigurationItemRepository
 	 */
 	protected $configurationItemRepository;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Repository\ConfigurationItemRepository $configurationItemRepository
 	 * @return void
 	 */
-	public function injectConfigurationItemRepository(Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository $configurationItemRepository) {
+	public function injectConfigurationItemRepository(\TYPO3\CMS\Extensionmanager\Domain\Repository\ConfigurationItemRepository $configurationItemRepository) {
 		$this->configurationItemRepository = $configurationItemRepository;
 	}
 
@@ -78,8 +80,8 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function writeConfiguration(array $configuration, $extensionKey) {
-		/** @var $installUtility Tx_Extensionmanager_Utility_Install */
-		$installUtility = $this->objectManager->get('Tx_Extensionmanager_Utility_Install');
+		/** @var $installUtility \TYPO3\CMS\Extensionmanager\Utility\InstallUtility */
+		$installUtility = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Utility\\InstallUtility');
 		$installUtility->writeExtensionTypoScriptStyleConfigurationToLocalconf($extensionKey, $configuration);
 	}
 
@@ -91,10 +93,10 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 	 */
 	public function getCurrentConfiguration($extensionKey) {
 		$extension = $GLOBALS['TYPO3_LOADED_EXT'][$extensionKey];
-		$defaultConfig = $this->configurationItemRepository->createArrayFromConstants(t3lib_div::getUrl((PATH_site . $extension['siteRelPath']) . '/ext_conf_template.txt'), $extension);
+		$defaultConfig = $this->configurationItemRepository->createArrayFromConstants(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl((PATH_site . $extension['siteRelPath']) . '/ext_conf_template.txt'), $extension);
 		$currentExtensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extension['key']]);
 		$currentExtensionConfig = is_array($currentExtensionConfig) ? $currentExtensionConfig : array();
-		$currentFullConfiguration = t3lib_div::array_merge_recursive_overrule($defaultConfig, $currentExtensionConfig);
+		$currentFullConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($defaultConfig, $currentExtensionConfig);
 		return $currentFullConfiguration;
 	}
 
@@ -112,11 +114,12 @@ class Tx_Extensionmanager_Utility_Configuration implements t3lib_Singleton {
 		$nestedConfiguration = array();
 		foreach ($valuedConfiguration as $name => $section) {
 			$path = str_replace('.', './', $name);
-			$nestedConfiguration = t3lib_utility_Array::setValueByPath($nestedConfiguration, $path, $section['value'], '/');
+			$nestedConfiguration = \TYPO3\CMS\Core\Utility\ArrayUtility::setValueByPath($nestedConfiguration, $path, $section['value'], '/');
 		}
 		return $nestedConfiguration;
 	}
 
 }
+
 
 ?>

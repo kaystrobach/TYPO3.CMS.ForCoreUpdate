@@ -1,42 +1,41 @@
 <?php
+namespace TYPO3\CMS\Saltedpasswords\Salt;
+
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains class "tx_saltedpasswords_salts_phpass"
  * that provides PHPass salted hashing.
  *
  * Derived from Drupal CMS
  * original license: GNU General Public License (GPL)
- * @see http://drupal.org/node/29706/
  *
- * Based on the Portable PHP password hashing framework
- * original license: Public Domain
+ * @see http://drupal.org/node/29706/
  * @see http://www.openwall.com/phpass/
  */
-
 /**
  * Class that implements PHPass salted hashing based on Drupal's
  * modified Openwall implementation.
@@ -44,36 +43,31 @@
  * PHPass should work on every system.
  *
  * @author Marcus Krause <marcus#exp2009@t3sec.info>
- *
  * @since 2009-09-06
  * @package TYPO3
  * @subpackage tx_saltedpasswords
  */
-class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts implements tx_saltedpasswords_salts {
+class PhpassSalt extends \TYPO3\CMS\Saltedpasswords\Salt\AbstractSalt implements \TYPO3\CMS\Saltedpasswords\Salt\SaltInterface {
+
 	/**
 	 * Keeps a string for mapping an int to the corresponding
 	 * base 64 character.
 	 */
 	const ITOA64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
 	/**
 	 * The default log2 number of iterations for password stretching.
 	 */
 	const HASH_COUNT = 14;
-
 	/**
 	 * The default maximum allowed log2 number of iterations for
 	 * password stretching.
 	 */
 	const MAX_HASH_COUNT = 24;
-
 	/**
 	 * The default minimum allowed log2 number of iterations for
 	 * password stretching.
 	 */
 	const MIN_HASH_COUNT = 7;
-
-
 	/**
 	 * Keeps log2 number
 	 * of iterations for password stretching.
@@ -123,18 +117,14 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 */
 	protected function applySettingsToSalt($salt) {
 		$saltWithSettings = $salt;
-
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
-			// Salt without setting
+		// Salt without setting
 		if (strlen($salt) == $reqLenBase64) {
-				// We encode the final log2 iteration count in base 64.
+			// We encode the final log2 iteration count in base 64.
 			$itoa64 = $this->getItoa64();
 			$saltWithSettings = $this->getSetting() . $itoa64[$this->getHashCount()];
-
 			$saltWithSettings .= $salt;
 		}
-
 		return $saltWithSettings;
 	}
 
@@ -148,8 +138,7 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 */
 	public function checkPassword($plainPW, $saltedHashPW) {
 		$hash = $this->cryptPassword($plainPW, $saltedHashPW);
-
-		return ($hash && $saltedHashPW === $hash);
+		return $hash && $saltedHashPW === $hash;
 	}
 
 	/**
@@ -172,41 +161,30 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 * @param string $password Plain-text password to hash
 	 * @param string $setting An existing hash or the output of getGeneratedSalt()
 	 * @return mixed A string containing the hashed password (and salt)
-	 *						or boolean FALSE on failure.
 	 */
 	protected function cryptPassword($password, $setting) {
 		$saltedPW = NULL;
-
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
-			// Retrieving settings with salt
-		$setting = substr($setting, 0, strlen($this->getSetting()) + 1 + $reqLenBase64);
-
+		// Retrieving settings with salt
+		$setting = substr($setting, 0, (strlen($this->getSetting()) + 1) + $reqLenBase64);
 		$count_log2 = $this->getCountLog2($setting);
-
-			// Hashes may be imported from elsewhere, so we allow != HASH_COUNT
+		// Hashes may be imported from elsewhere, so we allow != HASH_COUNT
 		if ($count_log2 >= $this->getMinHashCount() && $count_log2 <= $this->getMaxHashCount()) {
-
 			$salt = substr($setting, strlen($this->getSetting()) + 1, $reqLenBase64);
-
-				// We must use md5() or sha1() here since they are the only cryptographic
-				// primitives always available in PHP 5. To implement our own low-level
-				// cryptographic function in PHP would result in much worse performance and
-				// consequently in lower iteration counts and hashes that are quicker to crack
-				// (by non-PHP code).
+			// We must use md5() or sha1() here since they are the only cryptographic
+			// primitives always available in PHP 5. To implement our own low-level
+			// cryptographic function in PHP would result in much worse performance and
+			// consequently in lower iteration counts and hashes that are quicker to crack
+			// (by non-PHP code).
 			$count = 1 << $count_log2;
-
 			$hash = md5($salt . $password, TRUE);
 			do {
 				$hash = md5($hash . $password, TRUE);
 			} while (--$count);
-
-			$saltedPW =  $setting . $this->base64Encode($hash, 16);
-
-				// base64Encode() of a 16 byte MD5 will always be 22 characters.
-			return (strlen($saltedPW) == 34) ? $saltedPW : FALSE;
+			$saltedPW = $setting . $this->base64Encode($hash, 16);
+			// base64Encode() of a 16 byte MD5 will always be 22 characters.
+			return strlen($saltedPW) == 34 ? $saltedPW : FALSE;
 		}
-
 		return $saltedPW;
 	}
 
@@ -217,26 +195,22 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 * @return integer Used hashcount for given hash string
 	 */
 	protected function getCountLog2($setting) {
-		return strpos(
-			$this->getItoa64(),
-			$setting[strlen($this->getSetting())]
-		);
+		return strpos($this->getItoa64(), $setting[strlen($this->getSetting())]);
 	}
 
 	/**
 	 * Generates a random base 64-encoded salt prefixed and suffixed with settings for the hash.
 	 *
 	 * Proper use of salts may defeat a number of attacks, including:
-	 *  - The ability to try candidate passwords against multiple hashes at once.
-	 *  - The ability to use pre-hashed lists of candidate passwords.
-	 *  - The ability to determine whether two users have the same (or different)
-	 *    password without actually having to guess one of the passwords.
+	 * - The ability to try candidate passwords against multiple hashes at once.
+	 * - The ability to use pre-hashed lists of candidate passwords.
+	 * - The ability to determine whether two users have the same (or different)
+	 * password without actually having to guess one of the passwords.
 	 *
 	 * @return string A character string containing settings and a random salt
 	 */
 	protected function getGeneratedSalt() {
-		$randomBytes = t3lib_div::generateRandomBytes($this->getSaltLength());
-
+		$randomBytes = \TYPO3\CMS\Core\Utility\GeneralUtility::generateRandomBytes($this->getSaltLength());
 		return $this->base64Encode($randomBytes, $this->getSaltLength());
 	}
 
@@ -261,14 +235,12 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 */
 	public function getHashedPassword($password, $salt = NULL) {
 		$saltedPW = NULL;
-
 		if (!empty($password)) {
 			if (empty($salt) || !$this->isValidSalt($salt)) {
 				$salt = $this->getGeneratedSalt();
 			}
 			$saltedPW = $this->cryptPassword($password, $this->applySettingsToSalt($salt));
 		}
-
 		return $saltedPW;
 	}
 
@@ -336,12 +308,12 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 * @return boolean TRUE if salted hash needs an update, otherwise FALSE
 	 */
 	public function isHashUpdateNeeded($passString) {
-			// Check whether this was an updated password.
-		if ((strncmp($passString, '$P$', 3)) || (strlen($passString) != 34)) {
+		// Check whether this was an updated password.
+		if (strncmp($passString, '$P$', 3) || strlen($passString) != 34) {
 			return TRUE;
 		}
-			// Check whether the iteration count used differs from the standard number.
-		return ($this->getCountLog2($passString) < $this->getHashCount());
+		// Check whether the iteration count used differs from the standard number.
+		return $this->getCountLog2($passString) < $this->getHashCount();
 	}
 
 	/**
@@ -351,12 +323,10 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 * @return boolean TRUE if it's valid salt, otherwise FALSE
 	 */
 	public function isValidSalt($salt) {
-		$isValid = $skip = FALSE;
-
+		$isValid = ($skip = FALSE);
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
 		if (strlen($salt) >= $reqLenBase64) {
-				// Salt with prefixed setting
+			// Salt with prefixed setting
 			if (!strncmp('$', $salt, 1)) {
 				if (!strncmp($this->getSetting(), $salt, strlen($this->getSetting()))) {
 					$isValid = TRUE;
@@ -365,15 +335,13 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 					$skip = TRUE;
 				}
 			}
-
-				// Checking base64 characters
-			if (!$skip && (strlen($salt) >= $reqLenBase64)) {
-				if (preg_match('/^[' . preg_quote($this->getItoa64(), '/') . ']{' . $reqLenBase64 . ',' . $reqLenBase64 . '}$/', substr($salt, 0, $reqLenBase64))) {
+			// Checking base64 characters
+			if (!$skip && strlen($salt) >= $reqLenBase64) {
+				if (preg_match(((((('/^[' . preg_quote($this->getItoa64(), '/')) . ']{') . $reqLenBase64) . ',') . $reqLenBase64) . '}$/', substr($salt, 0, $reqLenBase64))) {
 					$isValid = TRUE;
 				}
 			}
 		}
-
 		return $isValid;
 	}
 
@@ -385,12 +353,10 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 */
 	public function isValidSaltedPW($saltedPW) {
 		$isValid = FALSE;
-
-		$isValid = (!strncmp($this->getSetting(), $saltedPW, strlen($this->getSetting()))) ? TRUE : FALSE;
+		$isValid = !strncmp($this->getSetting(), $saltedPW, strlen($this->getSetting())) ? TRUE : FALSE;
 		if ($isValid) {
 			$isValid = $this->isValidSalt($saltedPW);
 		}
-
 		return $isValid;
 	}
 
@@ -403,7 +369,7 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	 * @see getHashCount()
 	 */
 	public function setHashCount($hashCount = NULL) {
-		self::$hashCount = !is_NULL($hashCount) && is_int($hashCount) && $hashCount >= $this->getMinHashCount() && $hashCount <= $this->getMaxHashCount() ? $hashCount : self::HASH_COUNT;
+		self::$hashCount = ((!is_NULL($hashCount) && is_int($hashCount)) && $hashCount >= $this->getMinHashCount()) && $hashCount <= $this->getMaxHashCount() ? $hashCount : self::HASH_COUNT;
 	}
 
 	/**
@@ -429,5 +395,8 @@ class tx_saltedpasswords_salts_phpass extends tx_saltedpasswords_abstract_salts 
 	public function setMinHashCount($minHashCount = NULL) {
 		self::$minHashCount = !is_NULL($minHashCount) && is_int($minHashCount) ? $minHashCount : self::MIN_HASH_COUNT;
 	}
+
 }
+
+
 ?>

@@ -1,45 +1,46 @@
 <?php
+namespace TYPO3\CMS\Saltedpasswords\Salt;
+
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains abstract class "tx_saltedpasswords_abstract_salts"
  * to be used in classes that provide salted hashing.
  */
-
 /**
  * Abtract class with methods needed to be extended
  * in a salted hashing class.
  *
  * @author Marcus Krause <marcus#exp2009@t3sec.info>
- *
  * @since 2009-09-06
  * @package TYPO3
  * @subpackage tx_saltedpasswords
  */
-abstract class tx_saltedpasswords_abstract_salts {
+abstract class AbstractSalt {
+
 	/**
 	 * Method applies settings (prefix, optional hash count, optional suffix)
 	 * to a salt.
@@ -83,22 +84,22 @@ abstract class tx_saltedpasswords_abstract_salts {
 		$itoa64 = $this->getItoa64();
 		do {
 			$value = ord($input[$i++]);
-			$output .= $itoa64[$value & 0x3f];
+			$output .= $itoa64[$value & 63];
 			if ($i < $count) {
 				$value |= ord($input[$i]) << 8;
 			}
-			$output .= $itoa64[($value >> 6) & 0x3f];
+			$output .= $itoa64[$value >> 6 & 63];
 			if ($i++ >= $count) {
 				break;
 			}
 			if ($i < $count) {
 				$value |= ord($input[$i]) << 16;
 			}
-			$output .= $itoa64[($value >> 12) & 0x3f];
+			$output .= $itoa64[$value >> 12 & 63];
 			if ($i++ >= $count) {
 				break;
 			}
-			$output .= $itoa64[($value >> 18) & 0x3f];
+			$output .= $itoa64[$value >> 18 & 63];
 		} while ($i < $count);
 		return $output;
 	}
@@ -111,8 +112,11 @@ abstract class tx_saltedpasswords_abstract_salts {
 	 * @return integer Required length of base64 characters
 	 */
 	protected function getLengthBase64FromBytes($byteLength) {
-			// Calculates bytes in bits in base64
+		// Calculates bytes in bits in base64
 		return intval(ceil(($byteLength * 8) / 6));
 	}
+
 }
+
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Regexp implements tx_form_System_Filter_Interface {
+class RegExpFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Regular expression for filter
@@ -68,5 +70,6 @@ class tx_form_System_Filter_Regexp implements tx_form_System_Filter_Interface {
 	}
 
 }
+
 
 ?>

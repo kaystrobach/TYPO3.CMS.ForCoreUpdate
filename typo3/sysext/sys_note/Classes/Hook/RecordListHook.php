@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\SysNote\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,21 +30,22 @@
  * @subpackage sys_note
  * @author Georg Ringer <typo3@ringerge.org>
  */
-class Tx_SysNote_Hooks_RecordList {
+class RecordListHook {
 
 	/**
 	 * Add sys_notes as additional content to the footer of the list module
 	 *
 	 * @param array $params
-	 * @param SC_db_list $parentObject
+	 * @param \TYPO3\CMS\Recordlist\RecordList $parentObject
 	 * @return string
 	 */
-	public function render(array $params = array(), SC_db_list $parentObject) {
-		$renderer = t3lib_div::makeInstance('Tx_SysNote_SysNote');
+	public function render(array $params = array(), \TYPO3\CMS\Recordlist\RecordList $parentObject) {
+		$renderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\SysNote\\SysNoteRenderer');
 		$sysNotes = $renderer->renderByPid($parentObject->id);
 		return $sysNotes;
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Locking;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @subpackage t3lib
  * @see 	class.t3lib_tstemplate.php, class.tslib_fe.php
  */
-class t3lib_lock {
+class Locker {
 
 	/**
 	 * @var string Locking method: One of 'simple', 'flock', 'semaphore' or 'disable'
@@ -113,7 +115,7 @@ class t3lib_lock {
 		case 'flock':
 			$path = PATH_site . 'typo3temp/locks/';
 			if (!is_dir($path)) {
-				t3lib_div::mkdir($path);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($path);
 			}
 			$this->id = md5($id);
 			$this->resource = $path . $this->id;
@@ -121,13 +123,13 @@ class t3lib_lock {
 		case 'semaphore':
 			$this->id = abs(crc32($id));
 			if (($this->resource = sem_get($this->id, 1)) === FALSE) {
-				throw new RuntimeException('Unable to get semaphore', 1313828196);
+				throw new \RuntimeException('Unable to get semaphore', 1313828196);
 			}
 			break;
 		case 'disable':
 			break;
 		default:
-			throw new InvalidArgumentException(('No such method "' . $method) . '"', 1294586097);
+			throw new \InvalidArgumentException(('No such method "' . $method) . '"', 1294586097);
 		}
 	}
 
@@ -177,13 +179,13 @@ class t3lib_lock {
 				usleep($this->step * 1000);
 			}
 			if (!$isAcquired) {
-				throw new RuntimeException('Lock file could not be created', 1294586098);
+				throw new \RuntimeException('Lock file could not be created', 1294586098);
 			}
-			t3lib_div::fixPermissions($this->resource);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($this->resource);
 			break;
 		case 'flock':
 			if (($this->filepointer = fopen($this->resource, 'w+')) == FALSE) {
-				throw new RuntimeException('Lock file could not be opened', 1294586099);
+				throw new \RuntimeException('Lock file could not be opened', 1294586099);
 			}
 			// Lock without blocking
 			if (flock($this->filepointer, (LOCK_EX | LOCK_NB)) == TRUE) {
@@ -192,7 +194,7 @@ class t3lib_lock {
 				// Lock with blocking (waiting for similar locks to become released)
 				$noWait = FALSE;
 			} else {
-				throw new RuntimeException(('Could not lock file "' . $this->resource) . '"', 1294586100);
+				throw new \RuntimeException(('Could not lock file "' . $this->resource) . '"', 1294586100);
 			}
 			break;
 		case 'semaphore':
@@ -222,7 +224,7 @@ class t3lib_lock {
 		$success = TRUE;
 		switch ($this->method) {
 		case 'simple':
-			if (t3lib_div::isAllowedAbsPath($this->resource) && t3lib_div::isFirstPartOfStr($this->resource, PATH_site . 'typo3temp/locks/')) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($this->resource) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($this->resource, PATH_site . 'typo3temp/locks/')) {
 				if (@unlink($this->resource) == FALSE) {
 					$success = FALSE;
 				}
@@ -233,7 +235,7 @@ class t3lib_lock {
 				$success = FALSE;
 			}
 			fclose($this->filepointer);
-			if (t3lib_div::isAllowedAbsPath($this->resource) && t3lib_div::isFirstPartOfStr($this->resource, PATH_site . 'typo3temp/locks/')) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($this->resource) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($this->resource, PATH_site . 'typo3temp/locks/')) {
 				@unlink($this->resource);
 			}
 			break;
@@ -317,10 +319,11 @@ class t3lib_lock {
 	 */
 	public function sysLog($message, $severity = 0) {
 		if ($this->isLoggingEnabled) {
-			t3lib_div::sysLog((((('Locking [' . $this->method) . '::') . $this->id) . ']: ') . trim($message), $this->syslogFacility, $severity);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog((((('Locking [' . $this->method) . '::') . $this->id) . ']: ') . trim($message), $this->syslogFacility, $severity);
 		}
 	}
 
 }
+
 
 ?>

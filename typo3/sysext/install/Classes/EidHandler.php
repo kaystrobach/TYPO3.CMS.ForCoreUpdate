@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author 	Marcus Krause <security@typo3.org>
  */
-class tx_install_ajax {
+class EidHandler {
 
 	/**
 	 * Keeps content to be printed.
@@ -54,7 +56,7 @@ class tx_install_ajax {
 	 * @todo Define visibility
 	 */
 	public function init() {
-		$this->cmd = t3lib_div::_GP('cmd');
+		$this->cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
 	}
 
 	/**
@@ -100,7 +102,7 @@ class tx_install_ajax {
 		if (!headers_sent()) {
 			header('Content-type: text/plain');
 		}
-		return t3lib_div::getRandomHexString($keyLength);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::getRandomHexString($keyLength);
 	}
 
 	/**
@@ -120,5 +122,6 @@ class tx_install_ajax {
 	}
 
 }
+
 
 ?>

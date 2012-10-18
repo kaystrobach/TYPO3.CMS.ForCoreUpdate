@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Radio extends tx_form_Domain_Model_Element_Abstract {
+class RadioElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -76,7 +78,7 @@ class tx_form_Domain_Model_Element_Radio extends tx_form_Domain_Model_Element_Ab
 	 * If there is submitted data for this field
 	 * it will change the checked attribute
 	 *
-	 * @return tx_form_Domain_Model_Element_Radio
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\RadioElement
 	 * @see tx_form_Domain_Model_Element::checkFilterAndSetIncomingDataFromRequest()
 	 */
 	public function checkFilterAndSetIncomingDataFromRequest() {
@@ -96,5 +98,6 @@ class tx_form_Domain_Model_Element_Radio extends tx_form_Domain_Model_Element_Ab
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_extTables_PostProcessingHook
+interface TableConfigurationPostProcessingHookInterface
 {
 	/**
 	 * Function which may process data created / registered by extTables
@@ -42,4 +44,5 @@ interface t3lib_extTables_PostProcessingHook
 	public function processData();
 
 }
+
 ?>

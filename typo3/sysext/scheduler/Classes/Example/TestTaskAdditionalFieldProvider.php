@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Example;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_scheduler
  */
-class tx_scheduler_TestTask_AdditionalFieldProvider implements tx_scheduler_AdditionalFieldProvider {
+class TestTaskAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface {
 
 	/**
 	 * This method is used to define new fields for adding or editing a task
@@ -36,10 +38,10 @@ class tx_scheduler_TestTask_AdditionalFieldProvider implements tx_scheduler_Addi
 	 *
 	 * @param array $taskInfo Reference to the array containing the info used in the add/edit form
 	 * @param object $task When editing, reference to the current task object. Null when adding.
-	 * @param tx_scheduler_Module $parentObject Reference to the calling object (Scheduler's BE module)
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
 	 * @return array	Array containing all the information pertaining to the additional fields
 	 */
-	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject) {
 		// Initialize extra field value
 		if (empty($taskInfo['email'])) {
 			if ($parentObject->CMD == 'add') {
@@ -55,7 +57,7 @@ class tx_scheduler_TestTask_AdditionalFieldProvider implements tx_scheduler_Addi
 		}
 		// Write the code for the field
 		$fieldID = 'task_email';
-		$fieldCode = ((('<input type="text" name="tx_scheduler[email]" id="' . $fieldID) . '" value="') . htmlspecialchars($taskInfo['email'])) . '" size="30" />';
+		$fieldCode = ((('<input type="text" name="TYPO3\\CMS\\Scheduler\\Scheduler[email]" id="' . $fieldID) . '" value="') . htmlspecialchars($taskInfo['email'])) . '" size="30" />';
 		$additionalFields = array();
 		$additionalFields[$fieldID] = array(
 			'code' => $fieldCode,
@@ -71,13 +73,13 @@ class tx_scheduler_TestTask_AdditionalFieldProvider implements tx_scheduler_Addi
 	 * If the task class is not relevant, the method is expected to return TRUE
 	 *
 	 * @param array	 $submittedData Reference to the array containing the data submitted by the user
-	 * @param tx_scheduler_Module $parentObject Reference to the calling object (Scheduler's BE module)
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
 	 * @return boolean TRUE if validation was ok (or selected class is not relevant), FALSE otherwise
 	 */
-	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $parentObject) {
+	public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject) {
 		$submittedData['email'] = trim($submittedData['email']);
 		if (empty($submittedData['email'])) {
-			$parentObject->addMessage($GLOBALS['LANG']->sL('LLL:EXT:scheduler/mod1/locallang.xml:msg.noEmail'), t3lib_FlashMessage::ERROR);
+			$parentObject->addMessage($GLOBALS['LANG']->sL('LLL:EXT:scheduler/mod1/locallang.xml:msg.noEmail'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 			$result = FALSE;
 		} else {
 			$result = TRUE;
@@ -90,13 +92,14 @@ class tx_scheduler_TestTask_AdditionalFieldProvider implements tx_scheduler_Addi
 	 * if the task class matches
 	 *
 	 * @param array $submittedData Array containing the data submitted by the user
-	 * @param tx_scheduler_Task $task Reference to the current task object
+	 * @param \TYPO3\CMS\Scheduler\Task $task Reference to the current task object
 	 * @return void
 	 */
-	public function saveAdditionalFields(array $submittedData, tx_scheduler_Task $task) {
+	public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task $task) {
 		$task->email = $submittedData['email'];
 	}
 
 }
+
 
 ?>

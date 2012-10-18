@@ -7,7 +7,7 @@ if (TYPO3_MODE == 'BE') {
 		'title' => 'LLL:EXT:sv/reports/locallang.xml:report_title',
 		'description' => 'LLL:EXT:sv/reports/locallang.xml:report_description',
 		'icon' => 'EXT:sv/reports/tx_sv_report.png',
-		'report' => 'tx_sv_reports_ServicesList'
+		'report' => 'TYPO3\\CMS\\Sv\\Report\\ServicesListReport'
 	);
 }
 ?>

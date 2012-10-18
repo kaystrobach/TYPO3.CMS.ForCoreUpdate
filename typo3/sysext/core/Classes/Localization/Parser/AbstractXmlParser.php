@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization\Parser;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
+abstract class AbstractXmlParser implements \TYPO3\CMS\Core\Localization\Parser\LocalizationParserInterface {
 
 	/**
 	 * @var string
@@ -55,20 +57,20 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 	 * @param string $languageKey Language key
 	 * @param string $charset File charset
 	 * @return array
-	 * @throws t3lib_l10n_exception_FileNotFound
+	 * @throws \TYPO3\CMS\Core\Localization\Exception\FileNotFoundException
 	 */
 	public function getParsedData($sourcePath, $languageKey, $charset = '') {
 		$this->sourcePath = $sourcePath;
 		$this->languageKey = $languageKey;
 		$this->charset = $this->getCharset($languageKey, $charset);
 		if ($this->languageKey !== 'default' && $this->languageKey !== 'en') {
-			$this->sourcePath = t3lib_div::getFileAbsFileName(t3lib_div::llXmlAutoFileName($this->sourcePath, $this->languageKey));
+			$this->sourcePath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(\TYPO3\CMS\Core\Utility\GeneralUtility::llXmlAutoFileName($this->sourcePath, $this->languageKey));
 			if (!@is_file($this->sourcePath)) {
 				// Global localization is not available, try split localization file
-				$this->sourcePath = t3lib_div::getFileAbsFileName(t3lib_div::llXmlAutoFileName($sourcePath, $languageKey, TRUE));
+				$this->sourcePath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(\TYPO3\CMS\Core\Utility\GeneralUtility::llXmlAutoFileName($sourcePath, $languageKey, TRUE));
 			}
 			if (!@is_file($this->sourcePath)) {
-				throw new t3lib_l10n_exception_FileNotFound('Localization file does not exist', 1306332397);
+				throw new \TYPO3\CMS\Core\Localization\Exception\FileNotFoundException('Localization file does not exist', 1306332397);
 			}
 		}
 		$LOCAL_LANG = array();
@@ -84,13 +86,13 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 	 * @return string
 	 */
 	protected function getCharset($languageKey, $charset = '') {
-		/** @var $csConvObj t3lib_cs */
+		/** @var $csConvObj \TYPO3\CMS\Core\Charset\CharsetConverter */
 		if (is_object($GLOBALS['LANG'])) {
 			$csConvObj = $GLOBALS['LANG']->csConvObj;
 		} elseif (is_object($GLOBALS['TSFE'])) {
 			$csConvObj = $GLOBALS['TSFE']->csConvObj;
 		} else {
-			$csConvObj = t3lib_div::makeInstance('t3lib_cs');
+			$csConvObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 		}
 		if ($charset !== '') {
 			$targetCharset = $csConvObj->parse_charset($charset);
@@ -104,12 +106,12 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 	 * Loads the current XML file before processing.
 	 *
 	 * @return array An array representing parsed XML file (structure depends on concrete parser)
-	 * @throws t3lib_l10n_exception_InvalidXmlFile
+	 * @throws \TYPO3\CMS\Core\Localization\Exception\InvalidXmlFileException
 	 */
 	protected function parseXmlFile() {
 		$rootXmlNode = simplexml_load_file($this->sourcePath, 'SimpleXmlElement', \LIBXML_NOWARNING);
 		if (!isset($rootXmlNode) || $rootXmlNode === FALSE) {
-			throw new t3lib_l10n_exception_InvalidXmlFile('The path provided does not point to existing and accessible well-formed XML file.', 1278155987);
+			throw new \TYPO3\CMS\Core\Localization\Exception\InvalidXmlFileException('The path provided does not point to existing and accessible well-formed XML file.', 1278155987);
 		}
 		return $this->doParsingFromRoot($rootXmlNode);
 	}
@@ -120,8 +122,9 @@ abstract class t3lib_l10n_parser_AbstractXml implements t3lib_l10n_parser {
 	 * @param SimpleXMLElement $root A root node
 	 * @return array An array representing the parsed XML file
 	 */
-	abstract protected function doParsingFromRoot(SimpleXMLElement $root);
+	abstract protected function doParsingFromRoot(\SimpleXMLElement $root);
 
 }
+
 
 ?>

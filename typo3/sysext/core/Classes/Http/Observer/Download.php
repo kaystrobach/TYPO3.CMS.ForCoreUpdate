@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Http\Observer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @see http://pear.php.net/manual/en/package.http.http-request2.observers.php
  * @author Philipp Gampe
  */
-class t3lib_http_observer_Download implements SplObserver {
+class Download implements SplObserver {
 
 	/**
 	 * @var resource A file pointer resource
@@ -70,12 +72,12 @@ class t3lib_http_observer_Download implements SplObserver {
 	 * Saves current chunk to disk each time a body part is received.
 	 * If the filename is empty, tries to determine it from received headers
 	 *
-	 * @throws t3lib_exception if file can not be opened
+	 * @throws \TYPO3\CMS\Core\Exception if file can not be opened
 	 * @throws UnexpectedValueException if the file name is empty and can not be determined from headers
 	 * @param SplSubject|HTTP_Request2 $request
 	 * @return void
 	 */
-	public function update(SplSubject $request) {
+	public function update(\SplSubject $request) {
 		$event = $request->getLastEvent();
 		switch ($event['name']) {
 		case 'receivedHeaders':
@@ -106,10 +108,10 @@ class t3lib_http_observer_Download implements SplObserver {
 	 */
 	public function setDirectory($directory) {
 		if (!is_dir($directory)) {
-			throw new InvalidArgumentException($directory . ' is not a directory', 1312223779);
+			throw new \InvalidArgumentException($directory . ' is not a directory', 1312223779);
 		}
-		if (!t3lib_div::isAllowedAbsPath($directory)) {
-			throw new InvalidArgumentException(($directory . ' is not within the PATH_site') . ' OR within the lockRootPath', 1328734617);
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($directory)) {
+			throw new \InvalidArgumentException(($directory . ' is not within the PATH_site') . ' OR within the lockRootPath', 1328734617);
 		}
 		$this->targetDirectory = ($directory = rtrim($directory, DIRECTORY_SEPARATOR));
 	}
@@ -134,7 +136,7 @@ class t3lib_http_observer_Download implements SplObserver {
 	 * @param HTTP_Request2_Response $response
 	 * @return void
 	 */
-	protected function determineFilename(HTTP_Request2 $request, HTTP_Request2_Response $response) {
+	protected function determineFilename(\HTTP_Request2 $request, \HTTP_Request2_Response $response) {
 		$matches = array();
 		$disposition = $response->getHeader('content-disposition');
 		if (($disposition !== NULL && 0 === strpos($disposition, 'attachment')) && 1 === preg_match('/filename="([^"]+)"/', $disposition, $matches)) {
@@ -152,17 +154,17 @@ class t3lib_http_observer_Download implements SplObserver {
 	 * $this->filename must be set before calling this function.
 	 *
 	 * @throws UnexpectedValueException if $this->filename is not set
-	 * @throws t3lib_exception if file can not be opened
+	 * @throws \TYPO3\CMS\Core\Exception if file can not be opened
 	 * @return void
 	 */
 	protected function openFile() {
 		if ($this->targetFilename === '') {
-			throw new UnexpectedValueException('The file name must not be empty', 1321113658);
+			throw new \UnexpectedValueException('The file name must not be empty', 1321113658);
 		}
 		$this->targetFilePath = ($this->targetDirectory . DIRECTORY_SEPARATOR) . $this->targetFilename;
 		$this->filePointer = @fopen($this->targetFilePath, 'wb');
 		if ($this->filePointer === FALSE) {
-			throw new t3lib_exception('Cannot open target file ' . $this->targetFilePath, 1320833203);
+			throw new \TYPO3\CMS\Core\Exception('Cannot open target file ' . $this->targetFilePath, 1320833203);
 		}
 	}
 
@@ -174,9 +176,10 @@ class t3lib_http_observer_Download implements SplObserver {
 	protected function closeFile() {
 		fclose($this->filePointer);
 		$this->filePointer = FALSE;
-		t3lib_div::fixPermissions($this->targetFilePath);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($this->targetFilePath);
 	}
 
 }
+
 
 ?>

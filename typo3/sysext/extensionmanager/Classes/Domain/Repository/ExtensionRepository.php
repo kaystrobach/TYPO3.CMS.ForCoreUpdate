@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,20 +30,20 @@
  * @package Extension Manager
  * @subpackage Repository
  */
-class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extbase_Persistence_Repository {
+class ExtensionRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
-	 * @var Tx_Extbase_Persistence_Mapper_DataMapper
+	 * @var \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper
 	 */
 	protected $dataMapper;
 
 	/**
 	 * Injects the DataMapper to map records to objects
 	 *
-	 * @param Tx_Extbase_Persistence_Mapper_DataMapper $dataMapper
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper $dataMapper
 	 * @return void
 	 */
-	public function injectDataMapper(Tx_Extbase_Persistence_Mapper_DataMapper $dataMapper) {
+	public function injectDataMapper(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper $dataMapper) {
 		$this->dataMapper = $dataMapper;
 	}
 
@@ -71,12 +73,12 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * Find an extension by extension key ordered by version
 	 *
 	 * @param string $extensionKey
-	 * @return Tx_Extbase_Persistence_QueryResultInterface
+	 * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
 	 */
 	public function findByExtensionKeyOrderedByVersion($extensionKey) {
 		$query = $this->createQuery();
 		$query->matching($query->logicalAnd($query->equals('extensionKey', $extensionKey), $query->greaterThanOrEqual('reviewState', 0)));
-		$query->setOrderings(array('version' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING));
+		$query->setOrderings(array('version' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING));
 		return $query->execute();
 	}
 
@@ -127,7 +129,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 				HAVING position > 0';
 		$order = 'position desc';
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $from, $where, '', $order);
-		return $this->dataMapper->map('Tx_Extensionmanager_Domain_Model_Extension', $result);
+		return $this->dataMapper->map('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Extension', $result);
 	}
 
 	/**
@@ -136,7 +138,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * @param string $extensionKey
 	 * @param integer $lowestVersion
 	 * @param integer $highestVersion
-	 * @return Tx_Extbase_Persistence_QueryResultInterface
+	 * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
 	 */
 	public function findByVersionRangeAndExtensionKeyOrderedByVersion($extensionKey, $lowestVersion = 0, $highestVersion = 0) {
 		$query = $this->createQuery();
@@ -154,7 +156,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 			$query->matching($query->logicalAnd($constraint, $query->greaterThanOrEqual('reviewState', 0)));
 		}
 		$query->setOrderings(array(
-			'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
+			'integerVersion' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
 		));
 		return $query->execute();
 	}
@@ -181,7 +183,7 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 		$query = $this->createQuery();
 		$query->matching($query->logicalAnd($query->equals('extensionKey', $extensionKey), $query->greaterThanOrEqual('reviewState', 0)));
 		$query->setOrderings(array(
-			'integerVersion' => Tx_Extbase_Persistence_QueryInterface::ORDER_DESCENDING
+			'integerVersion' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
 		));
 		return $query->setLimit(1)->execute()->getFirst();
 	}
@@ -212,10 +214,10 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	 * Adds default constraints to the query - in this case it
 	 * enables us to always just search for the latest version of an extension
 	 *
-	 * @param Tx_Extbase_Persistence_Query $query the query to adjust
-	 * @return Tx_Extbase_Persistence_Query
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\Query $query the query to adjust
+	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\Query
 	 */
-	protected function addDefaultConstraints(Tx_Extbase_Persistence_Query $query) {
+	protected function addDefaultConstraints(\TYPO3\CMS\Extbase\Persistence\Generic\Query $query) {
 		if ($query->getConstraint()) {
 			$query->matching($query->logicalAnd($query->getConstraint(), $query->equals('lastversion', TRUE)));
 		} else {
@@ -225,5 +227,6 @@ class Tx_Extensionmanager_Domain_Repository_ExtensionRepository extends Tx_Extba
 	}
 
 }
+
 
 ?>

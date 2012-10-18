@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
+class EmConfUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Returns the $EM_CONF array from an extensions ext_emconf.php file
@@ -58,10 +60,10 @@ class Tx_Extensionmanager_Utility_EmConf implements t3lib_Singleton {
 	 *
 	 * @internal
 	 * @param array $extensionData
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension Extension object from TER data
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension Extension object from TER data
 	 * @return string
 	 */
-	public function constructEmConf(array $extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
+	public function constructEmConf(array $extensionData, \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension = NULL) {
 		if (is_object($extension)) {
 			$extensionData['EM_CONF']['constraints'] = unserialize($extension->getSerializedDependencies());
 		}
@@ -168,5 +170,6 @@ $EM_CONF[$_EXTKEY] = ') . $emConf) . ';
 	}
 
 }
+
 
 ?>

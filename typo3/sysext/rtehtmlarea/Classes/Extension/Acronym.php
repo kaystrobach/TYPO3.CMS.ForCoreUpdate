@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_acronym extends tx_rtehtmlarea_api {
+class Acronym extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -63,7 +65,7 @@ class tx_rtehtmlarea_acronym extends tx_rtehtmlarea_api {
 	protected $abbreviationIndex = 0;
 
 	public function main($parentObject) {
-		return parent::main($parentObject) && t3lib_extMgm::isLoaded('static_info_tables');
+		return parent::main($parentObject) && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables');
 	}
 
 	/**
@@ -130,14 +132,14 @@ class tx_rtehtmlarea_acronym extends tx_rtehtmlarea_api {
 			$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.altElementBrowserMountPoints'));
 			if ($altMountPoints) {
 				$savedGroupDataWebmounts = $GLOBALS['BE_USER']->groupData['webmounts'];
-				$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
+				$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $altMountPoints)));
 				$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
 			}
 			$webMounts = $GLOBALS['BE_USER']->returnWebmounts();
 			$perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
 			$recursive = isset($this->thisConfig['buttons.'][$button . '.']['recursive']) ? intval($this->thisConfig['buttons.'][$button . '.']['recursive']) : 0;
 			if (trim($this->thisConfig['buttons.'][$button . '.']['pages'])) {
-				$pids = t3lib_div::trimExplode(',', $this->thisConfig['buttons.'][$button . '.']['pages'], 1);
+				$pids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->thisConfig['buttons.'][$button . '.']['pages'], 1);
 				foreach ($pids as $key => $val) {
 					if (!$GLOBALS['BE_USER']->isInWebMount($val, $perms_clause)) {
 						unset($pids[$key]);
@@ -151,7 +153,7 @@ class tx_rtehtmlarea_acronym extends tx_rtehtmlarea_api {
 				$GLOBALS['BE_USER']->groupData['webmounts'] = $savedGroupDataWebmounts;
 				$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
 			}
-			$queryGenerator = t3lib_div::makeInstance('t3lib_queryGenerator');
+			$queryGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
 			foreach ($pids as $key => $val) {
 				if ($pageTree) {
 					$pageTreePrefix = ',';
@@ -166,13 +168,13 @@ class tx_rtehtmlarea_acronym extends tx_rtehtmlarea_api {
 		}
 		// Restrict to acronyms in certain languages
 		if ((is_array($this->thisConfig['buttons.']) && is_array($this->thisConfig['buttons.']['language.'])) && isset($this->thisConfig['buttons.']['language.']['restrictToItems'])) {
-			$languageList = implode('\',\'', t3lib_div::trimExplode(',', $GLOBALS['TYPO3_DB']->fullQuoteStr(strtoupper($this->thisConfig['buttons.']['language.']['restrictToItems']), $tableB)));
+			$languageList = implode('\',\'', \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_DB']->fullQuoteStr(strtoupper($this->thisConfig['buttons.']['language.']['restrictToItems']), $tableB)));
 			$whereClause .= (((' AND ' . $tableB) . '.lg_iso_2 IN (') . $languageList) . ') ';
 		}
-		$whereClause .= t3lib_BEfunc::BEenableFields($tableA);
-		$whereClause .= t3lib_BEfunc::deleteClause($tableA);
-		$whereClause .= t3lib_BEfunc::BEenableFields($tableB);
-		$whereClause .= t3lib_BEfunc::deleteClause($tableB);
+		$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($tableA);
+		$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($tableA);
+		$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($tableB);
+		$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($tableB);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $tableAB, $whereClause);
 		while ($acronymRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$item = array('term' => $acronymRow['term'], 'abbr' => $acronymRow['acronym'], 'language' => strtolower($acronymRow['lg_iso_2']) . ($acronymRow['lg_country_iso_2'] ? '-' . $acronymRow['lg_country_iso_2'] : ''));
@@ -188,5 +190,6 @@ class tx_rtehtmlarea_acronym extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

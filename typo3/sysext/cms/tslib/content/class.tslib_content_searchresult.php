@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_SearchResult extends tslib_content_Abstract {
+class SearchResultContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, SEARCHRESULT
@@ -40,16 +42,16 @@ class tslib_content_SearchResult extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-		if (t3lib_div::_GP('sword') && t3lib_div::_GP('scols')) {
-			$search = t3lib_div::makeInstance('tslib_search');
-			$search->register_and_explode_search_string(t3lib_div::_GP('sword'));
-			$search->register_tables_and_columns(t3lib_div::_GP('scols'), $conf['allowedCols']);
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('sword') && \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('scols')) {
+			$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\SearchResultContentObject');
+			$search->register_and_explode_search_string(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('sword'));
+			$search->register_tables_and_columns(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('scols'), $conf['allowedCols']);
 			// Depth
 			$depth = 100;
 			// The startId is found
 			$theStartId = 0;
-			if (t3lib_utility_Math::canBeInterpretedAsInteger(t3lib_div::_GP('stype'))) {
-				$temp_theStartId = t3lib_div::_GP('stype');
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('stype'))) {
+				$temp_theStartId = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('stype');
 				$rootLine = $GLOBALS['TSFE']->sys_page->getRootLine($temp_theStartId);
 				// The page MUST have a rootline with the Level0-page of the current site inside!!
 				foreach ($rootLine as $val) {
@@ -57,12 +59,12 @@ class tslib_content_SearchResult extends tslib_content_Abstract {
 						$theStartId = $temp_theStartId;
 					}
 				}
-			} elseif (t3lib_div::_GP('stype')) {
-				if (substr(t3lib_div::_GP('stype'), 0, 1) == 'L') {
-					$pointer = intval(substr(t3lib_div::_GP('stype'), 1));
+			} elseif (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('stype')) {
+				if (substr(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('stype'), 0, 1) == 'L') {
+					$pointer = intval(substr(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('stype'), 1));
 					$theRootLine = $GLOBALS['TSFE']->tmpl->rootLine;
 					// location Data:
-					$locDat_arr = explode(':', t3lib_div::_POST('locationData'));
+					$locDat_arr = explode(':', \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('locationData'));
 					$pId = intval($locDat_arr[0]);
 					if ($pId) {
 						$altRootLine = $GLOBALS['TSFE']->sys_page->getRootLine($pId);
@@ -104,13 +106,13 @@ class tslib_content_SearchResult extends tslib_content_Abstract {
 			// Build query
 			$search->build_search_query($endClause);
 			// Count...
-			if (t3lib_utility_Math::canBeInterpretedAsInteger(t3lib_div::_GP('scount'))) {
-				$search->res_count = t3lib_div::_GP('scount');
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('scount'))) {
+				$search->res_count = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('scount');
 			} else {
 				$search->count_query();
 			}
 			// Range
-			$spointer = intval(t3lib_div::_GP('spointer'));
+			$spointer = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('spointer'));
 			$range = isset($conf['range.']) ? $this->cObj->stdWrap($conf['range'], $conf['range.']) : $conf['range'];
 			if ($range) {
 				$theRange = intval($range);
@@ -128,13 +130,13 @@ class tslib_content_SearchResult extends tslib_content_Abstract {
 			if ($GLOBALS['TYPO3_DB']->sql_num_rows($search->result)) {
 				$GLOBALS['TSFE']->register['SWORD_PARAMS'] = $search->get_searchwords();
 				$total = $search->res_count;
-				$rangeLow = t3lib_utility_Math::forceIntegerInRange($spointer + 1, 1, $total);
-				$rangeHigh = t3lib_utility_Math::forceIntegerInRange($spointer + $theRange, 1, $total);
+				$rangeLow = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($spointer + 1, 1, $total);
+				$rangeHigh = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($spointer + $theRange, 1, $total);
 				// prev/next url:
 				$target = isset($conf['target.']) ? $this->cObj->stdWrap($conf['target'], $conf['target.']) : $conf['target'];
 				$LD = $GLOBALS['TSFE']->tmpl->linkData($GLOBALS['TSFE']->page, $target, 1, '', '', $this->cObj->getClosestMPvalueForPage($GLOBALS['TSFE']->page['uid']));
 				$targetPart = $LD['target'] ? (' target="' . htmlspecialchars($LD['target'])) . '"' : '';
-				$urlParams = $this->cObj->URLqMark($LD['totalURL'], (((((('&sword=' . rawurlencode(t3lib_div::_GP('sword'))) . '&scols=') . rawurlencode(t3lib_div::_GP('scols'))) . '&stype=') . rawurlencode(t3lib_div::_GP('stype'))) . '&scount=') . $total);
+				$urlParams = $this->cObj->URLqMark($LD['totalURL'], (((((('&sword=' . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('sword'))) . '&scols=') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('scols'))) . '&stype=') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('stype'))) . '&scount=') . $total);
 				// substitution:
 				$result = $this->cObj->cObjGetSingle($conf['layout'], $conf['layout.'], 'layout');
 				$result = str_replace('###RANGELOW###', $rangeLow, $result);
@@ -156,7 +158,7 @@ class tslib_content_SearchResult extends tslib_content_Abstract {
 				$result = str_replace('###PREV###', $prev, $result);
 				// Searching result
 				$theValue = $this->cObj->cObjGetSingle($conf['resultObj'], $conf['resultObj.'], 'resultObj');
-				$cObj = t3lib_div::makeInstance('tslib_cObj');
+				$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 				$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 				$renderCode = '';
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($search->result)) {
@@ -188,5 +190,6 @@ class tslib_content_SearchResult extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

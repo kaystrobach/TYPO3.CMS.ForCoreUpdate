@@ -34,7 +34,7 @@ unset($MCONF);
 require 'conf.php';
 require $BACK_PATH . 'init.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_rtehtmlarea_parse_html');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rtehtmlarea\\ContentParser');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

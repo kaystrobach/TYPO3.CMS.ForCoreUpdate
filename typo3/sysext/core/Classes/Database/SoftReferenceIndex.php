@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -77,7 +79,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_softrefproc {
+class SoftReferenceIndex {
 
 	// External configuration
 	/**
@@ -180,7 +182,7 @@ class t3lib_softrefproc {
 	 */
 	public function findRef_images($content, $spParams) {
 		// Start HTML parser and split content by image tag:
-		$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
+		$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 		$splitContent = $htmlParser->splitTags('img', $content);
 		$elements = array();
 		// Traverse splitted parts:
@@ -188,17 +190,17 @@ class t3lib_softrefproc {
 			if ($k % 2) {
 				// Get file reference:
 				$attribs = $htmlParser->get_tag_attributes($v);
-				$srcRef = t3lib_div::htmlspecialchars_decode($attribs[0]['src']);
+				$srcRef = \TYPO3\CMS\Core\Utility\GeneralUtility::htmlspecialchars_decode($attribs[0]['src']);
 				$pI = pathinfo($srcRef);
 				// If it looks like a local image, continue. Otherwise ignore it.
-				$absPath = t3lib_div::getFileAbsFileName(PATH_site . $srcRef);
+				$absPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(PATH_site . $srcRef);
 				if (((!$pI['scheme'] && !$pI['query']) && $absPath) && $srcRef !== 'clear.gif') {
 					// Initialize the element entry with info text here:
 					$tokenID = $this->makeTokenID($k);
 					$elements[$k] = array();
 					$elements[$k]['matchString'] = $v;
 					// If the image seems to be from fileadmin/ folder or an RTE image, then proceed to set up substitution token:
-					if (t3lib_div::isFirstPartOfStr($srcRef, $this->fileAdminDir . '/') || t3lib_div::isFirstPartOfStr($srcRef, 'uploads/') && preg_match('/^RTEmagicC_/', basename($srcRef))) {
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($srcRef, $this->fileAdminDir . '/') || \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($srcRef, 'uploads/') && preg_match('/^RTEmagicC_/', basename($srcRef))) {
 						// Token and substitute value:
 						// Make sure the value we work on is found and will get substituted in the content (Very important that the src-value is not DeHSC'ed)
 						if (strstr($splitContent[$k], $attribs[0]['src'])) {
@@ -279,7 +281,7 @@ class t3lib_softrefproc {
 	 */
 	public function findRef_typolink_tag($content, $spParams) {
 		// Parse string for special TYPO3 <link> tag:
-		$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
+		$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 		$linkTags = $htmlParser->splitTags('link', $content);
 		// Traverse result:
 		$elements = array();
@@ -312,7 +314,7 @@ class t3lib_softrefproc {
 	public function findRef_TStemplate($content, $spParams) {
 		$elements = array();
 		// First, try to find images and links:
-		$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml');
+		$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 		$splitContent = $htmlParser->splitTags('img,a,form', $content);
 		// Traverse splitted parts:
 		foreach ($splitContent as $k => $v) {
@@ -332,15 +334,15 @@ class t3lib_softrefproc {
 				}
 				// Get file reference:
 				if (isset($attribs[0][$attributeName])) {
-					$srcRef = t3lib_div::htmlspecialchars_decode($attribs[0][$attributeName]);
+					$srcRef = \TYPO3\CMS\Core\Utility\GeneralUtility::htmlspecialchars_decode($attribs[0][$attributeName]);
 					// Set entry:
 					$tokenID = $this->makeTokenID($k);
 					$elements[$k] = array();
 					$elements[$k]['matchString'] = $v;
 					// OK, if it looks like a local file from fileadmin/, include it:
 					$pI = pathinfo($srcRef);
-					$absPath = t3lib_div::getFileAbsFileName(PATH_site . $srcRef);
-					if ((t3lib_div::isFirstPartOfStr($srcRef, $this->fileAdminDir . '/') && !$pI['query']) && $absPath) {
+					$absPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(PATH_site . $srcRef);
+					if ((\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($srcRef, $this->fileAdminDir . '/') && !$pI['query']) && $absPath) {
 						// Token and substitute value:
 						// Very important that the src-value is not DeHSC'ed
 						if (strstr($splitContent[$k], $attribs[0][$attributeName])) {
@@ -535,7 +537,7 @@ class t3lib_softrefproc {
 				);
 				$parts[$idx] = ('{softref:' . $tokenID) . '}';
 				// Check if the file actually exists:
-				$absPath = t3lib_div::getFileAbsFileName(PATH_site . $value);
+				$absPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(PATH_site . $value);
 				if (!@is_file($absPath)) {
 					$elements['fileadminReferences.' . $idx]['error'] = 'File does not exist!';
 				}
@@ -559,7 +561,7 @@ class t3lib_softrefproc {
 	public function getTypoLinkParts($typolinkValue) {
 		$finalTagParts = array();
 		// Split by space into link / target / class
-		list($link_param, $browserTarget, $cssClass) = t3lib_div::trimExplode(' ', $typolinkValue, 1);
+		list($link_param, $browserTarget, $cssClass) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $typolinkValue, 1);
 		if (strlen($browserTarget)) {
 			$finalTagParts['target'] = $browserTarget;
 		}
@@ -582,7 +584,7 @@ class t3lib_softrefproc {
 			list($rootFileDat) = explode('?', rawurldecode($link_param));
 			$containsSlash = strstr($rootFileDat, '/');
 			$rFD_fI = pathinfo($rootFileDat);
-			if ((trim($rootFileDat) && !$containsSlash) && (@is_file((PATH_site . $rootFileDat)) || t3lib_div::inList('php,html,htm', strtolower($rFD_fI['extension'])))) {
+			if ((trim($rootFileDat) && !$containsSlash) && (@is_file((PATH_site . $rootFileDat)) || \TYPO3\CMS\Core\Utility\GeneralUtility::inList('php,html,htm', strtolower($rFD_fI['extension'])))) {
 				$isLocalFile = 1;
 			} elseif ($containsSlash) {
 				// Adding this so realurl directories are linked right (non-existing).
@@ -611,14 +613,14 @@ class t3lib_softrefproc {
 					$finalTagParts['anchor'] = trim($link_params_parts[1]);
 				}
 				// Splitting the parameter by ',' and if the array counts more than 1 element it's a id/type/? pair
-				$pairParts = t3lib_div::trimExplode(',', $link_param);
+				$pairParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $link_param);
 				if (count($pairParts) > 1) {
 					$link_param = $pairParts[0];
 					$finalTagParts['type'] = $pairParts[1];
 				}
 				// Checking if the id-parameter is an alias.
 				if (strlen($link_param)) {
-					if (!t3lib_utility_Math::canBeInterpretedAsInteger($link_param)) {
+					if (!\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($link_param)) {
 						$finalTagParts['alias'] = $link_param;
 						$link_param = $this->getPageIdFromAlias($link_param);
 					}
@@ -664,7 +666,7 @@ class t3lib_softrefproc {
 			if (!$tLP['query']) {
 				// We will not process files which has a query added to it. That will look like a script we don't want to move.
 				// File must be inside fileadmin/
-				if (t3lib_div::isFirstPartOfStr($tLP['filepath'], $this->fileAdminDir . '/')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($tLP['filepath'], $this->fileAdminDir . '/')) {
 					// Set up the basic token and token value for the relative file:
 					$elements[($tokenID . ':') . $idx]['subst'] = array(
 						'type' => 'file',
@@ -673,7 +675,7 @@ class t3lib_softrefproc {
 						'tokenValue' => $tLP['filepath']
 					);
 					// Depending on whether the file exists or not we will set the
-					$absPath = t3lib_div::getFileAbsFileName(PATH_site . $tLP['filepath']);
+					$absPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(PATH_site . $tLP['filepath']);
 					if (!@is_file($absPath)) {
 						$elements[($tokenID . ':') . $idx]['error'] = 'File does not exist!';
 					}
@@ -706,7 +708,7 @@ class t3lib_softrefproc {
 			// Add anchor if applicable
 			if (strlen($tLP['anchor'])) {
 				// Anchor is assumed to point to a content elements:
-				if (t3lib_utility_Math::canBeInterpretedAsInteger($tLP['anchor'])) {
+				if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($tLP['anchor'])) {
 					// Initialize a new entry because we have a new relation:
 					$newTokenID = $this->makeTokenID('setTypoLinkPartsElement:anchor:' . $idx);
 					$elements[($newTokenID . ':') . $idx] = array();
@@ -748,7 +750,7 @@ class t3lib_softrefproc {
 	 * @todo Define visibility
 	 */
 	public function getPageIdFromAlias($link_param) {
-		$pRec = t3lib_BEfunc::getRecordsByField('pages', 'alias', $link_param);
+		$pRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordsByField('pages', 'alias', $link_param);
 		return $pRec[0]['uid'];
 	}
 
@@ -764,5 +766,6 @@ class t3lib_softrefproc {
 	}
 
 }
+
 
 ?>

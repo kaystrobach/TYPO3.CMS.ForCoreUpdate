@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,35 +33,35 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
+class FileHandlingUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_EmConf
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\EmConfUtility
 	 */
 	protected $emConfUtility;
 
 	/**
 	 * Injector for Tx_Extensionmanager_Utility_EmConf
 	 *
-	 * @param Tx_Extensionmanager_Utility_EmConf $emConfUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\EmConfUtility $emConfUtility
 	 * @return void
 	 */
-	public function injectEmConfUtility(Tx_Extensionmanager_Utility_EmConf $emConfUtility) {
+	public function injectEmConfUtility(\TYPO3\CMS\Extensionmanager\Utility\EmConfUtility $emConfUtility) {
 		$this->emConfUtility = $emConfUtility;
 	}
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Install
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\InstallUtility
 	 */
 	protected $installUtility;
 
 	/**
 	 * Injector for Tx_Extensionmanager_Utility_Install
 	 *
-	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\InstallUtility $installUtility
 	 * @return void
 	 */
-	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+	public function injectInstallUtility(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility $installUtility) {
 		$this->installUtility = $installUtility;
 	}
 
@@ -67,11 +69,11 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * Unpack an extension in t3x data format and write files
 	 *
 	 * @param array $extensionData
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @param string $pathType
 	 * @return void
 	 */
-	public function unpackExtensionFromExtensionDataArray(array $extensionData, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL, $pathType = 'Local') {
+	public function unpackExtensionFromExtensionDataArray(array $extensionData, \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension = NULL, $pathType = 'Local') {
 		$extensionDir = $this->makeAndClearExtensionDir($extensionData['extKey'], $pathType);
 		$files = $this->extractFilesArrayFromExtensionData($extensionData);
 		$directories = $this->extractDirectoriesFromExtensionData($files);
@@ -115,7 +117,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 */
 	protected function createDirectoriesForExtensionFiles(array $directories, $rootPath) {
 		foreach ($directories as $directory) {
-			t3lib_div::mkdir_deep($rootPath . $directory);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep($rootPath . $directory);
 		}
 	}
 
@@ -128,7 +130,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 */
 	protected function writeExtensionFiles(array $files, $rootPath) {
 		foreach ($files as $file) {
-			t3lib_div::writeFile($rootPath . $file['name'], $file['content']);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($rootPath . $file['name'], $file['content']);
 		}
 	}
 
@@ -138,14 +140,14 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 *
 	 * @param string $extensionkey
 	 * @param string $pathType Extension installation scope (Local,Global,System)
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return string
 	 */
 	protected function makeAndClearExtensionDir($extensionkey, $pathType = 'Local') {
-		$paths = Tx_Extensionmanager_Domain_Model_Extension::returnInstallPaths();
+		$paths = \TYPO3\CMS\Extensionmanager\Domain\Model\Extension::returnInstallPaths();
 		$path = $paths[$pathType];
 		if ((!$path || !is_dir($path)) || !$extensionkey) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('ERROR: The extension install path "%s" was no directory!', $path), 1337280417);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('ERROR: The extension install path "%s" was no directory!', $path), 1337280417);
 		} else {
 			$extDirPath = ($path . $extensionkey) . '/';
 			if (is_dir($extDirPath)) {
@@ -160,13 +162,13 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * Add specified directory
 	 *
 	 * @param string $extDirPath
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	protected function addDirectory($extDirPath) {
-		t3lib_div::mkdir($extDirPath);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($extDirPath);
 		if (!is_dir($extDirPath)) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_create_dir'), $extDirPath), 1337280416);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_create_dir'), $extDirPath), 1337280416);
 		}
 	}
 
@@ -174,13 +176,13 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * Remove specified directory
 	 *
 	 * @param string $extDirPath
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	public function removeDirectory($extDirPath) {
-		$res = t3lib_div::rmdir($extDirPath, TRUE);
+		$res = \TYPO3\CMS\Core\Utility\GeneralUtility::rmdir($extDirPath, TRUE);
 		if ($res === FALSE) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_remove_dir'), $extDirPath), 1337280415);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf($GLOBALS['LANG']->getLL('clearMakeExtDir_could_not_remove_dir'), $extDirPath), 1337280415);
 		}
 	}
 
@@ -189,12 +191,12 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 *
 	 * @param array $extensionData
 	 * @param string $rootPath
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return void
 	 */
-	protected function writeEmConfToFile(array $extensionData, $rootPath, Tx_Extensionmanager_Domain_Model_Extension $extension = NULL) {
+	protected function writeEmConfToFile(array $extensionData, $rootPath, \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension = NULL) {
 		$emConfContent = $this->emConfUtility->constructEmConf($extensionData, $extension);
-		t3lib_div::writeFile($rootPath . 'ext_emconf.php', $emConfContent);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($rootPath . 'ext_emconf.php', $emConfContent);
 	}
 
 	/**
@@ -204,9 +206,9 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @return boolean
 	 */
 	public function isValidExtensionPath($path) {
-		$allowedPaths = Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallPaths();
+		$allowedPaths = \TYPO3\CMS\Extensionmanager\Domain\Model\Extension::returnAllowedInstallPaths();
 		foreach ($allowedPaths as $allowedPath) {
-			if (t3lib_div::isFirstPartOfStr($path, $allowedPath)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($path, $allowedPath)) {
 				return TRUE;
 			}
 		}
@@ -220,7 +222,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @return string
 	 */
 	public function returnAbsolutePath($relativePath) {
-		return t3lib_div::resolveBackPath(PATH_site . $relativePath);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath(PATH_site . $relativePath);
 	}
 
 	/**
@@ -244,12 +246,12 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	public function createZipFileFromExtension($extension) {
 		$extensionPath = $this->getAbsoluteExtensionPath($extension);
 		$fileName = ((PATH_site . 'typo3temp/') . $extension) . '.zip';
-		$zip = new ZipArchive();
-		$zip->open($fileName, ZipArchive::CREATE);
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($extensionPath));
+		$zip = new \ZipArchive();
+		$zip->open($fileName, \ZipArchive::CREATE);
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($extensionPath));
 		foreach ($iterator as $key => $value) {
 			$archiveName = str_replace($extensionPath, '', $key);
-			if (t3lib_utility_String::isLastPartOfString($key, '.')) {
+			if (\TYPO3\CMS\Core\Utility\StringUtility::isLastPartOfString($key, '.')) {
 				continue;
 			} else {
 				$zip->addFile($key, $archiveName);
@@ -265,7 +267,7 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	 * @param string $file path to zip file
 	 * @param string $fileName file name
 	 * @param string $pathType path type (Local, Global, System)
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	public function unzipExtensionFromFile($file, $fileName, $pathType = 'Local') {
@@ -278,20 +280,20 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 					$dir = substr(zip_entry_name($zipEntry), 0, $last);
 					$file = substr(zip_entry_name($zipEntry), strrpos(zip_entry_name($zipEntry), DIRECTORY_SEPARATOR) + 1);
 					if (!is_dir($dir)) {
-						t3lib_div::mkdir_deep($extensionDir . $dir);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep($extensionDir . $dir);
 					}
 					if (strlen(trim($file)) > 0) {
-						$return = t3lib_div::writeFile((($extensionDir . $dir) . '/') . $file, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
+						$return = \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile((($extensionDir . $dir) . '/') . $file, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
 						if ($return === FALSE) {
-							throw new Tx_Extensionmanager_Exception_ExtensionManager('Could not write file ' . $file, 1344691048);
+							throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Could not write file ' . $file, 1344691048);
 						}
 					}
 				} else {
-					t3lib_div::writeFile($extensionDir . zip_entry_name($zipEntry), zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
+					\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($extensionDir . zip_entry_name($zipEntry), zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
 				}
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Unable to open zip file ' . $file, 1344691049);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Unable to open zip file ' . $file, 1344691049);
 		}
 	}
 
@@ -336,5 +338,6 @@ class Tx_Extensionmanager_Utility_FileHandling implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

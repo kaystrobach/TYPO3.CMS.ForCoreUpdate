@@ -94,7 +94,7 @@ class t3lib_install {
 	public $touchedLine = 0;
 
 	/**
-	 * @var t3lib_install_Sql Instance of SQL handler
+	 * @var \TYPO3\CMS\Install\Sql\SchemaMigrator Instance of SQL handler
 	 */
 	protected $sqlHandler = NULL;
 
@@ -102,7 +102,7 @@ class t3lib_install {
 	 * Constructor function
 	 */
 	public function __construct() {
-		$this->sqlHandler = t3lib_div::makeInstance('t3lib_install_Sql');
+		$this->sqlHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Sql\\SchemaMigrator');
 	}
 
 	/**************************************
@@ -232,13 +232,13 @@ class t3lib_install {
 		if (!($this->localconf_addLinesOnly || $tokenSet)) {
 			for ($i = count($lines) - 1; $i > 0; $i--) {
 				$line = trim($lines[$i]);
-				if ($stopAtToken && t3lib_div::isFirstPartOfStr($line, $this->localconf_startEditPointToken)) {
+				if ($stopAtToken && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($line, $this->localconf_startEditPointToken)) {
 					break;
 				}
-				if (t3lib_div::isFirstPartOfStr($line, '?>')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($line, '?>')) {
 					$insertPos = $i;
 				}
-				if (t3lib_div::isFirstPartOfStr($line, $variable)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($line, $variable)) {
 					$startPos = $i;
 					break;
 				}
@@ -249,7 +249,7 @@ class t3lib_install {
 			$endPos = $startPos;
 			for ($i = $startPos; $i < count($lines); $i++) {
 				$line = trim($lines[$i]);
-				if (t3lib_div::isFirstPartOfStr($line, ');')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($line, ');')) {
 					$endPos = $i;
 					break;
 				}
@@ -321,7 +321,7 @@ class t3lib_install {
 			throw new RuntimeException(('TYPO3 Fatal Error: ' . $writeToLocalconf_dat['file']) . ' is not writable!', 1270853916);
 		}
 		// Splitting localconf.php file into lines
-		$lines = explode(LF, str_replace(CR, '', trim(t3lib_div::getUrl($writeToLocalconf_dat['file']))));
+		$lines = explode(LF, str_replace(CR, '', trim(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($writeToLocalconf_dat['file']))));
 		$writeToLocalconf_dat['endLine'] = array_pop($lines);
 		// Getting "? >" ending.
 		// Checking if "updated" line was set by this tool - if so remove old line.
@@ -387,9 +387,9 @@ class t3lib_install {
 		$lines[] = $updatedLine;
 		$lines[] = $writeToLocalconf_dat['endLine'];
 		$success = FALSE;
-		if (!t3lib_div::writeFile($writeToLocalconf_dat['tmpfile'], implode(LF, $lines))) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($writeToLocalconf_dat['tmpfile'], implode(LF, $lines))) {
 			$msg = ('typo3conf/localconf.php' . $tmpExt) . ' could not be written - maybe a write access problem?';
-		} elseif (strcmp(t3lib_div::getUrl($writeToLocalconf_dat['tmpfile']), implode(LF, $lines))) {
+		} elseif (strcmp(\TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($writeToLocalconf_dat['tmpfile']), implode(LF, $lines))) {
 			@unlink($writeToLocalconf_dat['tmpfile']);
 			$msg = ('typo3conf/localconf.php' . $tmpExt) . ' was NOT written properly (written content didn\'t match file content) - maybe a disk space problem?';
 		} elseif (!@copy($writeToLocalconf_dat['tmpfile'], $writeToLocalconf_dat['file'])) {
@@ -401,7 +401,7 @@ class t3lib_install {
 		}
 		$this->messages[] = $msg;
 		if (!$success) {
-			t3lib_div::sysLog($msg, 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog($msg, 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 		}
 		return $success;
 	}

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Tree\TableConfiguration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib_tree
  */
-class t3lib_tree_Tca_DatabaseNode extends t3lib_tree_RepresentationNode {
+class DatabaseTreeNode extends \TYPO3\CMS\Backend\Tree\TreeRepresentationNode {
 
 	/**
 	 * @var boolean
@@ -142,7 +144,7 @@ class t3lib_tree_Tca_DatabaseNode extends t3lib_tree_RepresentationNode {
 	 * -1 if its smaller than the other one
 	 * 0 if its equal
 	 *
-	 * @param t3lib_tree_Node $other
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $other
 	 * @return integer see description above
 	 */
 	public function compareTo($other) {
@@ -172,5 +174,6 @@ class t3lib_tree_Tca_DatabaseNode extends t3lib_tree_RepresentationNode {
 	}
 
 }
+
 
 ?>

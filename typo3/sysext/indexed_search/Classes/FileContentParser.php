@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @package TYPO3
  * @subpackage tx_indexedsearch
  */
-class tx_indexed_search_extparse {
+class FileContentParser {
 
 	// This value is also overridden from config.
 	/**
@@ -96,7 +98,7 @@ class tx_indexed_search_extparse {
 		$extOK = FALSE;
 		$mainExtension = '';
 		// Ignore extensions
-		$ignoreExtensions = t3lib_div::trimExplode(',', strtolower($indexerConfig['ignoreExtensions']), 1);
+		$ignoreExtensions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', strtolower($indexerConfig['ignoreExtensions']), 1);
 		if (in_array($extension, $ignoreExtensions)) {
 			$this->pObj->log_setTSlogMessage(sprintf($this->sL('LLL:EXT:indexed_search/locallang.xml:ignoreExtensions'), $extension), 1);
 			return FALSE;
@@ -111,7 +113,7 @@ class tx_indexed_search_extparse {
 					$this->app['pdfinfo'] = ($pdfPath . 'pdfinfo') . $exe;
 					$this->app['pdftotext'] = ($pdfPath . 'pdftotext') . $exe;
 					// PDF mode:
-					$this->pdf_mode = t3lib_utility_Math::forceIntegerInRange($indexerConfig['pdf_mode'], -100, 100);
+					$this->pdf_mode = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($indexerConfig['pdf_mode'], -100, 100);
 					$extOK = TRUE;
 				} else {
 					$this->pObj->log_setTSlogMessage(sprintf($this->sL('LLL:EXT:indexed_search/locallang.xml:pdfToolsNotFound'), $pdfPath), 3);
@@ -305,7 +307,7 @@ class tx_indexed_search_extparse {
 		// Read indexer-config
 		$indexerConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['indexed_search']);
 		// Ignore extensions
-		$ignoreExtensions = t3lib_div::trimExplode(',', strtolower($indexerConfig['ignoreExtensions']), 1);
+		$ignoreExtensions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', strtolower($indexerConfig['ignoreExtensions']), 1);
 		if (in_array($extension, $ignoreExtensions)) {
 			return FALSE;
 		}
@@ -465,20 +467,20 @@ class tx_indexed_search_extparse {
 			if ($this->app['pdfinfo']) {
 				// Getting pdf-info:
 				$cmd = ($this->app['pdfinfo'] . ' ') . escapeshellarg($absFile);
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$pdfInfo = $this->splitPdfInfo($res);
 				unset($res);
 				if (intval($pdfInfo['pages'])) {
 					list($low, $high) = explode('-', $cPKey);
 					// Get pdf content:
-					$tempFileName = t3lib_div::tempnam('Typo3_indexer');
+					$tempFileName = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('Typo3_indexer');
 					// Create temporary name
 					@unlink($tempFileName);
 					// Delete if exists, just to be safe.
 					$cmd = ((((((($this->app['pdftotext'] . ' -f ') . $low) . ' -l ') . $high) . ' -enc UTF-8 -q ') . escapeshellarg($absFile)) . ' ') . $tempFileName;
-					t3lib_utility_Command::exec($cmd);
+					\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd);
 					if (@is_file($tempFileName)) {
-						$content = t3lib_div::getUrl($tempFileName);
+						$content = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($tempFileName);
 						unlink($tempFileName);
 					} else {
 						$this->pObj->log_setTSlogMessage(sprintf($this->sL('LLL:EXT:indexed_search/locallang.xml:pdfToolsFailed'), $absFile), 2);
@@ -492,7 +494,7 @@ class tx_indexed_search_extparse {
 		case 'doc':
 			if ($this->app['catdoc']) {
 				$cmd = ($this->app['catdoc'] . ' -d utf-8 ') . escapeshellarg($absFile);
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$content = implode(LF, $res);
 				unset($res);
 				$contentArr = $this->pObj->splitRegularContent($this->removeEndJunk($content));
@@ -503,7 +505,7 @@ class tx_indexed_search_extparse {
 		case 'ppt':
 			if ($this->app['ppthtml']) {
 				$cmd = ($this->app['ppthtml'] . ' ') . escapeshellarg($absFile);
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$content = implode(LF, $res);
 				unset($res);
 				$content = $this->pObj->convertHTMLToUtf8($content);
@@ -514,7 +516,7 @@ class tx_indexed_search_extparse {
 		case 'xls':
 			if ($this->app['xlhtml']) {
 				$cmd = ($this->app['xlhtml'] . ' -nc -te ') . escapeshellarg($absFile);
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$content = implode(LF, $res);
 				unset($res);
 				$content = $this->pObj->convertHTMLToUtf8($content);
@@ -536,12 +538,12 @@ class tx_indexed_search_extparse {
 			if ($this->app['unzip']) {
 				// Read content.xml:
 				$cmd = (($this->app['unzip'] . ' -p ') . escapeshellarg($absFile)) . ' content.xml';
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$content_xml = implode(LF, $res);
 				unset($res);
 				// Read meta.xml:
 				$cmd = (($this->app['unzip'] . ' -p ') . escapeshellarg($absFile)) . ' meta.xml';
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$meta_xml = implode(LF, $res);
 				unset($res);
 				$utf8_content = trim(strip_tags(str_replace('<', ' <', $content_xml)));
@@ -549,7 +551,7 @@ class tx_indexed_search_extparse {
 				$contentArr['title'] = basename($absFile);
 				// Make sure the title doesn't expose the absolute path!
 				// Meta information
-				$metaContent = t3lib_div::xml2tree($meta_xml);
+				$metaContent = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2tree($meta_xml);
 				$metaContent = $metaContent['office:document-meta'][0]['ch']['office:meta'][0]['ch'];
 				if (is_array($metaContent)) {
 					$contentArr['title'] = $metaContent['dc:title'][0]['values'][0] ? $metaContent['dc:title'][0]['values'][0] : $contentArr['title'];
@@ -566,7 +568,7 @@ class tx_indexed_search_extparse {
 		case 'rtf':
 			if ($this->app['unrtf']) {
 				$cmd = ($this->app['unrtf'] . ' ') . escapeshellarg($absFile);
-				t3lib_utility_Command::exec($cmd, $res);
+				\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 				$fileContent = implode(LF, $res);
 				unset($res);
 				$fileContent = $this->pObj->convertHTMLToUtf8($fileContent);
@@ -577,7 +579,7 @@ class tx_indexed_search_extparse {
 
 		case 'csv':
 			// Raw text
-			$content = t3lib_div::getUrl($absFile);
+			$content = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($absFile);
 			// TODO: Implement auto detection of charset (currently assuming utf-8)
 			$contentCharset = 'utf-8';
 			$content = $this->pObj->convertHTMLToUtf8($content, $contentCharset);
@@ -588,13 +590,13 @@ class tx_indexed_search_extparse {
 		case 'html':
 
 		case 'htm':
-			$fileContent = t3lib_div::getUrl($absFile);
+			$fileContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($absFile);
 			$fileContent = $this->pObj->convertHTMLToUtf8($fileContent);
 			$contentArr = $this->pObj->splitHTMLContent($fileContent);
 			break;
 		case 'xml':
 			// PHP strip-tags()
-			$fileContent = t3lib_div::getUrl($absFile);
+			$fileContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($absFile);
 			// Finding charset:
 			preg_match('/^[[:space:]]*<\\?xml[^>]+encoding[[:space:]]*=[[:space:]]*["\'][[:space:]]*([[:alnum:]_-]+)[[:space:]]*["\']/i', substr($fileContent, 0, 200), $reg);
 			$charset = $reg[1] ? $this->pObj->csObj->parse_charset($reg[1]) : 'utf-8';
@@ -651,7 +653,7 @@ class tx_indexed_search_extparse {
 		case 'pdf':
 			// Getting pdf-info:
 			$cmd = ($this->app['pdfinfo'] . ' ') . escapeshellarg($absFile);
-			t3lib_utility_Command::exec($cmd, $res);
+			\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 			$pdfInfo = $this->splitPdfInfo($res);
 			unset($res);
 			if (intval($pdfInfo['pages'])) {
@@ -660,7 +662,7 @@ class tx_indexed_search_extparse {
 				if ($this->pdf_mode > 0) {
 					$iter = ceil($pdfInfo['pages'] / $this->pdf_mode);
 				} else {
-					$iter = t3lib_utility_Math::forceIntegerInRange(abs($this->pdf_mode), 1, $pdfInfo['pages']);
+					$iter = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(abs($this->pdf_mode), 1, $pdfInfo['pages']);
 				}
 				// Traverse and create intervals.
 				for ($a = 0; $a < $iter; $a++) {
@@ -730,5 +732,6 @@ class tx_indexed_search_extparse {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter implements tx_form_System_Filter_Interface {
+class FilterUtility implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Array with filter objects to use
@@ -51,10 +53,10 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	/**
 	 * Add a filter object to the filter array
 	 *
-	 * @param tx_form_System_Filter_Interface $filter The filter
-	 * @return tx_form_System_Filter
+	 * @param \TYPO3\CMS\Form\Filter\FilterInterface $filter The filter
+	 * @return \TYPO3\CMS\Form\Utility\FilterUtility
 	 */
-	public function addFilter(tx_form_System_Filter_Interface $filter) {
+	public function addFilter(\TYPO3\CMS\Form\Filter\FilterInterface $filter) {
 		$this->filters[] = $filter;
 		return $this;
 	}
@@ -65,7 +67,7 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	 *
 	 * @param string $class Name of the filter
 	 * @param array $arguments Configuration of the filter
-	 * @return tx_form_System_Filter_Interface The filter object
+	 * @return \TYPO3\CMS\Form\Filter\FilterInterface The filter object
 	 */
 	public function makeFilter($class, array $arguments = NULL) {
 		return self::createFilter($class, $arguments);
@@ -79,7 +81,7 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	 */
 	public function filter($value) {
 		if (!empty($this->filters)) {
-			/** @var $filter tx_form_System_Filter_Interface */
+			/** @var $filter \TYPO3\CMS\Form\Filter\FilterInterface */
 			foreach ($this->filters as $filter) {
 				$value = $filter->filter($value);
 			}
@@ -105,19 +107,20 @@ class tx_form_System_Filter implements tx_form_System_Filter_Interface {
 	 *
 	 * @param string $class Name of the filter
 	 * @param array $arguments Configuration of the filter
-	 * @return tx_form_System_Filter_Interface The filter object
+	 * @return \TYPO3\CMS\Form\Filter\FilterInterface The filter object
 	 */
 	static public function createFilter($class, array $arguments = NULL) {
 		$class = strtolower((string) $class);
-		$className = 'tx_form_System_Filter_' . ucfirst($class);
+		$className = 'TYPO3\\CMS\\Form\\Utility\\FilterUtility_' . ucfirst($class);
 		if (is_null($arguments)) {
-			$filter = t3lib_div::makeInstance($className);
+			$filter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
 		} else {
-			$filter = t3lib_div::makeInstance($className, $arguments);
+			$filter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $arguments);
 		}
 		return $filter;
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Configuration\TypoScript\ConditionMatching;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
+class ConditionMatcher extends \TYPO3\CMS\Core\Configuration\TypoScript\ConditionMatching\AbstractConditionMatcher {
 
 	/**
 	 * Constructor for this class
@@ -53,7 +55,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 * @see t3lib_tsparser::parse()
 	 */
 	protected function evaluateCondition($string) {
-		list($key, $value) = t3lib_div::trimExplode('=', $string, FALSE, 2);
+		list($key, $value) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('=', $string, FALSE, 2);
 		$result = parent::evaluateConditionCommon($key, $value);
 		if (is_bool($result)) {
 			return $result;
@@ -61,9 +63,9 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 			switch ($key) {
 			case 'usergroup':
 				$groupList = $this->getGroupList();
-				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 				foreach ($values as $test) {
-					if ($test == '*' || t3lib_div::inList($groupList, $test)) {
+					if ($test == '*' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($groupList, $test)) {
 						return TRUE;
 					}
 				}
@@ -75,7 +77,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 				}
 				break;
 			case 'treeLevel':
-				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 				$treeLevel = count($this->rootline) - 1;
 				// If a new page is being edited or saved the treeLevel is higher by one:
 				if ($this->isNewPageWithPageId($this->pageId)) {
@@ -90,7 +92,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 			case 'PIDupinRootline':
 
 			case 'PIDinRootline':
-				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 				if (($key == 'PIDinRootline' || !in_array($this->pageId, $values)) || $this->isNewPageWithPageId($this->pageId)) {
 					foreach ($values as $test) {
 						foreach ($this->rootline as $rl_dat) {
@@ -139,10 +141,10 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 */
 	protected function determinePageId() {
 		$pageId = 0;
-		$editStatement = t3lib_div::_GP('edit');
-		$commandStatement = t3lib_div::_GP('cmd');
+		$editStatement = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('edit');
+		$commandStatement = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
 		// Determine id from module that was called with an id:
-		if ($id = intval(t3lib_div::_GP('id'))) {
+		if ($id = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'))) {
 			$pageId = $id;
 		} elseif (is_array($editStatement)) {
 			list($table, $uidAndAction) = each($editStatement);
@@ -172,7 +174,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 */
 	protected function getPage() {
 		$pageId = isset($this->pageId) ? $this->pageId : $this->determinePageId();
-		return t3lib_BEfunc::getRecord('pages', $pageId);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $pageId);
 	}
 
 	/**
@@ -190,7 +192,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 			if (($ignoreTable || $table === 'pages') && $id >= 0) {
 				$pageId = $id;
 			} else {
-				$record = t3lib_BEfunc::getRecordWSOL($table, abs($id), '*', '', FALSE);
+				$record = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL($table, abs($id), '*', '', FALSE);
 				$pageId = $record['pid'];
 			}
 		}
@@ -205,7 +207,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 * @return boolean TRUE if the is currently a new page record being edited with $pid as uid of the parent page
 	 */
 	protected function isNewPageWithPageId($pageId) {
-		if (isset($GLOBALS['SOBE']) && $GLOBALS['SOBE'] instanceof SC_alt_doc) {
+		if (isset($GLOBALS['SOBE']) && $GLOBALS['SOBE'] instanceof \TYPO3\CMS\Backend\Controller\EditDocumentController) {
 			$pageId = intval($pageId);
 			$elementsData = $GLOBALS['SOBE']->elementsData;
 			$data = $GLOBALS['SOBE']->data;
@@ -222,7 +224,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 				foreach ($elementsData as $element) {
 					if ($element['cmd'] == 'new' && $element['table'] == 'pages') {
 						if ($element['pid'] < 0) {
-							$pageRecord = t3lib_BEfunc::getRecord('pages', abs($element['pid']), 'pid');
+							$pageRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', abs($element['pid']), 'pid');
 							$element['pid'] = $pageRecord['pid'];
 						}
 						if ($element['pid'] == $pageId) {
@@ -242,7 +244,7 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	 */
 	protected function determineRootline() {
 		$pageId = isset($this->pageId) ? $this->pageId : $this->determinePageId();
-		$rootline = t3lib_BEfunc::BEgetRootLine($pageId, '', TRUE);
+		$rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($pageId, '', TRUE);
 		return $rootline;
 	}
 
@@ -295,5 +297,6 @@ class t3lib_matchCondition_backend extends t3lib_matchCondition_abstract {
 	}
 
 }
+
 
 ?>

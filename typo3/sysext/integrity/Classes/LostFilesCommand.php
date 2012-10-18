@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_lost_files extends tx_lowlevel_cleaner_core {
+class LostFilesCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * @todo Define visibility
@@ -65,7 +67,7 @@ Assumptions:
 The assumptions are not requirements by the TYPO3 API but reflects the de facto implementation of most TYPO3 installations and therefore a practical approach to cleaning up the uploads/ folder.
 Therefore, if all "group" type fields in TCA and flexforms are positioned inside the uploads/ folder and if no files inside are managed manually it should be safe to clean out files with no relations found in the system.
 Under such circumstances there should theoretically be no lost files in the uploads/ folder since TCEmain should have managed relations automatically including adding and deleting files.
-However, there is at least one reason known to why files might be found lost and that is when FlexForms are used. In such a case a change of/in the Data Structure XML (or the ability of the system to find the Data Structure definition!) used for the flexform could leave lost files behind. This is not unlikely to happen when records are deleted. More details can be found in a note to the function t3lib_BEfunc::getFlexFormDS()
+However, there is at least one reason known to why files might be found lost and that is when FlexForms are used. In such a case a change of/in the Data Structure XML (or the ability of the system to find the Data Structure definition!) used for the flexform could leave lost files behind. This is not unlikely to happen when records are deleted. More details can be found in a note to the function TYPO3\\CMS\\Backend\\Utility\\BackendUtility::getFlexFormDS()
 Another scenario could of course be de-installation of extensions which managed files in the uploads/ folders.
 
 Automatic Repair of Errors:
@@ -106,18 +108,18 @@ Will report lost files.';
 		);
 		// Get all files:
 		$fileArr = array();
-		$fileArr = t3lib_div::getAllFilesAndFoldersInPath($fileArr, PATH_site . 'uploads/');
-		$fileArr = t3lib_div::removePrefixPathFromList($fileArr, PATH_site);
-		$excludePaths = t3lib_div::trimExplode(',', $this->cli_argValue('--excludePath', 0), 1);
+		$fileArr = \TYPO3\CMS\Core\Utility\GeneralUtility::getAllFilesAndFoldersInPath($fileArr, PATH_site . 'uploads/');
+		$fileArr = \TYPO3\CMS\Core\Utility\GeneralUtility::removePrefixPathFromList($fileArr, PATH_site);
+		$excludePaths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->cli_argValue('--excludePath', 0), 1);
 		// Traverse files and for each, look up if its found in the reference index.
 		foreach ($fileArr as $key => $value) {
 			$include = TRUE;
 			foreach ($excludePaths as $exclPath) {
-				if (t3lib_div::isFirstPartOfStr($value, $exclPath)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($value, $exclPath)) {
 					$include = FALSE;
 				}
 			}
-			$shortKey = t3lib_div::shortmd5($value);
+			$shortKey = \TYPO3\CMS\Core\Utility\GeneralUtility::shortmd5($value);
 			if ($include) {
 				// First, allow "index.html", ".htaccess" files since they are often used for good reasons
 				if (substr($value, -11) == '/index.html' || substr($value, -10) == '/.htaccess') {
@@ -166,7 +168,7 @@ Will report lost files.';
 	 */
 	public function main_autoFix($resultArray) {
 		foreach ($resultArray['lostFiles'] as $key => $value) {
-			$absFileName = t3lib_div::getFileAbsFileName($value);
+			$absFileName = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($value);
 			echo ('Deleting file: "' . $absFileName) . '": ';
 			if ($bypass = $this->cli_noExecutionCheck($absFileName)) {
 				echo $bypass;
@@ -183,5 +185,6 @@ Will report lost files.';
 	}
 
 }
+
 
 ?>

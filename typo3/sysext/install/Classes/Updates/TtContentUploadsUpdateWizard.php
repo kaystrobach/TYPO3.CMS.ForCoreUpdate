@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Updates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @author Steffen Ritter <steffen.ritter@typo3.org>
  * @license http://www.gnu.org/copyleft/gpl.html
  */
-class Tx_Install_Updates_File_TtContentUploadsUpdateWizard extends Tx_Install_Updates_Base {
+class TtContentUploadsUpdateWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	const FOLDER_ContentUploads = '_migrated/content_uploads';
 	/**
@@ -43,17 +45,17 @@ class Tx_Install_Updates_File_TtContentUploadsUpdateWizard extends Tx_Install_Up
 	protected $targetDirectory;
 
 	/**
-	 * @var t3lib_file_Factory
+	 * @var \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected $fileFactory;
 
 	/**
-	 * @var t3lib_file_Repository_FileRepository
+	 * @var \TYPO3\CMS\Core\Resource\FileRepository
 	 */
 	protected $fileRepository;
 
 	/**
-	 * @var t3lib_file_Storage
+	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected $storage;
 
@@ -64,24 +66,24 @@ class Tx_Install_Updates_File_TtContentUploadsUpdateWizard extends Tx_Install_Up
 	 */
 	protected function init() {
 		$fileadminDirectory = rtrim($GLOBALS['TYPO3_CONF_VARS']['BE']['fileadminDir'], '/') . '/';
-		/** @var $storageRepository t3lib_file_Repository_StorageRepository */
-		$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
+		/** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
+		$storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
 		$storages = $storageRepository->findAll();
 		foreach ($storages as $storage) {
 			$storageRecord = $storage->getStorageRecord();
 			$configuration = $storage->getConfiguration();
 			$isLocalDriver = $storageRecord['driver'] === 'Local';
-			$isOnFileadmin = !empty($configuration['basePath']) && t3lib_div::isFirstPartOfStr($configuration['basePath'], $fileadminDirectory);
+			$isOnFileadmin = !empty($configuration['basePath']) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($configuration['basePath'], $fileadminDirectory);
 			if ($isLocalDriver && $isOnFileadmin) {
 				$this->storage = $storage;
 				break;
 			}
 		}
 		if (!isset($this->storage)) {
-			throw new RuntimeException('Local default storage could not be initialized - might be due to missing sys_file* tables.');
+			throw new \RuntimeException('Local default storage could not be initialized - might be due to missing sys_file* tables.');
 		}
-		$this->fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
-		$this->fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+		$this->fileFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+		$this->fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$this->targetDirectory = ((PATH_site . $fileadminDirectory) . self::FOLDER_ContentUploads) . '/';
 	}
 
@@ -149,15 +151,15 @@ class Tx_Install_Updates_File_TtContentUploadsUpdateWizard extends Tx_Install_Up
 			));
 			$collections[] = $GLOBALS['TYPO3_DB']->sql_insert_id();
 		}
-		$files = t3lib_div::trimExplode(',', $record['media'], TRUE);
-		$descriptions = t3lib_div::trimExplode('
+		$files = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $record['media'], TRUE);
+		$descriptions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('
 ', $record['imagecaption']);
-		$titleText = t3lib_div::trimExplode('
+		$titleText = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('
 ', $record['titleText']);
 		$i = 0;
 		foreach ($files as $file) {
 			if (file_exists((PATH_site . 'uploads/media/') . $file)) {
-				t3lib_div::upload_copy_move((PATH_site . 'uploads/media/') . $file, $this->targetDirectory . $file);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::upload_copy_move((PATH_site . 'uploads/media/') . $file, $this->targetDirectory . $file);
 				$fileObject = $this->storage->getFile((self::FOLDER_ContentUploads . '/') . $file);
 				$this->fileRepository->addToIndex($fileObject);
 				$dataArray = array(
@@ -212,5 +214,6 @@ class Tx_Install_Updates_File_TtContentUploadsUpdateWizard extends Tx_Install_Up
 	}
 
 }
+
 
 ?>

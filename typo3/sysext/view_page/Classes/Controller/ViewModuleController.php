@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\ViewPage\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage viewpage
  */
-class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_ActionController {
+class ViewModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
 	 * Show selected page from pagetree in iframe
@@ -48,12 +50,12 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 	 * @return string
 	 */
 	protected function getTargetUrl() {
-		$pageIdToShow = intval(t3lib_div::_GP('id'));
+		$pageIdToShow = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'));
 		$adminCommand = $this->getAdminCommand($pageIdToShow);
 		$domainName = $this->getDomainName($pageIdToShow);
 		// Mount point overlay: Set new target page id and mp parameter
-		/** @var t3lib_pageSelect $sysPage */
-		$sysPage = t3lib_div::makeInstance('t3lib_pageSelect');
+		/** @var \TYPO3\CMS\Frontend\Page\PageRepository $sysPage */
+		$sysPage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 		$sysPage->init(FALSE);
 		$mountPointMpParameter = '';
 		$finalPageIdToShow = $pageIdToShow;
@@ -68,7 +70,7 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 		if ($domainName) {
 			$protocol = 'http';
 			$page = (array) $sysPage->getPage($finalPageIdToShow);
-			if ($page['url_scheme'] == 2 || $page['url_scheme'] == 0 && t3lib_div::getIndpEnv('TYPO3_SSL')) {
+			if ($page['url_scheme'] == 2 || $page['url_scheme'] == 0 && \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
 				$protocol = 'https';
 			}
 			$protocolAndHost = ($protocol . '://') . $domainName;
@@ -85,10 +87,10 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 	 */
 	protected function getAdminCommand($pageId) {
 		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$pageinfo = t3lib_BEfunc::readPageAccess($pageId, $GLOBALS['BE_USER']->getPagePermsClause(1));
+		$pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($pageId, $GLOBALS['BE_USER']->getPagePermsClause(1));
 		$addCommand = '';
 		if (is_array($pageinfo)) {
-			$addCommand = '&ADMCMD_view=1&ADMCMD_editIcons=1' . t3lib_BEfunc::ADMCMD_previewCmds($pageinfo);
+			$addCommand = '&ADMCMD_view=1&ADMCMD_editIcons=1' . \TYPO3\CMS\Backend\Utility\BackendUtility::ADMCMD_previewCmds($pageinfo);
 		}
 		return $addCommand;
 	}
@@ -103,7 +105,7 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 	 */
 	protected function getTypeParameterIfSet($pageId) {
 		$typeParameter = '';
-		$modTSconfig = t3lib_BEfunc::getModTSconfig($pageId, 'mod.web_view');
+		$modTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($pageId, 'mod.web_view');
 		$typeId = intval($modTSconfig['properties']['type']);
 		if ($typeId > 0) {
 			$typeParameter = '&type=' . $typeId;
@@ -118,10 +120,11 @@ class Tx_Viewpage_Controller_ViewController extends Tx_Extbase_MVC_Controller_Ac
 	 * @return boolean|string Domain name if there is one, FALSE if not
 	 */
 	protected function getDomainName($pageId) {
-		$domain = t3lib_BEfunc::firstDomainRecord(t3lib_BEfunc::BEgetRootLine($pageId));
+		$domain = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord(\TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($pageId));
 		return $domain;
 	}
 
 }
+
 
 ?>

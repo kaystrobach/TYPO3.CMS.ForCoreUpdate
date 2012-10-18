@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_Domain_Model_BackendUserGroup extends Tx_Extbase_DomainObject_AbstractEntity {
+class BackendUserGroup extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string
@@ -38,7 +40,7 @@ class Tx_Beuser_Domain_Model_BackendUserGroup extends Tx_Extbase_DomainObject_Ab
 	protected $title;
 
 	/**
-	 * @var Tx_Extbase_Persistence_ObjectStorage<Tx_Beuser_Domain_Model_BackendUserGroup>
+	 * @var \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage<\TYPO3\CMS\Beuser\Domain\Model\BackendUserGroup>
 	 * @lazy
 	 */
 	protected $subGroups;
@@ -58,19 +60,20 @@ class Tx_Beuser_Domain_Model_BackendUserGroup extends Tx_Extbase_DomainObject_Ab
 	}
 
 	/**
-	 * @param \Tx_Extbase_Persistence_ObjectStorage $subGroups
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage $subGroups
 	 */
 	public function setSubGroups($subGroups) {
 		$this->subGroups = $subGroups;
 	}
 
 	/**
-	 * @return \Tx_Extbase_Persistence_ObjectStorage
+	 * @return \TYPO3\CMS\Extbase\Persistence\Generic\ObjectStorage
 	 */
 	public function getSubGroups() {
 		return $this->subGroups;
 	}
 
 }
+
 
 ?>

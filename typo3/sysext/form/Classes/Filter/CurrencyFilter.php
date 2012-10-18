@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Currency implements tx_form_System_Filter_Interface {
+class CurrencyFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Separator between group of thousands
@@ -60,7 +62,7 @@ class tx_form_System_Filter_Currency implements tx_form_System_Filter_Interface 
 	 * Set the decimal point character
 	 *
 	 * @param string $decimalsPoint Character used for decimal point
-	 * @return tx_form_System_Filter_Currency
+	 * @return \TYPO3\CMS\Form\Filter\CurrencyFilter
 	 */
 	public function setDecimalsPoint($decimalsPoint = '.') {
 		if (empty($decimalsPoint)) {
@@ -75,7 +77,7 @@ class tx_form_System_Filter_Currency implements tx_form_System_Filter_Interface 
 	 * Set the thousand separator character
 	 *
 	 * @param string $thousandSeparator Character used for thousand separator
-	 * @return tx_form_System_Filter_Currency
+	 * @return \TYPO3\CMS\Form\Filter\CurrencyFilter
 	 */
 	public function setThousandSeparator($thousandSeparator = ',') {
 		if (empty($thousandSeparator)) {
@@ -103,5 +105,6 @@ class tx_form_System_Filter_Currency implements tx_form_System_Filter_Interface 
 	}
 
 }
+
 
 ?>

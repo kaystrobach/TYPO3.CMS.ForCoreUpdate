@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_ComparableNode
+interface ComparableNodeInterface
 {
 	/**
 	 * Compare Node against another one
@@ -52,10 +54,11 @@ interface t3lib_tree_ComparableNode
 	 * }
 	 * </pre>
 	 *
-	 * @param t3lib_tree_Node $other
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $other
 	 * @return integer see description
 	 */
 	public function compareTo($other);
 
 }
+
 ?>

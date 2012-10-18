@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Json;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_JSON_Container extends tx_form_Domain_Model_JSON_Element {
+class ContainerJsonElement extends \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement {
 
 	/**
 	 * The items within this container
@@ -43,13 +45,14 @@ class tx_form_Domain_Model_JSON_Container extends tx_form_Domain_Model_JSON_Elem
 	/**
 	 * Add an element to this container
 	 *
-	 * @param tx_form_Domain_Model_JSON_Element $element The element to add
+	 * @param \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $element The element to add
 	 * @return void
 	 */
-	public function addElement(tx_form_Domain_Model_JSON_Element $element) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $element) {
 		$this->elementContainer['items'][] = $element;
 	}
 
 }
+
 
 ?>

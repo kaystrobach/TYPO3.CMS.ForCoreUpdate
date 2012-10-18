@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Updates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @author 	  Tolleiv Nietsch <typo3@tolleiv.de>
  * @license 	 http://www.gnu.org/copyleft/gpl.html
  */
-class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_Base {
+class FilemountUpdateWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	/**
 	 * @var string
@@ -50,12 +52,12 @@ class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_B
 	protected $sqlQueries = array();
 
 	/**
-	 * @var t3lib_file_Storage
+	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected $storage;
 
 	/**
-	 * @var t3lib_file_Repository_StorageRepository
+	 * @var \TYPO3\CMS\Core\Resource\StorageRepository
 	 */
 	protected $storageRepository;
 
@@ -70,7 +72,7 @@ class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_B
 	 * Initialize the storage repository.
 	 */
 	public function init() {
-		$this->storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
+		$this->storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
 		$storages = $this->storageRepository->findAll();
 		$this->storage = $storages[0];
 	}
@@ -83,7 +85,7 @@ class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_B
 	 */
 	public function checkForUpdate(&$description) {
 		$description = 'Migrate all filemounts to be based on file abstraction layer storages.';
-		$filemountCount = $this->db->exec_SELECTcountRows('*', 'sys_filemounts', 'base IN (0,1) ' . t3lib_BEfunc::deleteClause('sys_filemounts'));
+		$filemountCount = $this->db->exec_SELECTcountRows('*', 'sys_filemounts', 'base IN (0,1) ' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_filemounts'));
 		return $filemountCount > 0 && !$this->isWizardDone();
 	}
 
@@ -112,7 +114,7 @@ class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_B
 	protected function migrateAbsoluteFilemounts() {
 		$description = 'This is the local %s directory. This storage mount has been created by the TYPO3 upgrade wizards.';
 		$fileadminDir = PATH_site . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileadminDir'];
-		$absoluteFilemounts = $this->db->exec_SELECTgetRows('*', 'sys_filemounts', 'base = 0' . t3lib_BEfunc::deleteClause('sys_filemounts'));
+		$absoluteFilemounts = $this->db->exec_SELECTgetRows('*', 'sys_filemounts', 'base = 0' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_filemounts'));
 		foreach ($absoluteFilemounts as $filemount) {
 			if (stristr($filemount['path'], $fileadminDir)) {
 				$storageId = $this->storage->getUid();
@@ -132,7 +134,7 @@ class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_B
 	 * and their path is modified to be a valid resource location
 	 */
 	protected function migrateRelativeFilemounts() {
-		$relativeFilemounts = $this->db->exec_SELECTgetRows('*', 'sys_filemounts', 'base = 1' . t3lib_BEfunc::deleteClause('sys_filemounts'));
+		$relativeFilemounts = $this->db->exec_SELECTgetRows('*', 'sys_filemounts', 'base = 1' . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('sys_filemounts'));
 		foreach ($relativeFilemounts as $filemount) {
 			$this->db->exec_UPDATEquery('sys_filemounts', 'uid=' . intval($filemount['uid']), array('base' => $this->storage->getUid(), 'path' => '/' . ltrim($filemount['path'], '/')));
 			$this->sqlQueries[] = $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery;
@@ -140,5 +142,6 @@ class Tx_Install_Updates_File_FilemountUpdateWizard extends Tx_Install_Updates_B
 	}
 
 }
+
 
 ?>

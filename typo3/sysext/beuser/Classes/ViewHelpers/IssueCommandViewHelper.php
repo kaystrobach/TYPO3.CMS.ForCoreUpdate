@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_ViewHelpers_IssueCommandViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class IssueCommandViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Returns a URL with a command to TYPO3 Core Engine (tce_db.php)
@@ -42,10 +44,11 @@ class Tx_Beuser_ViewHelpers_IssueCommandViewHelper extends Tx_Fluid_Core_ViewHel
 	 * @see template::issueCommand()
 	 */
 	public function render($parameters, $redirectUrl = '') {
-		$redirectUrl = $redirectUrl ? $redirectUrl : t3lib_div::getIndpEnv('REQUEST_URI');
-		return ((((((($GLOBALS['BACK_PATH'] . 'tce_db.php?') . $parameters) . '&redirect=') . ($redirectUrl == '' ? '\' + T3_THIS_LOCATION + \'' : rawurlencode($redirectUrl))) . '&vC=') . rawurlencode($GLOBALS['BE_USER']->veriCode())) . t3lib_BEfunc::getUrlToken('tceAction')) . '&prErr=1&uPT=1';
+		$redirectUrl = $redirectUrl ? $redirectUrl : \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI');
+		return ((((((($GLOBALS['BACK_PATH'] . 'tce_db.php?') . $parameters) . '&redirect=') . ($redirectUrl == '' ? '\' + T3_THIS_LOCATION + \'' : rawurlencode($redirectUrl))) . '&vC=') . rawurlencode($GLOBALS['BE_USER']->veriCode())) . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction')) . '&prErr=1&uPT=1';
 	}
 
 }
+
 
 ?>

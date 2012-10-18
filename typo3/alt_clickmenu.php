@@ -47,15 +47,15 @@ $LANG->includeLLFile('EXT:lang/locallang_misc.xml');
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/ClickMenu/ClickMenu.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/ClickMenu/ClickMenu.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/ClickMenu/ClickMenu.php';
 /*
  * @deprecated since 6.0, the classname SC_alt_clickmenu and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/ClickMenuController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/ClickMenuController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/ClickMenuController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_alt_clickmenu');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\ClickMenuController');
 $SOBE->init();
 // Include files?
 foreach ($SOBE->include_once as $INC_FILE) {

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Messaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_FlashMessage extends t3lib_message_AbstractMessage {
+class FlashMessage extends \TYPO3\CMS\Core\Messaging\AbstractMessage {
 
 	/**
 	 * defines whether the message should be stored in the session (to survive redirects) or only for one request (default)
@@ -110,5 +112,6 @@ class t3lib_FlashMessage extends t3lib_message_AbstractMessage {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_AbstractPlain extends tx_form_Domain_Model_Element_Abstract {
+class AbstractPlainElement extends \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement {
 
 	/**
 	 * @var string
@@ -87,5 +89,6 @@ class tx_form_Domain_Model_Element_AbstractPlain extends tx_form_Domain_Model_El
 	}
 
 }
+
 
 ?>

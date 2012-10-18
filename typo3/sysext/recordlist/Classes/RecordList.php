@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recordlist;
+
 /**
  * Script Class for the Web > List module; rendering the listing of records on a page
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_db_list {
+class RecordList {
 
 	// Internal, GPvars:
 	// Page Id for which to make the listing
@@ -97,7 +99,7 @@ class SC_db_list {
 	/**
 	 * Document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -144,17 +146,17 @@ class SC_db_list {
 		$this->MCONF = $GLOBALS['MCONF'];
 		$this->perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
 		// GPvars:
-		$this->id = t3lib_div::_GP('id');
-		$this->pointer = t3lib_div::_GP('pointer');
-		$this->imagemode = t3lib_div::_GP('imagemode');
-		$this->table = t3lib_div::_GP('table');
-		$this->search_field = t3lib_div::_GP('search_field');
-		$this->search_levels = t3lib_div::_GP('search_levels');
-		$this->showLimit = t3lib_div::_GP('showLimit');
-		$this->returnUrl = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
-		$this->clear_cache = t3lib_div::_GP('clear_cache');
-		$this->cmd = t3lib_div::_GP('cmd');
-		$this->cmd_table = t3lib_div::_GP('cmd_table');
+		$this->id = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id');
+		$this->pointer = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pointer');
+		$this->imagemode = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('imagemode');
+		$this->table = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('table');
+		$this->search_field = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('search_field');
+		$this->search_levels = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('search_levels');
+		$this->showLimit = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('showLimit');
+		$this->returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
+		$this->clear_cache = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('clear_cache');
+		$this->cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
+		$this->cmd_table = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd_table');
 		// Initialize menu
 		$this->menuConfig();
 	}
@@ -173,9 +175,9 @@ class SC_db_list {
 			'localization' => ''
 		);
 		// Loading module configuration:
-		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id, 'mod.' . $this->MCONF['name']);
+		$this->modTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($this->id, 'mod.' . $this->MCONF['name']);
 		// Clean up settings:
-		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name']);
+		$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name']);
 	}
 
 	/**
@@ -186,7 +188,7 @@ class SC_db_list {
 	 */
 	public function clearCache() {
 		if ($this->clear_cache) {
-			$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+			$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 			$tce->stripslashes_values = 0;
 			$tce->start(array(), array());
 			$tce->clear_cacheCmd($this->id);
@@ -201,11 +203,11 @@ class SC_db_list {
 	 */
 	public function main() {
 		// Start document template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/db_list.html');
 		// Loading current page record and checking access:
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
+		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 		// Apply predefined values for hidden checkboxes
 		// Set predefined value for DisplayBigControlPanel:
@@ -227,10 +229,10 @@ class SC_db_list {
 			$this->MOD_SETTINGS['localization'] = FALSE;
 		}
 		// Initialize the dblist object:
-		/** @var $dblist localRecordList */
-		$dblist = t3lib_div::makeInstance('localRecordList');
+		/** @var $dblist \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList */
+		$dblist = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recordlist\\RecordList\\DatabaseRecordList');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
-		$dblist->script = t3lib_BEfunc::getModuleUrl('web_list', array(), '');
+		$dblist->script = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_list', array(), '');
 		$dblist->calcPerms = $GLOBALS['BE_USER']->calcPerms($this->pageinfo);
 		$dblist->thumbs = $GLOBALS['BE_USER']->uc['thumbnailsByDefault'];
 		$dblist->returnUrl = $this->returnUrl;
@@ -243,8 +245,8 @@ class SC_db_list {
 		$dblist->hideTranslations = $this->modTSconfig['properties']['hideTranslations'];
 		$dblist->tableTSconfigOverTCA = $this->modTSconfig['properties']['table.'];
 		$dblist->alternateBgColors = $this->modTSconfig['properties']['alternateBgColors'] ? 1 : 0;
-		$dblist->allowedNewTables = t3lib_div::trimExplode(',', $this->modTSconfig['properties']['allowedNewTables'], 1);
-		$dblist->deniedNewTables = t3lib_div::trimExplode(',', $this->modTSconfig['properties']['deniedNewTables'], 1);
+		$dblist->allowedNewTables = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->modTSconfig['properties']['allowedNewTables'], 1);
+		$dblist->deniedNewTables = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->modTSconfig['properties']['deniedNewTables'], 1);
 		$dblist->newWizards = $this->modTSconfig['properties']['newWizards'] ? 1 : 0;
 		$dblist->pageRow = $this->pageinfo;
 		$dblist->counter++;
@@ -254,17 +256,17 @@ class SC_db_list {
 		$dblist->clickTitleMode = $clickTitleMode === '' ? 'edit' : $clickTitleMode;
 		// Clipboard is initialized:
 		// Start clipboard
-		$dblist->clipObj = t3lib_div::makeInstance('t3lib_clipboard');
+		$dblist->clipObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Clipboard\\Clipboard');
 		// Initialize - reads the clipboard content from the user session
 		$dblist->clipObj->initializeClipboard();
 		// Clipboard actions are handled:
 		// CB is the clipboard command array
-		$CB = t3lib_div::_GET('CB');
+		$CB = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('CB');
 		if ($this->cmd == 'setCB') {
 			// CBH is all the fields selected for the clipboard, CBC is the checkbox fields which were checked.
 			// By merging we get a full array of checked/unchecked elements
 			// This is set to the 'el' array of the CB after being parsed so only the table in question is registered.
-			$CB['el'] = $dblist->clipObj->cleanUpCBC(array_merge((array) t3lib_div::_POST('CBH'), (array) t3lib_div::_POST('CBC')), $this->cmd_table);
+			$CB['el'] = $dblist->clipObj->cleanUpCBC(array_merge((array) \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('CBH'), (array) \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('CBC')), $this->cmd_table);
 		}
 		if (!$this->MOD_SETTINGS['clipBoard']) {
 			// If the clipboard is NOT shown, set the pad to 'normal'.
@@ -284,29 +286,29 @@ class SC_db_list {
 			// Deleting records...:
 			// Has not to do with the clipboard but is simply the delete action. The clipboard object is used to clean up the submitted entries to only the selected table.
 			if ($this->cmd == 'delete') {
-				$items = $dblist->clipObj->cleanUpCBC(t3lib_div::_POST('CBC'), $this->cmd_table, 1);
+				$items = $dblist->clipObj->cleanUpCBC(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('CBC'), $this->cmd_table, 1);
 				if (count($items)) {
 					$cmd = array();
 					foreach ($items as $iK => $value) {
 						$iKParts = explode('|', $iK);
 						$cmd[$iKParts[0]][$iKParts[1]]['delete'] = 1;
 					}
-					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+					$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 					$tce->stripslashes_values = 0;
 					$tce->start(array(), $cmd);
 					$tce->process_cmdmap();
 					if (isset($cmd['pages'])) {
-						t3lib_BEfunc::setUpdateSignal('updatePageTree');
+						\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updatePageTree');
 					}
-					$tce->printLogErrorMessages(t3lib_div::getIndpEnv('REQUEST_URI'));
+					$tce->printLogErrorMessages(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'));
 				}
 			}
 			// Initialize the listing object, dblist, for rendering the list:
-			$this->pointer = t3lib_utility_Math::forceIntegerInRange($this->pointer, 0, 100000);
+			$this->pointer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->pointer, 0, 100000);
 			$dblist->start($this->id, $this->table, $this->pointer, $this->search_field, $this->search_levels, $this->showLimit);
 			$dblist->setDispFields();
 			// Render versioning selector:
-			if (t3lib_extMgm::isLoaded('version')) {
+			if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('version')) {
 				$dblist->HTMLcode .= $this->doc->getVersionSelector($this->id);
 			}
 			// Render the list of tables:
@@ -341,7 +343,7 @@ class SC_db_list {
 				' . $this->doc->redirectUrls($listUrl)) . '
 				') . $dblist->CBfunctions()) . '
 				function editRecords(table,idList,addParams,CBflag) {	//
-					window.location.href="') . $GLOBALS['BACK_PATH']) . 'alt_doc.php?returnUrl=') . rawurlencode(t3lib_div::getIndpEnv('REQUEST_URI'))) . '&edit["+table+"]["+idList+"]=edit"+addParams;
+					window.location.href="') . $GLOBALS['BACK_PATH']) . 'alt_doc.php?returnUrl=') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'))) . '&edit["+table+"]["+idList+"]=edit"+addParams;
 				}
 				function editList(table,idList) {	//
 					var list="";
@@ -390,20 +392,20 @@ class SC_db_list {
 						<form action="" method="post">';
 			// Add "display bigControlPanel" checkbox:
 			if ($this->modTSconfig['properties']['enableDisplayBigControlPanel'] === 'selectable') {
-				$this->body .= t3lib_BEfunc::getFuncCheck($this->id, 'SET[bigControlPanel]', $this->MOD_SETTINGS['bigControlPanel'], '', $this->table ? '&table=' . $this->table : '', 'id="checkLargeControl"');
-				$this->body .= ('<label for="checkLargeControl">' . t3lib_BEfunc::wrapInHelp('xMOD_csh_corebe', 'list_options', $GLOBALS['LANG']->getLL('largeControl', TRUE))) . '</label><br />';
+				$this->body .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->id, 'SET[bigControlPanel]', $this->MOD_SETTINGS['bigControlPanel'], '', $this->table ? '&table=' . $this->table : '', 'id="checkLargeControl"');
+				$this->body .= ('<label for="checkLargeControl">' . \TYPO3\CMS\Backend\Utility\BackendUtility::wrapInHelp('xMOD_csh_corebe', 'list_options', $GLOBALS['LANG']->getLL('largeControl', TRUE))) . '</label><br />';
 			}
 			// Add "clipboard" checkbox:
 			if ($this->modTSconfig['properties']['enableClipBoard'] === 'selectable') {
 				if ($dblist->showClipboard) {
-					$this->body .= t3lib_BEfunc::getFuncCheck($this->id, 'SET[clipBoard]', $this->MOD_SETTINGS['clipBoard'], '', $this->table ? '&table=' . $this->table : '', 'id="checkShowClipBoard"');
-					$this->body .= ('<label for="checkShowClipBoard">' . t3lib_BEfunc::wrapInHelp('xMOD_csh_corebe', 'list_options', $GLOBALS['LANG']->getLL('showClipBoard', TRUE))) . '</label><br />';
+					$this->body .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->id, 'SET[clipBoard]', $this->MOD_SETTINGS['clipBoard'], '', $this->table ? '&table=' . $this->table : '', 'id="checkShowClipBoard"');
+					$this->body .= ('<label for="checkShowClipBoard">' . \TYPO3\CMS\Backend\Utility\BackendUtility::wrapInHelp('xMOD_csh_corebe', 'list_options', $GLOBALS['LANG']->getLL('showClipBoard', TRUE))) . '</label><br />';
 				}
 			}
 			// Add "localization view" checkbox:
 			if ($this->modTSconfig['properties']['enableLocalizationView'] === 'selectable') {
-				$this->body .= t3lib_BEfunc::getFuncCheck($this->id, 'SET[localization]', $this->MOD_SETTINGS['localization'], '', $this->table ? '&table=' . $this->table : '', 'id="checkLocalization"');
-				$this->body .= ('<label for="checkLocalization">' . t3lib_BEfunc::wrapInHelp('xMOD_csh_corebe', 'list_options', $GLOBALS['LANG']->getLL('localization', TRUE))) . '</label><br />';
+				$this->body .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->id, 'SET[localization]', $this->MOD_SETTINGS['localization'], '', $this->table ? '&table=' . $this->table : '', 'id="checkLocalization"');
+				$this->body .= ('<label for="checkLocalization">' . \TYPO3\CMS\Backend\Utility\BackendUtility::wrapInHelp('xMOD_csh_corebe', 'list_options', $GLOBALS['LANG']->getLL('localization', TRUE))) . '</label><br />';
 			}
 			$this->body .= '
 						</form>
@@ -414,7 +416,7 @@ class SC_db_list {
 			}
 			// Search box:
 			if (!$this->modTSconfig['properties']['disableSearchBox']) {
-				$sectionTitle = t3lib_BEfunc::wrapInHelp('xMOD_csh_corebe', 'list_searchbox', $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.search', TRUE));
+				$sectionTitle = \TYPO3\CMS\Backend\Utility\BackendUtility::wrapInHelp('xMOD_csh_corebe', 'list_searchbox', $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.search', TRUE));
 				$this->body .= ('<div class="db_list-searchbox">' . $this->doc->section($sectionTitle, $dblist->getSearchBox(), FALSE, TRUE, FALSE, TRUE)) . '</div>';
 			}
 			// Additional footer content
@@ -422,7 +424,7 @@ class SC_db_list {
 			if (is_array($footerContentHook)) {
 				foreach ($footerContentHook as $hook) {
 					$params = array();
-					$this->body .= t3lib_div::callUserFunction($hook, $params, $this);
+					$this->body .= \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hook, $params, $this);
 				}
 			}
 		}
@@ -450,5 +452,6 @@ class SC_db_list {
 	}
 
 }
+
 
 ?>

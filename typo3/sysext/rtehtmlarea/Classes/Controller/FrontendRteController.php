@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
+class FrontendRteController extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaBase {
 
 	// External:
 	public $RTEWrapStyle = '';
@@ -94,7 +96,7 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 	public $LOCAL_LANG;
 
 	/**
-	 * @var t3lib_PageRenderer
+	 * @var \TYPO3\CMS\Core\Page\PageRenderer
 	 */
 	protected $pageRenderer;
 
@@ -118,13 +120,13 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 		global $TSFE, $TYPO3_CONF_VARS, $TYPO3_DB;
 		$this->TCEform = $parentObject;
 		$this->client = $this->clientInfo();
-		$this->typoVersion = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version);
+		$this->typoVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version);
 		/* =======================================
 		 * INIT THE EDITOR-SETTINGS
 		 * =======================================
 		 */
 		// Get the path to this extension:
-		$this->extHttpPath = t3lib_extMgm::siteRelPath($this->ID);
+		$this->extHttpPath = \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath($this->ID);
 		// Get the site URL
 		$this->siteURL = $GLOBALS['TSFE']->absRefPrefix ? $GLOBALS['TSFE']->absRefPrefix : '';
 		// Get the host URL
@@ -166,12 +168,12 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 		// Language
 		$TSFE->initLLvars();
 		$this->language = $TSFE->lang;
-		$this->LOCAL_LANG = t3lib_div::readLLfile(('EXT:' . $this->ID) . '/locallang.xml', $this->language);
+		$this->LOCAL_LANG = \TYPO3\CMS\Core\Utility\GeneralUtility::readLLfile(('EXT:' . $this->ID) . '/locallang.xml', $this->language);
 		if ($this->language == 'default' || !$this->language) {
 			$this->language = 'en';
 		}
 		$this->contentLanguageUid = $row['sys_language_uid'] > 0 ? $row['sys_language_uid'] : 0;
-		if (t3lib_extMgm::isLoaded('static_info_tables')) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables')) {
 			if ($this->contentLanguageUid) {
 				$tableA = 'sys_language';
 				$tableB = 'static_languages';
@@ -179,8 +181,8 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 				$selectFields = (((((($tableA . '.uid,') . $tableB) . '.lg_iso_2,') . $tableB) . '.lg_country_iso_2,') . $tableB) . '.lg_typo3';
 				$tableAB = (((((($tableA . ' LEFT JOIN ') . $tableB) . ' ON ') . $tableA) . '.static_lang_isocode=') . $tableB) . '.uid';
 				$whereClause = (($tableA . '.uid IN (') . $languagesUidsList) . ') ';
-				$whereClause .= t3lib_BEfunc::BEenableFields($tableA);
-				$whereClause .= t3lib_BEfunc::deleteClause($tableA);
+				$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($tableA);
+				$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($tableA);
 				$res = $TYPO3_DB->exec_SELECTquery($selectFields, $tableAB, $whereClause);
 				while ($languageRow = $TYPO3_DB->sql_fetch_assoc($res)) {
 					$this->contentISOLanguage = strtolower(trim($languageRow['lg_iso_2']) . (trim($languageRow['lg_country_iso_2']) ? '_' . trim($languageRow['lg_country_iso_2']) : ''));
@@ -280,7 +282,7 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 		$item = ((((((((((((((((($this->triggerField($PA['itemFormElName']) . '
 			<div id="pleasewait') . $textAreaId) . '" class="pleasewait" style="display: block;" >') . $TSFE->csConvObj->conv($TSFE->getLLL('Please wait', $this->LOCAL_LANG), $this->charset, $TSFE->renderCharset)) . '</div>
 			<div id="editorWrap') . $textAreaId) . '" class="editorWrap" style="visibility: hidden; ') . htmlspecialchars($this->RTEWrapStyle)) . '">
-			<textarea id="RTEarea') . $textAreaId) . '" name="') . htmlspecialchars($PA['itemFormElName'])) . '" rows="0" cols="0" style="') . htmlspecialchars($this->RTEdivStyle)) . '">') . t3lib_div::formatForTextarea($value)) . '</textarea>
+			<textarea id="RTEarea') . $textAreaId) . '" name="') . htmlspecialchars($PA['itemFormElName'])) . '" rows="0" cols="0" style="') . htmlspecialchars($this->RTEdivStyle)) . '">') . \TYPO3\CMS\Core\Utility\GeneralUtility::formatForTextarea($value)) . '</textarea>
 			</div>') . LF;
 		return $item;
 	}
@@ -330,7 +332,7 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 			if ($GLOBALS['TSFE']->isINTincScript()) {
 				// We use an instance of t3lib_PageRenderer to render additional header data
 				// because this script is invoked after header has been rendered by $GLOBALS['TSFE']->getPageRenderer()
-				$this->pageRenderer = t3lib_div::makeInstance('t3lib_PageRenderer');
+				$this->pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Page\\PageRenderer');
 				$this->pageRenderer->setTemplateFile($this->extHttpPath . 'templates/rtehtmlarea_pageheader_frontend.html');
 			} else {
 				$this->pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
@@ -356,5 +358,6 @@ class tx_rtehtmlarea_pi2 extends tx_rtehtmlarea_base {
 	}
 
 }
+
 
 ?>

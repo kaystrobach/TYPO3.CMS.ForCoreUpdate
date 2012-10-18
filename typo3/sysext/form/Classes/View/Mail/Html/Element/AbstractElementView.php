@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,12 +30,12 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_View_Mail_Html_Element_Abstract {
+abstract class AbstractElementView {
 
 	/**
 	 * The model for the current object
 	 *
-	 * @var tx_form_Domain_Model_Element_Abstract
+	 * @var \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement
 	 */
 	protected $model;
 
@@ -77,7 +79,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @param boolean $emptyElement
 	 * @return boolean
 	 */
-	protected function parseXML(DOMDocument $dom, DOMNode $reference, $emptyElement = FALSE) {
+	protected function parseXML(\DOMDocument $dom, \DOMNode $reference, $emptyElement = FALSE) {
 		$node = $reference->firstChild;
 		while (!is_null($node)) {
 			$deleteNode = FALSE;
@@ -175,7 +177,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 */
 	public function render($type = 'element', $returnFirstChild = TRUE) {
 		$useLayout = $this->getLayout((string) $type);
-		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom = new \DOMDocument('1.0', 'utf-8');
 		$dom->formatOutput = TRUE;
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->loadXML($useLayout);
@@ -196,12 +198,12 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @return string HTML string of the layout to use for this element
 	 */
 	public function getLayout($type) {
-		/** @var $layoutHandler tx_form_System_Layout */
-		$layoutHandler = t3lib_div::makeInstance('tx_form_System_Layout');
+		/** @var $layoutHandler \TYPO3\CMS\Form\Layout */
+		$layoutHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Layout');
 		switch ($type) {
 		case 'element':
 			$layoutDefault = $this->layout;
-			$layout = $layoutHandler->getLayoutByObject(tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE), $layoutDefault);
+			$layout = $layoutHandler->getLayoutByObject(\TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this, TRUE), $layoutDefault);
 			break;
 		case 'elementWrap':
 			$layoutDefault = $this->elementWrap;
@@ -224,7 +226,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @param DOMNode $value Value to import
 	 * @return void
 	 */
-	public function replaceNodeWithFragment(DOMDocument $dom, DOMNode $node, DOMNode $value) {
+	public function replaceNodeWithFragment(\DOMDocument $dom, \DOMNode $node, \DOMNode $value) {
 		$replaceNode = $dom->createDocumentFragment();
 		$domNode = $dom->importNode($value, TRUE);
 		$replaceNode->appendChild($domNode);
@@ -238,7 +240,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @param DOMElement $domElement DOM element of the specific HTML tag
 	 * @return void
 	 */
-	public function setAttributes(DOMElement $domElement) {
+	public function setAttributes(\DOMElement $domElement) {
 		$attributes = $this->model->getAttributes();
 		foreach ($attributes as $key => $attribute) {
 			if (!empty($attribute)) {
@@ -257,7 +259,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @param string $key Attribute key
 	 * @return void
 	 */
-	public function setAttribute(DOMElement $domElement, $key) {
+	public function setAttribute(\DOMElement $domElement, $key) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $key), ENT_QUOTES);
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
@@ -273,7 +275,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @param string $other Key of the attribute to take the value from
 	 * @return unknown_type
 	 */
-	public function setAttributeWithValueofOtherAttribute(DOMElement $domElement, $key, $other) {
+	public function setAttributeWithValueofOtherAttribute(\DOMElement $domElement, $key, $other) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $other), ENT_QUOTES);
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
@@ -288,8 +290,8 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 */
 	protected function createAdditional($class) {
 		$class = strtolower((string) $class);
-		$className = 'tx_form_View_Mail_Html_Additional_' . ucfirst($class);
-		return t3lib_div::makeInstance($className, $this->model);
+		$className = 'TYPO3\\CMS\\Form\\View\\Mail\\Html\\Additional\\AdditionalElementView_' . ucfirst($class);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $this->model);
 	}
 
 	/**
@@ -331,7 +333,7 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	 * @return string
 	 */
 	public function getElementWrapType() {
-		$elementType = strtolower(tx_form_Common::getInstance()->getLastPartOfClassName($this->model));
+		$elementType = strtolower(\TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this->model));
 		$wrapType = 'csc-form-element csc-form-element-' . $elementType;
 		return $wrapType;
 	}
@@ -361,5 +363,6 @@ abstract class tx_form_View_Mail_Html_Element_Abstract {
 	}
 
 }
+
 
 ?>

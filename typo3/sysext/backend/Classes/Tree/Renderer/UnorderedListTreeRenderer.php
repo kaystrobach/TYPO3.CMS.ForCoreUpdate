@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Renderer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
+class UnorderedListTreeRenderer extends \TYPO3\CMS\Backend\Tree\Renderer\AbstractTreeRenderer {
 
 	/**
 	 * recursion level
@@ -43,11 +45,11 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Renders a node recursive or just a single instance
 	 *
-	 * @param t3lib_tree_RepresentationNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node
 	 * @param boolean $recursive
 	 * @return string
 	 */
-	public function renderNode(t3lib_tree_RepresentationNode $node, $recursive = TRUE) {
+	public function renderNode(\TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node, $recursive = TRUE) {
 		$code = (('<li><span class="' . $node->getIcon()) . '">&nbsp;</span>') . $node->getLabel();
 		if ($recursive && $node->getChildNodes() !== NULL) {
 			$this->recursionLevel++;
@@ -61,11 +63,11 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Renders a node collection recursive or just a single instance
 	 *
-	 * @param t3lib_tree_NodeCollection $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $node
 	 * @param boolean $recursive
 	 * @return string
 	 */
-	public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE) {
+	public function renderTree(\TYPO3\CMS\Backend\Tree\AbstractTree $tree, $recursive = TRUE) {
 		$this->recursionLevel = 0;
 		$code = ('<ul class="level' . $this->recursionLevel) . '" style="margin-left:10px">';
 		$code .= $this->renderNode($tree->getRoot(), $recursive);
@@ -76,11 +78,11 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	/**
 	 * Renders an tree recursive or just a single instance
 	 *
-	 * @param t3lib_tree_NodeCollection $collection
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $collection
 	 * @param boolean $recursive
 	 * @return string
 	 */
-	public function renderNodeCollection(t3lib_tree_NodeCollection $collection, $recursive = TRUE) {
+	public function renderNodeCollection(\TYPO3\CMS\Backend\Tree\TreeNodeCollection $collection, $recursive = TRUE) {
 		$code = ('<ul class="level' . $this->recursionLevel) . '" style="margin-left:10px">';
 		foreach ($collection as $node) {
 			$code .= $this->renderNode($node, $recursive);
@@ -90,5 +92,6 @@ class t3lib_tree_Renderer_UnorderedList extends t3lib_tree_Renderer_Abstract {
 	}
 
 }
+
 
 ?>

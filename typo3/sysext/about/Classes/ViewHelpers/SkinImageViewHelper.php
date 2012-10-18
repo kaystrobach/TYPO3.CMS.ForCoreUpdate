@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\About\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * not be used outside of the extension for now.
  * See the fluid templates of ext:about for a usage example.
  */
-class Tx_About_ViewHelpers_SkinImageViewHelper extends Tx_Fluid_ViewHelpers_ImageViewHelper {
+class SkinImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
 
 	/**
 	 * Resizes a given image (if required) and renders the respective img tag
@@ -48,10 +50,11 @@ class Tx_About_ViewHelpers_SkinImageViewHelper extends Tx_Fluid_ViewHelpers_Imag
 	 * @return string rendered tag.
 	 */
 	public function render($src, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL) {
-		$src = t3lib_iconWorks::skinImg('../typo3/', $src, '', 1);
+		$src = \TYPO3\CMS\Backend\Utility\IconUtility::skinImg('../typo3/', $src, '', 1);
 		return parent::render('' . $src, $width, $height . $minWidth, $minHeight, $maxWidth, $maxHeight);
 	}
 
 }
+
 
 ?>

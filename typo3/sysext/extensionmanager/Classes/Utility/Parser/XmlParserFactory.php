@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Parser;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
+class XmlParserFactory {
 
 	/**
 	 * An array with instances of xml parsers.
@@ -53,12 +55,12 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 	 */
 	static protected $parsers = array(
 		'extension' => array(
-			'Tx_Extensionmanager_Utility_Parser_ExtensionXmlPullParser' => 'ExtensionXmlPullParser.php',
-			'Tx_Extensionmanager_Utility_Parser_ExtensionXmlPushParser' => 'ExtensionXmlPushParser.php'
+			'TYPO3\\CMS\\Extensionmanager\\Utility\\Parser\\ExtensionXmlPullParser' => 'ExtensionXmlPullParser.php',
+			'TYPO3\\CMS\\Extensionmanager\\Utility\\Parser\\ExtensionXmlPushParser' => 'ExtensionXmlPushParser.php'
 		),
 		'mirror' => array(
-			'Tx_Extensionmanager_Utility_Parser_MirrorXmlPullParser' => 'MirrorXmlPullParser.php',
-			'Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser' => 'MirrorXmlPushParser.php'
+			'TYPO3\\CMS\\Extensionmanager\\Utility\\Parser\\MirrorXmlPullParser' => 'MirrorXmlPullParser.php',
+			'TYPO3\\CMS\\Extensionmanager\\Utility\\Parser\\MirrorXmlPushParser' => 'MirrorXmlPushParser.php'
 		)
 	);
 
@@ -77,8 +79,8 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 			// reset instance
 			self::$instance[$parserType] = ($objParser = NULL);
 			foreach (self::$parsers[$parserType] as $className => $file) {
-				if (!t3lib_div::inList($excludeClassNames, $className)) {
-					$objParser = t3lib_div::makeInstance($className);
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($excludeClassNames, $className)) {
+					$objParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
 					if ($objParser->isAvailable()) {
 						self::$instance[$parserType] =& $objParser;
 						break;
@@ -91,5 +93,6 @@ class Tx_Extensionmanager_Utility_Parser_XmlParserFactory {
 	}
 
 }
+
 
 ?>

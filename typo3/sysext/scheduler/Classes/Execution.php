@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_scheduler
  */
-class tx_scheduler_Execution {
+class Execution {
 
 	/**
 	 * Start date of a task (timestamp)
@@ -233,12 +235,12 @@ class tx_scheduler_Execution {
 				}
 				// If date is in the future, throw an exception
 				if (!empty($this->end) && $date > $this->end) {
-					throw new OutOfBoundsException('Next execution date is past end date.', 1250715528);
+					throw new \OutOfBoundsException('Next execution date is past end date.', 1250715528);
 				}
 			}
 		} else {
 			// The event has ended, throw an exception
-			throw new OutOfBoundsException('Task is past end date.', 1250715544);
+			throw new \OutOfBoundsException('Task is past end date.', 1250715544);
 		}
 		return $date;
 	}
@@ -249,8 +251,8 @@ class tx_scheduler_Execution {
 	 * @return integer Next execution (timestamp)
 	 */
 	public function getNextCronExecution() {
-		/** @var $cronCmd tx_scheduler_CronCmd */
-		$cronCmd = t3lib_div::makeInstance('tx_scheduler_CronCmd', $this->getCronCmd());
+		/** @var $cronCmd \TYPO3\CMS\Scheduler\CronCommand\CronCommand */
+		$cronCmd = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\CronCommand\\CronCommand', $this->getCronCmd());
 		$cronCmd->calculateNextValue();
 		return $cronCmd->getTimestamp();
 	}
@@ -281,5 +283,6 @@ class tx_scheduler_Execution {
 	}
 
 }
+
 
 ?>

@@ -31,9 +31,9 @@ $BE_USER->modAccess($MCONF, TRUE);
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/tstemplate/Classes/Controller/TypoScriptTemplateModuleController.php
  */
-require_once t3lib_extMgm::extPath('tstemplate') . 'Classes/Controller/TypoScriptTemplateModuleController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('tstemplate') . 'Classes/Controller/TypoScriptTemplateModuleController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_mod_web_ts_index');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Tstemplate\\Controller\\TypoScriptTemplateModuleController');
 /* @var $SOBE SC_mod_web_ts_index */
 $SOBE->init();
 // Include files?

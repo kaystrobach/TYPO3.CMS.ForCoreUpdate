@@ -35,7 +35,7 @@ $TYPO3_AJAX = TRUE;
 // Include t3lib_div at this time to get the GET/POST methods it provides
 require_once dirname(__FILE__) . '/../t3lib/class.t3lib_div.php';
 // First get the ajaxID
-$ajaxID = (string) t3lib_div::_GP('ajaxID');
+$ajaxID = (string) \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('ajaxID');
 // This is a list of requests that don't necessarily need a valid BE user
 $noUserAjaxIDs = array(
 	'BackendLogin::login',
@@ -52,7 +52,7 @@ require 'init.php';
 // finding the script path from the variable
 $ajaxScript = $TYPO3_CONF_VARS['BE']['AJAX'][$ajaxID];
 // Instantiating the AJAX object
-$ajaxObj = t3lib_div::makeInstance('TYPO3AJAX', $ajaxID);
+$ajaxObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Http\\AjaxRequestHandler', $ajaxID);
 $ajaxParams = array();
 // Evaluating the arguments and calling the AJAX method/function
 if (empty($ajaxID)) {
@@ -60,7 +60,7 @@ if (empty($ajaxID)) {
 } elseif (empty($ajaxScript)) {
 	$ajaxObj->setError(('No backend function registered for ajaxID "' . $ajaxID) . '".');
 } else {
-	$ret = t3lib_div::callUserFunction($ajaxScript, $ajaxParams, $ajaxObj, FALSE, TRUE);
+	$ret = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($ajaxScript, $ajaxParams, $ajaxObj, FALSE, TRUE);
 	if ($ret === FALSE) {
 		$ajaxObj->setError(('Registered backend function for ajaxID "' . $ajaxID) . '" was not found.');
 	}

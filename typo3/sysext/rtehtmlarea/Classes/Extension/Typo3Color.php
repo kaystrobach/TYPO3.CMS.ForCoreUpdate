@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_typo3color extends tx_rtehtmlarea_api {
+class Typo3Color extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -102,7 +104,7 @@ class tx_rtehtmlarea_typo3color extends tx_rtehtmlarea_api {
 		}
 		// Setting the list of colors if specified in the RTE config
 		if ($this->thisConfig['colors']) {
-			$HTMLAreaColors = t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList($this->thisConfig['colors']));
+			$HTMLAreaColors = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList($this->thisConfig['colors']));
 			$HTMLAreaJSColors = array();
 			foreach ($HTMLAreaColors as $colorName) {
 				if ($HTMLAreaColorname[$colorName]) {
@@ -119,5 +121,6 @@ class tx_rtehtmlarea_typo3color extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

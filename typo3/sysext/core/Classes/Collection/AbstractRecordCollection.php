@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collection_RecordCollection, t3lib_collection_Persistable, t3lib_collection_Sortable {
+abstract class AbstractRecordCollection implements \TYPO3\CMS\Core\Collection\RecordCollectionInterface, \TYPO3\CMS\Core\Collection\PersistableCollectionInterface, \TYPO3\CMS\Core\Collection\SortableCollectionInterface {
 
 	/**
 	 * The table name collections are stored to
@@ -95,7 +97,7 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 * Creates this object.
 	 */
 	public function __construct() {
-		$this->storage = new SplDoublyLinkedList();
+		$this->storage = new \SplDoublyLinkedList();
 	}
 
 	/**
@@ -270,7 +272,7 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 */
 	public function usort($callbackFunction) {
 		// TODO: Implement usort() method with TCEforms in mind
-		throw new RuntimeException('This method is not yet supported.', 1322545589);
+		throw new \RuntimeException('This method is not yet supported.', 1322545589);
 	}
 
 	/**
@@ -285,7 +287,7 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 */
 	public function moveItemAt($currentPosition, $newPosition = 0) {
 		// TODO: Implement usort() method with TCEforms in mind
-		throw new RuntimeException('This method is not yet supported.', 1322545626);
+		throw new \RuntimeException('This method is not yet supported.', 1322545626);
 	}
 
 	/**
@@ -316,11 +318,11 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 *
 	 * @param integer $id Id of database record to be loaded
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
-	 * @return t3lib_collection_Collection
+	 * @return \TYPO3\CMS\Core\Collection\CollectionInterface
 	 */
 	static public function load($id, $fillItems = FALSE) {
-		t3lib_div::loadTCA(static::$storageTableName);
-		$collectionRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', static::$storageTableName, ('uid=' . intval($id)) . t3lib_BEfunc::deleteClause(static::$storageTableName));
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA(static::$storageTableName);
+		$collectionRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', static::$storageTableName, ('uid=' . intval($id)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause(static::$storageTableName));
 		return self::create($collectionRecord, $fillItems);
 	}
 
@@ -330,7 +332,7 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	 *
 	 * @param array $collectionRecord Database record
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
-	 * @return t3lib_collection_Collection
+	 * @return \TYPO3\CMS\Core\Collection\CollectionInterface
 	 */
 	static public function create(array $collectionRecord, $fillItems = FALSE) {
 		$collection = new static();
@@ -357,8 +359,8 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 		if ($this->getIdentifier() == 0) {
 			$data[trim(static::$storageTableName)][$uid]['pid'] = 0;
 		}
-		/** @var t3lib_TCEmain $tce */
-		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+		/** @var \TYPO3\CMS\Core\DataHandler\DataHandler $tce */
+		$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 		$tce->stripslashes_values = 0;
 		$tce->start($data, array());
 		$tce->process_datamap();
@@ -424,5 +426,6 @@ abstract class t3lib_collection_AbstractRecordCollection implements t3lib_collec
 	}
 
 }
+
 
 ?>

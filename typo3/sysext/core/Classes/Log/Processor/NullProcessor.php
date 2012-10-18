@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Processor;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,18 +30,19 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_processor_Null extends t3lib_log_processor_Abstract {
+class NullProcessor extends \TYPO3\CMS\Core\Log\Processor\AbstractProcessor {
 
 	/**
 	 * Processes a log record and returns the same.
 	 *
-	 * @param t3lib_log_Record $logRecord The log record to process
-	 * @return t3lib_log_Record The processed log record with additional data
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $logRecord The log record to process
+	 * @return \TYPO3\CMS\Core\Log\LogRecord The processed log record with additional data
 	 */
-	public function processLogRecord(t3lib_log_Record $logRecord) {
+	public function processLogRecord(\TYPO3\CMS\Core\Log\LogRecord $logRecord) {
 		return $logRecord;
 	}
 
 }
+
 
 ?>

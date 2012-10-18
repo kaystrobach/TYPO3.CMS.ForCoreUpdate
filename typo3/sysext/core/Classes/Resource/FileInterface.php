@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface
+interface FileInterface extends \TYPO3\CMS\Core\Resource\ResourceInterface
 {
 	/*******************************
 	 * VARIOUS FILE PROPERTY GETTERS
@@ -110,7 +112,7 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface
 	 * @TODO : Consider to remove this function from the interface, as its
 	 * @TODO : At the same time, it could be considered whether to make the whole
 	 * @param string $contents The contents to write to the file.
-	 * @return t3lib_file_File The file object (allows chaining).
+	 * @return \TYPO3\CMS\Core\Resource\File The file object (allows chaining).
 	 */
 	public function setContents($contents);
 
@@ -128,7 +130,7 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface
 	 * Renames this file.
 	 *
 	 * @param string $newName The new file name
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function rename($newName);
 
@@ -172,4 +174,5 @@ interface t3lib_file_FileInterface extends t3lib_file_ResourceInterface
 	public function toArray();
 
 }
+
 ?>

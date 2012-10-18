@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Collection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collection_AbstractRecordCollection {
+abstract class AbstractFileCollection extends \TYPO3\CMS\Core\Collection\AbstractRecordCollection {
 
 	/**
 	 * The table name collections are stored to
@@ -95,7 +97,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 * @return string
 	 */
 	public function key() {
-		/** @var $currentRecord t3lib_file_File */
+		/** @var $currentRecord \TYPO3\CMS\Core\Resource\File */
 		$currentRecord = $this->storage->current();
 		return $currentRecord->getIdentifier();
 	}
@@ -108,7 +110,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	protected function getItemUidList($includeTableName = FALSE) {
 		$list = array();
-		/** @var $entry t3lib_file_File */
+		/** @var $entry \TYPO3\CMS\Core\Resource\File */
 		foreach ($this->storage as $entry) {
 			$list[] = ($this->getItemTableName() . '_') . $entry->getUid();
 		}
@@ -138,7 +140,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	public function toArray() {
 		$itemArray = array();
-		/** @var $item t3lib_file_File */
+		/** @var $item \TYPO3\CMS\Core\Resource\File */
 		foreach ($this->storage as $item) {
 			$itemArray[] = $item->toArray();
 		}
@@ -157,7 +159,7 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 */
 	public function getItems() {
 		$itemArray = array();
-		/** @var $item t3lib_file_File */
+		/** @var $item \TYPO3\CMS\Core\Resource\File */
 		foreach ($this->storage as $item) {
 			$itemArray[] = $item;
 		}
@@ -199,19 +201,19 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	/**
 	 * Adds a file to this collection.
 	 *
-	 * @param t3lib_file_FileInterface $data
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $data
 	 */
-	public function add(t3lib_file_FileInterface $data) {
+	public function add(\TYPO3\CMS\Core\Resource\FileInterface $data) {
 		$this->storage->push($data);
 	}
 
 	/**
 	 * Adds all files of another collection to the corrent one.
 	 *
-	 * @param t3lib_collection_Collection $other
+	 * @param \TYPO3\CMS\Core\Collection\CollectionInterface $other
 	 */
-	public function addAll(t3lib_collection_Collection $other) {
-		/** @var $value t3lib_file_File */
+	public function addAll(\TYPO3\CMS\Core\Collection\CollectionInterface $other) {
+		/** @var $value \TYPO3\CMS\Core\Resource\File */
 		foreach ($other as $value) {
 			$this->add($value);
 		}
@@ -220,11 +222,11 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	/**
 	 * Removes a file from this collection.
 	 *
-	 * @param t3lib_file_File $file
+	 * @param \TYPO3\CMS\Core\Resource\File $file
 	 */
-	public function remove(t3lib_file_File $file) {
+	public function remove(\TYPO3\CMS\Core\Resource\File $file) {
 		$offset = 0;
-		/** @var $value t3lib_file_File */
+		/** @var $value \TYPO3\CMS\Core\Resource\File */
 		foreach ($this->storage as $value) {
 			if ($value === $file) {
 				break;
@@ -238,9 +240,10 @@ abstract class t3lib_file_Collection_AbstractFileCollection extends t3lib_collec
 	 * Removes all elements of the current collection.
 	 */
 	public function removeAll() {
-		$this->storage = new SplDoublyLinkedList();
+		$this->storage = new \SplDoublyLinkedList();
 	}
 
 }
+
 
 ?>

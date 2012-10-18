@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -43,7 +45,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_iconWorks {
+class IconUtility {
 
 	static public $fileSpriteIconNames = array(
 		'htm' => 'mimetypes-text-html',
@@ -375,7 +377,7 @@ class t3lib_iconWorks {
 	 * @access private
 	 */
 	static public function makeIcon($iconfile, $mode, $user, $protectSection, $absFile, $iconFileName_stateTagged) {
-		$iconFileName = (((('icon_' . t3lib_div::shortMD5((((((($iconfile . '|') . $mode) . '|-') . $user) . '|') . $protectSection))) . '_') . $iconFileName_stateTagged) . '.') . ($GLOBALS['TYPO3_CONF_VARS']['GFX']['gdlib_png'] ? 'png' : 'gif');
+		$iconFileName = (((('icon_' . \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5((((((($iconfile . '|') . $mode) . '|-') . $user) . '|') . $protectSection))) . '_') . $iconFileName_stateTagged) . '.') . ($GLOBALS['TYPO3_CONF_VARS']['GFX']['gdlib_png'] ? 'png' : 'gif');
 		$mainpath = '../typo3temp/' . $iconFileName;
 		$path = (PATH_site . 'typo3temp/') . $iconFileName;
 		if (file_exists((PATH_typo3 . 'icons/') . $iconFileName)) {
@@ -464,7 +466,7 @@ class t3lib_iconWorks {
 					}
 					// Create the image as file, destroy GD image and return:
 					@self::imagemake($im, $path);
-					t3lib_div::gif_compress($path, 'IM');
+					\TYPO3\CMS\Core\Utility\GeneralUtility::gif_compress($path, 'IM');
 					ImageDestroy($im);
 					return $mainpath;
 				} else {
@@ -513,7 +515,7 @@ class t3lib_iconWorks {
 	 * @see t3lib_div::read_png_gif
 	 */
 	static public function imagecreatefrom($file) {
-		$file = t3lib_div::read_png_gif($file, $GLOBALS['TYPO3_CONF_VARS']['GFX']['gdlib_png']);
+		$file = \TYPO3\CMS\Core\Utility\GeneralUtility::read_png_gif($file, $GLOBALS['TYPO3_CONF_VARS']['GFX']['gdlib_png']);
 		if ($GLOBALS['TYPO3_CONF_VARS']['GFX']['gdlib_png']) {
 			return $file ? imagecreatefrompng($file) : -1;
 		} else {
@@ -536,7 +538,7 @@ class t3lib_iconWorks {
 			@ImageGif($im, $path);
 		}
 		if (@is_file($path)) {
-			t3lib_div::fixPermissions($path);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($path);
 		}
 	}
 
@@ -640,8 +642,8 @@ class t3lib_iconWorks {
 		// then it is checked whether it is a valid directory
 		if (strpos($fileExtension, '.') !== FALSE || strpos($fileExtension, '/') !== FALSE) {
 			// Check if it is a directory
-			$filePath = ((dirname(t3lib_div::getIndpEnv('SCRIPT_FILENAME')) . '/') . $GLOBALS['BACK_PATH']) . $fileExtension;
-			$path = t3lib_div::resolveBackPath($filePath);
+			$filePath = ((dirname(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_FILENAME')) . '/') . $GLOBALS['BACK_PATH']) . $fileExtension;
+			$path = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($filePath);
 			if ((is_dir($path) || substr($fileExtension, -1) === '/') || substr($fileExtension, -1) === '\\') {
 				$fileExtension = 'folder';
 			} else {
@@ -771,7 +773,7 @@ class t3lib_iconWorks {
 				}
 				if (isset($GLOBALS['TCA'][$table]['ctrl']['typeicon_classes']['userFunc'])) {
 					$parameters = array('row' => $row);
-					$recordType[6] = t3lib_div::callUserFunction($GLOBALS['TCA'][$table]['ctrl']['typeicon_classes']['userFunc'], $parameters, $ref);
+					$recordType[6] = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($GLOBALS['TCA'][$table]['ctrl']['typeicon_classes']['userFunc'], $parameters, $ref);
 				}
 			} else {
 				foreach ($recordType as &$type) {
@@ -873,7 +875,7 @@ class t3lib_iconWorks {
 		// The status array should be passed as a reference and in order to be modified within the hook
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideIconOverlay'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideIconOverlay'] as $classRef) {
-				$hookObject = t3lib_div::getUserObj($classRef);
+				$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
 				if (method_exists($hookObject, 'overrideIconOverlay')) {
 					$hookObject->overrideIconOverlay($table, $row, $status);
 				}
@@ -937,5 +939,6 @@ class t3lib_iconWorks {
 	}
 
 }
+
 
 ?>

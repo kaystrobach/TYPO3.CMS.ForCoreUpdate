@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Parser;
+
 /***************************************************************
  * Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage EM
  */
-abstract class Tx_Extensionmanager_Utility_Parser_ExtensionXmlAbstractParser extends Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
+abstract class ExtensionXmlAbstractParser extends \TYPO3\CMS\Extensionmanager\Utility\Parser\XmlAbstractParser {
 
 	/**
 	 * Keeps current author company of an extension's version.
@@ -414,5 +416,6 @@ abstract class Tx_Extensionmanager_Utility_Parser_ExtensionXmlAbstractParser ext
 	}
 
 }
+
 
 ?>

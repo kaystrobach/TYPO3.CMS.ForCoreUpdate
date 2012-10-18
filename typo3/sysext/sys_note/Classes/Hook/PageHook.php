@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\SysNote\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,21 +30,22 @@
  * @subpackage sys_note
  * @author Georg Ringer <typo3@ringerge.org>
  */
-class Tx_SysNote_Hooks_Page {
+class PageHook {
 
 	/**
 	 * Add sys_notes as additional content to the footer of the page module
 	 *
 	 * @param array $params
-	 * @param SC_db_layout $parentObject
+	 * @param \TYPO3\CMS\Backend\Controller\PageLayoutController $parentObject
 	 * @return string
 	 */
-	public function render(array $params = array(), SC_db_layout $parentObject) {
-		$sysNote = t3lib_div::makeInstance('Tx_SysNote_SysNote');
+	public function render(array $params = array(), \TYPO3\CMS\Backend\Controller\PageLayoutController $parentObject) {
+		$sysNote = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\SysNote\\SysNoteRenderer');
 		$content = $sysNote->renderByPid($parentObject->id);
 		return $content;
 	}
 
 }
+
 
 ?>

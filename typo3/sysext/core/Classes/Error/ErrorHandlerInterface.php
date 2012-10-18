@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage error
  */
-interface t3lib_error_ErrorHandlerInterface
+interface ErrorHandlerInterface
 {
 	/**
 	 * Registers this class as default error handler
@@ -60,9 +62,10 @@ interface t3lib_error_ErrorHandlerInterface
 	 * @param string $errorFile Name of the file the error occurred in
 	 * @param integer $errorLine Line number where the error occurred
 	 * @return void
-	 * @throws t3lib_error_Exception with the data passed to this method if the error is registered as exceptionalError
+	 * @throws \TYPO3\CMS\Core\Error\Exception with the data passed to this method if the error is registered as exceptionalError
 	 */
 	public function handleError($errorLevel, $errorMessage, $errorFile, $errorLine);
 
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_cmdline_backend extends tx_rsaauth_abstract_backend {
+class CommandLineBackend extends \TYPO3\CMS\Rsaauth\Backend\AbstractBackend {
 
 	/**
 	 * A path to the openssl binary or FALSE if the binary does not exist
@@ -55,7 +57,7 @@ class tx_rsaauth_cmdline_backend extends tx_rsaauth_abstract_backend {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->opensslPath = t3lib_exec::getCommand('openssl');
+		$this->opensslPath = \TYPO3\CMS\Core\Utility\CommandUtility::getCommand('openssl');
 		$this->temporaryDirectory = PATH_site . 'typo3temp';
 		// Get temporary directory from the configuration
 		$extconf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['rsaauth']);
@@ -65,7 +67,7 @@ class tx_rsaauth_cmdline_backend extends tx_rsaauth_abstract_backend {
 	}
 
 	/**
-	 * @return tx_rsaauth_keypair A new key pair or NULL in case of error
+	 * @return \TYPO3\CMS\Rsaauth\Keypair A new key pair or NULL in case of error
 	 * @see tx_rsaauth_abstract_backend::createNewKeyPair()
 	 */
 	public function createNewKeyPair() {
@@ -78,17 +80,17 @@ class tx_rsaauth_cmdline_backend extends tx_rsaauth_abstract_backend {
 		// to do the same and use the F4 (0x10001) exponent. This is the most
 		// secure.
 		$command = (($this->opensslPath . ' genrsa -out ') . escapeshellarg($privateKeyFile)) . ' 1024';
-		t3lib_utility_Command::exec($command);
+		\TYPO3\CMS\Core\Utility\CommandUtility::exec($command);
 		// Test that we got a private key
 		$privateKey = file_get_contents($privateKeyFile);
 		if (FALSE !== strpos($privateKey, 'BEGIN RSA PRIVATE KEY')) {
 			// Ok, we got the private key. Get the modulus.
 			$command = ($this->opensslPath . ' rsa -noout -modulus -in ') . escapeshellarg($privateKeyFile);
-			$value = t3lib_utility_Command::exec($command);
+			$value = \TYPO3\CMS\Core\Utility\CommandUtility::exec($command);
 			if (substr($value, 0, 8) === 'Modulus=') {
 				$publicKey = substr($value, 8);
 				// Create a result object
-				$result = t3lib_div::makeInstance('tx_rsaauth_keypair');
+				$result = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rsaauth\\Keypair');
 				/** @var $result tx_rsa_keypair */
 				$result->setExponent(65537);
 				$result->setPrivateKey($privateKey);
@@ -115,7 +117,7 @@ class tx_rsaauth_cmdline_backend extends tx_rsaauth_abstract_backend {
 		$command = (((($this->opensslPath . ' rsautl -inkey ') . escapeshellarg($privateKeyFile)) . ' -in ') . escapeshellarg($dataFile)) . ' -decrypt';
 		// Execute the command and capture the result
 		$output = array();
-		t3lib_utility_Command::exec($command, $output);
+		\TYPO3\CMS\Core\Utility\CommandUtility::exec($command, $output);
 		// Remove the file
 		@unlink($privateKeyFile);
 		@unlink($dataFile);
@@ -133,12 +135,13 @@ class tx_rsaauth_cmdline_backend extends tx_rsaauth_abstract_backend {
 		$result = FALSE;
 		if ($this->opensslPath) {
 			// If path exists, test that command runs and can produce output
-			$test = t3lib_utility_Command::exec($this->opensslPath . ' version');
+			$test = \TYPO3\CMS\Core\Utility\CommandUtility::exec($this->opensslPath . ' version');
 			$result = substr($test, 0, 8) == 'OpenSSL ';
 		}
 		return $result;
 	}
 
 }
+
 
 ?>

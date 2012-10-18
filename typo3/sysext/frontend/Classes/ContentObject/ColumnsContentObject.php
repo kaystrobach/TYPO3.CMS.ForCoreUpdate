@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Columns extends tslib_content_Abstract {
+class ColumnsContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, COLUMNS
@@ -48,7 +50,7 @@ class tslib_content_Columns extends tslib_content_Abstract {
 			$TDParams = isset($conf['TDParams.']) ? $this->cObj->stdWrap($conf['TDParams'], $conf['TDParams.']) : $conf['TDParams'];
 			$TDparams = $TDparams ? ' ' . $TDparams : ' valign="top"';
 			$rows = isset($conf['rows.']) ? $this->cObj->stdWrap($conf['rows'], $conf['rows.']) : $conf['rows'];
-			$rows = t3lib_utility_Math::forceIntegerInRange($rows, 2, 20);
+			$rows = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($rows, 2, 20);
 			$totalWidth = isset($conf['totalWidth.']) ? intval($this->cObj->stdWrap($conf['totalWidth'], $conf['totalWidth.'])) : intval($conf['totalWidth']);
 			$columnWidth = 0;
 			$totalGapWidth = 0;
@@ -82,7 +84,7 @@ class tslib_content_Columns extends tslib_content_Abstract {
 						$tdPar = $gapConf['gapBgCol'] ? (' bgcolor="' . $gapConf['gapBgCol']) . '"' : '';
 						$gapLine = intval($gapConf['gapLineThickness']);
 						if ($gapLine) {
-							$gapSurround = t3lib_utility_Math::forceIntegerInRange(($gapWidth - $gapLine) / 2, 1, 1000);
+							$gapSurround = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(($gapWidth - $gapLine) / 2, 1, 1000);
 							// right gap
 							$content .= ((((('<td' . $tdPar) . '><img src="') . $GLOBALS['TSFE']->absRefPrefix) . 'clear.gif" width="') . $gapSurround) . '" height="1" alt="" title="" /></td>';
 							$tdRowCount++;
@@ -113,5 +115,6 @@ class tslib_content_Columns extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

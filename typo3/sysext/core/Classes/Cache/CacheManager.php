@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,10 +34,10 @@
  * @scope singleton
  * @api
  */
-class t3lib_cache_Manager implements t3lib_Singleton {
+class CacheManager implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var t3lib_cache_Factory
+	 * @var \TYPO3\CMS\Core\Cache\CacheFactory
 	 */
 	protected $cacheFactory;
 
@@ -53,16 +55,16 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 * @var array Default cache configuration as fallback
 	 */
 	protected $defaultCacheConfiguration = array(
-		'frontend' => 't3lib_cache_frontend_VariableFrontend',
-		'backend' => 't3lib_cache_backend_DbBackend',
+		'frontend' => 'TYPO3\\CMS\\Core\\Cache\\Frontend\\VariableFrontend',
+		'backend' => 'TYPO3\\CMS\\Core\\Cache\\Backend\\Typo3DatabaseBackend',
 		'options' => array()
 	);
 
 	/**
-	 * @param t3lib_cache_Factory $cacheFactory
+	 * @param \TYPO3\CMS\Core\Cache\CacheFactory $cacheFactory
 	 * @return void
 	 */
-	public function injectCacheFactory(t3lib_cache_Factory $cacheFactory) {
+	public function injectCacheFactory(\TYPO3\CMS\Core\Cache\CacheFactory $cacheFactory) {
 		$this->cacheFactory = $cacheFactory;
 	}
 
@@ -94,15 +96,15 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	/**
 	 * Registers a cache so it can be retrieved at a later point.
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The cache frontend to be registered
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The cache frontend to be registered
 	 * @return void
-	 * @throws t3lib_cache_exception_DuplicateIdentifier if a cache with the given identifier has already been registered.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\DuplicateIdentifierException if a cache with the given identifier has already been registered.
 	 * @api
 	 */
-	public function registerCache(t3lib_cache_frontend_Frontend $cache) {
+	public function registerCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		$identifier = $cache->getIdentifier();
 		if (isset($this->caches[$identifier])) {
-			throw new t3lib_cache_exception_DuplicateIdentifier(('A cache with identifier "' . $identifier) . '" has already been registered.', 1203698223);
+			throw new \TYPO3\CMS\Core\Cache\Exception\DuplicateIdentifierException(('A cache with identifier "' . $identifier) . '" has already been registered.', 1203698223);
 		}
 		$this->caches[$identifier] = $cache;
 	}
@@ -111,13 +113,13 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 * Returns the cache specified by $identifier
 	 *
 	 * @param string $identifier Identifies which cache to return
-	 * @return t3lib_cache_frontend_Frontend The specified cache frontend
-	 * @throws t3lib_cache_exception_NoSuchCache
+	 * @return \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface The specified cache frontend
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
 	 * @api
 	 */
 	public function getCache($identifier) {
 		if ($this->hasCache($identifier) === FALSE) {
-			throw new t3lib_cache_exception_NoSuchCache(('A cache with identifier "' . $identifier) . '" does not exist.', 1203699034);
+			throw new \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException(('A cache with identifier "' . $identifier) . '" does not exist.', 1203699034);
 		}
 		if (!isset($this->caches[$identifier])) {
 			$this->createCache($identifier);
@@ -279,7 +281,7 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	 * @api
 	 */
 	static public function getClassTag($className = '') {
-		return $className === '' ? t3lib_cache_frontend_Frontend::TAG_CLASS : t3lib_cache_frontend_Frontend::TAG_CLASS . str_replace('\\', '_', $className);
+		return $className === '' ? \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface::TAG_CLASS : \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface::TAG_CLASS . str_replace('\\', '_', $className);
 	}
 
 	/**
@@ -321,5 +323,6 @@ class t3lib_cache_Manager implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

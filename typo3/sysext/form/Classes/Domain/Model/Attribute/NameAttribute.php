@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attributes_Abstract {
+class NameAttribute extends \TYPO3\CMS\Form\Domain\Model\Attribute\AbstractAttribute {
 
 	/**
 	 * Addition to the name value
@@ -78,7 +80,7 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	public function getValue() {
 		$value = $this->getValueWithoutPrefix();
 		if ($this->returnValueWithoutPrefix === FALSE) {
-			$requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
+			$requestHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Request');
 			$attribute = ((($requestHandler->getPrefix() . '[') . $value) . ']') . $this->addition;
 		} else {
 			$attribute = $value;
@@ -91,7 +93,7 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	 * This is necessarry in some cases like a multiple select box
 	 *
 	 * @param string $addition The additional string
-	 * @return tx_form_Domain_Model_Attributes_Name
+	 * @return \TYPO3\CMS\Form\Domain\Model\Attribute\NameAttribute
 	 */
 	public function setAddition($addition) {
 		$this->addition = (string) $addition;
@@ -110,5 +112,6 @@ class tx_form_Domain_Model_Attributes_Name extends tx_form_Domain_Model_Attribut
 	}
 
 }
+
 
 ?>

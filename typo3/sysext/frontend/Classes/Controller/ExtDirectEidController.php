@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Controller;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,12 +30,12 @@
  * @author Stefan Galinski <stefan.galinski@gmail.com>
  * @package 	TYPO3
  */
-class tslib_ExtDirectEid {
+class ExtDirectEidController {
 
 	/**
 	 * Ajax Instance
 	 *
-	 * @var TYPO3AJAX
+	 * @var \TYPO3\CMS\Core\Http\AjaxRequestHandler
 	 */
 	protected $ajaxObjext = NULL;
 
@@ -44,13 +46,13 @@ class tslib_ExtDirectEid {
 	 * @return void
 	 */
 	public function routeAction() {
-		tslib_eidtools::initLanguage();
-		tslib_eidtools::connectDB();
-		$ajaxID = t3lib_div::_GP('action');
+		\TYPO3\CMS\Frontend\Utility\EidUtility::initLanguage();
+		\TYPO3\CMS\Frontend\Utility\EidUtility::connectDB();
+		$ajaxID = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('action');
 		$ajaxScript = $GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['ExtDirect::' . $ajaxID];
-		$this->ajaxObject = t3lib_div::makeInstance('TYPO3AJAX', 'ExtDirect::' . $ajaxID);
+		$this->ajaxObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Http\\AjaxRequestHandler', 'ExtDirect::' . $ajaxID);
 		$parameters = array();
-		t3lib_div::callUserFunction($ajaxScript, $parameters, $this->ajaxObject, FALSE, TRUE);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($ajaxScript, $parameters, $this->ajaxObject, FALSE, TRUE);
 	}
 
 	/**
@@ -59,7 +61,7 @@ class tslib_ExtDirectEid {
 	 * @return boolean
 	 */
 	public function actionIsAllowed() {
-		if (!in_array(t3lib_div::_GP('action'), array('route', 'getAPI'))) {
+		if (!in_array(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('action'), array('route', 'getAPI'))) {
 			return FALSE;
 		}
 		return TRUE;
@@ -75,5 +77,6 @@ class tslib_ExtDirectEid {
 	}
 
 }
+
 
 ?>

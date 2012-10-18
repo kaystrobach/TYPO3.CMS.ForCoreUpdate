@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage reports
  */
-class tx_reports_tasks_SystemStatusUpdateTaskNotificationEmailField implements tx_scheduler_AdditionalFieldProvider {
+class SystemStatusUpdateTaskNotificationEmailField implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface {
 
 	/**
 	 * Additional fields
@@ -49,11 +51,11 @@ class tx_reports_tasks_SystemStatusUpdateTaskNotificationEmailField implements t
 	 * Gets additional fields to render in the form to add/edit a task
 	 *
 	 * @param array $taskInfo Values of the fields from the add/edit task form
-	 * @param tx_scheduler_Task $task The task object being eddited. Null when adding a task!
-	 * @param tx_scheduler_Module $schedulerModule Reference to the scheduler backend module
+	 * @param \TYPO3\CMS\Scheduler\Task $task The task object being eddited. Null when adding a task!
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the scheduler backend module
 	 * @return array A two dimensional array, array('Identifier' => array('fieldId' => array('code' => '', 'label' => '', 'cshKey' => '', 'cshLabel' => ''))
 	 */
-	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $schedulerModule) {
+	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule) {
 		$fields = array('notificationEmail');
 		if ($schedulerModule->CMD == 'edit') {
 			$taskInfo[$this->fieldPrefix . 'NotificationEmail'] = $task->getNotificationEmail();
@@ -77,14 +79,14 @@ class tx_reports_tasks_SystemStatusUpdateTaskNotificationEmailField implements t
 	 * Validates the additional fields' values
 	 *
 	 * @param array $submittedData An array containing the data submitted by the add/edit task form
-	 * @param tx_scheduler_Module $schedulerModule Reference to the scheduler backend module
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the scheduler backend module
 	 * @return boolean TRUE if validation was ok (or selected class is not relevant), FALSE otherwise
 	 */
-	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $schedulerModule) {
+	public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule) {
 		$validInput = TRUE;
 		$submittedData[$this->fieldPrefix . 'NotificationEmail'] = trim($submittedData[$this->fieldPrefix . 'NotificationEmail']);
 		if (empty($submittedData[$this->fieldPrefix . 'NotificationEmail']) || !filter_var($submittedData[($this->fieldPrefix . 'NotificationEmail')], FILTER_VALIDATE_EMAIL)) {
-			$schedulerModule->addMessage($GLOBALS['LANG']->sL('LLL:EXT:reports/reports/locallang.xml:status_updateTaskField_notificationEmail_invalid'), t3lib_FlashMessage::ERROR);
+			$schedulerModule->addMessage($GLOBALS['LANG']->sL('LLL:EXT:reports/reports/locallang.xml:status_updateTaskField_notificationEmail_invalid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 			$validInput = FALSE;
 		}
 		return $validInput;
@@ -94,12 +96,12 @@ class tx_reports_tasks_SystemStatusUpdateTaskNotificationEmailField implements t
 	 * Takes care of saving the additional fields' values in the task's object
 	 *
 	 * @param array $submittedData An array containing the data submitted by the add/edit task form
-	 * @param tx_scheduler_Task $task Reference to the scheduler backend module
+	 * @param \TYPO3\CMS\Scheduler\Task $task Reference to the scheduler backend module
 	 * @return void
 	 */
-	public function saveAdditionalFields(array $submittedData, tx_scheduler_Task $task) {
-		if (!$task instanceof tx_reports_tasks_SystemStatusUpdateTask) {
-			throw new InvalidArgumentException('Expected a task of type tx_reports_tasks_SystemStatusUpdateTask, but got ' . get_class($task), 1295012802);
+	public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task $task) {
+		if (!$task instanceof \TYPO3\CMS\Reports\Task\SystemStatusUpdateTask) {
+			throw new \InvalidArgumentException('Expected a task of type TYPO3\\CMS\\Reports\\Task\\SystemStatusUpdateTask, but got ' . get_class($task), 1295012802);
 		}
 		$task->setNotificationEmail($submittedData[$this->fieldPrefix . 'NotificationEmail']);
 	}
@@ -115,5 +117,6 @@ class tx_reports_tasks_SystemStatusUpdateTaskNotificationEmailField implements t
 	}
 
 }
+
 
 ?>

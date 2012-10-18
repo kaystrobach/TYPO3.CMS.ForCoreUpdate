@@ -64,15 +64,15 @@ unset($MCONF);
 require 'conf.php';
 require_once $BACK_PATH . 'init.php';
 $LANG->includeLLFile('EXT:impexp/app/locallang.php');
-t3lib_extMgm::isLoaded('impexp', 1);
+\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('impexp', 1);
 /*
  * @deprecated since 6.0, the classname SC_mod_tools_log_index and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/impexp/Classes/Controller/ImportExportController.php
  */
-require_once t3lib_extMgm::extPath('impexp') . 'Classes/Controller/ImportExportController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('impexp') . 'Classes/Controller/ImportExportController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_mod_tools_log_index');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Impexp\\Controller\\ImportExportController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

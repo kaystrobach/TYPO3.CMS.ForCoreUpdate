@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility\File;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @subpackage t3lib
  * @see t3lib_basicFileFunctions::init()
  */
-class t3lib_basicFileFunctions {
+class BasicFileUtility {
 
 	/**
 	 * @todo Define visibility
@@ -134,13 +136,13 @@ class t3lib_basicFileFunctions {
 	 * @todo Define visibility
 	 */
 	public function init($mounts, $f_ext) {
-		t3lib_div::logDeprecatedFunction('All methods in this class should not be used anymore since TYPO3 6.0. Please use corresponding t3lib_file_Storage (fetched via BE_USERS->getFileStorages()), as all functions should be found there (in a cleaner manner).');
-		$this->f_ext['webspace']['allow'] = t3lib_div::uniqueList(strtolower($f_ext['webspace']['allow']));
-		$this->f_ext['webspace']['deny'] = t3lib_div::uniqueList(strtolower($f_ext['webspace']['deny']));
-		$this->f_ext['ftpspace']['allow'] = t3lib_div::uniqueList(strtolower($f_ext['ftpspace']['allow']));
-		$this->f_ext['ftpspace']['deny'] = t3lib_div::uniqueList(strtolower($f_ext['ftpspace']['deny']));
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction('All methods in this class should not be used anymore since TYPO3 6.0. Please use corresponding TYPO3\\CMS\\Core\\Resource\\ResourceStorage (fetched via BE_USERS->getFileStorages()), as all functions should be found there (in a cleaner manner).');
+		$this->f_ext['webspace']['allow'] = \TYPO3\CMS\Core\Utility\GeneralUtility::uniqueList(strtolower($f_ext['webspace']['allow']));
+		$this->f_ext['webspace']['deny'] = \TYPO3\CMS\Core\Utility\GeneralUtility::uniqueList(strtolower($f_ext['webspace']['deny']));
+		$this->f_ext['ftpspace']['allow'] = \TYPO3\CMS\Core\Utility\GeneralUtility::uniqueList(strtolower($f_ext['ftpspace']['allow']));
+		$this->f_ext['ftpspace']['deny'] = \TYPO3\CMS\Core\Utility\GeneralUtility::uniqueList(strtolower($f_ext['ftpspace']['deny']));
 		$this->mounts = $mounts;
-		$this->webPath = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT');
+		$this->webPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_DOCUMENT_ROOT');
 		$this->isInit = 1;
 		$this->maxInputNameLen = $GLOBALS['TYPO3_CONF_VARS']['SYS']['maxFileNameLength'] ? $GLOBALS['TYPO3_CONF_VARS']['SYS']['maxFileNameLength'] : $this->maxInputNameLen;
 	}
@@ -170,7 +172,7 @@ class t3lib_basicFileFunctions {
 	public function getTotalFileInfo($wholePath) {
 		// @todo: deprecate this function, and replace its use in the storage/mounts
 		$theuser = getmyuid();
-		$info = t3lib_div::split_fileref($wholePath);
+		$info = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($wholePath);
 		$info['tstamp'] = @filemtime($wholePath);
 		$info['size'] = @filesize($wholePath);
 		$info['type'] = @filetype($wholePath);
@@ -194,11 +196,11 @@ class t3lib_basicFileFunctions {
 			$ik = strtolower($iconkey);
 			if ($ik) {
 				// If the extension is found amongst the allowed types, we return TRUE immediately
-				if ($this->f_ext[$type]['allow'] == '*' || t3lib_div::inList($this->f_ext[$type]['allow'], $ik)) {
+				if ($this->f_ext[$type]['allow'] == '*' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->f_ext[$type]['allow'], $ik)) {
 					return TRUE;
 				}
 				// If the extension is found amongst the denied types, we return FALSE immediately
-				if ($this->f_ext[$type]['deny'] == '*' || t3lib_div::inList($this->f_ext[$type]['deny'], $ik)) {
+				if ($this->f_ext[$type]['deny'] == '*' || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->f_ext[$type]['deny'], $ik)) {
 					return FALSE;
 				}
 				// If no match we return TRUE
@@ -246,7 +248,7 @@ class t3lib_basicFileFunctions {
 			$testPath = $this->slashPath($path);
 			$testPathWeb = $this->slashPath($this->webPath);
 			if ($testPathWeb && $testPath) {
-				return t3lib_div::isFirstPartOfStr($testPath, $testPathWeb);
+				return \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($testPath, $testPathWeb);
 			}
 		}
 		return TRUE;
@@ -263,7 +265,7 @@ class t3lib_basicFileFunctions {
 	 * @todo Define visibility
 	 */
 	public function checkIfAllowed($ext, $theDest, $filename = '') {
-		return t3lib_div::verifyFilenameAgainstDenyPattern($filename) && $this->is_allowed($ext, ($this->is_webpath($theDest) ? 'webspace' : 'ftpspace'));
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::verifyFilenameAgainstDenyPattern($filename) && $this->is_allowed($ext, ($this->is_webpath($theDest) ? 'webspace' : 'ftpspace'));
 	}
 
 	/**
@@ -306,7 +308,7 @@ class t3lib_basicFileFunctions {
 	 */
 	public function isPathValid($theFile) {
 		// @todo: should go into the LocalDriver in a protected way (not important to the outside world)
-		return t3lib_div::validPathStr($theFile);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::validPathStr($theFile);
 	}
 
 	/**
@@ -325,7 +327,7 @@ class t3lib_basicFileFunctions {
 		// @todo: should go into the LocalDriver in a protected way (not important to the outside world)
 		$theDest = $this->is_directory($theDest);
 		// $theDest is cleaned up
-		$origFileInfo = t3lib_div::split_fileref($theFile);
+		$origFileInfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($theFile);
 		// Fetches info about path, name, extension of $theFile
 		if ($theDest) {
 			if ($this->getUniqueNamePrefix) {
@@ -377,7 +379,7 @@ class t3lib_basicFileFunctions {
 		// @todo: deprecate this function, now done in the Storage object
 		if (($thePath && $this->isPathValid($thePath)) && is_array($this->mounts)) {
 			foreach ($this->mounts as $k => $val) {
-				if (t3lib_div::isFirstPartOfStr($thePath, $val['path'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($thePath, $val['path'])) {
 					return $k;
 				}
 			}
@@ -394,7 +396,7 @@ class t3lib_basicFileFunctions {
 		// @todo: where and when to use this function?
 		if (is_array($this->mounts)) {
 			foreach ($this->mounts as $k => $val) {
-				if (t3lib_div::isFirstPartOfStr($val['path'], PATH_site . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileadminDir'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($val['path'], PATH_site . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileadminDir'])) {
 					return $k;
 				}
 			}
@@ -508,7 +510,7 @@ class t3lib_basicFileFunctions {
 					$this->csConvObj = $GLOBALS['LANG']->csConvObj;
 				} else {
 					// The object may not exist yet, so we need to create it now. Happens in the Install Tool for example.
-					$this->csConvObj = t3lib_div::makeInstance('t3lib_cs');
+					$this->csConvObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 				}
 			}
 			// Define character set
@@ -535,5 +537,6 @@ class t3lib_basicFileFunctions {
 	}
 
 }
+
 
 ?>

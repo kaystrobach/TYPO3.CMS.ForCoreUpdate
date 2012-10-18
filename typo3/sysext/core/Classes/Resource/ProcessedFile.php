@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
+class ProcessedFile extends \TYPO3\CMS\Core\Resource\AbstractFile {
 
 	/*********************************************
 	 * FILE PROCESSING CONTEXTS
@@ -71,7 +73,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	/**
 	 * Reference to the original File object underlying this FileReference.
 	 *
-	 * @var t3lib_file_File
+	 * @var \TYPO3\CMS\Core\Resource\File
 	 */
 	protected $originalFile;
 
@@ -79,11 +81,11 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	 * Constructor for a file processing object. Should normally not be used
 	 * directly, use the corresponding factory methods instead.
 	 *
-	 * @param t3lib_file_File $originalFile
+	 * @param \TYPO3\CMS\Core\Resource\File $originalFile
 	 * @param string $context
 	 * @param array $processingConfiguration
 	 */
-	public function __construct(t3lib_file_File $originalFile, $context, array $processingConfiguration) {
+	public function __construct(\TYPO3\CMS\Core\Resource\File $originalFile, $context, array $processingConfiguration) {
 		$this->originalFile = $originalFile;
 		$this->context = $context;
 		$this->processingConfiguration = $processingConfiguration;
@@ -91,7 +93,8 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 
 	/*******************************
 	 * VARIOUS FILE PROPERTY GETTERS
-	 ************************/**
+	 ************************/
+	/**
 	 * Returns the checksum that makes the processed configuration unique
 	 * also takes the mtime and the uid into account, to find out if the
 	 * process needs to be done again
@@ -99,7 +102,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	 * @return string
 	 */
 	public function calculateChecksum() {
-		return t3lib_div::shortMD5(((($this->originalFile->getUid() . $this->originalFile->getModificationTime()) . $this->context) . serialize($GLOBALS['TYPO3_CONF_VARS']['GFX'])) . serialize($this->processingConfiguration));
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(((($this->originalFile->getUid() . $this->originalFile->getModificationTime()) . $this->context) . serialize($GLOBALS['TYPO3_CONF_VARS']['GFX'])) . serialize($this->processingConfiguration));
 	}
 
 	/******************
@@ -109,10 +112,10 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	 * Replace the current file contents with the given string
 	 *
 	 * @param string $contents The contents to write to the file.
-	 * @return t3lib_file_File The file object (allows chaining).
+	 * @return \TYPO3\CMS\Core\Resource\File The file object (allows chaining).
 	 */
 	public function setContents($contents) {
-		throw new BadMethodCallException('Setting contents not possible for processed file.', 1305438528);
+		throw new \BadMethodCallException('Setting contents not possible for processed file.', 1305438528);
 	}
 
 	/****************************************
@@ -150,7 +153,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	}
 
 	/**
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function getOriginalFile() {
 		return $this->originalFile;
@@ -205,7 +208,7 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 		if (isset($properties['is_processed']) && $properties['is_processed'] > 0) {
 			$this->processed = TRUE;
 		}
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($properties['storage'])) {
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($properties['storage'])) {
 			$this->setStorage($properties['storage']);
 		}
 		$this->properties = array_merge($this->properties, $properties);
@@ -233,5 +236,6 @@ class t3lib_file_ProcessedFile extends t3lib_file_AbstractFile {
 	}
 
 }
+
 
 ?>

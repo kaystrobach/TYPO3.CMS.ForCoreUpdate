@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Search\LiveSearch\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +27,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * ExtDirect Class for handling backend live search.
  *
@@ -34,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class extDirect_dataProvider_BackendLiveSearch {
+class LiveSearchDataProvider {
 
 	/**
 	 * @var array
@@ -45,12 +46,12 @@ class extDirect_dataProvider_BackendLiveSearch {
 	);
 
 	/**
-	 * @var t3lib_search_livesearch
+	 * @var \TYPO3\CMS\Backend\Search\Livesearch\Livesearch
 	 */
 	protected $liveSearch = NULL;
 
 	/**
-	 * @var t3lib_search_livesearch_queryParser
+	 * @var \TYPO3\CMS\Backend\Search\Livesearch\QueryParser
 	 */
 	protected $queryParser = NULL;
 
@@ -58,25 +59,21 @@ class extDirect_dataProvider_BackendLiveSearch {
 	 * Initialize the live search
 	 */
 	public function __construct() {
-			// @todo Use the autoloader for this. Not sure why its not working.
-		require_once(PATH_t3lib . 'search/class.t3lib_search_livesearch_queryParser.php');
-
-		$this->liveSearch = t3lib_div::makeInstance('t3lib_search_livesearch');
-		$this->queryParser = t3lib_div::makeInstance('t3lib_search_livesearch_queryParser');
+		// @todo Use the autoloader for this. Not sure why its not working.
+		require_once PATH_t3lib . 'search/class.t3lib_search_livesearch_queryParser.php';
+		$this->liveSearch = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Search\\Livesearch\\Livesearch');
+		$this->queryParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Search\\Livesearch\\QueryParser');
 	}
 
 	/**
-	 *
 	 * @param stdClass $command
-	 *
 	 * @return array
 	 */
 	public function find($command) {
 		$this->liveSearch->setStartCount($command->start);
 		$this->liveSearch->setLimitCount($command->limit);
 		$this->liveSearch->setQueryString($command->query);
-
-			// Jump & edit - find page and retrieve an edit link (this is only for pages
+		// Jump & edit - find page and retrieve an edit link (this is only for pages
 		if ($this->queryParser->isValidPageJump($command->query)) {
 			$this->searchResults['pageJump'] = $this->liveSearch->findPage($command->query);
 			$commandQuery = $this->queryParser->getCommandForPageJump($command->query);
@@ -84,18 +81,17 @@ class extDirect_dataProvider_BackendLiveSearch {
 				$command->query = $commandQuery;
 			}
 		}
-
-			// Search through the database and find records who match to the given search string
+		// Search through the database and find records who match to the given search string
 		$resultArray = $this->liveSearch->find($command->query);
-
 		foreach ($resultArray as $resultFromTable) {
 			foreach ($resultFromTable as $item) {
 				$this->searchResults['searchItems'][] = $item;
 			}
 		}
-
 		return $this->searchResults;
 	}
+
 }
+
 
 ?>

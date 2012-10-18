@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Storage;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_storagefactory {
+class StorageFactory {
 
 	/**
 	 * A list of all available storages. Currently this list cannot be extended.
@@ -37,7 +39,7 @@ class tx_rsaauth_storagefactory {
 	 *
 	 * @var string
 	 */
-	static protected $preferredStorage = 'EXT:rsaauth/sv1/storage/class.tx_rsaauth_split_storage.php:tx_rsaauth_split_storage';
+	static protected $preferredStorage = 'EXT:rsaauth/sv1/storage/class.tx_rsaauth_split_storage.php:TYPO3\\CMS\\Rsaauth\\Storage\\SplitStorage';
 
 	/**
 	 * An instance of the storage. This member is set in the getStorage() function.
@@ -46,7 +48,7 @@ class tx_rsaauth_storagefactory {
 	 *
 	 * <!-- Please, keep the variable type! It helps IDEs to provide autocomple! -->
 	 *
-	 * @var tx_rsaauth_abstract_storage
+	 * @var \TYPO3\CMS\Rsaauth\Storage\AbstractStorage
 	 */
 	static protected $storageInstance = NULL;
 
@@ -55,11 +57,11 @@ class tx_rsaauth_storagefactory {
 	 * is derieved from the tx_rsaauth_abstract_storage. Applications should
 	 * not use anoy methods that are not declared in the tx_rsaauth_abstract_storage.
 	 *
-	 * @return tx_rsaauth_abstract_storage A storage
+	 * @return \TYPO3\CMS\Rsaauth\Storage\AbstractStorage A storage
 	 */
 	static public function getStorage() {
 		if (is_null(self::$storageInstance)) {
-			self::$storageInstance = t3lib_div::getUserObj(self::$preferredStorage);
+			self::$storageInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj(self::$preferredStorage);
 		}
 		return self::$storageInstance;
 	}
@@ -76,5 +78,6 @@ class tx_rsaauth_storagefactory {
 	}
 
 }
+
 
 ?>

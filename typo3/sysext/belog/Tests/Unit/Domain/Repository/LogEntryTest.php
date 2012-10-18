@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Tests\Unit\Domain\Repository;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,15 +30,15 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class LogEntryTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Belog_Domain_Model_LogEntry
+	 * @var \TYPO3\CMS\Belog\Domain\Model\LogEntry
 	 */
 	private $fixture = NULL;
 
 	public function setUp() {
-		$this->fixture = new Tx_Belog_Domain_Model_LogEntry();
+		$this->fixture = new \TYPO3\CMS\Belog\Domain\Model\LogEntry();
 	}
 
 	public function tearDown() {
@@ -79,10 +81,11 @@ class Tx_Belog_Domain_Repository_LogEntryTest extends Tx_Extbase_Tests_Unit_Base
 	 * @test
 	 */
 	public function getLogDataForSerializedObjectReturnsEmptyArray() {
-		$this->fixture->setLogData(new stdClass());
+		$this->fixture->setLogData(new \stdClass());
 		$this->assertSame(array(), $this->fixture->getLogData());
 	}
 
 }
+
 
 ?>

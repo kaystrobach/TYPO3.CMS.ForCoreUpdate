@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization\Parser;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-class t3lib_l10n_parser_Xliff extends t3lib_l10n_parser_AbstractXml {
+class XliffParser extends \TYPO3\CMS\Core\Localization\Parser\AbstractXmlParser {
 
 	/**
 	 * Returns array representation of XML data, starting from a root node.
@@ -39,10 +41,10 @@ class t3lib_l10n_parser_Xliff extends t3lib_l10n_parser_AbstractXml {
 	 * @param SimpleXMLElement $root A root node
 	 * @return array An array representing the parsed XML file
 	 */
-	protected function doParsingFromRoot(SimpleXMLElement $root) {
+	protected function doParsingFromRoot(\SimpleXMLElement $root) {
 		$parsedData = array();
 		$bodyOfFileTag = $root->file->body;
-		if ($bodyOfFileTag instanceof SimpleXMLElement) {
+		if ($bodyOfFileTag instanceof \SimpleXMLElement) {
 			foreach ($bodyOfFileTag->children() as $translationElement) {
 				if ($translationElement->getName() === 'trans-unit' && !isset($translationElement['restype'])) {
 					// If restype would be set, it could be metadata from Gettext to XLIFF conversion (and we don't need this data)
@@ -113,5 +115,6 @@ class t3lib_l10n_parser_Xliff extends t3lib_l10n_parser_AbstractXml {
 	}
 
 }
+
 
 ?>

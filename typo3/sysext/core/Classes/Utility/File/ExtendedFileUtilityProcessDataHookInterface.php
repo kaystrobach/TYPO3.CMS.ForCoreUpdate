@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility\File;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_extFileFunctions_processDataHook
+interface ExtendedFileUtilityProcessDataHookInterface
 {
 	/**
 	 * Post-process a file action.
@@ -39,10 +41,11 @@ interface t3lib_extFileFunctions_processDataHook
 	 * @param string $action The action
 	 * @param array $cmdArr The parameter sent to the action handler
 	 * @param array $result The results of all calls to the action handler
-	 * @param t3lib_extFileFunctions $parentObject Parent t3lib_extFileFunctions object
+	 * @param \TYPO3\CMS\Core\Utility\File\ExtendedFileUtility $parentObject Parent t3lib_extFileFunctions object
 	 * @return void
 	 */
-	public function processData_postProcessAction($action, array $cmdArr, array $result, t3lib_extFileFunctions $parentObject);
+	public function processData_postProcessAction($action, array $cmdArr, array $result, \TYPO3\CMS\Core\Utility\File\ExtendedFileUtility $parentObject);
 
 }
+
 ?>

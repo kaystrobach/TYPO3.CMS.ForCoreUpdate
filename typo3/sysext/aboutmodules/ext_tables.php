@@ -4,7 +4,7 @@ if (!defined('TYPO3_MODE')) {
 }
 // Avoid that this block is loaded in frontend or within upgrade wizards
 if (TYPO3_MODE === 'BE' && !(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
-	Tx_Extbase_Utility_Extension::registerModule($_EXTKEY, 'help', 'aboutmodules', 'after:about', array(
+	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule($_EXTKEY, 'help', 'aboutmodules', 'after:about', array(
 		'Modules' => 'index'
 	), array(
 		'access' => 'user,group',

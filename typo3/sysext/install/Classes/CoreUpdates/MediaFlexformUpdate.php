@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +29,7 @@
 /**
  * Migrates the old media FlexForm to the new
  */
-class tx_coreupdates_mediaFlexform extends Tx_Install_Updates_Base {
+class MediaFlexformUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'FlexForm Data from Media Element';
 
@@ -57,11 +59,11 @@ class tx_coreupdates_mediaFlexform extends Tx_Install_Updates_Base {
 	 */
 	public function performUpdate(array &$dbQueries, &$customMessages) {
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,pi_flexform', $GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'], 'CType = "media" AND pi_flexform LIKE "%<sheet index=\\"sDEF\\">%"');
-		/** @var $flexformTools t3lib_flexformtools */
-		$flexformTools = t3lib_div::makeInstance('t3lib_flexformtools');
+		/** @var $flexformTools \TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools */
+		$flexformTools = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 		foreach ($rows as $row) {
 			$flexFormXML = $row['pi_flexform'];
-			$data = t3lib_div::xml2array($flexFormXML);
+			$data = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($flexFormXML);
 			$sDEF = $data['data']['sDEF']['lDEF'];
 			unset($data['data']['sDEF']);
 			$type = $sDEF['mmType']['vDEF'];
@@ -96,5 +98,6 @@ class tx_coreupdates_mediaFlexform extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\User\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class extDirect_DataProvider_BackendUserSettings {
+class BackendUserSettingsDataProvider {
 
 	/**
 	 * Get user settings
@@ -112,7 +114,7 @@ class extDirect_DataProvider_BackendUserSettings {
 		if (!isset($list)) {
 			$list = $value;
 		} else {
-			if (!t3lib_div::inList($list, $value)) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($list, $value)) {
 				$list .= ',' . $value;
 			}
 		}
@@ -129,9 +131,9 @@ class extDirect_DataProvider_BackendUserSettings {
 	 */
 	public function removeFromList($key, $value) {
 		$list = $this->get($key);
-		if (t3lib_div::inList($list, $value)) {
-			$list = t3lib_div::trimExplode(',', $list, TRUE);
-			$list = t3lib_div::removeArrayEntryByValue($list, $value);
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($list, $value)) {
+			$list = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $list, TRUE);
+			$list = \TYPO3\CMS\Core\Utility\GeneralUtility::removeArrayEntryByValue($list, $value);
 			$this->set($key, implode(',', $list));
 		}
 	}
@@ -143,7 +145,7 @@ class extDirect_DataProvider_BackendUserSettings {
 	 * @return mixed $array value of the settings
 	 */
 	protected function getFromDottedNotation($key) {
-		$subkeys = t3lib_div::trimExplode('.', $key);
+		$subkeys = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $key);
 		$array =& $GLOBALS['BE_USER']->uc;
 		foreach ($subkeys as $subkey) {
 			$array =& $array[$subkey];
@@ -159,7 +161,7 @@ class extDirect_DataProvider_BackendUserSettings {
 	 * @return void
 	 */
 	protected function setFromDottedNotation($key, $value) {
-		$subkeys = t3lib_div::trimExplode('.', $key, TRUE);
+		$subkeys = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $key, TRUE);
 		$lastKey = $subkeys[count($subkeys) - 1];
 		$array =& $GLOBALS['BE_USER']->uc;
 		foreach ($subkeys as $subkey) {
@@ -178,10 +180,11 @@ class extDirect_DataProvider_BackendUserSettings {
 	 * @return void
 	 */
 	protected function getLastKeyFromDottedNotation($key) {
-		$subkeys = t3lib_div::trimExplode('.', $key, TRUE);
+		$subkeys = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $key, TRUE);
 		return $subkeys[count($subkeys) - 1];
 	}
 
 }
+
 
 ?>

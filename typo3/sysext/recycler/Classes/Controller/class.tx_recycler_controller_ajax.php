@@ -22,14 +22,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 // Pre-Include all models and views
-require_once t3lib_extMgm::extPath('recycler', 'classes/model/class.tx_recycler_model_deletedRecords.php');
-require_once t3lib_extMgm::extPath('recycler', 'classes/model/class.tx_recycler_model_tables.php');
-require_once t3lib_extMgm::extPath('recycler', 'classes/view/class.tx_recycler_view_deletedRecords.php');
-require_once t3lib_extMgm::extPath('recycler', 'classes/helper/class.tx_recycler_helper.php');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler', 'classes/model/class.tx_recycler_model_deletedRecords.php');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler', 'classes/model/class.tx_recycler_model_tables.php');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler', 'classes/view/class.tx_recycler_view_deletedRecords.php');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler', 'classes/helper/class.tx_recycler_helper.php');
 /*
  * @deprecated since 6.0, the classname tx_recycler_controller_ajax and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/recycler/Classes/Controller/RecyclerAjaxController.php
  */
-require_once t3lib_extMgm::extPath('recycler') . 'Classes/Controller/RecyclerAjaxController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler') . 'Classes/Controller/RecyclerAjaxController.php';
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Sprite;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_spritemanager_SpriteIconGenerator
+interface SpriteIconGeneratorInterface
 {
 	/**
 	 * the implementation of this function has to do the main task
@@ -51,4 +53,5 @@ interface t3lib_spritemanager_SpriteIconGenerator
 	public function getAvailableIconNames();
 
 }
+
 ?>

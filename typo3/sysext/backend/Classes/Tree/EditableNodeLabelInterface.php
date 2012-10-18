@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_tree_LabelEditable
+interface EditableNodeLabelInterface
 {
 	/**
 	 * Sets the new label
@@ -44,4 +46,5 @@ interface t3lib_tree_LabelEditable
 	public function setLabel($label);
 
 }
+
 ?>

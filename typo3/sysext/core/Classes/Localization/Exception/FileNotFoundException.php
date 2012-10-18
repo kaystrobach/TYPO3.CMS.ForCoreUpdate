@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization\Exception;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,9 +33,10 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-class t3lib_l10n_exception_FileNotFound extends RuntimeException {
+class FileNotFoundException extends \RuntimeException {
 
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_utility_Array {
+class ArrayUtility {
 
 	/**
 	 * Reduce an array by a search value and keep the array structure.
@@ -75,7 +77,7 @@ class t3lib_utility_Array {
 			if ($value === $needle) {
 				($resultArray[$key] = $value);
 			} elseif (is_array($value)) {
-				($subArrayMatches = t3lib_utility_Array::filterByValueRecursive($needle, $value));
+				($subArrayMatches = \TYPO3\CMS\Core\Utility\ArrayUtility::filterByValueRecursive($needle, $value));
 				if (count($subArrayMatches) > 0) {
 					($resultArray[$key] = $subArrayMatches);
 				}
@@ -109,7 +111,7 @@ class t3lib_utility_Array {
 		try {
 			// Use late static binding to enable mocking of this call in unit tests
 			static::getValueByPath($array, $path, $delimiter);
-		} catch (RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 			$isValid = FALSE;
 		}
 		return $isValid;
@@ -141,7 +143,7 @@ class t3lib_utility_Array {
 	 */
 	static public function getValueByPath(array $array, $path, $delimiter = '/') {
 		if (empty($path)) {
-			throw new RuntimeException('Path must not be empty', 1341397767);
+			throw new \RuntimeException('Path must not be empty', 1341397767);
 		}
 		// Extract parts of the path
 		$path = str_getcsv($path, $delimiter);
@@ -153,7 +155,7 @@ class t3lib_utility_Array {
 				$value = $value[$segment];
 			} else {
 				// Fail if key does not exist
-				throw new RuntimeException('Path does not exist in array', 1341397869);
+				throw new \RuntimeException('Path does not exist in array', 1341397869);
 			}
 		}
 		return $value;
@@ -186,10 +188,10 @@ class t3lib_utility_Array {
 	 */
 	static public function setValueByPath(array $array, $path, $value, $delimiter = '/') {
 		if (empty($path)) {
-			throw new RuntimeException('Path must not be empty', 1341406194);
+			throw new \RuntimeException('Path must not be empty', 1341406194);
 		}
 		if (!is_string($path)) {
-			throw new RuntimeException('Path must be a string', 1341406402);
+			throw new \RuntimeException('Path must be a string', 1341406402);
 		}
 		// Extract parts of the path
 		$path = str_getcsv($path, $delimiter);
@@ -199,7 +201,7 @@ class t3lib_utility_Array {
 		foreach ($path as $segment) {
 			// Fail if the part is empty
 			if (empty($segment)) {
-				throw new RuntimeException('Invalid path specified: ' . $path, 1341406846);
+				throw new \RuntimeException('Invalid path specified: ' . $path, 1341406846);
 			}
 			// Create cell if it doesn't exist
 			if (!array_key_exists($segment, $pointer)) {
@@ -278,7 +280,7 @@ class t3lib_utility_Array {
 				$stringContent = str_replace('\'', '\\\'', $stringContent);
 				$lines .= ((('\'' . $stringContent) . '\'') . ',') . LF;
 			} else {
-				throw new RuntimeException('Objects are not supported', 1342294986);
+				throw new \RuntimeException('Objects are not supported', 1342294986);
 			}
 		}
 		$lines .= (str_repeat(TAB, ($level - 1)) . ')') . ($level - 1 == 0 ? '' : ',' . LF);
@@ -311,5 +313,6 @@ class t3lib_utility_Array {
 	}
 
 }
+
 
 ?>

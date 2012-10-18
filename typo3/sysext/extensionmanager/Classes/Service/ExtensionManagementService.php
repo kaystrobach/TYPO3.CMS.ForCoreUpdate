@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Service;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,70 +33,70 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
+class ExtensionManagementService implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Model_DownloadQueue
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Model\DownloadQueue
 	 */
 	protected $downloadQueue;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Dependency
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\DependencyUtility
 	 */
 	protected $dependencyUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Install
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\InstallUtility
 	 */
 	protected $installUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_List
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\ListUtility
 	 */
 	protected $listUtility;
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Model_DownloadQueue $downloadQueue
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\DownloadQueue $downloadQueue
 	 * @return void
 	 */
-	public function injectDownloadQueue(Tx_Extensionmanager_Domain_Model_DownloadQueue $downloadQueue) {
+	public function injectDownloadQueue(\TYPO3\CMS\Extensionmanager\Domain\Model\DownloadQueue $downloadQueue) {
 		$this->downloadQueue = $downloadQueue;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Dependency $dependencyUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\DependencyUtility $dependencyUtility
 	 * @return void
 	 */
-	public function injectDependencyUtility(Tx_Extensionmanager_Utility_Dependency $dependencyUtility) {
+	public function injectDependencyUtility(\TYPO3\CMS\Extensionmanager\Utility\DependencyUtility $dependencyUtility) {
 		$this->dependencyUtility = $dependencyUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\InstallUtility $installUtility
 	 * @return void
 	 */
-	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+	public function injectInstallUtility(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility $installUtility) {
 		$this->installUtility = $installUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility
 	 * @return void
 	 */
-	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+	public function injectListUtility(\TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility) {
 		$this->listUtility = $listUtility;
 	}
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Download
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\DownloadUtility
 	 */
 	protected $downloadUtility;
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Download $downloadUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\DownloadUtility $downloadUtility
 	 * @return void
 	 */
-	public function injectDownloadUtility(Tx_Extensionmanager_Utility_Download $downloadUtility) {
+	public function injectDownloadUtility(\TYPO3\CMS\Extensionmanager\Utility\DownloadUtility $downloadUtility) {
 		$this->downloadUtility = $downloadUtility;
 	}
 
@@ -109,28 +111,28 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	/**
 	 * Mark an extension for download
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return void
 	 */
-	public function markExtensionForDownload(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function markExtensionForDownload(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension) {
 		$this->downloadQueue->addExtensionToQueue($extension);
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return void
 	 */
-	public function markExtensionForUpdate(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function markExtensionForUpdate(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension) {
 		$this->downloadQueue->addExtensionToQueue($extension, 'update');
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return array
 	 */
-	public function resolveDependenciesAndInstall(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function resolveDependenciesAndInstall(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 		$this->downloadQueue->addExtensionToQueue($extension);
 		$queue = $this->downloadQueue->getExtensionQueue();
@@ -205,10 +207,10 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	/**
 	 * Get and resolve dependencies
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return array
 	 */
-	public function getAndResolveDependencies(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function getAndResolveDependencies(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension) {
 		$this->dependencyUtility->buildExtensionDependenciesTree($extension);
 		$installQueue = $this->downloadQueue->getExtensionInstallStorage();
 		if (is_array($installQueue) && count($installQueue) > 0) {
@@ -218,5 +220,6 @@ class Tx_Extensionmanager_Service_Management implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

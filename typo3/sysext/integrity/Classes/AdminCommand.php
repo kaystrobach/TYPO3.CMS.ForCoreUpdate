@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_admin_core extends t3lib_cli {
+class AdminCommand extends \TYPO3\CMS\Cli\Controller\CommandLineController {
 
 	/**
 	 * @todo Define visibility
@@ -99,7 +101,7 @@ class tx_lowlevel_admin_core extends t3lib_cli {
 ');
 			}
 			$lockFileContent = $this->cli_argValue('--redirect');
-			t3lib_div::writeFile(PATH_typo3conf . 'LOCK_BACKEND', $lockFileContent);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_typo3conf . 'LOCK_BACKEND', $lockFileContent);
 			$this->cli_echo(((('Wrote lock-file to \'' . PATH_typo3conf) . 'LOCK_BACKEND\' with content \'') . $lockFileContent) . '\'');
 			break;
 		case 'clearBElock':
@@ -125,5 +127,6 @@ class tx_lowlevel_admin_core extends t3lib_cli {
 	}
 
 }
+
 
 ?>

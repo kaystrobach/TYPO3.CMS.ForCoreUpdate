@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\ContentElement;
+
 /**
  * Script Class for showing the history module of TYPO3s backend
  *
@@ -7,7 +9,7 @@
  * @subpackage core
  * @see class.show_rechis.inc
  */
-class SC_show_rechis {
+class ElementHistoryController {
 
 	// Internal:
 	/**
@@ -18,7 +20,7 @@ class SC_show_rechis {
 	/**
 	 * Document template object
 	 *
-	 * @var mediumDoc
+	 * @var \TYPO3\CMS\Backend\Template\MediumDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -31,7 +33,7 @@ class SC_show_rechis {
 	 */
 	public function init() {
 		// Create internal template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/show_rechis.html');
 		// Start the page header:
@@ -46,7 +48,7 @@ class SC_show_rechis {
 	 */
 	public function main() {
 		// Start history object
-		$historyObj = t3lib_div::makeInstance('recordHistory');
+		$historyObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\History\\RecordHistory');
 		// Get content:
 		$this->content .= $historyObj->main();
 		// Setting up the buttons and markers for docheader
@@ -81,15 +83,16 @@ class SC_show_rechis {
 			'back' => ''
 		);
 		// CSH
-		$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'history_log', $GLOBALS['BACK_PATH'], '', TRUE);
+		$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'history_log', $GLOBALS['BACK_PATH'], '', TRUE);
 		// Start history object
-		$historyObj = t3lib_div::makeInstance('recordHistory');
+		$historyObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\History\\RecordHistory');
 		if ($historyObj->returnUrl) {
-			$buttons['back'] = ((('<a href="' . htmlspecialchars($historyObj->returnUrl)) . '" class="typo3-goBack">') . t3lib_iconWorks::getSpriteIcon('actions-view-go-back')) . '</a>';
+			$buttons['back'] = ((('<a href="' . htmlspecialchars($historyObj->returnUrl)) . '" class="typo3-goBack">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-view-go-back')) . '</a>';
 		}
 		return $buttons;
 	}
 
 }
+
 
 ?>

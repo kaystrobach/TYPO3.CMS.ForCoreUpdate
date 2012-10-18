@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -55,7 +57,7 @@
  * Could not get image resource for "NonExistingImage.png".
  * </output>
  */
-class Tx_Extensionmanager_ViewHelpers_ImageViewHelper extends Tx_Fluid_ViewHelpers_ImageViewHelper {
+class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
 
 	/**
 	 * Resizes a given image (if required) and renders the respective img tag
@@ -73,12 +75,13 @@ class Tx_Extensionmanager_ViewHelpers_ImageViewHelper extends Tx_Fluid_ViewHelpe
 		$image = '';
 		try {
 			$image = parent::render($src, $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight);
-		} catch (t3lib_file_exception_FileDoesNotExistException $e) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException $e) {
 
 		}
 		return $image;
 	}
 
 }
+
 
 ?>

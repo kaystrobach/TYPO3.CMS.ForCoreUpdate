@@ -4,7 +4,7 @@ if (!defined('TYPO3_MODE')) {
 }
 if (TYPO3_MODE === 'BE') {
 	// Module Admin > Backend Users
-	Tx_Extbase_Utility_Extension::registerModule($_EXTKEY, 'tools', 'tx_Beuser', 'top', array(
+	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule($_EXTKEY, 'tools', 'tx_Beuser', 'top', array(
 		'BackendUser' => 'index, addToCompareList, removeFromCompareList, compare, online, terminateBackendUserSession'
 	), array(
 		'access' => 'user,group',

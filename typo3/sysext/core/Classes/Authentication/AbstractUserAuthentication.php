@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Authentication;
+
 /**
  * Authentication of users in TYPO3
  *
@@ -13,7 +15,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_userAuth {
+abstract class AbstractUserAuthentication {
 
 	// Which global database to connect to
 	/**
@@ -331,7 +333,7 @@ abstract class t3lib_userAuth {
 	public function start() {
 		// Backend or frontend login - used for auth services
 		if (empty($this->loginType)) {
-			throw new t3lib_exception('No loginType defined, should be set explicitly by subclass');
+			throw new \TYPO3\CMS\Core\Exception('No loginType defined, should be set explicitly by subclass');
 		}
 		// Set level to normal if not already set
 		if (!$this->security_level) {
@@ -352,7 +354,7 @@ abstract class t3lib_userAuth {
 			$this->writeDevLog = TRUE;
 		}
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('## Beginning of auth logging.', 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('## Beginning of auth logging.', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		// Init vars.
 		$mode = '';
@@ -362,11 +364,11 @@ abstract class t3lib_userAuth {
 		$this->svConfig = $GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth'];
 		// If we have a flash client, take the ID from the GP
 		if (!$id && $GLOBALS['CLIENT']['BROWSER'] == 'flash') {
-			$id = t3lib_div::_GP($this->name);
+			$id = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($this->name);
 		}
 		// If fallback to get mode....
 		if ((!$id && $this->getFallBack) && $this->get_name) {
-			$id = isset($_GET[$this->get_name]) ? t3lib_div::_GET($this->get_name) : '';
+			$id = isset($_GET[$this->get_name]) ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GET($this->get_name) : '';
 			if (strlen($id) != $this->hash_length) {
 				$id = '';
 			}
@@ -398,8 +400,8 @@ abstract class t3lib_userAuth {
 			$pragmaHeader = 'no-cache';
 			// Prevent error message in IE when using a https connection
 			// see http://forge.typo3.org/issues/24125
-			$clientInfo = t3lib_div::clientInfo();
-			if ($clientInfo['BROWSER'] === 'msie' && t3lib_div::getIndpEnv('TYPO3_SSL')) {
+			$clientInfo = \TYPO3\CMS\Core\Utility\GeneralUtility::clientInfo();
+			if ($clientInfo['BROWSER'] === 'msie' && \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
 				// Some IEs can not handle no-cache
 				// see http://support.microsoft.com/kb/323308/en-us
 				$cacheControlHeader = 'must-revalidate';
@@ -418,7 +420,7 @@ abstract class t3lib_userAuth {
 		// Determine whether we need to skip session update.
 		// This is used mainly for checking session timeout without
 		// refreshing the session itself while checking.
-		if (t3lib_div::_GP('skipSessionUpdate')) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('skipSessionUpdate')) {
 			$skipSessionUpdate = TRUE;
 		} else {
 			$skipSessionUpdate = FALSE;
@@ -426,10 +428,10 @@ abstract class t3lib_userAuth {
 		// Re-read user session
 		$this->user = $this->fetchUserSession($skipSessionUpdate);
 		if ($this->writeDevLog && is_array($this->user)) {
-			t3lib_div::devLog('User session finally read: ' . t3lib_div::arrayToLogString($this->user, array($this->userid_column, $this->username_column)), 't3lib_userAuth', -1);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User session finally read: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($this->user, array($this->userid_column, $this->username_column)), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', -1);
 		}
 		if ($this->writeDevLog && !is_array($this->user)) {
-			t3lib_div::devLog('No user session found.', 't3lib_userAuth', 2);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('No user session found.', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 2);
 		}
 		// Setting cookies
 		if (!$this->dontSetCookie) {
@@ -441,7 +443,7 @@ abstract class t3lib_userAuth {
 				$_params = array(
 					'pObj' => &$this
 				);
-				t3lib_div::callUserFunction($funcName, $_params, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($funcName, $_params, $this);
 			}
 		}
 		// Set $this->gc_time if not explicitely specified
@@ -468,22 +470,22 @@ abstract class t3lib_userAuth {
 			// Get the domain to be used for the cookie (if any):
 			$cookieDomain = $this->getCookieDomain();
 			// If no cookie domain is set, use the base path:
-			$cookiePath = $cookieDomain ? '/' : t3lib_div::getIndpEnv('TYPO3_SITE_PATH');
+			$cookiePath = $cookieDomain ? '/' : \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
 			// If the cookie lifetime is set, use it:
 			$cookieExpire = $isRefreshTimeBasedCookie ? $GLOBALS['EXEC_TIME'] + $this->lifetime : 0;
 			// Use the secure option when the current request is served by a secure connection:
-			$cookieSecure = (bool) $settings['cookieSecure'] && t3lib_div::getIndpEnv('TYPO3_SSL');
+			$cookieSecure = (bool) $settings['cookieSecure'] && \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL');
 			// Deliver cookies only via HTTP and prevent possible XSS by JavaScript:
 			$cookieHttpOnly = (bool) $settings['cookieHttpOnly'];
 			// Do not set cookie if cookieSecure is set to "1" (force HTTPS) and no secure channel is used:
-			if ((int) $settings['cookieSecure'] !== 1 || t3lib_div::getIndpEnv('TYPO3_SSL')) {
+			if ((int) $settings['cookieSecure'] !== 1 || \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
 				setcookie($this->name, $this->id, $cookieExpire, $cookiePath, $cookieDomain, $cookieSecure, $cookieHttpOnly);
 			} else {
-				throw new t3lib_exception('Cookie was not set since HTTPS was forced in $TYPO3_CONF_VARS[SYS][cookieSecure].', 1254325546);
+				throw new \TYPO3\CMS\Core\Exception('Cookie was not set since HTTPS was forced in $TYPO3_CONF_VARS[SYS][cookieSecure].', 1254325546);
 			}
 			if ($this->writeDevLog) {
 				$devLogMessage = ($isRefreshTimeBasedCookie ? 'Updated Cookie: ' : 'Set Cookie: ') . $this->id;
-				t3lib_div::devLog($devLogMessage . ($cookieDomain ? ', ' . $cookieDomain : ''), 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog($devLogMessage . ($cookieDomain ? ', ' . $cookieDomain : ''), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 		}
 	}
@@ -505,9 +507,9 @@ abstract class t3lib_userAuth {
 		if ($cookieDomain) {
 			if ($cookieDomain[0] == '/') {
 				$match = array();
-				$matchCnt = @preg_match($cookieDomain, t3lib_div::getIndpEnv('TYPO3_HOST_ONLY'), $match);
+				$matchCnt = @preg_match($cookieDomain, \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY'), $match);
 				if ($matchCnt === FALSE) {
-					t3lib_div::sysLog(('The regular expression for the cookie domain (' . $cookieDomain) . ') contains errors. The session is not shared across sub-domains.', 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(('The regular expression for the cookie domain (' . $cookieDomain) . ') contains errors. The session is not shared across sub-domains.', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 				} elseif ($matchCnt) {
 					$result = $match[0];
 				}
@@ -533,9 +535,9 @@ abstract class t3lib_userAuth {
 	 */
 	protected function getCookie($cookieName) {
 		if (isset($_SERVER['HTTP_COOKIE'])) {
-			$cookies = t3lib_div::trimExplode(';', $_SERVER['HTTP_COOKIE']);
+			$cookies = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(';', $_SERVER['HTTP_COOKIE']);
 			foreach ($cookies as $cookie) {
-				list($name, $value) = t3lib_div::trimExplode('=', $cookie);
+				list($name, $value) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('=', $cookie);
 				if (strcmp(trim($name), $cookieName) == 0) {
 					// Use the last one
 					$cookieValue = urldecode($value);
@@ -588,14 +590,14 @@ abstract class t3lib_userAuth {
 		// Indicates if an active authentication failed (not auto login)
 		$this->loginFailure = FALSE;
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Login type: ' . $this->loginType, 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Login type: ' . $this->loginType, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		// The info array provide additional information for auth services
 		$authInfo = $this->getAuthInfoArray();
 		// Get Login/Logout data submitted by a form or params
 		$loginData = $this->getLoginFormData();
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Login data: ' . t3lib_div::arrayToLogString($loginData), 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Login data: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($loginData), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		// Active logout (eg. with "logout" button)
 		if ($loginData['status'] == 'logout') {
@@ -605,7 +607,7 @@ abstract class t3lib_userAuth {
 			}
 			// Logout written to log
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('User logged out. Id: ' . $this->id, 't3lib_userAuth', -1);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User logged out. Id: ' . $this->id, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', -1);
 			}
 			$this->logoff();
 		}
@@ -613,13 +615,13 @@ abstract class t3lib_userAuth {
 		if ($loginData['status'] == 'login') {
 			$activeLogin = TRUE;
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('Active login (eg. with login form)', 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Active login (eg. with login form)', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 			// check referer for submitted login values
 			if (($this->formfield_status && $loginData['uident']) && $loginData['uname']) {
-				$httpHost = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+				$httpHost = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 				if (!$this->getMethodEnabled && ($httpHost != $authInfo['refInfo']['host'] && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer'])) {
-					throw new RuntimeException(((('TYPO3 Fatal Error: Error: This host address ("' . $httpHost) . '") and the referer host ("') . $authInfo['refInfo']['host']) . '") mismatches!<br />
+					throw new \RuntimeException(((('TYPO3 Fatal Error: Error: This host address ("' . $httpHost) . '") and the referer host ("') . $authInfo['refInfo']['host']) . '") mismatches!<br />
 						It\'s possible that the environment variable HTTP_REFERER is not passed to the script because of a proxy.<br />
 						The site administrator can disable this check in the "All Configuration" section of the Install Tool (flag: TYPO3_CONF_VARS[SYS][doNotCheckReferer]).', 1270853930);
 				}
@@ -629,14 +631,14 @@ abstract class t3lib_userAuth {
 			// Refuse login for _CLI users, if not processing a CLI request type
 			// (although we shouldn't be here in case of a CLI request type)
 			if (strtoupper(substr($loginData['uname'], 0, 5)) == '_CLI_' && !(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI)) {
-				throw new RuntimeException('TYPO3 Fatal Error: You have tried to login using a CLI user. Access prohibited!', 1270853931);
+				throw new \RuntimeException('TYPO3 Fatal Error: You have tried to login using a CLI user. Access prohibited!', 1270853931);
 			}
 		}
 		// The following code makes auto-login possible (if configured). No submitted data needed
 		// Determine whether we need to skip session update.
 		// This is used mainly for checking session timeout without
 		// refreshing the session itself while checking.
-		if (t3lib_div::_GP('skipSessionUpdate')) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('skipSessionUpdate')) {
 			$skipSessionUpdate = TRUE;
 		} else {
 			$skipSessionUpdate = FALSE;
@@ -646,10 +648,10 @@ abstract class t3lib_userAuth {
 		$haveSession = is_array($authInfo['userSession']) ? TRUE : FALSE;
 		if ($this->writeDevLog) {
 			if ($haveSession) {
-				t3lib_div::devLog('User session found: ' . t3lib_div::arrayToLogString($authInfo['userSession'], array($this->userid_column, $this->username_column)), 't3lib_userAuth', 0);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User session found: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($authInfo['userSession'], array($this->userid_column, $this->username_column)), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 0);
 			}
 			if (is_array($this->svConfig['setup'])) {
-				t3lib_div::devLog('SV setup: ' . t3lib_div::arrayToLogString($this->svConfig['setup']), 't3lib_userAuth', 0);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('SV setup: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($this->svConfig['setup']), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 0);
 			}
 		}
 		// Fetch user if ...
@@ -658,13 +660,13 @@ abstract class t3lib_userAuth {
 			// First found user will be used
 			$serviceChain = '';
 			$subType = 'getUser' . $this->loginType;
-			while (is_object($serviceObj = t3lib_div::makeInstanceService('auth', $subType, $serviceChain))) {
+			while (is_object($serviceObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('auth', $subType, $serviceChain))) {
 				$serviceChain .= ',' . $serviceObj->getServiceKey();
 				$serviceObj->initAuth($subType, $loginData, $authInfo, $this);
 				if ($row = $serviceObj->getUser()) {
 					$tempuserArr[] = $row;
 					if ($this->writeDevLog) {
-						t3lib_div::devLog('User found: ' . t3lib_div::arrayToLogString($row, array($this->userid_column, $this->username_column)), 't3lib_userAuth', 0);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User found: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($row, array($this->userid_column, $this->username_column)), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 0);
 					}
 					// User found, just stop to search for more if not configured to go on
 					if (!$this->svConfig['setup'][($this->loginType . '_fetchAllUsers')]) {
@@ -675,16 +677,16 @@ abstract class t3lib_userAuth {
 			}
 			unset($serviceObj);
 			if ($this->writeDevLog && $this->svConfig['setup'][$this->loginType . '_alwaysFetchUser']) {
-				t3lib_div::devLog($this->loginType . '_alwaysFetchUser option is enabled', 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog($this->loginType . '_alwaysFetchUser option is enabled', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 			if ($this->writeDevLog && $serviceChain) {
-				t3lib_div::devLog(($subType . ' auth services called: ') . $serviceChain, 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(($subType . ' auth services called: ') . $serviceChain, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 			if ($this->writeDevLog && !count($tempuserArr)) {
-				t3lib_div::devLog('No user found by services', 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('No user found by services', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 			if ($this->writeDevLog && count($tempuserArr)) {
-				t3lib_div::devLog(count($tempuserArr) . ' user records found by services', 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(count($tempuserArr) . ' user records found by services', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 		}
 		// If no new user was set we use the already found user session
@@ -694,14 +696,14 @@ abstract class t3lib_userAuth {
 			// User is authenticated because we found a user session
 			$authenticated = TRUE;
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('User session used: ' . t3lib_div::arrayToLogString($authInfo['userSession'], array($this->userid_column, $this->username_column)), 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User session used: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($authInfo['userSession'], array($this->userid_column, $this->username_column)), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 		}
 		// Re-auth user when 'auth'-service option is set
 		if ($this->svConfig['setup'][$this->loginType . '_alwaysAuthUser']) {
 			$authenticated = FALSE;
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('alwaysAuthUser option is enabled', 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('alwaysAuthUser option is enabled', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 		}
 		// Authenticate the user if needed
@@ -711,11 +713,11 @@ abstract class t3lib_userAuth {
 				// If one service returns FALSE then authentication failed
 				// a service might return 100 which means there's no reason to stop but the user can't be authenticated by that service
 				if ($this->writeDevLog) {
-					t3lib_div::devLog('Auth user: ' . t3lib_div::arrayToLogString($tempuser), 't3lib_userAuth');
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Auth user: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($tempuser), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 				}
 				$serviceChain = '';
 				$subType = 'authUser' . $this->loginType;
-				while (is_object($serviceObj = t3lib_div::makeInstanceService('auth', $subType, $serviceChain))) {
+				while (is_object($serviceObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('auth', $subType, $serviceChain))) {
 					$serviceChain .= ',' . $serviceObj->getServiceKey();
 					$serviceObj->initAuth($subType, $loginData, $authInfo, $this);
 					if (($ret = $serviceObj->authUser($tempuser)) > 0) {
@@ -736,7 +738,7 @@ abstract class t3lib_userAuth {
 				}
 				unset($serviceObj);
 				if ($this->writeDevLog && $serviceChain) {
-					t3lib_div::devLog(($subType . ' auth services called: ') . $serviceChain, 't3lib_userAuth');
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(($subType . ' auth services called: ') . $serviceChain, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 				}
 				if ($authenticated) {
 					// Leave foreach() because a user is authenticated
@@ -756,41 +758,41 @@ abstract class t3lib_userAuth {
 			}
 			// User logged in - write that to the log!
 			if ($this->writeStdLog && $activeLogin) {
-				$this->writelog(255, 1, 0, 1, 'User %s logged in from %s (%s)', array($tempuser[$this->username_column], t3lib_div::getIndpEnv('REMOTE_ADDR'), t3lib_div::getIndpEnv('REMOTE_HOST')), '', '', '', -1, '', $tempuser['uid']);
+				$this->writelog(255, 1, 0, 1, 'User %s logged in from %s (%s)', array($tempuser[$this->username_column], \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'), \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_HOST')), '', '', '', -1, '', $tempuser['uid']);
 			}
 			if ($this->writeDevLog && $activeLogin) {
-				t3lib_div::devLog(((((('User ' . $tempuser[$this->username_column]) . ' logged in from ') . t3lib_div::getIndpEnv('REMOTE_ADDR')) . ' (') . t3lib_div::getIndpEnv('REMOTE_HOST')) . ')', 't3lib_userAuth', -1);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(((((('User ' . $tempuser[$this->username_column]) . ' logged in from ') . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR')) . ' (') . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_HOST')) . ')', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', -1);
 			}
 			if ($this->writeDevLog && !$activeLogin) {
-				t3lib_div::devLog(((((('User ' . $tempuser[$this->username_column]) . ' authenticated from ') . t3lib_div::getIndpEnv('REMOTE_ADDR')) . ' (') . t3lib_div::getIndpEnv('REMOTE_HOST')) . ')', 't3lib_userAuth', -1);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(((((('User ' . $tempuser[$this->username_column]) . ' authenticated from ') . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR')) . ' (') . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_HOST')) . ')', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', -1);
 			}
 			if ($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL'] == 3 && $this->user_table == 'be_users') {
-				$requestStr = substr(t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT'), strlen(t3lib_div::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir));
-				$backendScript = t3lib_BEfunc::getBackendScript();
-				if ($requestStr == $backendScript && t3lib_div::getIndpEnv('TYPO3_SSL')) {
-					list(, $url) = explode('://', t3lib_div::getIndpEnv('TYPO3_SITE_URL'), 2);
+				$requestStr = substr(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_SCRIPT'), strlen(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir));
+				$backendScript = \TYPO3\CMS\Backend\Utility\BackendUtility::getBackendScript();
+				if ($requestStr == $backendScript && \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
+					list(, $url) = explode('://', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'), 2);
 					list($server, $address) = explode('/', $url, 2);
 					if (intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSLPort'])) {
 						$sslPortSuffix = ':' . intval($GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSLPort']);
 						// strip port from server
 						$server = str_replace($sslPortSuffix, '', $server);
 					}
-					t3lib_utility_Http::redirect((((('http://' . $server) . '/') . $address) . TYPO3_mainDir) . $backendScript);
+					\TYPO3\CMS\Core\Utility\HttpUtility::redirect((((('http://' . $server) . '/') . $address) . TYPO3_mainDir) . $backendScript);
 				}
 			}
 		} elseif ($activeLogin || count($tempuserArr)) {
 			$this->loginFailure = TRUE;
 			if (($this->writeDevLog && !count($tempuserArr)) && $activeLogin) {
-				t3lib_div::devLog('Login failed: ' . t3lib_div::arrayToLogString($loginData), 't3lib_userAuth', 2);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Login failed: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($loginData), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 2);
 			}
 			if ($this->writeDevLog && count($tempuserArr)) {
-				t3lib_div::devLog('Login failed: ' . t3lib_div::arrayToLogString($tempuser, array($this->userid_column, $this->username_column)), 't3lib_userAuth', 2);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Login failed: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($tempuser, array($this->userid_column, $this->username_column)), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 2);
 			}
 		}
 		// If there were a login failure, check to see if a warning email should be sent:
 		if ($this->loginFailure && $activeLogin) {
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('Call checkLogFailures: ' . t3lib_div::arrayToLogString(array('warningEmail' => $this->warningEmail, 'warningPeriod' => $this->warningPeriod, 'warningMax' => $this->warningMax)), 't3lib_userAuth', -1);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Call checkLogFailures: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString(array('warningEmail' => $this->warningEmail, 'warningPeriod' => $this->warningPeriod, 'warningMax' => $this->warningMax)), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', -1);
 			}
 			$this->checkLogFailures($this->warningEmail, $this->warningPeriod, $this->warningMax);
 		}
@@ -802,7 +804,7 @@ abstract class t3lib_userAuth {
 	 * @return string The new session ID
 	 */
 	public function createSessionId() {
-		return t3lib_div::getRandomHexString($this->hash_length);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::getRandomHexString($this->hash_length);
 	}
 
 	/*************************
@@ -819,7 +821,7 @@ abstract class t3lib_userAuth {
 	 */
 	public function createUserSession($tempuser) {
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Create session ses_id = ' . $this->id, 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Create session ses_id = ' . $this->id, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		// Delete session entry first
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery($this->session_table, (('ses_id = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->id, $this->session_table)) . '
@@ -862,7 +864,7 @@ abstract class t3lib_userAuth {
 	public function fetchUserSession($skipSessionUpdate = FALSE) {
 		$user = '';
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Fetch session ses_id = ' . $this->id, 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Fetch session ses_id = ' . $this->id, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		// Fetch the user session from the DB
 		$statement = $this->fetchUserSessionFromDB();
@@ -874,7 +876,7 @@ abstract class t3lib_userAuth {
 		}
 		if ($statement && $user) {
 			// A user was found
-			if (t3lib_Utility_Math::canBeInterpretedAsInteger($this->auth_timeout_field)) {
+			if (\t3lib_Utility_Math::canBeInterpretedAsInteger($this->auth_timeout_field)) {
 				// Get timeout from object
 				$timeout = intval($this->auth_timeout_field);
 			} else {
@@ -910,16 +912,16 @@ abstract class t3lib_userAuth {
 	 */
 	public function logoff() {
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('logoff: ses_id = ' . $this->id, 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('logoff: ses_id = ' . $this->id, 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		// Release the locked records
-		t3lib_BEfunc::lockRecords();
+		\TYPO3\CMS\Backend\Utility\BackendUtility::lockRecords();
 		// Hook for pre-processing the logoff() method, requested and implemented by andreas.otto@dkd.de:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_userauth.php']['logoff_pre_processing'])) {
 			$_params = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_userauth.php']['logoff_pre_processing'] as $_funcRef) {
 				if ($_funcRef) {
-					t3lib_div::callUserFunction($_funcRef, $_params, $this);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 		}
@@ -931,7 +933,7 @@ abstract class t3lib_userAuth {
 			$_params = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_userauth.php']['logoff_post_processing'] as $_funcRef) {
 				if ($_funcRef) {
-					t3lib_div::callUserFunction($_funcRef, $_params, $this);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 		}
@@ -948,7 +950,7 @@ abstract class t3lib_userAuth {
 	public function isExistingSessionRecord($id) {
 		$statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('COUNT(*)', $this->session_table, 'ses_id = :ses_id');
 		$statement->execute(array(':ses_id' => $id));
-		$row = $statement->fetch(t3lib_db_PreparedStatement::FETCH_NUM);
+		$row = $statement->fetch(\TYPO3\CMS\Core\Database\PreparedStatement::FETCH_NUM);
 		$statement->free();
 		return $row[0] ? TRUE : FALSE;
 	}
@@ -965,7 +967,7 @@ abstract class t3lib_userAuth {
 	 * then don't evaluate with the hashLockClause, as the client/browser is included in this hash
 	 * and thus, the flash request would be rejected
 	 *
-	 * @return t3lib_db_PreparedStatement
+	 * @return \TYPO3\CMS\Core\Database\PreparedStatement
 	 * @access private
 	 */
 	protected function fetchUserSessionFromDB() {
@@ -974,7 +976,7 @@ abstract class t3lib_userAuth {
 		if ($GLOBALS['CLIENT']['BROWSER'] == 'flash') {
 			// If on the flash client, the veri code is valid, then the user session is fetched
 			// from the DB without the hashLock clause
-			if (t3lib_div::_GP('vC') == $this->veriCode()) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('vC') == $this->veriCode()) {
 				$statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('*', ($this->session_table . ',') . $this->user_table, ((((((((((($this->session_table . '.ses_id = :ses_id
 						AND ') . $this->session_table) . '.ses_name = :ses_name
 						AND ') . $this->session_table) . '.ses_userid = ') . $this->user_table) . '.') . $this->userid_column) . '
@@ -1044,11 +1046,11 @@ abstract class t3lib_userAuth {
 	 * @access private
 	 */
 	protected function ipLockClause_remoteIPNumber($parts) {
-		$IP = t3lib_div::getIndpEnv('REMOTE_ADDR');
+		$IP = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR');
 		if ($parts >= 4) {
 			return $IP;
 		} else {
-			$parts = t3lib_utility_Math::forceIntegerInRange($parts, 1, 3);
+			$parts = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts, 1, 3);
 			$IPparts = explode('.', $IP);
 			for ($a = 4; $a > $parts; $a--) {
 				unset($IPparts[$a - 1]);
@@ -1086,10 +1088,10 @@ abstract class t3lib_userAuth {
 	 */
 	protected function hashLockClause_getHashInt() {
 		$hashStr = '';
-		if (t3lib_div::inList($this->lockHashKeyWords, 'useragent')) {
-			$hashStr .= ':' . t3lib_div::getIndpEnv('HTTP_USER_AGENT');
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->lockHashKeyWords, 'useragent')) {
+			$hashStr .= ':' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_USER_AGENT');
 		}
-		return t3lib_div::md5int($hashStr);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::md5int($hashStr);
 	}
 
 	/*************************
@@ -1112,7 +1114,7 @@ abstract class t3lib_userAuth {
 				$variable = $this->uc;
 			}
 			if ($this->writeDevLog) {
-				t3lib_div::devLog((('writeUC: ' . $this->userid_column) . '=') . intval($this->user[$this->userid_column]), 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog((('writeUC: ' . $this->userid_column) . '=') . intval($this->user[$this->userid_column]), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->user_table, ($this->userid_column . '=') . intval($this->user[$this->userid_column]), array('uc' => serialize($variable)));
 		}
@@ -1193,7 +1195,7 @@ abstract class t3lib_userAuth {
 		$sesDat[$key] = $data;
 		$this->user['ses_data'] = serialize($sesDat);
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('setAndSaveSessionData: ses_id = ' . $this->user['ses_id'], 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('setAndSaveSessionData: ses_id = ' . $this->user['ses_id'], 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->session_table, 'ses_id=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($this->user['ses_id'], $this->session_table), array('ses_data' => $this->user['ses_data']));
 	}
@@ -1213,15 +1215,15 @@ abstract class t3lib_userAuth {
 	public function getLoginFormData() {
 		$loginData = array();
 		if ($this->getMethodEnabled) {
-			$loginData['status'] = t3lib_div::_GP($this->formfield_status);
-			$loginData['uname'] = t3lib_div::_GP($this->formfield_uname);
-			$loginData['uident'] = t3lib_div::_GP($this->formfield_uident);
-			$loginData['chalvalue'] = t3lib_div::_GP($this->formfield_chalvalue);
+			$loginData['status'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($this->formfield_status);
+			$loginData['uname'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($this->formfield_uname);
+			$loginData['uident'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($this->formfield_uident);
+			$loginData['chalvalue'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($this->formfield_chalvalue);
 		} else {
-			$loginData['status'] = t3lib_div::_POST($this->formfield_status);
-			$loginData['uname'] = t3lib_div::_POST($this->formfield_uname);
-			$loginData['uident'] = t3lib_div::_POST($this->formfield_uident);
-			$loginData['chalvalue'] = t3lib_div::_POST($this->formfield_chalvalue);
+			$loginData['status'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->formfield_status);
+			$loginData['uname'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->formfield_uname);
+			$loginData['uident'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->formfield_uident);
+			$loginData['chalvalue'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->formfield_chalvalue);
 		}
 		// Only process the login data if a login is requested
 		if ($loginData['status'] === 'login') {
@@ -1243,14 +1245,14 @@ abstract class t3lib_userAuth {
 	public function processLoginData($loginData, $passwordTransmissionStrategy = '') {
 		$passwordTransmissionStrategy = $passwordTransmissionStrategy ? $passwordTransmissionStrategy : ($GLOBALS['TYPO3_CONF_VARS'][$this->loginType]['loginSecurityLevel'] ? trim($GLOBALS['TYPO3_CONF_VARS'][$this->loginType]['loginSecurityLevel']) : $this->security_level);
 		if ($this->writeDevLog) {
-			t3lib_div::devLog('Login data before processing: ' . t3lib_div::arrayToLogString($loginData), 't3lib_userAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Login data before processing: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($loginData), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 		}
 		$serviceChain = '';
 		$subType = 'processLoginData' . $this->loginType;
 		$authInfo = $this->getAuthInfoArray();
 		$isLoginDataProcessed = FALSE;
 		$processedLoginData = $loginData;
-		while (is_object($serviceObject = t3lib_div::makeInstanceService('auth', $subType, $serviceChain))) {
+		while (is_object($serviceObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('auth', $subType, $serviceChain))) {
 			$serviceChain .= ',' . $serviceObject->getServiceKey();
 			$serviceObject->initAuth($subType, $loginData, $authInfo, $this);
 			$serviceResult = $serviceObject->processLoginData($processedLoginData, $passwordTransmissionStrategy);
@@ -1267,7 +1269,7 @@ abstract class t3lib_userAuth {
 		if ($isLoginDataProcessed) {
 			$loginData = $processedLoginData;
 			if ($this->writeDevLog) {
-				t3lib_div::devLog('Processed login data: ' . t3lib_div::arrayToLogString($processedLoginData), 't3lib_userAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Processed login data: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($processedLoginData), 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication');
 			}
 		}
 		return $loginData;
@@ -1283,10 +1285,10 @@ abstract class t3lib_userAuth {
 	public function getAuthInfoArray() {
 		$authInfo = array();
 		$authInfo['loginType'] = $this->loginType;
-		$authInfo['refInfo'] = parse_url(t3lib_div::getIndpEnv('HTTP_REFERER'));
-		$authInfo['HTTP_HOST'] = t3lib_div::getIndpEnv('HTTP_HOST');
-		$authInfo['REMOTE_ADDR'] = t3lib_div::getIndpEnv('REMOTE_ADDR');
-		$authInfo['REMOTE_HOST'] = t3lib_div::getIndpEnv('REMOTE_HOST');
+		$authInfo['refInfo'] = parse_url(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_REFERER'));
+		$authInfo['HTTP_HOST'] = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_HOST');
+		$authInfo['REMOTE_ADDR'] = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR');
+		$authInfo['REMOTE_HOST'] = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_HOST');
 		/** @deprecated the usage of $authInfo['security_level'] is deprecated since 4.7 */
 		$authInfo['security_level'] = $this->security_level;
 		$authInfo['showHiddenRecords'] = $this->showHiddenRecords;
@@ -1324,7 +1326,7 @@ abstract class t3lib_userAuth {
 				session_start();
 				if ($_SESSION['login_challenge'] !== $loginData['chalvalue']) {
 					if ($this->writeDevLog) {
-						t3lib_div::devLog(((('PHP Session stored challenge "' . $_SESSION['login_challenge']) . '" and submitted challenge "') . $loginData['chalvalue']) . '" did not match, so authentication failed!', 't3lib_userAuth', 2);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(((('PHP Session stored challenge "' . $_SESSION['login_challenge']) . '" and submitted challenge "') . $loginData['chalvalue']) . '" did not match, so authentication failed!', 'TYPO3\\CMS\\Core\\Authentication\\AbstractUserAuthentication', 2);
 					}
 					$this->logoff();
 					return FALSE;
@@ -1487,5 +1489,6 @@ abstract class t3lib_userAuth {
 	}
 
 }
+
 
 ?>

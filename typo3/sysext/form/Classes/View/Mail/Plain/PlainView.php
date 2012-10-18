@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Plain;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,14 +30,14 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Plain extends tx_form_View_Mail_Plain_Element_Container {
+class PlainView extends \TYPO3\CMS\Form\View\Mail\Plain\Element\ContainerElementView {
 
 	/**
 	 * Constructor
 	 *
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Form $model, $spaces = 0) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Form $model, $spaces = 0) {
 		parent::__construct($model, $spaces);
 	}
 
@@ -48,5 +50,6 @@ class tx_form_View_Mail_Plain extends tx_form_View_Mail_Plain_Element_Container 
 	}
 
 }
+
 
 ?>

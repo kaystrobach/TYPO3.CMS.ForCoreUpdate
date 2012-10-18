@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,12 +34,12 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_AbstractRepository {
+class StorageRepository extends \TYPO3\CMS\Core\Resource\AbstractRepository {
 
 	/**
 	 * @var string
 	 */
-	protected $objectType = 't3lib_file_Storage';
+	protected $objectType = 'TYPO3\\CMS\\Core\\Resource\\ResourceStorage';
 
 	/**
 	 * @var string
@@ -136,12 +138,13 @@ class t3lib_file_Repository_StorageRepository extends t3lib_file_Repository_Abst
 	 * Creates an object managed by this repository.
 	 *
 	 * @param array $databaseRow
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected function createDomainObject(array $databaseRow) {
 		return $this->factory->getStorageObject($databaseRow['uid'], $databaseRow);
 	}
 
 }
+
 
 ?>

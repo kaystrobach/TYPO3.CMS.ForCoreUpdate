@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_UserInternal extends tslib_content_Abstract {
+class UserInternalContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, USER_INT
@@ -40,7 +42,7 @@ class tslib_content_UserInternal extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-		$this->cObj->setUserObjectType(tslib_cObj::OBJECTTYPE_USER_INT);
+		$this->cObj->setUserObjectType(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::OBJECTTYPE_USER_INT);
 		$substKey = 'INT_SCRIPT.' . $GLOBALS['TSFE']->uniqueHash();
 		$content = ('<!--' . $substKey) . '-->';
 		$includeLibs = isset($conf['includeLibs.']) ? $this->cObj->stdWrap($conf['includeLibs'], $conf['includeLibs.']) : $conf['includeLibs'];
@@ -55,5 +57,6 @@ class tslib_content_UserInternal extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

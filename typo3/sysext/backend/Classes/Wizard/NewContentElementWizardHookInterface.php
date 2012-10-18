@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Wizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,16 +33,17 @@
  * @package TYPO3
  * @subpackage cms
  */
-interface cms_newContentElementWizardsHook
+interface NewContentElementWizardHookInterface
 {
 	/**
 	 * Modifies WizardItems array
 	 *
 	 * @param array $wizardItems Array of Wizard Items
-	 * @param SC_db_new_content_el $parentObject Parent object New Content element wizard
+	 * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController $parentObject Parent object New Content element wizard
 	 * @return void
 	 */
 	public function manipulateWizardItems(&$wizardItems, &$parentObject);
 
 }
+
 ?>

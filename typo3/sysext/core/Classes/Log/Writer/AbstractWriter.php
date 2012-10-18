@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Writer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_log_writer_Abstract implements t3lib_log_writer_Writer {
+abstract class AbstractWriter implements \TYPO3\CMS\Core\Log\Writer\Writer {
 
 	/**
 	 * Constructs this log writer
@@ -42,11 +44,12 @@ abstract class t3lib_log_writer_Abstract implements t3lib_log_writer_Writer {
 			if (method_exists($this, $methodName)) {
 				$this->{$methodName}($optionValue);
 			} else {
-				throw new InvalidArgumentException(((('Invalid log writer option "' . $optionKey) . '" for log writer of type "') . get_class($this)) . '"', 1321696151);
+				throw new \InvalidArgumentException(((('Invalid log writer option "' . $optionKey) . '" for log writer of type "') . get_class($this)) . '"', 1321696151);
 			}
 		}
 	}
 
 }
+
 
 ?>

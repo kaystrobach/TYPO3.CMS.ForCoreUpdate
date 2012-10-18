@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class for rendering the login form
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_index {
+class LoginController {
 
 	const SIGNAL_RenderLoginForm = 'renderLoginForm';
 	// Internal, GPvars:
@@ -99,7 +101,7 @@ class SC_index {
 	public $loginSecurityLevel = 'superchallenged';
 
 	/**
-	 * @var Tx_Extbase_SignalSlot_Dispatcher
+	 * @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
 	 */
 	protected $signalSlotDispatcher;
 
@@ -112,38 +114,39 @@ class SC_index {
 	public function init() {
 		// We need a PHP session session for most login levels
 		session_start();
-		$this->redirect_url = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('redirect_url'));
-		$this->GPinterface = t3lib_div::_GP('interface');
+		$this->redirect_url = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect_url'));
+		$this->GPinterface = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('interface');
 		// Grabbing preset username and password, for security reasons this feature only works if SSL is used
-		if (t3lib_div::getIndpEnv('TYPO3_SSL')) {
-			$this->u = t3lib_div::_GP('u');
-			$this->p = t3lib_div::_GP('p');
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
+			$this->u = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('u');
+			$this->p = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('p');
 		}
 		// If "L" is "OUT", then any logged in is logged out. If redirect_url is given, we redirect to it
-		$this->L = t3lib_div::_GP('L');
+		$this->L = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('L');
 		// Login
-		$this->loginRefresh = t3lib_div::_GP('loginRefresh');
+		$this->loginRefresh = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('loginRefresh');
 		// Value of "Login" button. If set, the login button was pressed.
-		$this->commandLI = t3lib_div::_GP('commandLI');
+		$this->commandLI = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('commandLI');
 		// Sets the level of security from conf vars
 		if ($GLOBALS['TYPO3_CONF_VARS']['BE']['loginSecurityLevel']) {
 			$this->loginSecurityLevel = $GLOBALS['TYPO3_CONF_VARS']['BE']['loginSecurityLevel'];
 		}
 		// Try to get the preferred browser language
-		$preferredBrowserLanguage = $GLOBALS['LANG']->csConvObj->getPreferredClientLanguage(t3lib_div::getIndpEnv('HTTP_ACCEPT_LANGUAGE'));
+		$preferredBrowserLanguage = $GLOBALS['LANG']->csConvObj->getPreferredClientLanguage(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_ACCEPT_LANGUAGE'));
 		// If we found a $preferredBrowserLanguage and it is not the default language and no be_user is logged in
 		// initialize $GLOBALS['LANG'] again with $preferredBrowserLanguage
 		if ($preferredBrowserLanguage != 'default' && !$GLOBALS['BE_USER']->user['uid']) {
 			$GLOBALS['LANG']->init($preferredBrowserLanguage);
 		}
-		$GLOBALS['LANG']->includeLLFile('EXT:lang/locallang_login.xml');
+		// TODO reenable
+		//$GLOBALS['LANG']->includeLLFile('EXT:lang/locallang_login.xml');
 		// Setting the redirect URL to "backend.php" if no alternative input is given
 		$this->redirectToURL = $this->redirect_url ? $this->redirect_url : 'backend.php';
 		// Do a logout if the command is set
 		if ($this->L == 'OUT' && is_object($GLOBALS['BE_USER'])) {
 			$GLOBALS['BE_USER']->logoff();
 			if ($this->redirect_url) {
-				t3lib_utility_Http::redirect($this->redirect_url);
+				\TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->redirect_url);
 			}
 			die;
 		}
@@ -210,7 +213,7 @@ class SC_index {
 	 * @todo Define visibility
 	 */
 	public function makeLoginForm() {
-		$content = t3lib_parsehtml::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###LOGIN_FORM###');
+		$content = \TYPO3\CMS\Core\Html\HtmlParser::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###LOGIN_FORM###');
 		$markers = array(
 			'VALUE_USERNAME' => htmlspecialchars($this->u),
 			'VALUE_PASSWORD' => htmlspecialchars($this->p),
@@ -218,7 +221,7 @@ class SC_index {
 		);
 		// Show an error message if the login command was successful already, otherwise remove the subpart
 		if (!$this->isLoginInProgress()) {
-			$content = t3lib_parsehtml::substituteSubpart($content, '###LOGIN_ERROR###', '');
+			$content = \TYPO3\CMS\Core\Html\HtmlParser::substituteSubpart($content, '###LOGIN_ERROR###', '');
 		} else {
 			$markers['ERROR_MESSAGE'] = $GLOBALS['LANG']->getLL('error.login', TRUE);
 			$markers['ERROR_LOGIN_TITLE'] = $GLOBALS['LANG']->getLL('error.login.title', TRUE);
@@ -226,12 +229,12 @@ class SC_index {
 		}
 		// Remove the interface selector markers if it's not available
 		if (!($this->interfaceSelector && !$this->loginRefresh)) {
-			$content = t3lib_parsehtml::substituteSubpart($content, '###INTERFACE_SELECTOR###', '');
+			$content = \TYPO3\CMS\Core\Html\HtmlParser::substituteSubpart($content, '###INTERFACE_SELECTOR###', '');
 		} else {
 			$markers['LABEL_INTERFACE'] = $GLOBALS['LANG']->getLL('labels.interface', TRUE);
 			$markers['VALUE_INTERFACE'] = $this->interfaceSelector;
 		}
-		return t3lib_parsehtml::substituteMarkerArray($content, $markers, '###|###');
+		return \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($content, $markers, '###|###');
 	}
 
 	/**
@@ -242,7 +245,7 @@ class SC_index {
 	 * @todo Define visibility
 	 */
 	public function makeLogoutForm() {
-		$content = t3lib_parsehtml::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###LOGOUT_FORM###');
+		$content = \TYPO3\CMS\Core\Html\HtmlParser::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###LOGOUT_FORM###');
 		$markers = array(
 			'LABEL_USERNAME' => $GLOBALS['LANG']->getLL('labels.username', TRUE),
 			'VALUE_USERNAME' => htmlspecialchars($GLOBALS['BE_USER']->user['username']),
@@ -250,12 +253,12 @@ class SC_index {
 		);
 		// Remove the interface selector markers if it's not available
 		if (!$this->interfaceSelector_jump) {
-			$content = t3lib_parsehtml::substituteSubpart($content, '###INTERFACE_SELECTOR###', '');
+			$content = \TYPO3\CMS\Core\Html\HtmlParser::substituteSubpart($content, '###INTERFACE_SELECTOR###', '');
 		} else {
 			$markers['LABEL_INTERFACE'] = $GLOBALS['LANG']->getLL('labels.interface', TRUE);
 			$markers['VALUE_INTERFACE'] = $this->interfaceSelector_jump;
 		}
-		return t3lib_parsehtml::substituteMarkerArray($content, $markers, '###|###');
+		return \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($content, $markers, '###|###');
 	}
 
 	/**
@@ -266,14 +269,14 @@ class SC_index {
 	 * @todo Define visibility
 	 */
 	public function wrapLoginForm($content) {
-		$mainContent = t3lib_parsehtml::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###PAGE###');
+		$mainContent = \TYPO3\CMS\Core\Html\HtmlParser::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###PAGE###');
 		if ($GLOBALS['TBE_STYLES']['logo_login']) {
 			$logo = ('<img src="' . htmlspecialchars(($GLOBALS['BACK_PATH'] . $GLOBALS['TBE_STYLES']['logo_login']))) . '" alt="" />';
 		} else {
-			$logo = ('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/typo3logo.gif', 'width="123" height="34"')) . ' alt="" />';
+			$logo = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/typo3logo.gif', 'width="123" height="34"')) . ' alt="" />';
 		}
-		/** @var $browserWarning t3lib_FlashMessage */
-		$browserWarning = t3lib_div::makeInstance('t3lib_FlashMessage', ($GLOBALS['LANG']->getLL('warning.incompatibleBrowser') . ' ') . $GLOBALS['LANG']->getLL('warning.incompatibleBrowserInternetExplorer'), $GLOBALS['LANG']->getLL('warning.incompatibleBrowserHeadline'), t3lib_FlashMessage::ERROR);
+		/** @var $browserWarning \TYPO3\CMS\Core\Messaging\FlashMessage */
+		$browserWarning = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', ($GLOBALS['LANG']->getLL('warning.incompatibleBrowser') . ' ') . $GLOBALS['LANG']->getLL('warning.incompatibleBrowserInternetExplorer'), $GLOBALS['LANG']->getLL('warning.incompatibleBrowserHeadline'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 		$browserWarning = $browserWarning->render();
 		$additionalCssClasses = array();
 		if ($this->isLoginInProgress()) {
@@ -289,7 +292,7 @@ class SC_index {
 			'NEWS' => $this->makeLoginNews(),
 			'COPYRIGHT' => $this->makeCopyrightNotice(),
 			'CSS_CLASSES' => !empty($additionalCssClasses) ? ('class="' . implode(' ', $additionalCssClasses)) . '"' : '',
-			'CSS_OPENIDCLASS' => 't3-login-openid-' . (t3lib_extMgm::isLoaded('openid') ? 'enabled' : 'disabled'),
+			'CSS_OPENIDCLASS' => 't3-login-openid-' . (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('openid') ? 'enabled' : 'disabled'),
 			// The labels will be replaced later on, thus the other parts above
 			// can use these markers as well and it will be replaced
 			'HEADLINE' => $GLOBALS['LANG']->getLL('headline', TRUE),
@@ -316,7 +319,7 @@ class SC_index {
 			'SITENAME' => htmlspecialchars($GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'])
 		);
 		$this->emitRenderLoginFormSignal($markers);
-		return t3lib_parsehtml::substituteMarkerArray($mainContent, $markers, '###|###');
+		return \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($mainContent, $markers, '###|###');
 	}
 
 	/**
@@ -330,11 +333,11 @@ class SC_index {
 		// If a user is logged in AND a) if either the login is just done (isLoginInProgress) or b) a loginRefresh is done or c) the interface-selector is NOT enabled (If it is on the other hand, it should not just load an interface, because people has to choose then...)
 		if ($GLOBALS['BE_USER']->user['uid'] && (($this->isLoginInProgress() || $this->loginRefresh) || !$this->interfaceSelector)) {
 			// If no cookie has been set previously we tell people that this is a problem. This assumes that a cookie-setting script (like this one) has been hit at least once prior to this instance.
-			if (!$_COOKIE[t3lib_beUserAuth::getCookieName()]) {
+			if (!$_COOKIE[\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::getCookieName()]) {
 				if ($this->commandLI == 'setCookie') {
 					// we tried it a second time but still no cookie
 					// 26/4 2005: This does not work anymore, because the saving of challenge values in $_SESSION means the system will act as if the password was wrong.
-					throw new RuntimeException('Login-error: Yeah, that\'s a classic. No cookies, no TYPO3.<br /><br />Please accept cookies from TYPO3 - otherwise you\'ll not be able to use the system.', 1294586846);
+					throw new \RuntimeException('Login-error: Yeah, that\'s a classic. No cookies, no TYPO3.<br /><br />Please accept cookies from TYPO3 - otherwise you\'ll not be able to use the system.', 1294586846);
 				} else {
 					// try it once again - that might be needed for auto login
 					$this->redirectToURL = 'index.php?commandLI=setCookie';
@@ -358,12 +361,12 @@ class SC_index {
 				$this->redirectToURL = '../';
 				break;
 			}
-			/** @var $formProtection t3lib_formprotection_BackendFormProtection */
-			$formProtection = t3lib_formprotection_Factory::get();
+			/** @var $formProtection \TYPO3\CMS\Core\FormProtection\BackendFormProtection */
+			$formProtection = \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get();
 			// If there is a redirect URL AND if loginRefresh is not set...
 			if (!$this->loginRefresh) {
 				$formProtection->storeSessionTokenInRegistry();
-				t3lib_utility_Http::redirect($this->redirectToURL);
+				\TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->redirectToURL);
 			} else {
 				$formProtection->setSessionTokenFromRegistry();
 				$formProtection->persistSessionToken();
@@ -397,7 +400,7 @@ class SC_index {
 		$this->interfaceSelector_jump = '';
 		// If interfaces are defined AND no input redirect URL in GET vars:
 		if ($GLOBALS['TYPO3_CONF_VARS']['BE']['interfaces'] && ($this->isLoginInProgress() || !$this->redirect_url)) {
-			$parts = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['BE']['interfaces']);
+			$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['BE']['interfaces']);
 			// Only if more than one interface is defined will we show the selector:
 			if (count($parts) > 1) {
 				// Initialize:
@@ -412,7 +415,7 @@ class SC_index {
 				// Traverse the interface keys:
 				foreach ($parts as $valueStr) {
 					$this->interfaceSelector .= ((((('
-							<option value="' . htmlspecialchars($valueStr)) . '"') . (t3lib_div::_GP('interface') == htmlspecialchars($valueStr) ? ' selected="selected"' : '')) . '>') . htmlspecialchars($labels[$valueStr])) . '</option>';
+							<option value="' . htmlspecialchars($valueStr)) . '"') . (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('interface') == htmlspecialchars($valueStr) ? ' selected="selected"' : '')) . '>') . htmlspecialchars($labels[$valueStr])) . '</option>';
 					$this->interfaceSelector_jump .= ((('
 							<option value="' . htmlspecialchars($jumpScript[$valueStr])) . '">') . htmlspecialchars($labels[$valueStr])) . '</option>';
 				}
@@ -467,12 +470,12 @@ class SC_index {
 		$loginboxImage = '';
 		// Look for rotation image folder:
 		if ($GLOBALS['TBE_STYLES']['loginBoxImage_rotationFolder']) {
-			$absPath = t3lib_div::resolveBackPath(PATH_typo3 . $GLOBALS['TBE_STYLES']['loginBoxImage_rotationFolder']);
+			$absPath = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath(PATH_typo3 . $GLOBALS['TBE_STYLES']['loginBoxImage_rotationFolder']);
 			// Get rotation folder:
-			$dir = t3lib_div::getFileAbsFileName($absPath);
+			$dir = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($absPath);
 			if ($dir && @is_dir($dir)) {
 				// Get files for rotation into array:
-				$files = t3lib_div::getFilesInDir($dir, 'png,jpg,gif');
+				$files = \TYPO3\CMS\Core\Utility\GeneralUtility::getFilesInDir($dir, 'png,jpg,gif');
 				// Pick random file:
 				$randImg = array_rand($files, 1);
 				// Get size of random file:
@@ -493,7 +496,7 @@ class SC_index {
 				$loginImage = 'loginbox_image.jpg';
 				$imagecopy = 'Photo by J.C. Franca (www.digitalphoto.com.br)';
 			}
-			$loginboxImage = ((((('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], ('gfx/' . $loginImage), 'width="200" height="133"')) . ' id="loginbox-image" alt="') . $imagecopy) . '" title="') . $imagecopy) . '" />';
+			$loginboxImage = ((((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], ('gfx/' . $loginImage), 'width="200" height="133"')) . ' id="loginbox-image" alt="') . $imagecopy) . '" title="') . $imagecopy) . '" />';
 		}
 		// Return image tag:
 		return $loginboxImage;
@@ -511,12 +514,12 @@ class SC_index {
 		$newsContent = '';
 		$systemNews = $this->getSystemNews();
 		// Traverse news array IF there are records in it:
-		if ((is_array($systemNews) && count($systemNews)) && !t3lib_div::_GP('loginRefresh')) {
-			/** @var $htmlParser t3lib_parsehtml_proc */
-			$htmlParser = t3lib_div::makeInstance('t3lib_parsehtml_proc');
+		if ((is_array($systemNews) && count($systemNews)) && !\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('loginRefresh')) {
+			/** @var $htmlParser \TYPO3\CMS\Core\Html\RteHtmlParser */
+			$htmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\RteHtmlParser');
 			// Get the main news template, and replace the subpart after looped through
-			$newsContent = t3lib_parsehtml::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###LOGIN_NEWS###');
-			$newsItemTemplate = t3lib_parsehtml::getSubpart($newsContent, '###NEWS_ITEM###');
+			$newsContent = \TYPO3\CMS\Core\Html\HtmlParser::getSubpart($GLOBALS['TBE_TEMPLATE']->moduleTemplate, '###LOGIN_NEWS###');
+			$newsItemTemplate = \TYPO3\CMS\Core\Html\HtmlParser::getSubpart($newsContent, '###NEWS_ITEM###');
 			$newsItem = '';
 			$count = 1;
 			foreach ($systemNews as $newsItemData) {
@@ -534,11 +537,11 @@ class SC_index {
 					'###CLASS###' => $additionalClass
 				);
 				$count++;
-				$newsItem .= t3lib_parsehtml::substituteMarkerArray($newsItemTemplate, $newsItemMarker);
+				$newsItem .= \TYPO3\CMS\Core\Html\HtmlParser::substituteMarkerArray($newsItemTemplate, $newsItemMarker);
 			}
 			$title = $GLOBALS['TYPO3_CONF_VARS']['BE']['loginNewsTitle'] ? $GLOBALS['TYPO3_CONF_VARS']['BE']['loginNewsTitle'] : $GLOBALS['LANG']->getLL('newsheadline');
-			$newsContent = t3lib_parsehtml::substituteMarker($newsContent, '###NEWS_HEADLINE###', htmlspecialchars($title));
-			$newsContent = t3lib_parsehtml::substituteSubpart($newsContent, '###NEWS_ITEM###', $newsItem);
+			$newsContent = \TYPO3\CMS\Core\Html\HtmlParser::substituteMarker($newsContent, '###NEWS_HEADLINE###', htmlspecialchars($title));
+			$newsContent = \TYPO3\CMS\Core\Html\HtmlParser::substituteSubpart($newsContent, '###NEWS_ITEM###', $newsItem);
 		}
 		return $newsContent;
 	}
@@ -552,7 +555,7 @@ class SC_index {
 	protected function getSystemNews() {
 		$systemNewsTable = 'sys_news';
 		$systemNews = array();
-		$systemNewsRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('title, content, crdate', $systemNewsTable, ('1=1' . t3lib_BEfunc::BEenableFields($systemNewsTable)) . t3lib_BEfunc::deleteClause($systemNewsTable), '', 'crdate DESC');
+		$systemNewsRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('title, content, crdate', $systemNewsTable, ('1=1' . \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($systemNewsTable)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($systemNewsTable), '', 'crdate DESC');
 		foreach ($systemNewsRecords as $systemNewsRecord) {
 			$systemNews[] = array(
 				'date' => date($GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'], $systemNewsRecord['crdate']),
@@ -579,7 +582,7 @@ class SC_index {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/index.php']['loginFormHook'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/index.php']['loginFormHook'] as $function) {
 				$params = array();
-				$formCode = t3lib_div::callUserFunction($function, $params, $this);
+				$formCode = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($function, $params, $this);
 				if ($formCode) {
 					$form = $formCode;
 					break;
@@ -601,7 +604,7 @@ class SC_index {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/index.php']['loginScriptHook'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/index.php']['loginScriptHook'] as $function) {
 				$params = array();
-				$JSCode = t3lib_div::callUserFunction($function, $params, $this);
+				$JSCode = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($function, $params, $this);
 				if ($JSCode) {
 					break;
 				}
@@ -685,7 +688,7 @@ class SC_index {
 	 * @return boolean
 	 */
 	protected function isLoginInProgress() {
-		$username = t3lib_div::_GP('username');
+		$username = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('username');
 		return !(empty($username) && empty($this->commandLI));
 	}
 
@@ -696,17 +699,17 @@ class SC_index {
 	 * @return void
 	 */
 	protected function emitRenderLoginFormSignal(array &$markers) {
-		$this->getSignalSlotDispatcher()->dispatch('SC_index', self::SIGNAL_RenderLoginForm, array($this, $markers));
+		$this->getSignalSlotDispatcher()->dispatch('TYPO3\\CMS\\Backend\\Controller\\LoginController', self::SIGNAL_RenderLoginForm, array($this, $markers));
 	}
 
 	/**
 	 * Get the SignalSlot dispatcher
 	 *
-	 * @return Tx_Extbase_SignalSlot_Dispatcher
+	 * @return \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
 	 */
 	protected function getSignalSlotDispatcher() {
 		if (!isset($this->signalSlotDispatcher)) {
-			$this->signalSlotDispatcher = $this->getObjectManager()->get('Tx_Extbase_SignalSlot_Dispatcher');
+			$this->signalSlotDispatcher = $this->getObjectManager()->get('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
 		}
 		return $this->signalSlotDispatcher;
 	}
@@ -714,12 +717,13 @@ class SC_index {
 	/**
 	 * Get the ObjectManager
 	 *
-	 * @return Tx_Extbase_Object_ObjectManager
+	 * @return \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected function getObjectManager() {
-		return t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 	}
 
 }
+
 
 ?>

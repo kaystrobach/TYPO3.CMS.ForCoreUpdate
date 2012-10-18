@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Aboutmodules\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage aboutmodules
  */
-class Tx_Aboutmodules_Controller_ModulesController extends Tx_Extbase_MVC_Controller_ActionController {
+class ModulesController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
 	 * Show general information and the installed modules
@@ -42,7 +44,7 @@ class Tx_Aboutmodules_Controller_ModulesController extends Tx_Extbase_MVC_Contro
 	 * @return void
 	 */
 	public function indexAction() {
-		$this->view->assign('TYPO3Version', TYPO3_version)->assign('copyRightNotice', t3lib_BEfunc::TYPO3_copyRightNotice())->assign('warningMessages', t3lib_BEfunc::displayWarningMessages())->assign('modules', $this->getModulesData());
+		$this->view->assign('TYPO3Version', TYPO3_version)->assign('copyRightNotice', \TYPO3\CMS\Backend\Utility\BackendUtility::TYPO3_copyRightNotice())->assign('warningMessages', \TYPO3\CMS\Backend\Utility\BackendUtility::displayWarningMessages())->assign('modules', $this->getModulesData());
 	}
 
 	/**
@@ -52,8 +54,8 @@ class Tx_Aboutmodules_Controller_ModulesController extends Tx_Extbase_MVC_Contro
 	 * @return array
 	 */
 	protected function getModulesData() {
-		/** @var $loadedModules t3lib_loadModules */
-		$loadedModules = t3lib_div::makeInstance('t3lib_loadModules');
+		/** @var $loadedModules \TYPO3\CMS\Backend\Module\ModuleLoader */
+		$loadedModules = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 		$loadedModules->observeWorkspaces = TRUE;
 		$loadedModules->load($GLOBALS['TBE_MODULES']);
 		$mainModulesData = array();
@@ -94,5 +96,6 @@ class Tx_Aboutmodules_Controller_ModulesController extends Tx_Extbase_MVC_Contro
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Optgroup extends tx_form_Domain_Model_Element_Container {
+class OptgroupElement extends \TYPO3\CMS\Form\Domain\Model\Element\ContainerElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -56,11 +58,11 @@ class tx_form_Domain_Model_Element_Optgroup extends tx_form_Domain_Model_Element
 	 * Set the name of the parent object
 	 *
 	 * @param string $parentName Name of the parent
-	 * @return tx_form_Domain_Model_Element_Optgroup The element object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\OptgroupElement The element object
 	 * @see tx_form_Domain_Model_Element::setParent()
 	 */
 	public function setParentName($parentName) {
-		/** @var $element tx_form_Domain_Model_Element_Option */
+		/** @var $element \TYPO3\CMS\Form\Domain\Model\Element\OptionElement */
 		foreach ($this->elements as $element) {
 			$element->setParentName($parentName);
 		}
@@ -70,14 +72,15 @@ class tx_form_Domain_Model_Element_Optgroup extends tx_form_Domain_Model_Element
 	/**
 	 * Add child object to this element
 	 *
-	 * @param tx_form_Domain_Model_Element_Option $element The child object
-	 * @return tx_form_Domain_Model_Element_Optgroup
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\OptionElement $element The child object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\OptgroupElement
 	 */
-	public function addElement(tx_form_Domain_Model_Element_Option $element) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Element\OptionElement $element) {
 		$this->elements[] = $element;
 		return $this;
 	}
 
 }
+
 
 ?>

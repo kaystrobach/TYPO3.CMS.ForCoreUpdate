@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject\Menu;
+
 /**
  * Extension class creating graphic based menus (PNG or GIF files)
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_gmenu extends tslib_menu {
+class GraphicalMenuContentObject extends \TYPO3\CMS\Frontend\ContentObject\Menu\AbstractMenuContentObject {
 
 	/**
 	 * Calls procesItemStates() so that the common configuration for the menu items are resolved into individual configuration per item.
@@ -73,19 +75,19 @@ class tslib_gmenu extends tslib_menu {
 			$Wcounter = 0;
 			$Hobjs = $this->mconf['applyTotalH'];
 			if ($Hobjs) {
-				$Hobjs = t3lib_div::intExplode(',', $Hobjs);
+				$Hobjs = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $Hobjs);
 			}
 			$Wobjs = $this->mconf['applyTotalW'];
 			if ($Wobjs) {
-				$Wobjs = t3lib_div::intExplode(',', $Wobjs);
+				$Wobjs = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $Wobjs);
 			}
 			$minDim = $this->mconf['min'];
 			if ($minDim) {
-				$minDim = tslib_cObj::calcIntExplode(',', $minDim . ',');
+				$minDim = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::calcIntExplode(',', $minDim . ',');
 			}
 			$maxDim = $this->mconf['max'];
 			if ($maxDim) {
-				$maxDim = tslib_cObj::calcIntExplode(',', $maxDim . ',');
+				$maxDim = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::calcIntExplode(',', $maxDim . ',');
 			}
 			if ($minDim) {
 				$conf[$items] = $conf[$items - 1];
@@ -106,7 +108,7 @@ class tslib_gmenu extends tslib_menu {
 			if ($items == $c + 1 && $minDim) {
 				$Lobjs = $this->mconf['removeObjectsOfDummy'];
 				if ($Lobjs) {
-					$Lobjs = t3lib_div::intExplode(',', $Lobjs);
+					$Lobjs = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $Lobjs);
 					foreach ($Lobjs as $remItem) {
 						unset($val[$remItem]);
 						unset($val[$remItem . '.']);
@@ -130,7 +132,7 @@ class tslib_gmenu extends tslib_menu {
 			$c++;
 			if ($isGD) {
 				// Pre-working the item
-				$gifCreator = t3lib_div::makeInstance('tslib_gifBuilder');
+				$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder');
 				$gifCreator->init();
 				$gifCreator->start($val, $this->menuArr[$key]);
 				// If useLargestItemH/W is specified
@@ -144,7 +146,7 @@ class tslib_gmenu extends tslib_menu {
 					}
 					// Regenerate the new values...
 					$val['XY'] = implode(',', $tempXY);
-					$gifCreator = t3lib_div::makeInstance('tslib_gifBuilder');
+					$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder');
 					$gifCreator->init();
 					$gifCreator->start($val, $this->menuArr[$key]);
 				}
@@ -165,7 +167,7 @@ class tslib_gmenu extends tslib_menu {
 					}
 					// Regenerate the new values...
 					$val['XY'] = implode(',', $tempXY);
-					$gifCreator = t3lib_div::makeInstance('tslib_gifBuilder');
+					$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder');
 					$gifCreator->init();
 					$gifCreator->start($val, $this->menuArr[$key]);
 				}
@@ -182,7 +184,7 @@ class tslib_gmenu extends tslib_menu {
 					}
 					if ($maxFlag) {
 						$val['XY'] = implode(',', $tempXY);
-						$gifCreator = t3lib_div::makeInstance('tslib_gifBuilder');
+						$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder');
 						$gifCreator->init();
 						$gifCreator->start($val, $this->menuArr[$key]);
 					}
@@ -209,7 +211,7 @@ class tslib_gmenu extends tslib_menu {
 			$gifFileName = '';
 			if ($conf[$key]['altImgResource'] || is_array($conf[$key]['altImgResource.'])) {
 				if (!is_object($cObj)) {
-					$cObj = t3lib_div::makeInstance('tslib_cObj');
+					$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 				}
 				$cObj->start($this->menuArr[$key], 'pages');
 				$altImgInfo = $cObj->getImgResource($conf[$key]['altImgResource'], $conf[$key]['altImgResource.']);
@@ -237,7 +239,7 @@ class tslib_gmenu extends tslib_menu {
 				$gifCreator->output($this->result[$resKey][$key]['output_file']);
 				$gifCreator->destroy();
 			}
-			$this->result[$resKey][$key]['output_file'] = t3lib_div::png_to_gif_by_imagemagick($this->result[$resKey][$key]['output_file']);
+			$this->result[$resKey][$key]['output_file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::png_to_gif_by_imagemagick($this->result[$resKey][$key]['output_file']);
 			// counter is increased
 			$Hcounter += $this->result[$resKey][$key]['output_h'];
 			// counter is increased
@@ -280,7 +282,7 @@ class tslib_gmenu extends tslib_menu {
 			if ($items == $c + 1 && $minDim) {
 				$Lobjs = $this->mconf['removeObjectsOfDummy'];
 				if ($Lobjs) {
-					$Lobjs = t3lib_div::intExplode(',', $Lobjs);
+					$Lobjs = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $Lobjs);
 					foreach ($Lobjs as $remItem) {
 						unset($val[$remItem]);
 						unset($val[$remItem . '.']);
@@ -302,7 +304,7 @@ class tslib_gmenu extends tslib_menu {
 				}
 			}
 			$c++;
-			$gifCreator = t3lib_div::makeInstance('tslib_gifBuilder');
+			$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder');
 			$gifCreator->init();
 			$gifCreator->start($val, $this->menuArr[$key]);
 			if ($maxDim) {
@@ -317,7 +319,7 @@ class tslib_gmenu extends tslib_menu {
 				}
 				if ($maxFlag) {
 					$val['XY'] = implode(',', $tempXY);
-					$gifCreator = t3lib_div::makeInstance('tslib_gifBuilder');
+					$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder');
 					$gifCreator->init();
 					$gifCreator->start($val, $this->menuArr[$key]);
 				}
@@ -349,7 +351,7 @@ class tslib_gmenu extends tslib_menu {
 	public function writeMenu() {
 		if (((is_array($this->menuArr) && is_array($this->result)) && count($this->result)) && is_array($this->result['NO'])) {
 			// Create new tslib_cObj for our use
-			$this->WMcObj = t3lib_div::makeInstance('tslib_cObj');
+			$this->WMcObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 			$this->WMresult = '';
 			$this->INPfixMD5 = substr(md5(microtime() . $this->GMENU_fixKey), 0, 4);
 			$this->WMmenuItems = count($this->result['NO']);
@@ -414,7 +416,7 @@ class tslib_gmenu extends tslib_menu {
 						$this->I['A1'] = '';
 						$this->I['A2'] = '';
 					}
-					$this->I['IMG'] = ((((((((((('<img src="' . $GLOBALS['TSFE']->absRefPrefix) . $this->I['val']['output_file']) . '" width="') . $this->I['val']['output_w']) . '" height="') . $this->I['val']['output_h']) . '" ') . tslib_cObj::getBorderAttr('border="0"')) . ($this->mconf['disableAltText'] ? '' : (' alt="' . htmlspecialchars($this->I['altText'])) . '"')) . $this->I['name']) . ($this->I['val']['imgParams'] ? ' ' . $this->I['val']['imgParams'] : '')) . ' />';
+					$this->I['IMG'] = ((((((((((('<img src="' . $GLOBALS['TSFE']->absRefPrefix) . $this->I['val']['output_file']) . '" width="') . $this->I['val']['output_w']) . '" height="') . $this->I['val']['output_h']) . '" ') . \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getBorderAttr('border="0"')) . ($this->mconf['disableAltText'] ? '' : (' alt="' . htmlspecialchars($this->I['altText'])) . '"')) . $this->I['name']) . ($this->I['val']['imgParams'] ? ' ' . $this->I['val']['imgParams'] : '')) . ' />';
 					// Make before, middle and after parts
 					$this->I['parts'] = array();
 					$this->I['parts']['ATag_begin'] = $this->I['A1'];
@@ -538,5 +540,6 @@ class tslib_gmenu extends tslib_menu {
 	}
 
 }
+
 
 ?>

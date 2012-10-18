@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Editable
+interface EditableCollectionInterface
 {
 	/**
 	 * Adds on entry to the collection
@@ -44,10 +46,10 @@ interface t3lib_collection_Editable
 	/**
 	 * Adds a set of entries to the collection
 	 *
-	 * @param t3lib_collection_Collection $other
+	 * @param \TYPO3\CMS\Core\Collection\CollectionInterface $other
 	 * @return void
 	 */
-	public function addAll(t3lib_collection_Collection $other);
+	public function addAll(\TYPO3\CMS\Core\Collection\CollectionInterface $other);
 
 	/**
 	 * Remove the given entry from collection
@@ -69,4 +71,5 @@ interface t3lib_collection_Editable
 	public function removeAll();
 
 }
+
 ?>

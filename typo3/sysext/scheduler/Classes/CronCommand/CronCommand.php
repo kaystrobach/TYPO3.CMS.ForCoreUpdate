@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\CronCommand;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_scheduler
  */
-class tx_scheduler_CronCmd {
+class CronCommand {
 
 	/**
 	 * Normalized sections of the cron command.
@@ -61,12 +63,12 @@ class tx_scheduler_CronCmd {
 	 * @api
 	 * @param string $cronCommand The cron command can hold any combination documented as valid
 	 * @param bool|int $timestamp Optional start time, used in unit tests
-	 * @return tx_scheduler_CronCmd
+	 * @return \TYPO3\CMS\Scheduler\CronCommand\CronCommand
 	 */
 	public function __construct($cronCommand, $timestamp = FALSE) {
-		$cronCommand = tx_scheduler_CronCmd_Normalize::normalize($cronCommand);
+		$cronCommand = \TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand::normalize($cronCommand);
 		// Explode cron command to sections
-		$this->cronCommandSections = t3lib_div::trimExplode(' ', $cronCommand);
+		$this->cronCommandSections = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $cronCommand);
 		// Initialize the values with the starting time
 		// This takes care that the calculated time is always in the future
 		if ($timestamp === FALSE) {
@@ -92,7 +94,7 @@ class tx_scheduler_CronCmd {
 			// If there was no match within two days, cron command is invalid.
 			// The second day is needed to catch the summertime leap in some countries.
 			if ($loopCount > 2880) {
-				throw new RuntimeException('Unable to determine next execution timestamp: Hour and minute combination is invalid.', 1291494126);
+				throw new \RuntimeException('Unable to determine next execution timestamp: Hour and minute combination is invalid.', 1291494126);
 			}
 			if ($this->minuteAndHourMatchesCronCommand($newTimestamp)) {
 				break;
@@ -106,7 +108,7 @@ class tx_scheduler_CronCmd {
 			// sure leap year cron command configuration are caught.
 			// If the loop runs longer than that, the cron command is invalid.
 			if ($loopCount > 1464) {
-				throw new RuntimeException('Unable to determine next execution timestamp: Day of month, month and day of week combination is invalid.', 1291501280);
+				throw new \RuntimeException('Unable to determine next execution timestamp: Day of month, month and day of week combination is invalid.', 1291501280);
 			}
 			if ($this->dayMatchesCronCommand($newTimestamp)) {
 				break;
@@ -195,7 +197,7 @@ class tx_scheduler_CronCmd {
 		if ((string) $commandExpression === '*') {
 			$inList = TRUE;
 		} else {
-			$inList = t3lib_div::inList($commandExpression, $numberToMatch);
+			$inList = \TYPO3\CMS\Core\Utility\GeneralUtility::inList($commandExpression, $numberToMatch);
 		}
 		return $inList;
 	}
@@ -231,5 +233,6 @@ class tx_scheduler_CronCmd {
 	}
 
 }
+
 
 ?>

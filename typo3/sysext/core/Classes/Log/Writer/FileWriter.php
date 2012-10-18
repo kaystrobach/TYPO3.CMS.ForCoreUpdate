@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Writer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
+class FileWriter extends \TYPO3\CMS\Core\Log\Writer\AbstractWriter {
 
 	/**
 	 * Log file path, relative to PATH_site
@@ -60,7 +62,7 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	 * Constructor, opens the log file handle
 	 *
 	 * @param array $options
-	 * @return t3lib_log_writer_File
+	 * @return \TYPO3\CMS\Core\Log\Writer\FileWriter
 	 */
 	public function __construct(array $options = array()) {
 		// the parent constructor reads $options and sets them
@@ -81,7 +83,7 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	 * Sets the path to the log file.
 	 *
 	 * @param string $logFile path to the log file, relative to PATH_site
-	 * @return t3lib_log_writer_Writer
+	 * @return \TYPO3\CMS\Core\Log\Writer\Writer
 	 * @throws InvalidArgumentException
 	 */
 	public function setLogFile($logFile) {
@@ -91,10 +93,10 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 		// Skip handling if logFile is a stream resource
 		// This is used by unit tests with vfs:// directories
 		if (FALSE === strpos($logFile, '://')) {
-			if (!t3lib_div::isAllowedAbsPath((PATH_site . $logFile))) {
-				throw new InvalidArgumentException(('Log file path "' . $logFile) . '" is not valid!', 1326411176);
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath((PATH_site . $logFile))) {
+				throw new \InvalidArgumentException(('Log file path "' . $logFile) . '" is not valid!', 1326411176);
 			}
-			$logFile = t3lib_div::getFileAbsFileName($logFile);
+			$logFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($logFile);
 		}
 		$this->logFile = $logFile;
 		$this->openLogFile();
@@ -113,13 +115,13 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	/**
 	 * Writes the log record
 	 *
-	 * @param t3lib_log_Record $record Log record
-	 * @return t3lib_log_writer_Writer $this
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record Log record
+	 * @return \TYPO3\CMS\Core\Log\Writer\Writer $this
 	 * @throws RuntimeException
 	 */
-	public function writeLog(t3lib_log_Record $record) {
+	public function writeLog(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		if (FALSE === fwrite(self::$logFileHandle, $record . LF)) {
-			throw new RuntimeException('Could not write log record to log file', 1345036335);
+			throw new \RuntimeException('Could not write log record to log file', 1345036335);
 		}
 		return $this;
 	}
@@ -134,7 +136,7 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 		$this->createLogFile();
 		self::$logFileHandle = fopen($this->logFile, 'a');
 		if (!is_resource(self::$logFileHandle)) {
-			throw new RuntimeException(('Could not open log file "' . $this->logFile) . '"', 1321804422);
+			throw new \RuntimeException(('Could not open log file "' . $this->logFile) . '"', 1321804422);
 		}
 	}
 
@@ -161,12 +163,12 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 		}
 		$logFileDirectory = dirname($this->logFile);
 		if (!@is_dir($logFileDirectory)) {
-			t3lib_div::mkdir_deep($logFileDirectory);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep($logFileDirectory);
 			// only create .htaccess, if we created the directory on our own
 			$this->createHtaccessFile($logFileDirectory . '/.htaccess');
 		}
 		// create the log file
-		t3lib_div::writeFile($this->logFile, '');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($this->logFile, '');
 	}
 
 	/**
@@ -178,10 +180,11 @@ class t3lib_log_writer_File extends t3lib_log_writer_Abstract {
 	protected function createHtaccessFile($htaccessFile) {
 		// write .htaccess file to protect the log file
 		if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['generateApacheHtaccess']) && !file_exists($htaccessFile)) {
-			t3lib_div::writeFile($htaccessFile, 'Deny From All');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($htaccessFile, 'Deny From All');
 		}
 	}
 
 }
+
 
 ?>

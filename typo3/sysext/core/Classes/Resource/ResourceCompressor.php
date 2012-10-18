@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_Compressor {
+class ResourceCompressor {
 
 	protected $targetDirectory = 'typo3temp/compressor/';
 
@@ -63,14 +65,14 @@ class t3lib_Compressor {
 	public function __construct() {
 		// we check for existence of our targetDirectory
 		if (!is_dir((PATH_site . $this->targetDirectory))) {
-			t3lib_div::mkdir(PATH_site . $this->targetDirectory);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir(PATH_site . $this->targetDirectory);
 		}
 		// if enabled, we check whether we should auto-create the .htaccess file
 		if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['generateApacheHtaccess']) {
 			// check whether .htaccess exists
 			$htaccessPath = (PATH_site . $this->targetDirectory) . '.htaccess';
 			if (!file_exists($htaccessPath)) {
-				t3lib_div::writeFile($htaccessPath, $this->htaccessTemplate);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($htaccessPath, $this->htaccessTemplate);
 			}
 		}
 		// decide whether we should create gzipped versions or not
@@ -79,7 +81,7 @@ class t3lib_Compressor {
 		if (extension_loaded('zlib') && $compressionLevel) {
 			$this->createGzipped = TRUE;
 			// $compressionLevel can also be TRUE
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($compressionLevel)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($compressionLevel)) {
 				$this->gzipCompressionLevel = intval($compressionLevel);
 			}
 		}
@@ -272,17 +274,17 @@ class t3lib_Compressor {
 		// Get file type
 		$type = strtolower(trim($type, '. '));
 		if (empty($type)) {
-			throw new InvalidArgumentException('Error in t3lib_Compressor: No valid file type given for merged file', 1308957498);
+			throw new \InvalidArgumentException('Error in TYPO3\\CMS\\Core\\Resource\\ResourceCompressor: No valid file type given for merged file', 1308957498);
 		}
 		// we add up the filenames, filemtimes and filsizes to later build a checksum over
 		// it and include it in the temporary file name
 		$unique = '';
 		foreach ($filesToInclude as $key => $filename) {
-			if (t3lib_div::isValidUrl($filename)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($filename)) {
 				$filesToInclude[$key] = $this->retrieveExternalFile($filename);
 				$filename = $filesToInclude[$key];
 			}
-			$filepath = t3lib_div::resolveBackPath($this->rootPath . $filename);
+			$filepath = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($this->rootPath . $filename);
 			$unique .= ($filename . filemtime($filepath)) . filesize($filepath);
 		}
 		$targetFile = ((($this->targetDirectory . 'merged-') . md5($unique)) . '.') . $type;
@@ -291,9 +293,9 @@ class t3lib_Compressor {
 			$concatenated = '';
 			// concatenate all the files together
 			foreach ($filesToInclude as $filename) {
-				$contents = t3lib_div::getUrl(t3lib_div::resolveBackPath($this->rootPath . $filename));
+				$contents = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($this->rootPath . $filename));
 				// only fix paths if files aren't already in typo3temp (already processed)
-				if ($type === 'css' && !t3lib_div::isFirstPartOfStr($filename, $this->targetDirectory)) {
+				if ($type === 'css' && !\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($filename, $this->targetDirectory)) {
 					$contents = $this->cssFixRelativeUrlPaths($contents, dirname($filename) . '/');
 				}
 				$concatenated .= LF . $contents;
@@ -302,7 +304,7 @@ class t3lib_Compressor {
 			if ($type === 'css') {
 				$concatenated = $this->cssFixStatements($concatenated);
 			}
-			t3lib_div::writeFile(PATH_site . $targetFile, $concatenated);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_site . $targetFile, $concatenated);
 		}
 		return $targetFile;
 	}
@@ -342,13 +344,13 @@ class t3lib_Compressor {
 	 */
 	public function compressCssFile($filename) {
 		// generate the unique name of the file
-		$filenameAbsolute = t3lib_div::resolveBackPath($this->rootPath . $this->getFilenameFromMainDir($filename));
+		$filenameAbsolute = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($this->rootPath . $this->getFilenameFromMainDir($filename));
 		$unique = ($filenameAbsolute . filemtime($filenameAbsolute)) . filesize($filenameAbsolute);
 		$pathinfo = pathinfo($filename);
 		$targetFile = ((($this->targetDirectory . $pathinfo['filename']) . '-') . md5($unique)) . '.css';
 		// only create it, if it doesn't exist, yet
 		if (!file_exists((PATH_site . $targetFile)) || $this->createGzipped && !file_exists(((PATH_site . $targetFile) . '.gzip'))) {
-			$contents = t3lib_div::getUrl($filenameAbsolute);
+			$contents = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($filenameAbsolute);
 			// Perform some safe CSS optimizations.
 			$contents = str_replace('', '', $contents);
 			// Strip any and all carriage returns.
@@ -476,13 +478,13 @@ class t3lib_Compressor {
 	 */
 	public function compressJsFile($filename) {
 		// generate the unique name of the file
-		$filenameAbsolute = t3lib_div::resolveBackPath($this->rootPath . $this->getFilenameFromMainDir($filename));
+		$filenameAbsolute = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($this->rootPath . $this->getFilenameFromMainDir($filename));
 		$unique = ($filenameAbsolute . filemtime($filenameAbsolute)) . filesize($filenameAbsolute);
 		$pathinfo = pathinfo($filename);
 		$targetFile = ((($this->targetDirectory . $pathinfo['filename']) . '-') . md5($unique)) . '.js';
 		// only create it, if it doesn't exist, yet
 		if (!file_exists((PATH_site . $targetFile)) || $this->createGzipped && !file_exists(((PATH_site . $targetFile) . '.gzip'))) {
-			$contents = t3lib_div::getUrl($filenameAbsolute);
+			$contents = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($filenameAbsolute);
 			$this->writeFileAndCompressed($targetFile, $contents);
 		}
 		return $this->relativePath . $this->returnFileReference($targetFile);
@@ -510,7 +512,7 @@ class t3lib_Compressor {
 		$backPath = str_replace(TYPO3_mainDir, '', $this->backPath);
 		$file = str_replace($backPath, '', $filename);
 		if (substr($file, 0, 3) === '../') {
-			$file = t3lib_div::resolveBackPath(PATH_typo3 . $file);
+			$file = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath(PATH_typo3 . $file);
 		} else {
 			$file = PATH_site . $file;
 		}
@@ -533,7 +535,7 @@ class t3lib_Compressor {
 	protected function checkBaseDirectory($filename, array $baseDirectories) {
 		foreach ($baseDirectories as $baseDirectory) {
 			// check, if $filename starts with base directory
-			if (t3lib_div::isFirstPartOfStr($filename, $baseDirectory)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($filename, $baseDirectory)) {
 				return TRUE;
 			}
 		}
@@ -582,7 +584,7 @@ class t3lib_Compressor {
 			$match = trim($match, '\'" ');
 			// we must not rewrite paths containing ":" or "url(", e.g. data URIs (see RFC 2397)
 			if (strpos($match, ':') === FALSE && !preg_match('/url\\s*\\(/i', $match)) {
-				$newPath = t3lib_div::resolveBackPath($newDir . $match);
+				$newPath = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($newDir . $match);
 				$replacements[$matches[1][$matchCount]] = ($wrap[0] . $newPath) . $wrap[1];
 			}
 		}
@@ -627,10 +629,10 @@ class t3lib_Compressor {
 	 */
 	protected function writeFileAndCompressed($filename, $contents) {
 		// write uncompressed file
-		t3lib_div::writeFile(PATH_site . $filename, $contents);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_site . $filename, $contents);
 		if ($this->createGzipped) {
 			// create compressed version
-			t3lib_div::writeFile((PATH_site . $filename) . '.gzip', gzencode($contents, $this->gzipCompressionLevel));
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile((PATH_site . $filename) . '.gzip', gzencode($contents, $this->gzipCompressionLevel));
 		}
 	}
 
@@ -643,7 +645,7 @@ class t3lib_Compressor {
 	 */
 	protected function returnFileReference($filename) {
 		// if the client accepts gzip and we can create gzipped files, we give him compressed versions
-		if ($this->createGzipped && strpos(t3lib_div::getIndpEnv('HTTP_ACCEPT_ENCODING'), 'gzip') !== FALSE) {
+		if ($this->createGzipped && strpos(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_ACCEPT_ENCODING'), 'gzip') !== FALSE) {
 			return $filename . '.gzip';
 		} else {
 			return $filename;
@@ -657,12 +659,13 @@ class t3lib_Compressor {
 	 * @return string Temporary local filename for the externally-retrieved file
 	 */
 	protected function retrieveExternalFile($url) {
-		$externalContent = t3lib_div::getUrl($url);
+		$externalContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($url);
 		$filename = ($this->targetDirectory . 'external-') . md5($url);
-		t3lib_div::writeFile(PATH_site . $filename, $externalContent);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_site . $filename, $externalContent);
 		return $filename;
 	}
 
 }
+
 
 ?>

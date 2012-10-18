@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\TypoScript;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tsStyleConfig extends t3lib_tsparser_ext {
+class ConfigurationForm extends \TYPO3\CMS\Core\TypoScript\ExtendedTemplateService {
 
 	// Internal
 	/**
@@ -142,13 +144,13 @@ class t3lib_tsStyleConfig extends t3lib_tsparser_ext {
 		$this->ext_makeHelpInformationForCategory($cat);
 		$printFields = trim($this->ext_printFields($theConstants, $cat));
 		$content = '';
-		$content .= t3lib_div::wrapJS(((('
+		$content .= \TYPO3\CMS\Core\Utility\GeneralUtility::wrapJS(((('
 			function uFormUrl(aname) {
-				document.' . $this->ext_CEformName) . '.action = "') . t3lib_div::linkThisScript()) . '#"+aname;
+				document.' . $this->ext_CEformName) . '.action = "') . \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript()) . '#"+aname;
 			}
 		');
 		if ($addFormTag) {
-			$content .= ((((('<form action="' . htmlspecialchars(($script ? $script : t3lib_div::linkThisScript()))) . '" name="') . $this->ext_CEformName) . '" method="post" enctype="') . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype']) . '">';
+			$content .= ((((('<form action="' . htmlspecialchars(($script ? $script : \TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript()))) . '" name="') . $this->ext_CEformName) . '" method="post" enctype="') . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype']) . '">';
 		}
 		$content .= $addFields;
 		$content .= $printFields;
@@ -179,10 +181,10 @@ class t3lib_tsStyleConfig extends t3lib_tsparser_ext {
 	 * @todo Define visibility
 	 */
 	public function ext_mergeIncomingWithExisting($arr) {
-		$parseObj = t3lib_div::makeInstance('t3lib_TSparser');
+		$parseObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\Parser\\TypoScriptParser');
 		$parseObj->parse(implode(LF, $this->ext_incomingValues));
 		$arr2 = $parseObj->setup;
-		return t3lib_div::array_merge_recursive_overrule($arr, $arr2);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($arr, $arr2);
 	}
 
 	// Extends:
@@ -190,7 +192,7 @@ class t3lib_tsStyleConfig extends t3lib_tsparser_ext {
 	 * @todo Define visibility
 	 */
 	public function ext_getKeyImage($key) {
-		return ('<img' . t3lib_iconWorks::skinImg($this->ext_backPath, (('gfx/rednumbers/' . $key) . '.gif'), '')) . ' hspace="2" align="top" alt="" />';
+		return ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->ext_backPath, (('gfx/rednumbers/' . $key) . '.gif'), '')) . ' hspace="2" align="top" alt="" />';
 	}
 
 	/**
@@ -250,5 +252,6 @@ class t3lib_tsStyleConfig extends t3lib_tsparser_ext {
 	}
 
 }
+
 
 ?>

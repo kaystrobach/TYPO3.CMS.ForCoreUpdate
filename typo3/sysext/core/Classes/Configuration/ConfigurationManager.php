@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Configuration;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -35,7 +37,7 @@
  * @subpackage t3lib
  * @author Helge Funk <helge.funk@e-net.info>
  */
-class t3lib_Configuration {
+class ConfigurationManager {
 
 	/**
 	 * Path to default TYPO3_CONF_VARS file, relative to PATH_site
@@ -91,7 +93,7 @@ class t3lib_Configuration {
 	 * @return void
 	 */
 	static public function updateLocalConfiguration(array $configurationToMerge) {
-		$newLocalConfiguration = t3lib_div::array_merge_recursive_overrule(static::getLocalConfiguration(), $configurationToMerge);
+		$newLocalConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule(static::getLocalConfiguration(), $configurationToMerge);
 		static::writeLocalConfiguration($newLocalConfiguration);
 	}
 
@@ -102,7 +104,7 @@ class t3lib_Configuration {
 	 * @return mixed Value at path
 	 */
 	static public function getDefaultConfigurationValueByPath($path) {
-		return t3lib_utility_Array::getValueByPath(static::getDefaultConfiguration(), $path);
+		return \TYPO3\CMS\Core\Utility\ArrayUtility::getValueByPath(static::getDefaultConfiguration(), $path);
 	}
 
 	/**
@@ -112,7 +114,7 @@ class t3lib_Configuration {
 	 * @return mixed Value at path
 	 */
 	static public function getLocalConfigurationValueByPath($path) {
-		return t3lib_utility_Array::getValueByPath(static::getLocalConfiguration(), $path);
+		return \TYPO3\CMS\Core\Utility\ArrayUtility::getValueByPath(static::getLocalConfiguration(), $path);
 	}
 
 	/**
@@ -123,7 +125,7 @@ class t3lib_Configuration {
 	 * @return mixed
 	 */
 	static public function getConfigurationValueByPath($path) {
-		return t3lib_utility_Array::getValueByPath(t3lib_div::array_merge_recursive_overrule(static::getDefaultConfiguration(), static::getLocalConfiguration()), $path);
+		return \TYPO3\CMS\Core\Utility\ArrayUtility::getValueByPath(\TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule(static::getDefaultConfiguration(), static::getLocalConfiguration()), $path);
 	}
 
 	/**
@@ -137,7 +139,7 @@ class t3lib_Configuration {
 		$result = FALSE;
 		if (static::isValidLocalConfigurationPath($path)) {
 			$localConfiguration = static::getLocalConfiguration();
-			$localConfiguration = t3lib_utility_Array::setValueByPath($localConfiguration, $path, $value);
+			$localConfiguration = \TYPO3\CMS\Core\Utility\ArrayUtility::setValueByPath($localConfiguration, $path, $value);
 			$result = static::writeLocalConfiguration($localConfiguration);
 		}
 		return $result;
@@ -153,7 +155,7 @@ class t3lib_Configuration {
 		$localConfiguration = static::getLocalConfiguration();
 		foreach ($pairs as $path => $value) {
 			if (static::isValidLocalConfigurationPath($path)) {
-				$localConfiguration = t3lib_utility_Array::setValueByPath($localConfiguration, $path, $value);
+				$localConfiguration = \TYPO3\CMS\Core\Utility\ArrayUtility::setValueByPath($localConfiguration, $path, $value);
 			}
 		}
 		return static::writeLocalConfiguration($localConfiguration);
@@ -166,8 +168,8 @@ class t3lib_Configuration {
 	 * @return boolean TRUE on success
 	 */
 	static protected function writeLocalConfiguration(array $configuration) {
-		$configuration = t3lib_utility_Array::sortByKeyRecursive($configuration);
-		$result = t3lib_div::writeFile(PATH_site . static::LOCAL_CONFIGURATION_FILE, ((((('<?php' . LF) . 'return ') . t3lib_utility_Array::arrayExport($configuration)) . ';') . LF) . '?>');
+		$configuration = \TYPO3\CMS\Core\Utility\ArrayUtility::sortByKeyRecursive($configuration);
+		$result = \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_site . static::LOCAL_CONFIGURATION_FILE, ((((('<?php' . LF) . 'return ') . \TYPO3\CMS\Core\Utility\ArrayUtility::arrayExport($configuration)) . ';') . LF) . '?>');
 		return $result === FALSE ? FALSE : TRUE;
 	}
 
@@ -180,13 +182,14 @@ class t3lib_Configuration {
 	static protected function isValidLocalConfigurationPath($path) {
 		// Early return for white listed paths
 		foreach (static::$whiteListedLocalConfigurationPaths as $whiteListedPath) {
-			if (t3lib_div::isFirstPartOfStr($path, $whiteListedPath)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($path, $whiteListedPath)) {
 				return TRUE;
 			}
 		}
-		return t3lib_utility_Array::isValidPath(static::getDefaultConfiguration(), $path);
+		return \TYPO3\CMS\Core\Utility\ArrayUtility::isValidPath(static::getDefaultConfiguration(), $path);
 	}
 
 }
+
 
 ?>

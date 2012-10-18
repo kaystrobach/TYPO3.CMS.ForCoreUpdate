@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_contextmenu_ActionCollection extends ArrayObject {
+class ContextMenuActionCollection extends \ArrayObject {
 
 	/**
 	 * Returns the collection in an array representation for e.g. serialization
@@ -49,5 +51,6 @@ class t3lib_contextmenu_ActionCollection extends ArrayObject {
 	}
 
 }
+
 
 ?>

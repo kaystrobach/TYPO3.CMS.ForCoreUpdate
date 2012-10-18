@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author 	Steffen Ritter <info@rs-websystems.de>
  * @author Benjamin Mack <benni@typo3.org>
  */
-class tx_coreupdates_statictemplates extends Tx_Install_Updates_Base {
+class StaticTemplatesUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Install Outsourced Static Templates (now in System Extension)';
 
@@ -44,7 +46,7 @@ class tx_coreupdates_statictemplates extends Tx_Install_Updates_Base {
 	public function checkForUpdate(&$description) {
 		$description = '<strong>Check dependencies / references to old TypoScript templates in table static_template.</strong><br />
 		This updater checks if you are using the old TypoScript static templates. These are extracted into its own extension "statictemplates". If you need them, this updater will install this extension.<br /><br />';
-		if ($this->versionNumber >= 4004000 && !t3lib_extMgm::isLoaded('statictemplates')) {
+		if ($this->versionNumber >= 4004000 && !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('statictemplates')) {
 			$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('*', 'sys_refindex', 'ref_table = \'static_template\' AND tablename <> \'static_template\' AND deleted=0');
 			if ($count) {
 				$description .= '<strong style="color:#f00">Dependencies found! You MUST install the extenion "statictemplates"!</strong>';
@@ -75,14 +77,14 @@ class tx_coreupdates_statictemplates extends Tx_Install_Updates_Base {
 	 * @return 	bool		whether everything went smoothly or not
 	 */
 	public function performUpdate(array &$dbQueries, &$customMessages) {
-		if ($this->versionNumber >= 4004000 && !t3lib_extMgm::isLoaded('statictemplates')) {
+		if ($this->versionNumber >= 4004000 && !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('statictemplates')) {
 			// check wether the table can be truncated or if sysext with tca has to be installed
 			if ($this->checkForUpdate($customMessages[])) {
 				try {
-					t3lib_extMgm::loadExtension('statictemplates');
+					\TYPO3\CMS\Core\Extension\ExtensionManager::loadExtension('statictemplates');
 					$customMessages[] = 'System Extension "statictemplates" was successfully loaded, static templates are now supported.';
 					$result = TRUE;
-				} catch (RuntimeException $e) {
+				} catch (\RuntimeException $e) {
 					$result = FALSE;
 				}
 				return $result;
@@ -92,5 +94,6 @@ class tx_coreupdates_statictemplates extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

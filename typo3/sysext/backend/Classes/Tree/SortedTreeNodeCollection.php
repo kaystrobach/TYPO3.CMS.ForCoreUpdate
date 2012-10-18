@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -35,37 +37,37 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_SortedNodeCollection extends t3lib_tree_NodeCollection {
+class SortedTreeNodeCollection extends \TYPO3\CMS\Backend\Tree\TreeNodeCollection {
 
 	/**
 	 * Checks if a specific node is inside the collection
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @return boolean
 	 */
-	public function contains(t3lib_tree_Node $node) {
+	public function contains(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
 		return $this->offsetOf($node) !== -1;
 	}
 
 	/**
 	 * Returns the offset key of given node
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @return int
 	 */
-	protected function offsetOf(t3lib_tree_Node $node) {
+	protected function offsetOf(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
 		return $this->binarySearch($node, 0, $this->count() - 1);
 	}
 
 	/**
 	 * Binary search that returns the offset of a given node
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @param integer $start
 	 * @param integer $end
 	 * @return integer
 	 */
-	protected function binarySearch(t3lib_tree_Node $node, $start, $end) {
+	protected function binarySearch(\TYPO3\CMS\Backend\Tree\TreeNode $node, $start, $end) {
 		if (!$start && $end - $start >= 2 || $end - $start > 2) {
 			$divider = ceil(($end - $start) / 2);
 			if ($this->offsetGet($divider)->equals($node)) {
@@ -102,15 +104,16 @@ class t3lib_tree_SortedNodeCollection extends t3lib_tree_NodeCollection {
 	/**
 	 * Adds a node to the internal list in a sorted approach
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @return void
 	 */
-	public function append(t3lib_tree_Node $node) {
+	public function append(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
 		parent::append($node);
 		$this->asort();
 		$this->normalize();
 	}
 
 }
+
 
 ?>

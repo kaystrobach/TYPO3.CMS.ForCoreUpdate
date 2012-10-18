@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Parser;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-abstract class Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser extends Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
+abstract class MirrorXmlAbstractParser extends \TYPO3\CMS\Extensionmanager\Utility\Parser\XmlAbstractParser {
 
 	/**
 	 * Keeps country of currently processed mirror.
@@ -193,5 +195,6 @@ abstract class Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser extend
 	}
 
 }
+
 
 ?>

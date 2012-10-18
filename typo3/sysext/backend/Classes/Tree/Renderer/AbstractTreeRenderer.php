@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Renderer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,35 +33,36 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_tree_Renderer_Abstract {
+abstract class AbstractTreeRenderer {
 
 	/**
 	 * Renders a node recursive or just a single instance
 	 *
-	 * @param t3lib_tree_RepresentationNode $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderNode(t3lib_tree_RepresentationNode $node, $recursive = TRUE);
+	abstract public function renderNode(\TYPO3\CMS\Backend\Tree\TreeRepresentationNode $node, $recursive = TRUE);
 
 	/**
 	 * Renders a node collection recursive or just a single instance
 	 *
-	 * @param t3lib_tree_NodeCollection $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNodeCollection $node
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderNodeCollection(t3lib_tree_NodeCollection $collection, $recursive = TRUE);
+	abstract public function renderNodeCollection(\TYPO3\CMS\Backend\Tree\TreeNodeCollection $collection, $recursive = TRUE);
 
 	/**
 	 * Renders an tree recursive or just a single instance
 	 *
-	 * @param t3lib_tree_AbstractTree $node
+	 * @param \TYPO3\CMS\Backend\Tree\AbstractTree $node
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderTree(t3lib_tree_AbstractTree $tree, $recursive = TRUE);
+	abstract public function renderTree(\TYPO3\CMS\Backend\Tree\AbstractTree $tree, $recursive = TRUE);
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\MediaWizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-interface tslib_mediaWizardProvider
+interface MediaWizardProviderInterface
 {
 	/**
 	 * Tells the calling party if we can handle the URL passed to the constructor
@@ -51,4 +53,5 @@ interface tslib_mediaWizardProvider
 	public function rewriteUrl($url);
 
 }
+
 ?>

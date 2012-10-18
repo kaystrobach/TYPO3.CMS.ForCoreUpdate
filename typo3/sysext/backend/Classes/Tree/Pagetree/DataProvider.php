@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
+class DataProvider extends \TYPO3\CMS\Backend\Tree\AbstractTreeDataProvider {
 
 	/**
 	 * Node limit that should be loaded for this request per mount
@@ -71,13 +73,13 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 			$nodeLimit = $GLOBALS['TYPO3_CONF_VARS']['BE']['pageTree']['preloadLimit'];
 		}
 		$this->nodeLimit = abs(intval($nodeLimit));
-		$this->hiddenRecords = t3lib_div::trimExplode(',', $GLOBALS['BE_USER']->getTSConfigVal('options.hideRecords.pages'));
+		$this->hiddenRecords = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['BE_USER']->getTSConfigVal('options.hideRecords.pages'));
 		$hookElements = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/tree/pagetree/class.t3lib_tree_pagetree_dataprovider.php']['postProcessCollections'];
 		if (is_array($hookElements)) {
 			foreach ($hookElements as $classRef) {
 				/** @var $hookObject t3lib_tree_pagetree_interfaces_collectionprocessor */
-				$hookObject = t3lib_div::getUserObj($classRef);
-				if ($hookObject instanceof t3lib_tree_pagetree_interfaces_collectionprocessor) {
+				$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+				if ($hookObject instanceof \t3lib_tree_pagetree_interfaces_collectionprocessor) {
 					$this->processCollectionHookObjects[] = $hookObject;
 				}
 			}
@@ -87,11 +89,11 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	/**
 	 * Returns the root node.
 	 *
-	 * @return t3lib_tree_Node the root node
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNode the root node
 	 */
 	public function getRoot() {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node');
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode');
 		$node->setId('root');
 		$node->setExpanded(TRUE);
 		return $node;
@@ -100,14 +102,14 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	/**
 	 * Fetches the sub-nodes of the given node
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @param integer $mountPoint
 	 * @param integer $level internally used variable as a recursion limiter
-	 * @return t3lib_tree_NodeCollection
+	 * @return \TYPO3\CMS\Backend\Tree\TreeNodeCollection
 	 */
-	public function getNodes(t3lib_tree_Node $node, $mountPoint = 0, $level = 0) {
-		/** @var $nodeCollection t3lib_tree_pagetree_NodeCollection */
-		$nodeCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
+	public function getNodes(\TYPO3\CMS\Backend\Tree\TreeNode $node, $mountPoint = 0, $level = 0) {
+		/** @var $nodeCollection \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection */
+		$nodeCollection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNodeCollection');
 		if ($level >= 99) {
 			return $nodeCollection;
 		}
@@ -144,7 +146,7 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				if (!$subpage) {
 					continue;
 				}
-				$subNode = t3lib_tree_pagetree_Commands::getNewNode($subpage, $mountPoint);
+				$subNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNewNode($subpage, $mountPoint);
 				$subNode->setIsMountPoint($isMountPoint);
 				if ($this->nodeCounter < $this->nodeLimit) {
 					$childNodes = $this->getNodes($subNode, $mountPoint, $level + 1);
@@ -171,20 +173,20 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	 * @return array
 	 */
 	protected function getRecordWithWorkspaceOverlay($uid, $unsetMovePointers = FALSE) {
-		return t3lib_befunc::getRecordWSOL('pages', $uid, '*', '', TRUE, $unsetMovePointers);
+		return \t3lib_befunc::getRecordWSOL('pages', $uid, '*', '', TRUE, $unsetMovePointers);
 	}
 
 	/**
 	 * Returns a node collection of filtered nodes
 	 *
-	 * @param t3lib_tree_Node $node
+	 * @param \TYPO3\CMS\Backend\Tree\TreeNode $node
 	 * @param string $searchFilter
 	 * @param integer $mountPoint
-	 * @return t3lib_tree_pagetree_NodeCollection the filtered nodes
+	 * @return \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection the filtered nodes
 	 */
-	public function getFilteredNodes(t3lib_tree_Node $node, $searchFilter, $mountPoint = 0) {
-		/** @var $nodeCollection t3lib_tree_pagetree_NodeCollection */
-		$nodeCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
+	public function getFilteredNodes(\TYPO3\CMS\Backend\Tree\TreeNode $node, $searchFilter, $mountPoint = 0) {
+		/** @var $nodeCollection \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection */
+		$nodeCollection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNodeCollection');
 		$records = $this->getSubpages(-1, $searchFilter);
 		if (!is_array($records) || !count($records)) {
 			return $nodeCollection;
@@ -202,11 +204,11 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 		$isNumericSearchFilter = is_numeric($searchFilter) && $searchFilter > 0;
 		$nodeId = intval($node->getId());
 		foreach ($records as $record) {
-			$record = t3lib_tree_pagetree_Commands::getNodeRecord($record['uid']);
+			$record = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNodeRecord($record['uid']);
 			if (intval($record['pid']) === -1 || in_array($record['uid'], $this->hiddenRecords)) {
 				continue;
 			}
-			$rootline = t3lib_BEfunc::BEgetRootLine($record['uid'], '', $GLOBALS['BE_USER']->workspace != 0);
+			$rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($record['uid'], '', $GLOBALS['BE_USER']->workspace != 0);
 			$rootline = array_reverse($rootline);
 			if ($nodeId === 0) {
 				array_shift($rootline);
@@ -234,20 +236,20 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				if (!$inFilteredRootline) {
 					continue;
 				}
-				$rootlineElement = t3lib_tree_pagetree_Commands::getNodeRecord($rootlineElement['uid']);
+				$rootlineElement = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNodeRecord($rootlineElement['uid']);
 				$ident = intval($rootlineElement['sorting']) . intval($rootlineElement['uid']);
 				if ($reference && $reference->offsetExists($ident)) {
-					/** @var $refNode t3lib_tree_pagetree_Node */
+					/** @var $refNode \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
 					$refNode = $reference->offsetGet($ident);
 					$refNode->setExpanded(TRUE);
 					$refNode->setLeaf(FALSE);
 					$reference = $refNode->getChildNodes();
 					if ($reference == NULL) {
-						$reference = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
+						$reference = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNodeCollection');
 						$refNode->setChildNodes($reference);
 					}
 				} else {
-					$refNode = t3lib_tree_pagetree_Commands::getNewNode($rootlineElement, $mountPoint);
+					$refNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNewNode($rootlineElement, $mountPoint);
 					$replacement = '<span class="typo3-pagetree-filteringTree-highlight">$1</span>';
 					if ($isNumericSearchFilter && intval($rootlineElement['uid']) === intval($searchFilter)) {
 						$text = str_replace('$1', $refNode->getText(), $replacement);
@@ -255,12 +257,12 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 						$text = preg_replace(('/(' . $searchFilter) . ')/i', $replacement, $refNode->getText());
 					}
 					$refNode->setText($text, $refNode->getTextSourceField(), $refNode->getPrefix(), $refNode->getSuffix());
-					/** @var $childCollection t3lib_tree_pagetree_NodeCollection */
-					$childCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
+					/** @var $childCollection \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection */
+					$childCollection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNodeCollection');
 					if ($i + 1 >= $amountOfRootlineElements) {
 						$childNodes = $this->getNodes($refNode, $mountPoint);
 						foreach ($childNodes as $childNode) {
-							/** @var $childNode t3lib_tree_pagetree_Node */
+							/** @var $childNode \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
 							$childRecord = $childNode->getRecord();
 							$childIdent = intval($childRecord['sorting']) . intval($childRecord['uid']);
 							$childCollection->offsetSet($childIdent, $childNode);
@@ -287,11 +289,11 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	 * Note: If you add the search filter parameter, the nodes will be filtered by this string.
 	 *
 	 * @param string $searchFilter
-	 * @return t3lib_tree_pagetree_NodeCollection
+	 * @return \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection
 	 */
 	public function getTreeMounts($searchFilter = '') {
-		/** @var $nodeCollection t3lib_tree_pagetree_NodeCollection */
-		$nodeCollection = t3lib_div::makeInstance('t3lib_tree_pagetree_NodeCollection');
+		/** @var $nodeCollection \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNodeCollection */
+		$nodeCollection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNodeCollection');
 		$isTemporaryMountPoint = FALSE;
 		$rootNodeIsVirtual = FALSE;
 		$mountPoints = intval($GLOBALS['BE_USER']->uc['pageTree_temporaryMountPoint']);
@@ -323,7 +325,7 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 					'uid' => 0,
 					'title' => $sitename
 				);
-				$subNode = t3lib_tree_pagetree_Commands::getNewNode($record);
+				$subNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNewNode($record);
 				$subNode->setLabelIsEditable(FALSE);
 				if ($rootNodeIsVirtual) {
 					$subNode->setType('virtual_root');
@@ -340,9 +342,9 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 				if (!$record) {
 					continue;
 				}
-				$subNode = t3lib_tree_pagetree_Commands::getNewNode($record, $mountPoint);
+				$subNode = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNewNode($record, $mountPoint);
 				if ($showRootlineAboveMounts && !$isTemporaryMountPoint) {
-					$rootline = t3lib_tree_pagetree_Commands::getMountPointPath($record['uid']);
+					$rootline = \TYPO3\CMS\Backend\Tree\Pagetree\Commands::getMountPointPath($record['uid']);
 					$subNode->setReadableRootline($rootline);
 				}
 			}
@@ -376,7 +378,7 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	 * @return string
 	 */
 	protected function getWhereClause($id, $searchFilter = '') {
-		$where = ($GLOBALS['BE_USER']->getPagePermsClause(1) . t3lib_BEfunc::deleteClause('pages')) . t3lib_BEfunc::versioningPlaceholderClause('pages');
+		$where = ($GLOBALS['BE_USER']->getPagePermsClause(1) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('pages')) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause('pages');
 		if (is_numeric($id) && $id >= 0) {
 			$where .= ' AND pid= ' . $GLOBALS['TYPO3_DB']->fullQuoteStr(intval($id), 'pages');
 		}
@@ -425,5 +427,6 @@ class t3lib_tree_pagetree_DataProvider extends t3lib_tree_AbstractDataProvider {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Aboutmodules\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @subpackage core
  * @deprecated since 4.7, will be removed in 6.1
  */
-class tx_aboutmodules_Functions {
+class FunctionsUtility {
 
 	// Internal
 	/**
@@ -49,7 +51,7 @@ class tx_aboutmodules_Functions {
 	 * Default constructor throws deprecation warning
 	 */
 	public function __construct() {
-		t3lib_div::deprecationLog('class tx_aboutmodules_Functions is deprecated, unused in core since 4.3 and unmaintained. It will be removed in 6.1.');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('class TYPO3\\CMS\\Aboutmodules\\Utility\\FunctionsUtility is deprecated, unused in core since 4.3 and unmaintained. It will be removed in 6.1.');
 	}
 
 	/**
@@ -89,12 +91,12 @@ class tx_aboutmodules_Functions {
 		// Get collapsed configuration
 		if ($collapsable == 1) {
 			$config = is_array($GLOBALS['BE_USER']->uc['moduleData']['alt_menu.php']) ? $GLOBALS['BE_USER']->uc['moduleData']['alt_menu.php'] : array();
-			$collapsedOverride = t3lib_div::_GP('collapsedOverride');
+			$collapsedOverride = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('collapsedOverride');
 			if (is_array($collapsedOverride)) {
 				$config = array_merge($config, $collapsedOverride);
 			}
-			if (t3lib_div::_GP('collapsableExpandAll') == 1) {
-				$config['expandAll'] = t3lib_div::_GP('expandAll');
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('collapsableExpandAll') == 1) {
+				$config['expandAll'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('expandAll');
 			}
 			if ($config['expandAll'] && is_array($collapsedOverride)) {
 				$config = $collapsedOverride;
@@ -133,9 +135,9 @@ class tx_aboutmodules_Functions {
 				$link = $moduleInfo['script'];
 				$link_sub = 0;
 			}
-			$link = t3lib_div::resolveBackPath($link);
+			$link = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($link);
 			$moduleKey = $moduleName . '_tab';
-			$moduleCSSId = 'ID_' . t3lib_div::md5int($moduleName);
+			$moduleCSSId = 'ID_' . \TYPO3\CMS\Core\Utility\GeneralUtility::md5int($moduleName);
 			$collection[$moduleKey] = array(
 				'moduleName' => $moduleName,
 				'title' => $GLOBALS['LANG']->moduleLabels['tabs'][$moduleKey],
@@ -151,7 +153,7 @@ class tx_aboutmodules_Functions {
 				$imageCode = ((('<img src="' . $Ifilename) . '" ') . $image[3]) . ' alt="" />';
 				$descr3_imageCode = ((((('<img src="' . $Ifilename) . '" ') . $image[3]) . ' title="') . htmlspecialchars($descr3_title)) . '" alt="" />';
 			} else {
-				$descr3_imageCode = ((('<img' . t3lib_iconWorks::skinImg($backPath, 'gfx/dummy_module.gif', 'width="14" height="12"')) . ' title="') . htmlspecialchars($descr3_title)) . '" alt="" />';
+				$descr3_imageCode = ((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($backPath, 'gfx/dummy_module.gif', 'width="14" height="12"')) . ' title="') . htmlspecialchars($descr3_title)) . '" alt="" />';
 			}
 			// Creating the various links:
 			$label = $GLOBALS['LANG']->moduleLabels['tabs'][$moduleKey];
@@ -173,7 +175,7 @@ class tx_aboutmodules_Functions {
 			// make menu collapsable
 			if ($collapsable == 1 && is_array($moduleInfo['sub'])) {
 				$collapseJS = ((('onclick="window.location.href=\'alt_menu.php?collapsedOverride[' . $moduleName) . ']=') . ($config[$moduleName] ? '0' : '1')) . '\'"';
-				$collapseIcon = t3lib_iconWorks::getSpriteIcon('actions-view-table-' . ($config[$moduleName] ? 'expand' : 'collapse'), array('class' => 'c-iconCollapse'));
+				$collapseIcon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-view-table-' . ($config[$moduleName] ? 'expand' : 'collapse'), array('class' => 'c-iconCollapse'));
 			} else {
 				$collapseJS = ($collapseIcon = '');
 			}
@@ -207,10 +209,10 @@ class tx_aboutmodules_Functions {
 									<td colspan="3"></td>
 								</tr>';
 					}
-					$link = t3lib_div::resolveBackPath($subInfo['script']);
+					$link = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($subInfo['script']);
 					$prefix = $this->getNavFramePrefix($moduleInfo, $subInfo);
 					$subKey = (($moduleName . '_') . $subName) . '_tab';
-					$moduleCSSId = 'ID_' . t3lib_div::md5int((($moduleName . '_') . $subName));
+					$moduleCSSId = 'ID_' . \TYPO3\CMS\Core\Utility\GeneralUtility::md5int((($moduleName . '_') . $subName));
 					$collection[$moduleKey]['subitems'][$subKey] = array(
 						'moduleName' => ($moduleName . '_') . $subName,
 						'title' => $GLOBALS['LANG']->moduleLabels['tabs'][$subKey],
@@ -226,7 +228,7 @@ class tx_aboutmodules_Functions {
 						$imageCode = ((((('<img src="' . $Ifilename) . '" ') . $image[3]) . ' title="') . htmlspecialchars($GLOBALS['LANG']->moduleLabels['labels'][($subKey . 'label')])) . '" alt="" />';
 						$descr3_imageCode = ((((('<img src="' . $Ifilename) . '" ') . $image[3]) . ' title="') . htmlspecialchars($descr3_title)) . '" alt="" />';
 					} else {
-						$descr3_imageCode = ((('<img' . t3lib_iconWorks::skinImg($backPath, 'gfx/dummy_module.gif', 'width="14" height="12"')) . ' title="') . htmlspecialchars($descr3_title)) . '" alt="" />';
+						$descr3_imageCode = ((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($backPath, 'gfx/dummy_module.gif', 'width="14" height="12"')) . ' title="') . htmlspecialchars($descr3_title)) . '" alt="" />';
 					}
 					// Label for submodule:
 					$label = $GLOBALS['LANG']->moduleLabels['tabs'][$subKey];
@@ -260,7 +262,7 @@ class tx_aboutmodules_Functions {
 						if (!$GLOBALS['BE_USER']->uc['condensedMode'] && $moduleInfo['navFrameScript']) {
 							// use special nav script from sub module, otherwise from the main module
 							$subNavFrameScript = $subInfo['navFrameScript'] ? $subInfo['navFrameScript'] : $moduleInfo['navFrameScript'];
-							$subNavFrameScript = t3lib_div::resolveBackPath($subNavFrameScript);
+							$subNavFrameScript = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($subNavFrameScript);
 							// add GET params for sub module to the nav script
 							$subNavFrameScript = $this->wrapLinkWithAB($subNavFrameScript) . $subInfo['navFrameScriptParam'];
 							$JScmd = ((((((((((((((((((((((('
@@ -321,7 +323,7 @@ class tx_aboutmodules_Functions {
 						// Divider
 						$subCode .= ('
 							<tr class="c-divrow">
-								<td colspan="3"><img' . t3lib_iconWorks::skinImg($backPath, 'gfx/altmenuline.gif', 'width="105" height="3"')) . ' alt="" /></td>
+								<td colspan="3"><img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($backPath, 'gfx/altmenuline.gif', 'width="105" height="3"')) . ' alt="" /></td>
 							</tr>';
 					}
 				}
@@ -369,7 +371,7 @@ class tx_aboutmodules_Functions {
 				<table border="0" cellpadding="0" cellspacing="0" id="typo3-vmenu">
 					' . $menuCode) . '
 					<tr class="c-endrow">
-						<td colspan="3">') . t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'menu_modules', $GLOBALS['BACK_PATH'])) . '</td></tr>
+						<td colspan="3">') . \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'menu_modules', $GLOBALS['BACK_PATH'])) . '</td></tr>
 					') . $collapseAllHTML) . '
 				</table>';
 		}
@@ -436,7 +438,7 @@ class tx_aboutmodules_Functions {
 		$navFrameScript = $subModuleInfo['navFrameScript'] ? $subModuleInfo['navFrameScript'] : $moduleInfo['navFrameScript'];
 		$navFrameScriptParam = isset($subModuleInfo['navFrameScriptParam']) ? $subModuleInfo['navFrameScriptParam'] : $moduleInfo['navFrameScriptParam'];
 		if ($navFrameScript) {
-			$navFrameScript = t3lib_div::resolveBackPath($navFrameScript);
+			$navFrameScript = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($navFrameScript);
 			$navFrameScript = $this->wrapLinkWithAB($navFrameScript);
 			if ($GLOBALS['BE_USER']->uc['condensedMode']) {
 				$prefix = ($navFrameScript . $navFrameScriptParam) . '&currentSubScript=';
@@ -458,7 +460,7 @@ class tx_aboutmodules_Functions {
 	 * @todo Define visibility
 	 */
 	public function mIconFile($Ifilename, $backPath) {
-		if (t3lib_div::isAbsPath($Ifilename)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($Ifilename)) {
 			return $Ifilename;
 		}
 		return $backPath . $Ifilename;
@@ -474,7 +476,7 @@ class tx_aboutmodules_Functions {
 	 * @todo Define visibility
 	 */
 	public function mIconFilename($Ifilename, $backPath) {
-		if (t3lib_div::isAbsPath($Ifilename)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($Ifilename)) {
 			$Ifilename = '../' . substr($Ifilename, strlen(PATH_site));
 		}
 		return $backPath . $Ifilename;
@@ -521,16 +523,16 @@ class tx_aboutmodules_Functions {
 		$functions[] = array(
 			'id' => 'temp_CACHED',
 			'title' => $title,
-			'href' => ((((($backPath . 'tce_db.php?vC=') . $GLOBALS['BE_USER']->veriCode()) . '&redirect=') . rawurlencode(t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT'))) . '&cacheCmd=temp_CACHED') . t3lib_BEfunc::getUrlToken('tceAction'),
-			'icon' => ((('<img' . t3lib_iconWorks::skinImg($backPath, 'gfx/clear_cache_files_in_typo3c.gif', 'width="21" height="18"')) . ' title="') . htmlspecialchars($title)) . '" alt="" />'
+			'href' => ((((($backPath . 'tce_db.php?vC=') . $GLOBALS['BE_USER']->veriCode()) . '&redirect=') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_SCRIPT'))) . '&cacheCmd=temp_CACHED') . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction'),
+			'icon' => ((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($backPath, 'gfx/clear_cache_files_in_typo3c.gif', 'width="21" height="18"')) . ' title="') . htmlspecialchars($title)) . '" alt="" />'
 		);
 		// Clear all page cache
 		$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:rm.clearCache_all');
 		$functions[] = array(
 			'id' => 'all',
 			'title' => $title,
-			'href' => ((((($backPath . 'tce_db.php?vC=') . $GLOBALS['BE_USER']->veriCode()) . '&redirect=') . rawurlencode(t3lib_div::getIndpEnv('TYPO3_REQUEST_SCRIPT'))) . '&cacheCmd=all') . t3lib_BEfunc::getUrlToken('tceAction'),
-			'icon' => ((('<img' . t3lib_iconWorks::skinImg($backPath, 'gfx/clear_all_cache.gif', 'width="21" height="18"')) . ' title="') . htmlspecialchars($title)) . '" alt="" />'
+			'href' => ((((($backPath . 'tce_db.php?vC=') . $GLOBALS['BE_USER']->veriCode()) . '&redirect=') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_SCRIPT'))) . '&cacheCmd=all') . \TYPO3\CMS\Backend\Utility\BackendUtility::getUrlToken('tceAction'),
+			'icon' => ((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($backPath, 'gfx/clear_all_cache.gif', 'width="21" height="18"')) . ' title="') . htmlspecialchars($title)) . '" alt="" />'
 		);
 		// Return functions
 		return $functions;
@@ -580,5 +582,6 @@ class tx_aboutmodules_Functions {
 	}
 
 }
+
 
 ?>

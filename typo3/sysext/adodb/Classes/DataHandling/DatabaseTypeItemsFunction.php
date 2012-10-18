@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Adodb\DataHandling;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @author Robert Lemke <robert@typo3.org>
  * @author Karsten Dambekalns <karsten@typo3.org>
  */
-class tx_adodb_tceforms {
+class DatabaseTypeItemsFunction {
 
 	/**
 	 * @todo Define visibility
@@ -52,5 +54,6 @@ class tx_adodb_tceforms {
 	}
 
 }
+
 
 ?>

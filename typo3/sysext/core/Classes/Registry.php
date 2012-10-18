@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_Registry implements t3lib_Singleton {
+class Registry implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var 	array
@@ -154,10 +156,11 @@ class t3lib_Registry implements t3lib_Singleton {
 	 */
 	protected function validateNamespace($namespace) {
 		if (strlen($namespace) < 2) {
-			throw new InvalidArgumentException('Given namespace must be longer than two characters.', 1249755131);
+			throw new \InvalidArgumentException('Given namespace must be longer than two characters.', 1249755131);
 		}
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Sprite;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_SpriteManager {
+class SpriteManager {
 
 	/**
 	 * @var string Directory for cached sprite informations
@@ -58,7 +60,7 @@ class t3lib_SpriteManager {
 	static public function initialize() {
 		if (!static::isInitialized()) {
 			$cacheIdentifier = static::getCacheIdentifier();
-			/** @var $codeCache t3lib_cache_frontend_PhpFrontend */
+			/** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 			$codeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 			if ($codeCache->has($cacheIdentifier)) {
 				$codeCache->requireOnce($cacheIdentifier);
@@ -90,15 +92,15 @@ class t3lib_SpriteManager {
 	 */
 	static protected function createSpriteCache() {
 		$handlerClass = $GLOBALS['TYPO3_CONF_VARS']['BE']['spriteIconGenerator_handler'];
-		/** @var $handler t3lib_spritemanager_SpriteIconGenerator */
-		$handler = t3lib_div::makeInstance($handlerClass);
+		/** @var $handler \TYPO3\CMS\Backend\Sprite\SpriteIconGeneratorInterface */
+		$handler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($handlerClass);
 		// Throw exception if handler class does not implement required interface
-		if (!$handler instanceof t3lib_spritemanager_SpriteIconGenerator) {
-			throw new RuntimeException((('Class ' . $handlerClass) . ' in $TYPO3_CONF_VARS[BE][spriteIconGenerator_handler] ') . ' does not implement t3lib_spritemanager_SpriteIconGenerator', 1294586333);
+		if (!$handler instanceof \TYPO3\CMS\Backend\Sprite\SpriteIconGeneratorInterface) {
+			throw new \RuntimeException((('Class ' . $handlerClass) . ' in $TYPO3_CONF_VARS[BE][spriteIconGenerator_handler] ') . ' does not implement TYPO3\\CMS\\Backend\\Sprite\\SpriteIconGeneratorInterface', 1294586333);
 		}
 		// Create temp directory if missing
 		if (!is_dir((PATH_site . self::$tempPath))) {
-			t3lib_div::mkdir(PATH_site . self::$tempPath);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir(PATH_site . self::$tempPath);
 		}
 		// Generate CSS and TCA files, build icon set register
 		$handler->generate();
@@ -112,7 +114,7 @@ class t3lib_SpriteManager {
 		$iconNames = array_merge($availableSkinIcons, (array) $GLOBALS['TBE_STYLES']['spritemanager']['spriteIconsAvailable'], $handler->getAvailableIconNames());
 		$cacheString = addslashes(serialize($iconNames));
 		$cacheFileContent = ('$GLOBALS[\'TBE_STYLES\'][\'spriteIconApi\'][\'iconsAvailable\'] = unserialize(stripslashes(\'' . $cacheString) . '\'));';
-		/** @var $codeCache t3lib_cache_frontend_PhpFrontend */
+		/** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 		$GLOBALS['typo3CacheManager']->getCache('cache_core')->set(static::getCacheIdentifier(), $cacheFileContent);
 	}
 
@@ -178,5 +180,6 @@ class t3lib_SpriteManager {
 	}
 
 }
+
 
 ?>

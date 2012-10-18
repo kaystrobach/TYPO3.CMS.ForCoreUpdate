@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Additional_Error extends tx_form_Domain_Model_Additional_Abstract {
+class ErrorAdditionalElement extends \TYPO3\CMS\Form\Domain\Model\Additional\AbstractAdditionalElement {
 
 	/**
 	 * Return the value of the object
@@ -45,5 +47,6 @@ class tx_form_Domain_Model_Additional_Error extends tx_form_Domain_Model_Additio
 	}
 
 }
+
 
 ?>

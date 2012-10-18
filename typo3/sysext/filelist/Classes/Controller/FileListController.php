@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Filelist\Controller;
+
 /**
  * Script Class for creating the list of files in the File > Filelist module
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_file_list {
+class FileListController {
 
 	// Module configuration
 	/**
@@ -34,7 +36,7 @@ class SC_file_list {
 	/**
 	 * Document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -89,18 +91,18 @@ class SC_file_list {
 	 */
 	public function init() {
 		// Setting GPvars:
-		$this->id = ($combinedIdentifier = t3lib_div::_GP('id'));
-		$this->pointer = t3lib_div::_GP('pointer');
-		$this->table = t3lib_div::_GP('table');
-		$this->imagemode = t3lib_div::_GP('imagemode');
-		$this->cmd = t3lib_div::_GP('cmd');
-		$this->overwriteExistingFiles = t3lib_div::_GP('overwriteExistingFiles');
+		$this->id = ($combinedIdentifier = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'));
+		$this->pointer = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pointer');
+		$this->table = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('table');
+		$this->imagemode = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('imagemode');
+		$this->cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
+		$this->overwriteExistingFiles = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('overwriteExistingFiles');
 		// Setting module name:
 		$this->MCONF = $GLOBALS['MCONF'];
 		// Create the folder object
 		try {
 			if ($combinedIdentifier) {
-				$fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
+				$fileFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 				$this->folderObject = $fileFactory->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
 				// Disallow the rendering of the processing folder (e.g. could be called manually)
 				// and all folders without any defined storage
@@ -119,10 +121,10 @@ class SC_file_list {
 					$this->folderObject = NULL;
 				}
 			}
-		} catch (t3lib_file_exception_FolderDoesNotExistException $fileException) {
+		} catch (\TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException $fileException) {
 			// Set folder object to null and throw a message later on
 			$this->folderObject = NULL;
-			$this->errorMessage = t3lib_div::makeInstance('t3lib_FlashMessage', sprintf($GLOBALS['LANG']->getLL('folderNotFoundMessage', TRUE), htmlspecialchars($this->id)), $GLOBALS['LANG']->getLL('folderNotFoundTitle', TRUE), t3lib_FlashMessage::ERROR);
+			$this->errorMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', sprintf($GLOBALS['LANG']->getLL('folderNotFoundMessage', TRUE), htmlspecialchars($this->id)), $GLOBALS['LANG']->getLL('folderNotFoundTitle', TRUE), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 		}
 		// Configure the "menu" - which is used internally to save the values of sorting, displayThumbs etc.
 		$this->menuConfig();
@@ -147,7 +149,7 @@ class SC_file_list {
 			'bigControlPanel' => ''
 		);
 		// CLEANSE SETTINGS
-		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name']);
+		$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name']);
 	}
 
 	/**
@@ -158,7 +160,7 @@ class SC_file_list {
 	 */
 	public function main() {
 		// Initialize the template object
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/file_list.html');
 		$this->doc->getPageRenderer()->loadPrototype();
@@ -176,7 +178,7 @@ class SC_file_list {
 									// set the page specific options for the flashUploader
 								var flashUploadOptions = {
 									uploadURL:           top.TS.PATH_typo3 + "ajax.php",
-									uploadFileSizeLimit: "' . t3lib_div::getMaxUploadFileSize()) . '",
+									uploadFileSizeLimit: "' . \TYPO3\CMS\Core\Utility\GeneralUtility::getMaxUploadFileSize()) . '",
 									uploadFileTypes: {
 										allow:  "') . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']['webspace']['allow']) . '",
 										deny: "') . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']['webspace']['deny']) . '"
@@ -186,7 +188,7 @@ class SC_file_list {
 										"file[upload][1][target]": "') . ($this->folderObject ? $this->folderObject->getCombinedIdentifier() : '')) . '",
 										"file[upload][1][data]": 1,
 										"file[upload][1][charset]": "utf-8",
-										"ajaxID": "TYPO3_tcefile::process"
+										"ajaxID": "TYPO3\\CMS\\Backend\\Controller\\File\\FileController::process"
 									}
 								};
 
@@ -225,7 +227,7 @@ class SC_file_list {
 				';
 			}
 			// Create filelisting object
-			$this->filelist = t3lib_div::makeInstance('fileList');
+			$this->filelist = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Filelist\\FileList');
 			$this->filelist->backPath = $GLOBALS['BACK_PATH'];
 			// Apply predefined values for hidden checkboxes
 			// Set predefined value for DisplayBigControlPanel:
@@ -252,12 +254,12 @@ class SC_file_list {
 			}
 			$this->filelist->thumbs = $this->MOD_SETTINGS['displayThumbs'];
 			// Create clipboard object and initialize that
-			$this->filelist->clipObj = t3lib_div::makeInstance('t3lib_clipboard');
+			$this->filelist->clipObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Clipboard\\Clipboard');
 			$this->filelist->clipObj->fileMode = 1;
 			$this->filelist->clipObj->initializeClipboard();
-			$CB = t3lib_div::_GET('CB');
+			$CB = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('CB');
 			if ($this->cmd == 'setCB') {
-				$CB['el'] = $this->filelist->clipObj->cleanUpCBC(array_merge(t3lib_div::_POST('CBH'), t3lib_div::_POST('CBC')), '_FILE');
+				$CB['el'] = $this->filelist->clipObj->cleanUpCBC(array_merge(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('CBH'), \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('CBC')), '_FILE');
 			}
 			if (!$this->MOD_SETTINGS['clipBoard']) {
 				$CB['setP'] = 'normal';
@@ -268,7 +270,7 @@ class SC_file_list {
 			$this->filelist->clipObj->endClipboard();
 			// If the "cmd" was to delete files from the list (clipboard thing), do that:
 			if ($this->cmd == 'delete') {
-				$items = $this->filelist->clipObj->cleanUpCBC(t3lib_div::_POST('CBC'), '_FILE', 1);
+				$items = $this->filelist->clipObj->cleanUpCBC(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('CBC'), '_FILE', 1);
 				if (count($items)) {
 					// Make command array:
 					$FILE = array();
@@ -276,7 +278,7 @@ class SC_file_list {
 						$FILE['delete'][] = array('data' => $v);
 					}
 					// Init file processing object for deleting and pass the cmd array.
-					$fileProcessor = t3lib_div::makeInstance('t3lib_extFileFunctions');
+					$fileProcessor = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\File\\ExtendedFileUtility');
 					$fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 					$fileProcessor->init_actionPerms($GLOBALS['BE_USER']->getFileoperationPermissions());
 					$fileProcessor->dontCheckForUnique = $this->overwriteExistingFiles ? 1 : 0;
@@ -291,7 +293,7 @@ class SC_file_list {
 				$this->MOD_SETTINGS['reverse'] = 0;
 			}
 			// Start up filelisting object, include settings.
-			$this->pointer = t3lib_utility_Math::forceIntegerInRange($this->pointer, 0, 100000);
+			$this->pointer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->pointer, 0, 100000);
 			$this->filelist->start($this->folderObject, $this->pointer, $this->MOD_SETTINGS['sort'], $this->MOD_SETTINGS['reverse'], $this->MOD_SETTINGS['clipBoard'], $this->MOD_SETTINGS['bigControlPanel']);
 			// Generate the list
 			$this->filelist->generateList();
@@ -330,15 +332,15 @@ class SC_file_list {
 				';
 				// Add "display bigControlPanel" checkbox:
 				if ($GLOBALS['BE_USER']->getTSConfigVal('options.file_list.enableDisplayBigControlPanel') === 'selectable') {
-					$pageContent .= ((t3lib_BEfunc::getFuncCheck($this->id, 'SET[bigControlPanel]', $this->MOD_SETTINGS['bigControlPanel'], '', '', 'id="bigControlPanel"') . '<label for="bigControlPanel"> ') . $GLOBALS['LANG']->getLL('bigControlPanel', TRUE)) . '</label><br />';
+					$pageContent .= ((\TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->id, 'SET[bigControlPanel]', $this->MOD_SETTINGS['bigControlPanel'], '', '', 'id="bigControlPanel"') . '<label for="bigControlPanel"> ') . $GLOBALS['LANG']->getLL('bigControlPanel', TRUE)) . '</label><br />';
 				}
 				// Add "display thumbnails" checkbox:
 				if ($GLOBALS['BE_USER']->getTSConfigVal('options.file_list.enableDisplayThumbnails') === 'selectable') {
-					$pageContent .= ((t3lib_BEfunc::getFuncCheck($this->id, 'SET[displayThumbs]', $this->MOD_SETTINGS['displayThumbs'], '', '', 'id="checkDisplayThumbs"') . ' <label for="checkDisplayThumbs">') . $GLOBALS['LANG']->getLL('displayThumbs', TRUE)) . '</label><br />';
+					$pageContent .= ((\TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->id, 'SET[displayThumbs]', $this->MOD_SETTINGS['displayThumbs'], '', '', 'id="checkDisplayThumbs"') . ' <label for="checkDisplayThumbs">') . $GLOBALS['LANG']->getLL('displayThumbs', TRUE)) . '</label><br />';
 				}
 				// Add "clipboard" checkbox:
 				if ($GLOBALS['BE_USER']->getTSConfigVal('options.file_list.enableClipBoard') === 'selectable') {
-					$pageContent .= ((t3lib_BEfunc::getFuncCheck($this->id, 'SET[clipBoard]', $this->MOD_SETTINGS['clipBoard'], '', '', 'id="checkClipBoard"') . ' <label for="checkClipBoard">') . $GLOBALS['LANG']->getLL('clipBoard', TRUE)) . '</label>';
+					$pageContent .= ((\TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->id, 'SET[clipBoard]', $this->MOD_SETTINGS['clipBoard'], '', '', 'id="checkClipBoard"') . ' <label for="checkClipBoard">') . $GLOBALS['LANG']->getLL('clipBoard', TRUE)) . '</label>';
 				}
 				$pageContent .= '
 					</div>
@@ -346,12 +348,12 @@ class SC_file_list {
 				// Set clipboard:
 				if ($this->MOD_SETTINGS['clipBoard']) {
 					$pageContent .= $this->filelist->clipObj->printClipboard();
-					$pageContent .= t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'filelist_clipboard', $GLOBALS['BACK_PATH']);
+					$pageContent .= \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'filelist_clipboard', $GLOBALS['BACK_PATH']);
 				}
 			}
 			$markerArray = array(
 				'CSH' => $docHeaderButtons['csh'],
-				'FUNC_MENU' => t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
+				'FUNC_MENU' => \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
 				'CONTENT' => $pageContent
 			);
 			$this->content = $this->doc->moduleBody(array(), $docHeaderButtons, array_merge($markerArray, $otherMarkers));
@@ -395,18 +397,19 @@ class SC_file_list {
 			$buttons['shortcut'] = $this->doc->makeShortcutIcon('pointer,id,target,table', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name']);
 		}
 		// FileList Module CSH:
-		$buttons['csh'] = t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'filelist_module', $GLOBALS['BACK_PATH'], '', TRUE);
+		$buttons['csh'] = \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'filelist_module', $GLOBALS['BACK_PATH'], '', TRUE);
 		// Upload button (only if upload to this directory is allowed)
 		if (($this->folderObject && $this->folderObject->getStorage()->checkUserActionPermission('upload', 'File')) && $this->folderObject->checkActionPermission('write')) {
-			$buttons['upload'] = ((((((((('<a href="' . $GLOBALS['BACK_PATH']) . 'file_upload.php?target=') . rawurlencode($this->folderObject->getCombinedIdentifier())) . '&amp;returnUrl=') . rawurlencode($this->filelist->listURL())) . '" id="button-upload" title="') . $GLOBALS['LANG']->makeEntities($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:cm.upload', 1))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-edit-upload')) . '</a>';
+			$buttons['upload'] = ((((((((('<a href="' . $GLOBALS['BACK_PATH']) . 'file_upload.php?target=') . rawurlencode($this->folderObject->getCombinedIdentifier())) . '&amp;returnUrl=') . rawurlencode($this->filelist->listURL())) . '" id="button-upload" title="') . $GLOBALS['LANG']->makeEntities($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:cm.upload', 1))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-upload')) . '</a>';
 		}
 		// New folder button
 		if ($this->folderObject && $this->folderObject->checkActionPermission('add')) {
-			$buttons['new'] = ((((((((('<a href="' . $GLOBALS['BACK_PATH']) . 'file_newfolder.php?target=') . rawurlencode($this->folderObject->getCombinedIdentifier())) . '&amp;returnUrl=') . rawurlencode($this->filelist->listURL())) . '" title="') . $GLOBALS['LANG']->makeEntities($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:cm.new', 1))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-document-new')) . '</a>';
+			$buttons['new'] = ((((((((('<a href="' . $GLOBALS['BACK_PATH']) . 'file_newfolder.php?target=') . rawurlencode($this->folderObject->getCombinedIdentifier())) . '&amp;returnUrl=') . rawurlencode($this->filelist->listURL())) . '" title="') . $GLOBALS['LANG']->makeEntities($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:cm.new', 1))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-new')) . '</a>';
 		}
 		return $buttons;
 	}
 
 }
+
 
 ?>

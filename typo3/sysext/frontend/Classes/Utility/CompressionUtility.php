@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_cms
  */
-class tslib_fecompression implements t3lib_Singleton {
+class CompressionUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Accumulates content length for the compressed content. It is necessary to
@@ -72,5 +74,6 @@ class tslib_fecompression implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

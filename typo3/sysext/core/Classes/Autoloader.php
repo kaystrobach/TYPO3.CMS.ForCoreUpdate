@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @author Sebastian Kurfürst <sebastian@typo3.org>
  * @author Christian Kuhn <lolli@schwarzbu.ch>
  */
-class t3lib_autoloader {
+class Autoloader {
 
 	/**
 	 * Class name to file mapping. Key: class name. Value: fully qualified file name.
@@ -46,6 +48,20 @@ class t3lib_autoloader {
 	 * @var array
 	 */
 	static protected $classNameToFileMapping = array();
+
+	/**
+	 * Old class name to new class name mapping
+	 *
+	 * @var array
+	 */
+	static protected $aliasToClassNameMapping = array();
+
+	/**
+	 * New class name to old class name mapping
+	 *
+	 * @var array
+	 */
+	static protected $classNameToAliasMapping = array();
 
 	/**
 	 * Name of cache entry identifier in autoload cache
@@ -78,8 +94,9 @@ class t3lib_autoloader {
 	 * @return boolean TRUE in case of success
 	 */
 	static public function registerAutoloader() {
+		self::loadCoreClassAliasMapping();
 		self::loadCoreAndExtensionRegistry();
-		return spl_autoload_register('t3lib_autoloader::autoload', TRUE, TRUE);
+		return spl_autoload_register('TYPO3\\CMS\\Core\\Autoloader::autoload', TRUE, TRUE);
 	}
 
 	/**
@@ -96,7 +113,7 @@ class t3lib_autoloader {
 			self::$cacheUpdateRequired = FALSE;
 		}
 		self::$classNameToFileMapping = array();
-		return spl_autoload_unregister('t3lib_autoloader::autoload');
+		return spl_autoload_unregister('TYPO3\\CMS\\Core\\Autoloader::autoload');
 	}
 
 	/**
@@ -109,11 +126,14 @@ class t3lib_autoloader {
 	 * @return void
 	 */
 	static public function autoload($className) {
+		$className = ltrim($className, '\\');
+		$realClassName = self::getClassNameForAlias($className);
+		$lookUpClassName = ($hasRealClassName = $className !== $realClassName) ? $realClassName : $className;
 		// Use core and extension registry
-		$classPath = self::getClassPathByRegistryLookup($className);
-		if ($classPath) {
+		$classPath = self::getClassPathByRegistryLookup($lookUpClassName);
+		if ($classPath && !class_exists($realClassName, false)) {
 			// Include the required file that holds the class
-			t3lib_div::requireFile($classPath);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::requireOnce($classPath);
 		} else {
 			try {
 				// Regular expression for a valid classname taken from
@@ -121,9 +141,12 @@ class t3lib_autoloader {
 				if (preg_match('/^[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*$/', $className)) {
 					spl_autoload($className);
 				}
-			} catch (LogicException $exception) {
+			} catch (\LogicException $exception) {
 
 			}
+		}
+		if ($hasRealClassName && !class_exists($className, false)) {
+			class_alias($realClassName, $className);
 		}
 	}
 
@@ -134,7 +157,7 @@ class t3lib_autoloader {
 	 * @return void
 	 */
 	static protected function loadCoreAndExtensionRegistry() {
-		/** @var $phpCodeCache t3lib_cache_frontend_PhpFrontend */
+		/** @var $phpCodeCache \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend */
 		$phpCodeCache = $GLOBALS['typo3CacheManager']->getCache('cache_core');
 		// Create autoload cache file if it does not exist yet
 		if ($phpCodeCache->has(self::getAutoloadCacheIdentifier())) {
@@ -156,6 +179,30 @@ class t3lib_autoloader {
 		self::$classNameToFileMapping = $classRegistry;
 	}
 
+	static public function loadCoreClassAliasMapping() {
+		self::$aliasToClassNameMapping = require_once __DIR__ . '/../Migrations/Code/ClassAliasMap201208221700.php';
+		// Create aliases for early loaded classes
+		$classedLoadedPriorToAutoloader = array_intersect(self::$aliasToClassNameMapping, get_declared_classes());
+		if (!empty($classedLoadedPriorToAutoloader)) {
+			foreach ($classedLoadedPriorToAutoloader as $oldClassName => $newClassName) {
+				class_alias($newClassName, $oldClassName);
+			}
+		}
+		foreach (self::$aliasToClassNameMapping as $oldClassName => $newClassName) {
+			self::$aliasToClassNameMapping[strtolower($oldClassName)] = $newClassName;
+		}
+		self::$classNameToAliasMapping = array_flip(self::$aliasToClassNameMapping);
+	}
+
+	static public function getClassNameForAlias($className) {
+		$lookUpClassName = strtolower($className);
+		return isset(self::$aliasToClassNameMapping[$lookUpClassName]) ? self::$aliasToClassNameMapping[$lookUpClassName] : $className;
+	}
+
+	static public function getAliasForClassName($alias) {
+		return isset(self::$classNameToAliasMapping[$alias]) ? self::$classNameToAliasMapping[$alias] : $alias;
+	}
+
 	/**
 	 * Get the full path to a class by looking it up in the registry.
 	 * If not found, returns NULL.
@@ -169,9 +216,9 @@ class t3lib_autoloader {
 	 */
 	static public function getClassPathByRegistryLookup($className) {
 		$classPath = NULL;
-		$classNameLower = t3lib_div::strtolower($className);
+		$classNameLower = \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($className);
 		// Try to resolve extbase naming scheme if class is not already in cache file
-		if (!array_key_exists($classNameLower, self::$classNameToFileMapping)) {
+		if (substr($classNameLower, 0, 3) !== 'ux_' && !array_key_exists($classNameLower, self::$classNameToFileMapping)) {
 			self::attemptToLoadRegistryWithNamingConventionForGivenClassName($className);
 		}
 		// Look up class name in cache file
@@ -191,16 +238,17 @@ class t3lib_autoloader {
 	 * @return array
 	 */
 	static protected function createCoreAndExtensionRegistry() {
-		$classRegistry = require PATH_t3lib . 'core_autoload.php';
+		// TODO reenable
+		$classRegistry = array();
 		// At this point during bootstrap the local configuration is initialized,
 		// extMgm is ready to get the list of enabled extensions
-		foreach (t3lib_extMgm::getLoadedExtensionListArray() as $extensionKey) {
+		foreach (\TYPO3\CMS\Core\Extension\ExtensionManager::getLoadedExtensionListArray() as $extensionKey) {
 			try {
-				$extensionAutoloadFile = t3lib_extMgm::extPath($extensionKey, 'ext_autoload.php');
+				$extensionAutoloadFile = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($extensionKey, 'ext_autoload.php');
 				if (@file_exists($extensionAutoloadFile)) {
 					$classRegistry = array_merge($classRegistry, require $extensionAutoloadFile);
 				}
-			} catch (BadFunctionCallException $e) {
+			} catch (\BadFunctionCallException $e) {
 
 			}
 		}
@@ -225,15 +273,21 @@ class t3lib_autoloader {
 			$tempClassName = ltrim($className, '\\');
 			$delimiter = '\\';
 		}
-		$classNameParts = explode($delimiter, $tempClassName, 3);
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($classNameParts[1]);
+		$classNameParts = explode($delimiter, $tempClassName, 4);
+		if (((isset($classNameParts[0]) && $classNameParts[0] === 'TYPO3') && isset($classNameParts[1])) && $classNameParts[1] === 'CMS') {
+			$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($classNameParts[2]);
+			$classNameWithoutVendorAndProduct = $classNameParts[3];
+		} else {
+			$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($classNameParts[1]);
+			$classNameWithoutVendorAndProduct = $classNameParts[2];
+		}
 		if ($extensionKey) {
 			try {
 				// This will throw a BadFunctionCallException if the extension is not loaded
-				$extensionPath = t3lib_extMgm::extPath($extensionKey);
-				$classFilePathAndName = (($extensionPath . 'Classes/') . strtr($classNameParts[2], $delimiter, '/')) . '.php';
+				$extensionPath = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($extensionKey);
+				$classFilePathAndName = (($extensionPath . 'Classes/') . strtr($classNameWithoutVendorAndProduct, $delimiter, '/')) . '.php';
 				self::addClassToCache($classFilePathAndName, $className);
-			} catch (BadFunctionCallException $exception) {
+			} catch (\BadFunctionCallException $exception) {
 
 			}
 		}
@@ -250,7 +304,7 @@ class t3lib_autoloader {
 	static protected function addClassToCache($classFilePathAndName, $className) {
 		if (file_exists($classFilePathAndName)) {
 			self::$cacheUpdateRequired = TRUE;
-			self::$classNameToFileMapping[t3lib_div::strtolower($className)] = $classFilePathAndName;
+			self::$classNameToFileMapping[\TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($className)] = $classFilePathAndName;
 		}
 	}
 
@@ -301,11 +355,12 @@ class t3lib_autoloader {
 	static protected function lowerCaseClassRegistry($registry) {
 		$lowerCasedClassRegistry = array();
 		foreach ($registry as $className => $classFile) {
-			$lowerCasedClassRegistry[t3lib_div::strtolower($className)] = $classFile;
+			$lowerCasedClassRegistry[\TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($className)] = $classFile;
 		}
 		return $lowerCasedClassRegistry;
 	}
 
 }
+
 
 ?>

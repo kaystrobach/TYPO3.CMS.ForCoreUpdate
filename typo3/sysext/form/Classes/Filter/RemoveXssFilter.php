@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Removexss implements tx_form_System_Filter_Interface {
+class RemoveXssFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Return filtered value
@@ -42,10 +44,11 @@ class tx_form_System_Filter_Removexss implements tx_form_System_Filter_Interface
 	public function filter($value) {
 		$value = stripslashes($value);
 		$value = html_entity_decode($value, ENT_QUOTES);
-		$filteredValue = t3lib_div::removeXSS($value);
+		$filteredValue = \TYPO3\CMS\Core\Utility\GeneralUtility::removeXSS($value);
 		return $filteredValue;
 	}
 
 }
+
 
 ?>

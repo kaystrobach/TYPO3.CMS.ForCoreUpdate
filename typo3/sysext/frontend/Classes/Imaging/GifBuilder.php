@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Imaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -54,7 +56,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_gifBuilder extends t3lib_stdGraphic {
+class GifBuilder extends \TYPO3\CMS\Core\Imaging\GraphicalFunctions {
 
 	// Internal
 	// the main image
@@ -141,7 +143,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 		if (is_array($conf)) {
 			$this->setup = $conf;
 			$this->data = $data;
-			$this->cObj = t3lib_div::makeInstance('tslib_cObj');
+			$this->cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 			$this->cObj->start($this->data);
 			// Hook preprocess gifbuilder conf
 			// Added by Julle for 3.8.0
@@ -152,7 +154,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_gifbuilder.php']['gifbuilder-ConfPreProcess'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_gifbuilder.php']['gifbuilder-ConfPreProcess'] as $_funcRef) {
 					$_params = $this->setup;
-					$this->setup = t3lib_div::callUserFunction($_funcRef, $_params, $this);
+					$this->setup = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 			// Initializing global Char Range Map
@@ -171,7 +173,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 				}
 			}
 			// Getting sorted list of TypoScript keys from setup.
-			$sKeyArray = t3lib_TStemplate::sortedKeyList($this->setup);
+			$sKeyArray = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($this->setup);
 			// Setting the background color, passing it through stdWrap
 			if ($conf['backColor.'] || $conf['backColor']) {
 				$this->setup['backColor'] = isset($this->setup['backColor.']) ? trim($this->cObj->stdWrap($this->setup['backColor'], $this->setup['backColor.'])) : $this->setup['backColor'];
@@ -238,7 +240,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 					}
 					// Checks if disabled is set... (this is also done in menu.php / imgmenu!!)
 					if ($conf['if.']) {
-						$cObj = t3lib_div::makeInstance('tslib_cObj');
+						$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 						$cObj->start($this->data);
 						if (!$cObj->checkIf($conf['if.'])) {
 							unset($this->setup[$theKey]);
@@ -315,15 +317,15 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 				}
 			}
 			// Get trivial data
-			$XY = t3lib_div::intExplode(',', $this->setup['XY']);
+			$XY = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->setup['XY']);
 			$maxWidth = isset($this->setup['maxWidth.']) ? intval($this->cObj->stdWrap($this->setup['maxWidth'], $this->setup['maxWidth.'])) : intval($this->setup['maxWidth']);
 			$maxHeight = isset($this->setup['maxHeight.']) ? intval($this->cObj->stdWrap($this->setup['maxHeight'], $this->setup['maxHeight.'])) : intval($this->setup['maxHeight']);
-			$XY[0] = t3lib_utility_Math::forceIntegerInRange($XY[0], 1, $maxWidth ? $maxWidth : 2000);
-			$XY[1] = t3lib_utility_Math::forceIntegerInRange($XY[1], 1, $maxHeight ? $maxHeight : 2000);
+			$XY[0] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($XY[0], 1, $maxWidth ? $maxWidth : 2000);
+			$XY[1] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($XY[1], 1, $maxHeight ? $maxHeight : 2000);
 			$this->XY = $XY;
 			$this->w = $XY[0];
 			$this->h = $XY[1];
-			$this->OFFSET = t3lib_div::intExplode(',', $this->setup['offset']);
+			$this->OFFSET = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->setup['offset']);
 			// this sets the workArea
 			$this->setWorkArea($this->setup['workArea']);
 			// this sets the default to the current;
@@ -396,7 +398,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 		}
 		// Traverse the GIFBUILDER objects an render each one:
 		if (is_array($this->setup)) {
-			$sKeyArray = t3lib_TStemplate::sortedKeyList($this->setup);
+			$sKeyArray = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($this->setup);
 			foreach ($sKeyArray as $theKey) {
 				$theValue = $this->setup[$theKey];
 				if (intval($theKey) && ($conf = $this->setup[$theKey . '.'])) {
@@ -538,7 +540,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function checkTextObj($conf) {
-		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$cObj->start($this->data);
 		$isStdWrapped = array();
 		foreach ($conf as $key => $value) {
@@ -636,7 +638,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 */
 	public function calcOffset($string) {
 		$value = array();
-		$numbers = t3lib_div::trimExplode(',', $this->calculateFunctions($string));
+		$numbers = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->calculateFunctions($string));
 		foreach ($numbers as $key => $val) {
 			if ((string) $val == (string) intval($val)) {
 				$value[$key] = intval($val);
@@ -659,10 +661,10 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function getResource($file, $fileArray) {
-		if (!t3lib_div::inList($this->imageFileExt, $fileArray['ext'])) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->imageFileExt, $fileArray['ext'])) {
 			$fileArray['ext'] = $this->gifExtension;
 		}
-		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$cObj->start($this->data);
 		return $cObj->getImgResource($file, $fileArray);
 	}
@@ -691,14 +693,14 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	public function fileName($pre) {
 		$meaningfulPrefix = '';
 		if ($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']) {
-			/** @var $basicFileFunctions t3lib_basicFileFunctions */
-			$basicFileFunctions = t3lib_div::makeInstance('t3lib_basicFileFunctions');
+			/** @var $basicFileFunctions \TYPO3\CMS\Core\Utility\File\BasicFileUtility */
+			$basicFileFunctions = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\File\\BasicFileUtility');
 			$meaningfulPrefix = implode('_', array_merge($this->combinedTextStrings, $this->combinedFileNames));
 			$meaningfulPrefix = $basicFileFunctions->cleanFileName($meaningfulPrefix);
 			$meaningfulPrefixLength = intval($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']);
 			if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['UTF8filesystem']) {
-				/** @var $t3libCsInstance t3lib_cs */
-				$t3libCsInstance = t3lib_div::makeInstance('t3lib_cs');
+				/** @var $t3libCsInstance \TYPO3\CMS\Core\Charset\CharsetConverter */
+				$t3libCsInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 				$meaningfulPrefix = $t3libCsInstance->substr('utf-8', $meaningfulPrefix, 0, $meaningfulPrefixLength);
 			} else {
 				$meaningfulPrefix = substr($meaningfulPrefix, 0, $meaningfulPrefixLength);
@@ -709,7 +711,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 		// Not only the wrong glyphs are printed but also some memory stack overflow resulted in strange additional
 		// chars - and finally the reason for this investigation: The Bounding box data was changing all the time
 		// resulting in new images being generated all the time. With PHP4 it works fine.
-		return (((($this->tempPath . $pre) . $meaningfulPrefix) . t3lib_div::shortMD5(serialize($this->setup))) . '.') . $this->extension();
+		return (((($this->tempPath . $pre) . $meaningfulPrefix) . \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(serialize($this->setup))) . '.') . $this->extension();
 	}
 
 	/**
@@ -747,7 +749,7 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 */
 	protected function calculateValue($string) {
 		$calculatedValue = 0;
-		$parts = t3lib_div::splitCalc($string, '+-*/%');
+		$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::splitCalc($string, '+-*/%');
 		foreach ($parts as $part) {
 			$theVal = $part[1];
 			$sign = $part[0];
@@ -809,11 +811,12 @@ class tslib_gifBuilder extends t3lib_stdGraphic {
 	 * @return integer The maxium value of the given comma separated and calculated values
 	 */
 	protected function calculateMaximum($string) {
-		$parts = t3lib_div::trimExplode(',', $this->calcOffset($string), TRUE);
+		$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->calcOffset($string), TRUE);
 		$maximum = count($parts) ? max($parts) : 0;
 		return $maximum;
 	}
 
 }
+
 
 ?>

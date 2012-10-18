@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\DataHandling;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,17 +33,18 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_TCEmain_checkModifyAccessListHook
+interface DataHandlerCheckModifyAccessListHookInterface
 {
 	/**
 	 * Hook that determines whether a user has access to modify a table.
 	 *
 	 * @param boolean &$accessAllowed Whether the user has access to modify a table
 	 * @param string $table The name of the table to be modified
-	 * @param t3lib_TCEmain $parent The calling parent object
+	 * @param \TYPO3\CMS\Core\DataHandler\DataHandler $parent The calling parent object
 	 * @return void
 	 */
-	public function checkModifyAccessList(&$accessAllowed, $table, t3lib_TCEmain $parent);
+	public function checkModifyAccessList(&$accessAllowed, $table, \TYPO3\CMS\Core\DataHandler\DataHandler $parent);
 
 }
+
 ?>

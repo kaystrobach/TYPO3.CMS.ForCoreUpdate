@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @subpackage install
  * @author Helge Funk <helge.funk@e-net.info>
  */
-class tx_coreupdates_localConfiguration extends Tx_Install_Updates_Base {
+class LocalConfigurationUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	/**
 	 * @var string The title
@@ -77,7 +79,7 @@ class tx_coreupdates_localConfiguration extends Tx_Install_Updates_Base {
 				$matches = array();
 				// Convert extList to array
 				if (preg_match('/^\\$TYPO3_CONF_VARS\\[\'EXT\'\\]\\[\'extList\'\\] *={1} *\'(.+)\';{1}/', $line, $matches) === 1) {
-					$extListAsArray = t3lib_div::trimExplode(',', $matches[1], TRUE);
+					$extListAsArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $matches[1], TRUE);
 					$typo3ConfigurationVariables[] = ('$TYPO3_CONF_VARS[\'EXT\'][\'extListArray\'] = ' . var_export($extListAsArray, TRUE)) . ';';
 					$typo3ConfigurationVariables[] = ('$TYPO3_CONF_VARS[\'EXT\'][\'extList\'] = \'' . $matches[1]) . '\';';
 				} elseif (preg_match('/^\\$TYPO3_CONF_VARS.+;{1}/', $line, $matches) === 1) {
@@ -105,23 +107,24 @@ class tx_coreupdates_localConfiguration extends Tx_Install_Updates_Base {
 			eval(implode(LF, $typo3ConfigurationVariables));
 			// Add db settings to array
 			$TYPO3_CONF_VARS['DB'] = $typo3DatabaseVariables;
-			$TYPO3_CONF_VARS = t3lib_utility_Array::sortByKeyRecursive($TYPO3_CONF_VARS);
+			$TYPO3_CONF_VARS = \TYPO3\CMS\Core\Utility\ArrayUtility::sortByKeyRecursive($TYPO3_CONF_VARS);
 			// Write out new LocalConfiguration file
-			t3lib_div::writeFile(PATH_site . t3lib_Configuration::LOCAL_CONFIGURATION_FILE, ((((('<?php' . LF) . 'return ') . t3lib_utility_Array::arrayExport($TYPO3_CONF_VARS)) . ';') . LF) . '?>');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_site . \TYPO3\CMS\Core\Configuration\ConfigurationManager::LOCAL_CONFIGURATION_FILE, ((((('<?php' . LF) . 'return ') . \TYPO3\CMS\Core\Utility\ArrayUtility::arrayExport($TYPO3_CONF_VARS)) . ';') . LF) . '?>');
 			// Write out new AdditionalConfiguration file
 			if (sizeof($additionalConfiguration) > 0) {
-				t3lib_div::writeFile(PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE, ((('<?php' . LF) . implode(LF, $additionalConfiguration)) . LF) . '?>');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile(PATH_site . \TYPO3\CMS\Core\Configuration\ConfigurationManager::ADDITIONAL_CONFIGURATION_FILE, ((('<?php' . LF) . implode(LF, $additionalConfiguration)) . LF) . '?>');
 			} else {
-				@unlink((PATH_site . t3lib_Configuration::ADDITIONAL_CONFIGURATION_FILE));
+				@unlink((PATH_site . \TYPO3\CMS\Core\Configuration\ConfigurationManager::ADDITIONAL_CONFIGURATION_FILE));
 			}
 			rename(PATH_site . 'typo3conf/localconf.php', PATH_site . 'typo3conf/localconf.obsolete.php');
 			$result = TRUE;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 		}
 		return $result;
 	}
 
 }
+
 
 ?>

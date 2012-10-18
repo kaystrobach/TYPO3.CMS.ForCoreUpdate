@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Cli\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_cli {
+class CommandLineController {
 
 	// Command line arguments, exploded into key => value-array pairs
 	/**
@@ -138,7 +140,7 @@ class t3lib_cli {
 		$index = '_DEFAULT';
 		foreach ($_SERVER['argv'] as $token) {
 			// Options starting with a number is invalid - they could be negative values!
-			if ($token[0] === '-' && !t3lib_utility_Math::canBeInterpretedAsInteger($token[1])) {
+			if ($token[0] === '-' && !\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($token[1])) {
 				list($index, $opt) = explode('=', $token, 2);
 				if (isset($cli_options[$index])) {
 					echo (('ERROR: Option ' . $index) . ' was used twice!') . LF;
@@ -167,7 +169,7 @@ class t3lib_cli {
 		$allOptions = array();
 		foreach ($this->cli_options as $cfg) {
 			$allOptions[] = $cfg[0];
-			$argSplit = t3lib_div::trimExplode(' ', $cfg[0], 1);
+			$argSplit = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $cfg[0], 1);
 			if (isset($cli_args_copy[$argSplit[0]])) {
 				foreach ($argSplit as $i => $v) {
 					$ii = $i;
@@ -220,7 +222,7 @@ class t3lib_cli {
 	public function cli_keyboardInput_yes($msg = '') {
 		// ONLY makes sense to echo it out since we are awaiting keyboard input - that cannot be silenced
 		echo $msg . ' (Yes/No + return): ';
-		return t3lib_div::inList('y,yes', strtolower($this->cli_keyboardInput()));
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::inList('y,yes', strtolower($this->cli_keyboardInput()));
 	}
 
 	/**
@@ -306,5 +308,6 @@ class t3lib_cli {
 	}
 
 }
+
 
 ?>

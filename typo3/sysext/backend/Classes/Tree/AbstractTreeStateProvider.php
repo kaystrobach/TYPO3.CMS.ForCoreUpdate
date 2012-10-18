@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_tree_AbstractStateProvider {
+abstract class AbstractTreeStateProvider {
 
 	/**
 	 * Sets the current tree state
@@ -50,5 +52,6 @@ abstract class t3lib_tree_AbstractStateProvider {
 	abstract public function getState();
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_pagetree_Indicator {
+class Indicator {
 
 	/**
 	 * Indicator Providers
@@ -56,9 +58,9 @@ class t3lib_tree_pagetree_Indicator {
 			return;
 		}
 		foreach ($providers as $indicatorProvider) {
-			/** @var $indicatorProviderInstance t3lib_tree_pagetree_interfaces_IndicatorProvider */
-			$indicatorProviderInstance = t3lib_div::makeInstance($indicatorProvider);
-			if ($indicatorProviderInstance instanceof t3lib_tree_pagetree_interfaces_IndicatorProvider) {
+			/** @var $indicatorProviderInstance \TYPO3\CMS\Backend\Tree\Pagetree\IndicatorProviderInterface */
+			$indicatorProviderInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($indicatorProvider);
+			if ($indicatorProviderInstance instanceof \TYPO3\CMS\Backend\Tree\Pagetree\IndicatorProviderInterface) {
 				$this->indicatorProviders[] = $indicatorProviderInstance;
 			}
 		}
@@ -81,5 +83,6 @@ class t3lib_tree_pagetree_Indicator {
 	}
 
 }
+
 
 ?>

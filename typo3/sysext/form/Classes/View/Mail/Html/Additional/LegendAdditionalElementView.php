@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Html\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Html_Additional_Legend extends tx_form_View_Mail_Html_Additional {
+class LegendAdditionalElementView extends \TYPO3\CMS\Form\View\Mail\Html\Additional\AdditionalElementView {
 
 	/**
 	 * Default layout of this object
@@ -46,5 +48,6 @@ class tx_form_View_Mail_Html_Additional_Legend extends tx_form_View_Mail_Html_Ad
 	';
 
 }
+
 
 ?>

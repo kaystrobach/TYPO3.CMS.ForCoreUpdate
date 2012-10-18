@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu\Renderer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,35 +33,36 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_contextmenu_renderer_Abstract {
+abstract class AbstractContextMenuRenderer {
 
 	/**
 	 * Renders an action recursive or just a single one
 	 *
-	 * @param t3lib_contextmenu_Action $action
+	 * @param \TYPO3\CMS\Backend\ContextMenu\ContextMenuAction $action
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderAction(t3lib_contextmenu_Action $action, $recursive = FALSE);
+	abstract public function renderAction(\TYPO3\CMS\Backend\ContextMenu\ContextMenuAction $action, $recursive = FALSE);
 
 	/**
 	 * Renders an action collection recursive or just a single one
 	 *
-	 * @param t3lib_contextmenu_ActionCollection $actionCollection
+	 * @param \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection $actionCollection
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderActionCollection(t3lib_contextmenu_ActionCollection $actionCollection, $recursive = FALSE);
+	abstract public function renderActionCollection(\TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection $actionCollection, $recursive = FALSE);
 
 	/**
 	 * Renders a context menu recursive or just a single one
 	 *
-	 * @param t3lib_contextmenu_AbstractContextMenu $contextMenu
+	 * @param \TYPO3\CMS\Backend\ContextMenu\AbstractContextMenu $contextMenu
 	 * @param boolean $recursive
 	 * @return mixed
 	 */
-	abstract public function renderContextMenu(t3lib_contextmenu_AbstractContextMenu $contextMenu, $recursive = FALSE);
+	abstract public function renderContextMenu(\TYPO3\CMS\Backend\ContextMenu\AbstractContextMenu $contextMenu, $recursive = FALSE);
 
 }
+
 
 ?>

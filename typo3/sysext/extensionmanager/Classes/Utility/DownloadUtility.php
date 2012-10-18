@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,15 +33,15 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
+class DownloadUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Connection_Ter
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\Connection\TerUtility
 	 */
 	protected $terUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Repository_Helper
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\Repository\Helper
 	 */
 	protected $repositoryHelper;
 
@@ -49,41 +51,41 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	protected $downloadPath = 'Local';
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Connection_Ter $terUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\Connection\TerUtility $terUtility
 	 * @return void
 	 */
-	public function injectTerUtility(Tx_Extensionmanager_Utility_Connection_Ter $terUtility) {
+	public function injectTerUtility(\TYPO3\CMS\Extensionmanager\Utility\Connection\TerUtility $terUtility) {
 		$this->terUtility = $terUtility;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\Repository\Helper $repositoryHelper
 	 * @return void
 	 */
-	public function injectRepositoryHelper(Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper) {
+	public function injectRepositoryHelper(\TYPO3\CMS\Extensionmanager\Utility\Repository\Helper $repositoryHelper) {
 		$this->repositoryHelper = $repositoryHelper;
 	}
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_FileHandling
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility
 	 */
 	protected $fileHandlingUtility;
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_FileHandling $fileHandlingUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility $fileHandlingUtility
 	 * @return void
 	 */
-	public function injectFileHandlingUtility(Tx_Extensionmanager_Utility_FileHandling $fileHandlingUtility) {
+	public function injectFileHandlingUtility(\TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility $fileHandlingUtility) {
 		$this->fileHandlingUtility = $fileHandlingUtility;
 	}
 
 	/**
 	 * Download an extension
 	 *
-	 * @param Tx_Extensionmanager_Domain_Model_Extension $extension
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension
 	 * @return void
 	 */
-	public function download(Tx_Extensionmanager_Domain_Model_Extension $extension) {
+	public function download(\TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension) {
 		$mirrorUrl = $this->repositoryHelper->getMirrors()->getMirrorUrl();
 		$fetchedExtension = $this->terUtility->fetchExtension($extension->getExtensionKey(), $extension->getVersion(), $extension->getMd5hash(), $mirrorUrl);
 		if ((isset($fetchedExtension['extKey']) && !empty($fetchedExtension['extKey'])) && is_string($fetchedExtension['extKey'])) {
@@ -95,12 +97,12 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	 * Set the download path
 	 *
 	 * @param string $downloadPath
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return void
 	 */
 	public function setDownloadPath($downloadPath) {
-		if (!in_array($downloadPath, Tx_Extensionmanager_Domain_Model_Extension::returnAllowedInstallTypes())) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(htmlspecialchars($downloadPath) . ' not in allowed download paths', 1344766387);
+		if (!in_array($downloadPath, \TYPO3\CMS\Extensionmanager\Domain\Model\Extension::returnAllowedInstallTypes())) {
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(htmlspecialchars($downloadPath) . ' not in allowed download paths', 1344766387);
 		}
 		$this->downloadPath = $downloadPath;
 	}
@@ -115,5 +117,6 @@ class Tx_Extensionmanager_Utility_Download implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

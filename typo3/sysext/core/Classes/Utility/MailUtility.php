@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_utility_Mail {
+final class MailUtility {
 
 	/**
 	 * Proxy for the PHP mail() function. Adds possibility to hook in and send the mails in a different way.
@@ -72,13 +74,13 @@ final class t3lib_utility_Mail {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/utility/class.t3lib_utility_mail.php']['substituteMailDelivery'] as $hookSubscriber) {
 				$hookSubscriberContainsArrow = strpos($hookSubscriber, '->');
 				if ($hookSubscriberContainsArrow !== FALSE) {
-					throw new RuntimeException($hookSubscriber . ' is an invalid hook implementation. Please consider using an implementation of t3lib_mail_MailerAdapter.', 1322287600);
+					throw new \RuntimeException($hookSubscriber . ' is an invalid hook implementation. Please consider using an implementation of TYPO3\\CMS\\Core\\Mail\\MailerAdapter.', 1322287600);
 				} else {
-					$mailerAdapter = t3lib_div::makeInstance($hookSubscriber);
-					if ($mailerAdapter instanceof t3lib_mail_MailerAdapter) {
+					$mailerAdapter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($hookSubscriber);
+					if ($mailerAdapter instanceof \TYPO3\CMS\Core\Mail\MailerAdapterInterface) {
 						$success = $success && $mailerAdapter->mail($to, $subject, $messageBody, $additionalHeaders, $additionalParameters, $fakeThis);
 					} else {
-						throw new RuntimeException($hookSubscriber . ' is not an implementation of t3lib_mail_MailerAdapter,
+						throw new \RuntimeException($hookSubscriber . ' is not an implementation of TYPO3\\CMS\\Core\\Mail\\MailerAdapter,
 							but must implement that interface to be used in the substituteMailDelivery hook.', 1294062286);
 					}
 				}
@@ -91,7 +93,7 @@ final class t3lib_utility_Mail {
 			}
 		}
 		if (!$success) {
-			t3lib_div::sysLog(((('Mail to "' . $to) . '" could not be sent (Subject: "') . $subject) . '").', 'Core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(((('Mail to "' . $to) . '" could not be sent (Subject: "') . $subject) . '").', 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 		}
 		return $success;
 	}
@@ -146,13 +148,13 @@ final class t3lib_utility_Mail {
 	static public function getSystemFromAddress() {
 		// default, first check the localconf setting
 		$address = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-		if (!t3lib_div::validEmail($address)) {
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($address)) {
 			// just get us a domain record we can use as the host
 			$host = '';
 			$domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('domainName', 'sys_domain', 'hidden = 0', '', 'pid ASC, sorting ASC');
 			if (!empty($domainRecord['domainName'])) {
 				$tempUrl = $domainRecord['domainName'];
-				if (!t3lib_div::isFirstPartOfStr($tempUrl, 'http')) {
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($tempUrl, 'http')) {
 					// shouldn't be the case anyways, but you never know
 					// ... there're crazy people out there
 					$tempUrl = 'http://' . $tempUrl;
@@ -160,10 +162,10 @@ final class t3lib_utility_Mail {
 				$host = parse_url($tempUrl, PHP_URL_HOST);
 			}
 			$address = 'no-reply@' . $host;
-			if (!t3lib_div::validEmail($address)) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($address)) {
 				// still nothing, get host name from server
 				$address = 'no-reply@' . php_uname('n');
-				if (!t3lib_div::validEmail($address)) {
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($address)) {
 					// if everything fails use a dummy address
 					$address = 'no-reply@example.com';
 				}
@@ -217,5 +219,6 @@ final class t3lib_utility_Mail {
 	}
 
 }
+
 
 ?>

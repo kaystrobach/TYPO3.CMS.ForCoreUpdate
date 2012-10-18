@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage scheduler
  */
-class tx_scheduler_TableGarbageCollection extends tx_scheduler_Task {
+class TableGarbageCollectionTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * @var boolean True if all tables should be cleaned up
@@ -58,7 +60,7 @@ class tx_scheduler_TableGarbageCollection extends tx_scheduler_Task {
 	 * @return boolean TRUE if task run was successful
 	 */
 	public function execute() {
-		$tableConfigurations = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_scheduler_TableGarbageCollection']['options']['tables'];
+		$tableConfigurations = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['TYPO3\\CMS\\Scheduler\\Scheduler_TableGarbageCollection']['options']['tables'];
 		$tableHandled = FALSE;
 		foreach ($tableConfigurations as $tableName => $configuration) {
 			if ($this->allTables || $tableName === $this->table) {
@@ -67,7 +69,7 @@ class tx_scheduler_TableGarbageCollection extends tx_scheduler_Task {
 			}
 		}
 		if (!$tableHandled) {
-			throw new RuntimeException(('tx_scheduler_TableGarbageCollection misconfiguration: ' . $this->table) . ' does not exist in configuration', 1308354399);
+			throw new \RuntimeException(('TYPO3\\CMS\\Scheduler\\Scheduler_TableGarbageCollection misconfiguration: ' . $this->table) . ' does not exist in configuration', 1308354399);
 		}
 		return TRUE;
 	}
@@ -93,18 +95,18 @@ class tx_scheduler_TableGarbageCollection extends tx_scheduler_Task {
 				$deleteTimestamp = strtotime(('-' . $this->numberOfDays) . 'days');
 			} else {
 				if (!isset($configuration['expirePeriod'])) {
-					throw new RuntimeException('tx_scheduler_TableGarbageCollection misconfiguration: No expirePeriod defined for table ' . $table, 1308355095);
+					throw new \RuntimeException('TYPO3\\CMS\\Scheduler\\Scheduler_TableGarbageCollection misconfiguration: No expirePeriod defined for table ' . $table, 1308355095);
 				}
 				$deleteTimestamp = strtotime(('-' . $configuration['expirePeriod']) . 'days');
 			}
 			$where = ($configuration['dateField'] . ' < ') . $deleteTimestamp;
 		} else {
-			throw new RuntimeException('tx_scheduler_TableGarbageCollection misconfiguration: Either expireField or dateField must be defined for table ' . $table, 1308355268);
+			throw new \RuntimeException('TYPO3\\CMS\\Scheduler\\Scheduler_TableGarbageCollection misconfiguration: Either expireField or dateField must be defined for table ' . $table, 1308355268);
 		}
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery($table, $where);
 		$error = $GLOBALS['TYPO3_DB']->sql_error();
 		if ($error) {
-			throw new RuntimeException((('tx_scheduler_TableGarbageCollection failed for table ' . $this->table) . ' with error: ') . $error, 1308255491);
+			throw new \RuntimeException((('TYPO3\\CMS\\Scheduler\\Scheduler_TableGarbageCollection failed for table ' . $this->table) . ' with error: ') . $error, 1308255491);
 		}
 		return TRUE;
 	}
@@ -124,5 +126,6 @@ class tx_scheduler_TableGarbageCollection extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

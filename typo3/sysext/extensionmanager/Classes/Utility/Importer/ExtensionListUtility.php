@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Importer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -37,12 +39,12 @@
  * @package Extension Manager
  * @subpackage Utility/Importer
  */
-class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver {
+class ExtensionListUtility implements SplObserver {
 
 	/**
 	 * Keeps instance of a XML parser.
 	 *
-	 * @var Tx_Extensionmanager_Utility_Parser_ExtensionXmlAbstractParser
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\Parser\ExtensionXmlAbstractParser
 	 */
 	protected $parser;
 
@@ -104,17 +106,17 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	protected $repositoryUid = 1;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_RepositoryRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\RepositoryRepository
 	 */
 	protected $repositoryRepository;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository
 	 */
 	protected $extensionRepository;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Model_Extension
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Model\Extension
 	 */
 	protected $extensionModel;
 
@@ -123,20 +125,20 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 *
 	 * Method retrieves and initializes extension XML parser instance.
 	 *
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 */
 	public function __construct() {
-		/** @var $objectManager Tx_Extbase_Object_ObjectManager */
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->repositoryRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_RepositoryRepository');
-		$this->extensionRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_ExtensionRepository');
-		$this->extensionModel = $this->objectManager->get('Tx_Extensionmanager_Domain_Model_Extension');
+		/** @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManager */
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$this->repositoryRepository = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\RepositoryRepository');
+		$this->extensionRepository = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ExtensionRepository');
+		$this->extensionModel = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Model\\Extension');
 		// TODO catch parser exception
-		$this->parser = Tx_Extensionmanager_Utility_Parser_XmlParserFactory::getParserInstance('extension');
+		$this->parser = \TYPO3\CMS\Extensionmanager\Utility\Parser\XmlParserFactory::getParserInstance('extension');
 		if (is_object($this->parser)) {
 			$this->parser->attach($this);
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(get_class($this) . ': No XML parser available.');
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(get_class($this) . ': No XML parser available.');
 		}
 	}
 
@@ -169,13 +171,13 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 * @param SplSubject &$subject a subject notifying this observer
 	 * @return void
 	 */
-	protected function loadIntoDatabase(SplSubject &$subject) {
+	protected function loadIntoDatabase(\SplSubject &$subject) {
 		// flush every 50 rows to database
 		if ($this->sumRecords !== 0 && $this->sumRecords % 50 === 0) {
 			$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows('tx_extensionmanager_domain_model_extension', self::$fieldNames, $this->arrRows, self::$fieldIndicesNoQuote);
 			$this->arrRows = array();
 		}
-		$versionRepresentations = t3lib_utility_VersionNumber::convertVersionStringToArray($subject->getVersion());
+		$versionRepresentations = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionStringToArray($subject->getVersion());
 		// order must match that of self::$fieldNamses!
 		$this->arrRows[] = array(
 			$subject->getExtkey(),
@@ -207,12 +209,13 @@ class Tx_Extensionmanager_Utility_Importer_ExtensionList implements SplObserver 
 	 * @param SplSubject $subject a subject notifying this observer
 	 * @return void
 	 */
-	public function update(SplSubject $subject) {
-		if (is_subclass_of($subject, 'Tx_Extensionmanager_Utility_Parser_ExtensionXmlAbstractParser')) {
+	public function update(\SplSubject $subject) {
+		if (is_subclass_of($subject, 'TYPO3\\CMS\\Extensionmanager\\Utility\\Parser\\ExtensionXmlAbstractParser')) {
 			$this->loadIntoDatabase($subject);
 		}
 	}
 
 }
+
 
 ?>

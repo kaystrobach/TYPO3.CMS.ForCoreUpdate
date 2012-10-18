@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +29,7 @@
  * @package TYPO3
  * @subpackage tx_reports
  */
-class Tx_Reports_ViewHelpers_ActionMenuItemViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class ActionMenuItemViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper {
 
 	/**
 	 * @var string
@@ -62,5 +64,6 @@ class Tx_Reports_ViewHelpers_ActionMenuItemViewHelper extends Tx_Fluid_Core_View
 	}
 
 }
+
 
 ?>

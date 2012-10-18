@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_feloginhook {
+class FrontendLoginHook {
 
 	/**
 	 * Hooks to the felogin extension to provide additional code for FE login
@@ -39,10 +41,10 @@ class tx_rsaauth_feloginhook {
 	public function loginFormHook() {
 		$result = array(0 => '', 1 => '');
 		if (trim($GLOBALS['TYPO3_CONF_VARS']['FE']['loginSecurityLevel']) === 'rsa') {
-			$backend = tx_rsaauth_backendfactory::getBackend();
+			$backend = \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend();
 			if ($backend) {
 				$result[0] = 'tx_rsaauth_feencrypt(this);';
-				$javascriptPath = t3lib_extMgm::siteRelPath('rsaauth') . 'resources/';
+				$javascriptPath = \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('rsaauth') . 'resources/';
 				$files = array(
 					'jsbn/jsbn.js',
 					'jsbn/prng4.js',
@@ -52,13 +54,13 @@ class tx_rsaauth_feloginhook {
 					'rsaauth_min.js'
 				);
 				foreach ($files as $file) {
-					$result[1] .= ((('<script type="text/javascript" src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL')) . $javascriptPath) . $file) . '"></script>';
+					$result[1] .= ((('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL')) . $javascriptPath) . $file) . '"></script>';
 				}
 				// Generate a new key pair
 				$keyPair = $backend->createNewKeyPair();
 				// Save private key
-				$storage = tx_rsaauth_storagefactory::getStorage();
-				/** @var $storage tx_rsaauth_abstract_storage */
+				$storage = \TYPO3\CMS\Rsaauth\Storage\StorageFactory::getStorage();
+				/** @var $storage \TYPO3\CMS\Rsaauth\Storage\AbstractStorage */
 				$storage->put($keyPair->getPrivateKey());
 				// Add RSA hidden fields
 				$result[1] .= ('<input type="hidden" id="rsa_n" name="n" value="' . htmlspecialchars($keyPair->getPublicKeyModulus())) . '" />';
@@ -69,5 +71,6 @@ class tx_rsaauth_feloginhook {
 	}
 
 }
+
 
 ?>

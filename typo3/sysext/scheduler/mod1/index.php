@@ -22,12 +22,12 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-require_once t3lib_extMgm::extPath('scheduler') . 'interfaces/interface.tx_scheduler_additionalfieldprovider.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('scheduler') . 'interfaces/interface.tx_scheduler_additionalfieldprovider.php';
 $LANG->includeLLFile('EXT:scheduler/mod1/locallang.xml');
 $BE_USER->modAccess($MCONF, 1);
 // This checks permissions and exits if the users has no permission for entry.
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_scheduler_Module');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Scheduler\\Controller\\SchedulerModuleController');
 $SOBE->init();
 // Include files?
 foreach ($SOBE->include_once as $INC_FILE) {

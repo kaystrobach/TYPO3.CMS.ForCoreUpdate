@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_file_ResourceInterface
+interface ResourceInterface
 {
 	/**
 	 * Returns the identifier of this file
@@ -50,9 +52,10 @@ interface t3lib_file_ResourceInterface
 	/**
 	 * Get the storage this file is located in
 	 *
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	public function getStorage();
 
 }
+
 ?>

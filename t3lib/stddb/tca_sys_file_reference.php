@@ -141,27 +141,27 @@ $TCA['sys_file_reference'] = array(
 				--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.basicoverlayPalette;basicoverlayPalette,
 				--palette--;;filePalette'
 		),
-		t3lib_file_File::FILETYPE_TEXT => array(
+		\TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => array(
 			'showitem' => '
 				--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.basicoverlayPalette;basicoverlayPalette,
 				--palette--;;filePalette'
 		),
-		t3lib_file_File::FILETYPE_IMAGE => array(
+		\TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => array(
 			'showitem' => '
 				--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.basicoverlayPalette;basicoverlayPalette,
 				--palette--;;filePalette'
 		),
-		t3lib_file_File::FILETYPE_AUDIO => array(
+		\TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => array(
 			'showitem' => '
 				--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.basicoverlayPalette;basicoverlayPalette,
 				--palette--;;filePalette'
 		),
-		t3lib_file_File::FILETYPE_VIDEO => array(
+		\TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => array(
 			'showitem' => '
 				--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.basicoverlayPalette;basicoverlayPalette,
 				--palette--;;filePalette'
 		),
-		t3lib_file_File::FILETYPE_SOFTWARE => array(
+		\TYPO3\CMS\Core\Resource\File::FILETYPE_SOFTWARE => array(
 			'showitem' => '
 				--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.basicoverlayPalette;basicoverlayPalette,
 				--palette--;;filePalette'

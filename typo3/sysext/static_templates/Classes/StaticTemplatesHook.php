@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\StaticTemplates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Kasper Skårhøj (kasperYYYY@typo3.com)
  * @author Benjamin Mack (benn@typo3.org)
  */
-class tx_statictemplates {
+class StaticTemplatesHook {
 
 	/**
 	 * Includes static template records from static_template table, loaded through a hook
@@ -44,11 +46,11 @@ class tx_statictemplates {
 		// Static Template Records (static_template): include_static is a
 		// list of static templates to include
 		if (trim($params['row']['include_static'])) {
-			$includeStaticArr = t3lib_div::intExplode(',', $params['row']['include_static']);
+			$includeStaticArr = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $params['row']['include_static']);
 			// traversing list
 			foreach ($includeStaticArr as $id) {
 				// if $id is not already included ...
-				if (!t3lib_div::inList($params['idList'], ('static_' . $id))) {
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($params['idList'], ('static_' . $id))) {
 					$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'static_template', 'uid = ' . intval($id));
 					// there was a template, then we fetch that
 					if ($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -62,5 +64,6 @@ class tx_statictemplates {
 	}
 
 }
+
 
 ?>

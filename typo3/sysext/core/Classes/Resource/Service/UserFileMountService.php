@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Service;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Service_UserfilemountService {
+class UserFileMountService {
 
 	/**
 	 * User function for sys_filemounts (the userfilemounts)
@@ -53,9 +55,9 @@ class t3lib_file_Service_UserfilemountService {
 			$storageUid = intval($PA['row']['storage']);
 		}
 		if ($storageUid > 0) {
-			/** @var $storageRepository t3lib_file_Repository_StorageRepository */
-			$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
-			/** @var $storage t3lib_file_Storage */
+			/** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
+			$storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
+			/** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
 			$storage = $storageRepository->findByUid($storageUid);
 			$rootLevelFolder = $storage->getRootLevelFolder();
 			$folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
@@ -74,11 +76,11 @@ class t3lib_file_Service_UserfilemountService {
 	 * Simple function to make a hierarchical subfolder request into
 	 * a "flat" option list
 	 *
-	 * @param t3lib_file_Folder $parentFolder
+	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
 	 * @param integer $level a limiter
 	 * @return t3lib_file_Folder[]
 	 */
-	protected function getSubfoldersForOptionList(t3lib_file_Folder $parentFolder, $level = 0) {
+	protected function getSubfoldersForOptionList(\TYPO3\CMS\Core\Resource\Folder $parentFolder, $level = 0) {
 		$level++;
 		// hard break on recursion
 		if ($level > 99) {
@@ -94,5 +96,6 @@ class t3lib_file_Service_UserfilemountService {
 	}
 
 }
+
 
 ?>

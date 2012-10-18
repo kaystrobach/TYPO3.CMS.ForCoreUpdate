@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\TypoScript;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tsparser_ext extends t3lib_TStemplate {
+class ExtendedTemplateService extends \TYPO3\CMS\Core\TypoScript\TemplateService {
 
 	// This string is used to indicate the point in a template from where the editable constants are listed. Any vars before this point (if it exists though) is regarded as default values.
 	/**
@@ -311,13 +313,13 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 		$this->setup['resources'] = $this->resources;
 		$this->setup['sitetitle'] = $this->sitetitle;
 		// Parse constants
-		$constants = t3lib_div::makeInstance('t3lib_TSparser');
+		$constants = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\Parser\\TypoScriptParser');
 		// Register comments!
 		$constants->regComments = 1;
 		$constants->setup = $this->const;
 		$constants->setup = $this->mergeConstantsFromPageTSconfig($constants->setup);
-		/** @var $matchObj t3lib_matchCondition_frontend */
-		$matchObj = t3lib_div::makeInstance('t3lib_matchCondition_frontend');
+		/** @var $matchObj \TYPO3\CMS\Frontend\Configuration\TypoScript\ConditionMatching\ConditionMatcher */
+		$matchObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Configuration\\TypoScript\\ConditionMatching\\ConditionMatcher');
 		// Matches ALL conditions in TypoScript
 		$matchObj->setSimulateMatchResult(TRUE);
 		$c = 0;
@@ -392,7 +394,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 			if (substr($key, -2) != '..') {
 				$key = preg_replace('/\\.$/', '', $key);
 				if (substr($key, -1) != '.') {
-					if (t3lib_utility_Math::canBeInterpretedAsInteger($key)) {
+					if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($key)) {
 						$keyArr_num[$key] = $arr[$key];
 					} else {
 						$keyArr_alpha[$key] = $arr[$key];
@@ -426,15 +428,15 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 						'id' => $GLOBALS['SOBE']->id,
 						('tsbr[' . $depth) . ']' => $deeper ? 0 : 1
 					);
-					if (t3lib_div::_GP('breakPointLN')) {
-						$urlParameters['breakPointLN'] = t3lib_div::_GP('breakPointLN');
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('breakPointLN')) {
+						$urlParameters['breakPointLN'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('breakPointLN');
 					}
-					$aHref = (t3lib_BEfunc::getModuleUrl('web_ts', $urlParameters) . '#') . $goto;
+					$aHref = (\TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_ts', $urlParameters) . '#') . $goto;
 					$HTML .= ((((('<a name="' . $goto) . '" href="') . htmlspecialchars($aHref)) . '">') . $theIcon) . '</a>';
 				}
 				$label = $key;
 				// Read only...
-				if (t3lib_div::inList('types,resources,sitetitle', $depth) && $this->bType == 'setup') {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('types,resources,sitetitle', $depth) && $this->bType == 'setup') {
 					$label = ('<font color="#666666">' . $label) . '</font>';
 				} else {
 					if ($this->linkObjects) {
@@ -442,10 +444,10 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 							'id' => $GLOBALS['SOBE']->id,
 							'sObj' => $depth
 						);
-						if (t3lib_div::_GP('breakPointLN')) {
-							$urlParameters['breakPointLN'] = t3lib_div::_GP('breakPointLN');
+						if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('breakPointLN')) {
+							$urlParameters['breakPointLN'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('breakPointLN');
 						}
-						$aHref = t3lib_BEfunc::getModuleUrl('web_ts', $urlParameters);
+						$aHref = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_ts', $urlParameters);
 						if ($this->bType != 'const') {
 							$ln = is_array($arr[$key . '.ln..']) ? 'Defined in: ' . $this->lineNumberToScript($arr[($key . '.ln..')]) : 'N/A';
 						} else {
@@ -649,17 +651,17 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 			$PM = 'join';
 			$HTML .= $depthData;
 			$alttext = ('[' . $row['templateID']) . ']';
-			$alttext .= $row['pid'] ? ' - ' . t3lib_BEfunc::getRecordPath($row['pid'], $GLOBALS['SOBE']->perms_clause, 20) : '';
-			$icon = substr($row['templateID'], 0, 3) == 'sys' ? t3lib_iconWorks::getSpriteIconForRecord('sys_template', $row, array('title' => $alttext)) : t3lib_iconWorks::getSpriteIcon('mimetypes-x-content-template-static', array('title' => $alttext));
+			$alttext .= $row['pid'] ? ' - ' . \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordPath($row['pid'], $GLOBALS['SOBE']->perms_clause, 20) : '';
+			$icon = substr($row['templateID'], 0, 3) == 'sys' ? \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord('sys_template', $row, array('title' => $alttext)) : \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('mimetypes-x-content-template-static', array('title' => $alttext));
 			if (in_array($row['templateID'], $this->clearList_const) || in_array($row['templateID'], $this->clearList_setup)) {
 				$urlParameters = array(
 					'id' => $GLOBALS['SOBE']->id,
 					'template' => $row['templateID']
 				);
-				$aHref = t3lib_BEfunc::getModuleUrl('web_ts', $urlParameters);
+				$aHref = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_ts', $urlParameters);
 				$A_B = ('<a href="' . htmlspecialchars($aHref)) . '">';
 				$A_E = '</a>';
-				if (t3lib_div::_GP('template') == $row['templateID']) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('template') == $row['templateID']) {
 					$A_B = '<strong>' . $A_B;
 					$A_E .= '</strong>';
 				}
@@ -667,13 +669,13 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 				$A_B = '';
 				$A_E = '';
 			}
-			$HTML .= ((((($first ? '' : (((('<img src="' . $GLOBALS['BACK_PATH']) . 'gfx/ol/') . $PM) . $BTM) . '.gif" width="18" height="16" align="top" border="0" alt="" />') . $icon) . $A_B) . htmlspecialchars(t3lib_div::fixed_lgd_cs($row['title'], $GLOBALS['BE_USER']->uc['titleLen']))) . $A_E) . '&nbsp;&nbsp;';
+			$HTML .= ((((($first ? '' : (((('<img src="' . $GLOBALS['BACK_PATH']) . 'gfx/ol/') . $PM) . $BTM) . '.gif" width="18" height="16" align="top" border="0" alt="" />') . $icon) . $A_B) . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($row['title'], $GLOBALS['BE_USER']->uc['titleLen']))) . $A_E) . '&nbsp;&nbsp;';
 			$RL = $this->ext_getRootlineNumber($row['pid']);
 			$keyArray[] = ((((((((((((((((('<tr class="' . ($i++ % 2 == 0 ? 'bgColor4' : 'bgColor6')) . '">
 							<td nowrap="nowrap">') . $HTML) . '</td>
-							<td align="center">') . ($row['root'] ? t3lib_iconWorks::getSpriteIcon('status-status-checked') : '')) . '&nbsp;&nbsp;</td>
-							<td align="center">') . ($row['clConf'] ? t3lib_iconWorks::getSpriteIcon('status-status-checked') : '')) . '&nbsp;&nbsp;') . '</td>
-							<td align="center">') . ($row['clConst'] ? t3lib_iconWorks::getSpriteIcon('status-status-checked') : '')) . '&nbsp;&nbsp;') . '</td>
+							<td align="center">') . ($row['root'] ? \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-status-checked') : '')) . '&nbsp;&nbsp;</td>
+							<td align="center">') . ($row['clConf'] ? \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-status-checked') : '')) . '&nbsp;&nbsp;') . '</td>
+							<td align="center">') . ($row['clConst'] ? \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('status-status-checked') : '')) . '&nbsp;&nbsp;') . '</td>
 							<td align="center">') . ($row['pid'] ? $row['pid'] : '')) . '</td>
 							<td align="center">') . (strcmp($RL, '') ? $RL : '')) . '</td>
 							<td>') . ($row['next'] ? ('&nbsp;' . $row['next']) . '&nbsp;&nbsp;' : '')) . '</td>
@@ -731,7 +733,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 		if ($syntaxHL) {
 			$all = preg_replace(('/^[^' . LF) . ']*./', '', $all);
 			$all = chop($all);
-			$tsparser = t3lib_div::makeInstance('t3lib_TSparser');
+			$tsparser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\Parser\\TypoScriptParser');
 			$tsparser->lineNumberOffset = $this->ext_lineNumberOffset + 1;
 			$tsparser->parentObject = $this;
 			return $tsparser->doSyntaxHighlight($all, $lineNumbers ? array($this->ext_lineNumberOffset + 1) : '', $syntaxHLBlockmode);
@@ -754,9 +756,9 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 		if ($chars >= 4) {
 			if (strlen($string) > $chars) {
 				if (strlen($string) > 24 && substr($string, 0, 12) == ('##' . $this->Cmarker) . '_B##') {
-					return ((((('##' . $this->Cmarker) . '_B##') . t3lib_div::fixed_lgd_cs(substr($string, 12, -12), ($chars - 3))) . '##') . $this->Cmarker) . '_E##';
+					return ((((('##' . $this->Cmarker) . '_B##') . \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(substr($string, 12, -12), ($chars - 3))) . '##') . $this->Cmarker) . '_E##';
 				} else {
-					return t3lib_div::fixed_lgd_cs($string, $chars - 3);
+					return \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($string, $chars - 3);
 				}
 			}
 		}
@@ -832,7 +834,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 			}
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_template', ((('pid=' . intval($id)) . $addC) . ' ') . $this->whereClause, '', 'sorting', '1');
 			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			t3lib_BEfunc::workspaceOL('sys_template', $row);
+			\TYPO3\CMS\Backend\Utility\BackendUtility::workspaceOL('sys_template', $row);
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			// Returns the template row if found.
 			return $row;
@@ -852,7 +854,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 			$outRes = array();
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_template', (('pid=' . intval($id)) . ' ') . $this->whereClause, '', 'sorting');
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				t3lib_BEfunc::workspaceOL('sys_template', $row);
+				\TYPO3\CMS\Backend\Utility\BackendUtility::workspaceOL('sys_template', $row);
 				if (is_array($row)) {
 					$outRes[] = $row;
 				}
@@ -987,7 +989,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 		} else {
 			$m = strcspn($type, ' [');
 			$retArr['type'] = strtolower(substr($type, 0, $m));
-			if (t3lib_div::inList('int,options,file,boolean,offset,user', $retArr['type'])) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('int,options,file,boolean,offset,user', $retArr['type'])) {
 				$p = trim(substr($type, $m));
 				$reg = array();
 				preg_match('/\\[(.*)\\]/', $p, $reg);
@@ -997,10 +999,10 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 					switch ($retArr['type']) {
 					case 'int':
 						if (substr($retArr['paramstr'], 0, 1) == '-') {
-							$retArr['params'] = t3lib_div::intExplode('-', substr($retArr['paramstr'], 1));
+							$retArr['params'] = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('-', substr($retArr['paramstr'], 1));
 							$retArr['params'][0] = intval('-' . $retArr['params'][0]);
 						} else {
-							$retArr['params'] = t3lib_div::intExplode('-', $retArr['paramstr']);
+							$retArr['params'] = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('-', $retArr['paramstr']);
 						}
 						$retArr['paramstr'] = ($retArr['params'][0] . ' - ') . $retArr['params'][1];
 						break;
@@ -1038,7 +1040,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 					$out[$key] = $val;
 					break;
 				default:
-					if (t3lib_utility_Math::canBeInterpretedAsInteger($key)) {
+					if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($key)) {
 						$constRefs = explode(',', $val);
 						foreach ($constRefs as $const) {
 							$const = trim($const);
@@ -1077,7 +1079,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 			$iFile = $this->ext_localGfxPrefix . $imgConf;
 			$tFile = $this->ext_localWebGfxPrefix . $imgConf;
 		} elseif (substr($imgConf, 0, 4) == 'EXT:') {
-			$iFile = t3lib_div::getFileAbsFileName($imgConf);
+			$iFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($imgConf);
 			if ($iFile) {
 				$f = substr($iFile, strlen(PATH_site));
 				$tFile = ($GLOBALS['BACK_PATH'] . '../') . $f;
@@ -1144,7 +1146,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 						if (!$body) {
 							$body = $head;
 						}
-						$head = t3lib_div::fixed_lgd_cs($head, 35);
+						$head = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($head, 35);
 					}
 					$typeDat = $this->ext_getTypeData($params['type']);
 					$checked = '';
@@ -1186,7 +1188,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 						break;
 					case 'offset':
 						$wArr = explode(',', $fV);
-						$labels = t3lib_div::trimExplode(',', $typeDat['paramstr']);
+						$labels = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $typeDat['paramstr']);
 						$p_field = ((((((((($labels[0] ? $labels[0] : 'x') . ':<input type="text" name="') . $fN) . '" value="') . $wArr[0]) . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(4)) . ' onChange="uFormUrl(') . $aname) . ')" />';
 						$p_field .= ' , ';
 						$p_field .= ((((((((($labels[1] ? $labels[1] : 'y') . ':<input type="text" name="W') . $fN) . '" value="') . $wArr[1]) . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(4)) . ' onChange="uFormUrl(') . $aname) . ')" />';
@@ -1251,7 +1253,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 					case 'user':
 						$userFunction = $typeDat['paramstr'];
 						$userFunctionParams = array('fieldName' => $fN, 'fieldValue' => $fV);
-						$p_field = t3lib_div::callUserFunction($userFunction, $userFunctionParams, $this, '');
+						$p_field = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($userFunction, $userFunctionParams, $this, '');
 						break;
 					case 'small':
 
@@ -1282,13 +1284,13 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 							$userTyposcriptStyle = 'style="display:none;"';
 							$defaultTyposcriptStyle = '';
 						}
-						$deleteIconHTML = t3lib_iconWorks::getSpriteIcon('actions-edit-undo', array(
+						$deleteIconHTML = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-undo', array(
 							'class' => 'typo3-tstemplate-ceditor-control undoIcon',
 							'alt' => 'Revert to default Constant',
 							'title' => 'Revert to default Constant',
 							'rel' => $params['name']
 						));
-						$editIconHTML = t3lib_iconWorks::getSpriteIcon('actions-document-open', array(
+						$editIconHTML = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-open', array(
 							'class' => 'typo3-tstemplate-ceditor-control editIcon',
 							'alt' => 'Edit this Constant',
 							'title' => 'Edit this Constant',
@@ -1484,7 +1486,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 						switch ($typeDat['type']) {
 						case 'int':
 							if ($typeDat['paramstr']) {
-								$var = t3lib_utility_Math::forceIntegerInRange($var, $typeDat['params'][0], $typeDat['params'][1]);
+								$var = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($var, $typeDat['params'][0], $typeDat['params'][1]);
 							} else {
 								$var = intval($var);
 							}
@@ -1494,7 +1496,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 							break;
 						case 'color':
 							$col = array();
-							if ($var && !t3lib_div::inList($this->HTMLcolorList, strtolower($var))) {
+							if ($var && !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->HTMLcolorList, strtolower($var))) {
 								$var = preg_replace('/[^A-Fa-f0-9]*/', '', $var);
 								$useFulHex = strlen($var) > 3;
 								$col[] = HexDec(substr($var, 0, 1));
@@ -1579,7 +1581,7 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 	 * @todo Define visibility
 	 */
 	public function ext_prevPageWithTemplate($id, $perms_clause) {
-		$rootLine = t3lib_BEfunc::BEgetRootLine($id, $perms_clause ? ' AND ' . $perms_clause : '');
+		$rootLine = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id, $perms_clause ? ' AND ' . $perms_clause : '');
 		foreach ($rootLine as $p) {
 			if ($this->ext_getFirstTemplate($p['uid'])) {
 				return $p;
@@ -1588,5 +1590,6 @@ class t3lib_tsparser_ext extends t3lib_TStemplate {
 	}
 
 }
+
 
 ?>

@@ -1,13 +1,15 @@
 <?php
+namespace TYPO3\CMS\Backend\Template;
+
 /**
  * Extension class for "template" - used in the context of frontend editing.
  */
-class frontendDoc extends template {
+class FrontendDocumentTemplate extends \TYPO3\CMS\Backend\Template\DocumentTemplate {
 
 	/**
 	 * Gets instance of PageRenderer
 	 *
-	 * @return t3lib_PageRenderer
+	 * @return \TYPO3\CMS\Core\Page\PageRenderer
 	 */
 	public function getPageRenderer() {
 		if (!isset($this->pageRenderer)) {
@@ -38,5 +40,6 @@ class frontendDoc extends template {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class, putting the frameset together.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_login_frameset {
+class LoginFramesetController {
 
 	// Internal, dynamic
 	/**
@@ -48,5 +50,6 @@ class SC_login_frameset {
 	}
 
 }
+
 
 ?>

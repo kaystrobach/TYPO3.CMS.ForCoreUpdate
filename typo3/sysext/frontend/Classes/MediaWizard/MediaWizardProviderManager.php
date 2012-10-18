@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\MediaWizard;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @author Ernesto Baschny <ernst@cron-it.de>
  * @static
  */
-class tslib_mediaWizardManager {
+class MediaWizardProviderManager {
 
 	/**
 	 * @var array
@@ -45,9 +47,9 @@ class tslib_mediaWizardManager {
 	 */
 	static public function registerMediaWizardProvider($className) {
 		if (!isset(self::$providers[$className])) {
-			$provider = t3lib_div::makeInstance($className);
-			if (!$provider instanceof tslib_mediaWizardProvider) {
-				throw new UnexpectedValueException($className . ' is registered as a mediaWizardProvider, so it must implement interface tslib_mediaWizardProvider', 1285022360);
+			$provider = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
+			if (!$provider instanceof \TYPO3\CMS\Frontend\MediaWizard\MediaWizardProviderInterface) {
+				throw new \UnexpectedValueException($className . ' is registered as a mediaWizardProvider, so it must implement interface TYPO3\\CMS\\Frontend\\MediaWizard\\MediaWizardProviderInterface', 1285022360);
 			}
 			self::$providers[$className] = $provider;
 		}
@@ -61,7 +63,7 @@ class tslib_mediaWizardManager {
 		// Go through registered providers in reverse order (last one registered wins)
 		$providers = array_reverse(self::$providers, TRUE);
 		foreach (self::$providers as $className => $provider) {
-			/** @var $provider tslib_mediaWizardProvider */
+			/** @var $provider \TYPO3\CMS\Frontend\MediaWizard\MediaWizardProviderInterface */
 			if ($provider->canHandle($url)) {
 				return $provider;
 			}
@@ -71,5 +73,6 @@ class tslib_mediaWizardManager {
 	}
 
 }
+
 
 ?>

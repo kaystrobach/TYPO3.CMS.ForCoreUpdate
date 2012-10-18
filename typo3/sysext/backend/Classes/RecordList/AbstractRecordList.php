@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\RecordList;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @see typo3/db_list.php
  * @see typo3/sysext/filelist/mod1/index.php
  */
-abstract class t3lib_recordList {
+abstract class AbstractRecordList {
 
 	// Used in this class:
 	// default Max items shown
@@ -273,7 +275,7 @@ abstract class t3lib_recordList {
 			End of list table:
 		-->
 		<table border="0" cellpadding="0" cellspacing="0">';
-		$theIcon = ('<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/stopper.gif', 'width="18" height="16"')) . ' alt="" />';
+		$theIcon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/ol/stopper.gif', 'width="18" height="16"')) . ' alt="" />';
 		$this->HTMLcode .= $this->addElement(1, '', array(), '', $this->leftMargin, $theIcon);
 		$this->HTMLcode .= '
 		</table>';
@@ -325,11 +327,11 @@ abstract class t3lib_recordList {
 		switch ($type) {
 		case 'fwd':
 			$href = (($this->listURL() . '&pointer=') . ($pointer - $this->iLimit)) . $tParam;
-			$content = ((((('<a href="' . htmlspecialchars($href)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-move-up')) . '</a> <i>[1 - ') . $pointer) . ']</i>';
+			$content = ((((('<a href="' . htmlspecialchars($href)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-move-up')) . '</a> <i>[1 - ') . $pointer) . ']</i>';
 			break;
 		case 'rwd':
 			$href = (($this->listURL() . '&pointer=') . $pointer) . $tParam;
-			$content = ((((((('<a href="' . htmlspecialchars($href)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-move-down')) . '</a> <i>[') . ($pointer + 1)) . ' - ') . $this->totalItems) . ']</i>';
+			$content = ((((((('<a href="' . htmlspecialchars($href)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-move-down')) . '</a> <i>[') . ($pointer + 1)) . ' - ') . $this->totalItems) . ']</i>';
 			break;
 		}
 		return $content;
@@ -393,7 +395,7 @@ abstract class t3lib_recordList {
 	 */
 	public function initializeLanguages() {
 		// Look up page overlays:
-		$this->pageOverlays = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages_language_overlay', (('pid=' . intval($this->id)) . t3lib_BEfunc::deleteClause('pages_language_overlay')) . t3lib_BEfunc::versioningPlaceholderClause('pages_language_overlay'), '', '', '', 'sys_language_uid');
+		$this->pageOverlays = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages_language_overlay', (('pid=' . intval($this->id)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('pages_language_overlay')) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause('pages_language_overlay'), '', '', '', 'sys_language_uid');
 		$this->languageIconTitles = $this->getTranslateTools()->getSystemLanguages($this->id, $this->backPath);
 	}
 
@@ -409,7 +411,7 @@ abstract class t3lib_recordList {
 		$out = '';
 		$title = htmlspecialchars($this->languageIconTitles[$sys_language_uid]['title']);
 		if ($this->languageIconTitles[$sys_language_uid]['flagIcon']) {
-			$out .= t3lib_iconWorks::getSpriteIcon($this->languageIconTitles[$sys_language_uid]['flagIcon'], array('title' => $title));
+			$out .= \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon($this->languageIconTitles[$sys_language_uid]['flagIcon'], array('title' => $title));
 			if (!$addAsAdditionalText) {
 				return $out;
 			}
@@ -422,11 +424,11 @@ abstract class t3lib_recordList {
 	/**
 	 * Gets an instance of t3lib_transl8tools.
 	 *
-	 * @return t3lib_transl8tools
+	 * @return \TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider
 	 */
 	protected function getTranslateTools() {
 		if (!isset($this->translateTools)) {
-			$this->translateTools = t3lib_div::makeInstance('t3lib_transl8tools');
+			$this->translateTools = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Configuration\\TranslationConfigurationProvider');
 		}
 		return $this->translateTools;
 	}
@@ -454,7 +456,7 @@ abstract class t3lib_recordList {
 			if ($launchViewParameter !== '') {
 				$htmlCode .= (' onclick="' . htmlspecialchars((('top.launchView(' . $launchViewParameter) . '); return false;'))) . '"';
 			}
-			$htmlCode .= (' title="' . htmlspecialchars(t3lib_div::fixed_lgd_cs(implode(' / ', $result), 100))) . '">';
+			$htmlCode .= (' title="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(implode(' / ', $result), 100))) . '">';
 			$htmlCode .= count($result);
 			$htmlCode .= '</a>';
 		}
@@ -462,5 +464,6 @@ abstract class t3lib_recordList {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Service;
+
 /**
  * Parent class for "Services" classes
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_svbase {
+abstract class AbstractService {
 
 	/**
 	 * @var array service description array
@@ -143,7 +145,7 @@ abstract class t3lib_svbase {
 	 */
 	public function devLog($msg, $severity = 0, $dataVar = FALSE) {
 		if ($this->writeDevLog) {
-			t3lib_div::devLog($msg, $this->info['serviceKey'], $severity, $dataVar);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog($msg, $this->info['serviceKey'], $severity, $dataVar);
 		}
 	}
 
@@ -253,9 +255,9 @@ abstract class t3lib_svbase {
 	 */
 	public function checkExec($progList) {
 		$ret = TRUE;
-		$progList = t3lib_div::trimExplode(',', $progList, 1);
+		$progList = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $progList, 1);
 		foreach ($progList as $prog) {
-			if (!t3lib_exec::checkCommand($prog)) {
+			if (!\TYPO3\CMS\Core\Utility\CommandUtility::checkCommand($prog)) {
 				// Program not found
 				$this->errorPush(T3_ERR_SV_PROG_NOT_FOUND, 'External program not found: ' . $prog);
 				$ret = FALSE;
@@ -271,7 +273,7 @@ abstract class t3lib_svbase {
 	 * @todo Define visibility
 	 */
 	public function deactivateService() {
-		t3lib_extMgm::deactivateService($this->info['serviceType'], $this->info['serviceKey']);
+		\TYPO3\CMS\Core\Extension\ExtensionManager::deactivateService($this->info['serviceType'], $this->info['serviceKey']);
 	}
 
 	/***************************************
@@ -288,7 +290,7 @@ abstract class t3lib_svbase {
 	 */
 	public function checkInputFile($absFile) {
 		$checkResult = FALSE;
-		if (t3lib_div::isAllowedAbsPath($absFile) && @is_file($absFile)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($absFile) && @is_file($absFile)) {
 			if (@is_readable($absFile)) {
 				$checkResult = $absFile;
 			} else {
@@ -331,7 +333,7 @@ abstract class t3lib_svbase {
 		if (!$absFile) {
 			$absFile = $this->tempFile($this->prefixId);
 		}
-		if ($absFile && t3lib_div::isAllowedAbsPath($absFile)) {
+		if ($absFile && \TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($absFile)) {
 			if ($fd = @fopen($absFile, 'wb')) {
 				@fwrite($fd, $content);
 				@fclose($fd);
@@ -351,7 +353,7 @@ abstract class t3lib_svbase {
 	 * @todo Define visibility
 	 */
 	public function tempFile($filePrefix) {
-		$absFile = t3lib_div::tempnam($filePrefix);
+		$absFile = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam($filePrefix);
 		if ($absFile) {
 			$ret = $absFile;
 			$this->registerTempFile($absFile);
@@ -381,7 +383,7 @@ abstract class t3lib_svbase {
 	 */
 	public function unlinkTempFiles() {
 		foreach ($this->tempFiles as $absFile) {
-			t3lib_div::unlink_tempfile($absFile);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::unlink_tempfile($absFile);
 		}
 		$this->tempFiles = array();
 	}
@@ -551,5 +553,6 @@ abstract class t3lib_svbase {
 	}
 
 }
+
 
 ?>

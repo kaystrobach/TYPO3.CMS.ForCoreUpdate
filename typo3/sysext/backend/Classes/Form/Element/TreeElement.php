@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,21 +33,21 @@
  * @author Steffen Ritter <info@steffen-ritter.net>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class t3lib_TCEforms_Tree {
+class TreeElement {
 
 	/**
 	 * Stores a reference to the original tceForms object
 	 *
-	 * @var t3lib_TCEforms
+	 * @var \TYPO3\CMS\Backend\Form\FormEngine
 	 */
 	protected $tceForms = NULL;
 
 	/**
 	 * Constructor which sets the tceForms.
 	 *
-	 * @param t3lib_TCEforms $tceForms
+	 * @param \TYPO3\CMS\Backend\Form\FormEngine $tceForms
 	 */
-	public function __construct(t3lib_TCEforms &$tceForms) {
+	public function __construct(\TYPO3\CMS\Backend\Form\FormEngine &$tceForms) {
 		$this->tceForms = $tceForms;
 	}
 
@@ -79,12 +81,12 @@ class t3lib_TCEforms_Tree {
 				$allowedUids[] = $item[1];
 			}
 		}
-		$treeDataProvider = t3lib_tree_Tca_DataProviderFactory::getDataProvider($config, $table, $field, $row);
+		$treeDataProvider = \TYPO3\CMS\Core\Tree\TableConfiguration\TreeDataProviderFactory::getDataProvider($config, $table, $field, $row);
 		$treeDataProvider->setSelectedList(implode(',', $selectedNodes));
 		$treeDataProvider->setItemWhiteList($allowedUids);
 		$treeDataProvider->initializeTreeData();
-		$treeRenderer = t3lib_div::makeInstance('t3lib_tree_Tca_ExtJsArrayRenderer');
-		$tree = t3lib_div::makeInstance('t3lib_tree_Tca_TcaTree');
+		$treeRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Tree\\TableConfiguration\\ExtJsArrayTreeRenderer');
+		$tree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Tree\\TableConfiguration\\TableConfigurationTree');
 		$tree->setDataProvider($treeDataProvider);
 		$tree->setNodeRenderer($treeRenderer);
 		$treeData = $tree->render();
@@ -92,7 +94,7 @@ class t3lib_TCEforms_Tree {
 		if (is_array($PA['fieldConf']['config']['items'])) {
 			foreach ($PA['fieldConf']['config']['items'] as $additionalItem) {
 				if ($additionalItem[1] !== '--div--') {
-					$item = new stdClass();
+					$item = new \stdClass();
 					$item->uid = $additionalItem[1];
 					$item->text = $GLOBALS['LANG']->sL($additionalItem[0]);
 					$item->selectable = TRUE;
@@ -101,7 +103,7 @@ class t3lib_TCEforms_Tree {
 					if (file_exists(PATH_typo3 . $additionalItem[3])) {
 						$item->icon = $additionalItem[3];
 					} elseif (strlen(trim($additionalItem[3]))) {
-						$item->iconCls = t3lib_iconWorks::getSpriteIconClasses($additionalItem[3]);
+						$item->iconCls = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconClasses($additionalItem[3]);
 					}
 					$itemArray[] = $item;
 				}
@@ -135,18 +137,18 @@ class t3lib_TCEforms_Tree {
 		}
 		// Create a JavaScript code line which will ask the user to save/update the form due to changing the element.
 		// This is used for eg. "type" fields and others configured with "requestUpdate"
-		if ($GLOBALS['TCA'][$table]['ctrl']['type'] && !strcmp($field, $GLOBALS['TCA'][$table]['ctrl']['type']) || $GLOBALS['TCA'][$table]['ctrl']['requestUpdate'] && t3lib_div::inList($GLOBALS['TCA'][$table]['ctrl']['requestUpdate'], $field)) {
+		if ($GLOBALS['TCA'][$table]['ctrl']['type'] && !strcmp($field, $GLOBALS['TCA'][$table]['ctrl']['type']) || $GLOBALS['TCA'][$table]['ctrl']['requestUpdate'] && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TCA'][$table]['ctrl']['requestUpdate'], $field)) {
 			if ($GLOBALS['BE_USER']->jsConfirmation(1)) {
 				$onChange .= 'if (confirm(TBE_EDITOR.labels.onChangeAlert) && ' . 'TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };';
 			} else {
 				$onChange .= 'if (TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };';
 			}
 		}
-		/** @var $pageRenderer t3lib_PageRenderer */
+		/** @var $pageRenderer \TYPO3\CMS\Core\Page\PageRenderer */
 		$pageRenderer = $GLOBALS['SOBE']->doc->getPageRenderer();
 		$pageRenderer->loadExtJs();
 		$pageRenderer->addJsFile('../t3lib/js/extjs/tree/tree.js');
-		$pageRenderer->addInlineLanguageLabelFile(t3lib_extMgm::extPath('lang') . 'locallang_csh_corebe.xml', 'tcatree');
+		$pageRenderer->addInlineLanguageLabelFile(\TYPO3\CMS\Core\Extension\ExtensionManager::extPath('lang') . 'locallang_csh_corebe.xml', 'tcatree');
 		$pageRenderer->addExtOnReadyCode(((((((((((((((((((((((((((((((((((('
 			TYPO3.Components.Tree.StandardTreeItemData["' . $id) . '"] = ') . $treeData) . ';
 			var tree') . $id) . ' = new TYPO3.Components.Tree.StandardTree({
@@ -196,5 +198,6 @@ class t3lib_TCEforms_Tree {
 	}
 
 }
+
 
 ?>

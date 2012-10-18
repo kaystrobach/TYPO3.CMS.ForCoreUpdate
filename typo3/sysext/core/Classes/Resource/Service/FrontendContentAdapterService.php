@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Service;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @author Ingmar Schlecht <ingmar@typo3.org>
  * @license http://www.gnu.org/copyleft/gpl.html
  */
-class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
+class FrontendContentAdapterService {
 
 	/**
 	 * The name of the table
@@ -72,8 +74,8 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 		if (array_key_exists($table, static::$migrateFields)) {
 			foreach (static::$migrateFields[$table] as $migrateFieldName => $oldFieldNames) {
 				if ($row !== NULL && isset($row[$migrateFieldName])) {
-					/** @var $fileRepository t3lib_file_Repository_FileRepository */
-					$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+					/** @var $fileRepository \TYPO3\CMS\Core\Resource\FileRepository */
+					$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 					$files = $fileRepository->findByRelation($table, $migrateFieldName, $row['uid']);
 					$fileFieldContents = array(
 						'paths' => array(),
@@ -84,7 +86,7 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 						'sysFileUids' => array()
 					);
 					foreach ($files as $file) {
-						/** @var $file t3lib_file_FileReference */
+						/** @var $file \TYPO3\CMS\Core\Resource\FileReference */
 						$fileFieldContents['paths'][] = '../../' . $file->getPublicUrl();
 						$fileFieldContents['titleTexts'][] = $file->getProperty('title');
 						$fileFieldContents['captions'][] = $file->getProperty('description');
@@ -107,7 +109,7 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 					if (count($files) > 0) {
 
 					} elseif ($row['image'] > 0) {
-						throw new RuntimeException((('inconsistent count field in "' . $table) . '".') . $migrateFieldName, 1333754565);
+						throw new \RuntimeException((('inconsistent count field in "' . $table) . '".') . $migrateFieldName, 1333754565);
 					}
 				}
 			}
@@ -115,5 +117,6 @@ class t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService {
 	}
 
 }
+
 
 ?>

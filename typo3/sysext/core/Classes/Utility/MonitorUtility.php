@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Jigal van Hemert <jigal@xs4all.nl>
  */
-final class t3lib_utility_Monitor {
+final class MonitorUtility {
 
 	/**
 	 * Checks peak memory usage and stores data in cache for use in the report module
@@ -38,15 +40,15 @@ final class t3lib_utility_Monitor {
 	 */
 	static public function peakMemoryUsage() {
 		$peakUsage = memory_get_peak_usage(TRUE);
-		$memoryLimit = t3lib_div::getBytesFromSizeMeasurement(ini_get('memory_limit'));
+		$memoryLimit = \TYPO3\CMS\Core\Utility\GeneralUtility::getBytesFromSizeMeasurement(ini_get('memory_limit'));
 		if (is_double($memoryLimit) && $memoryLimit != 0) {
 			if ($peakUsage / $memoryLimit >= 0.9) {
-				/** @var $registry t3lib_Registry */
-				$registry = t3lib_div::makeInstance('t3lib_Registry');
+				/** @var $registry \TYPO3\CMS\Core\Registry */
+				$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 				$data = array(
 					'used' => $peakUsage,
 					'tstamp' => $GLOBALS['EXEC_TIME'],
-					'url' => t3lib_div::getIndpEnv('TYPO3_REQUEST_URL')
+					'url' => \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL')
 				);
 				$registry->set('core', 'reports-peakMemoryUsage', $data);
 			}
@@ -54,5 +56,6 @@ final class t3lib_utility_Monitor {
 	}
 
 }
+
 
 ?>

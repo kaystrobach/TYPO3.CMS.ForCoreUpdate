@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_transferData {
+class DataPreprocessor {
 
 	// External, static:
 	// If set, the records requested are locked.
@@ -112,9 +114,9 @@ class t3lib_transferData {
 			$idList = $this->prevPageID;
 		}
 		if ($GLOBALS['TCA'][$table]) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			// For each ID value (integer) we
-			$ids = t3lib_div::trimExplode(',', $idList, 1);
+			$ids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $idList, 1);
 			foreach ($ids as $id) {
 				// If ID is not blank:
 				if (strcmp($id, '')) {
@@ -133,13 +135,13 @@ class t3lib_transferData {
 							}
 						}
 						if ($id < 0) {
-							$record = t3lib_beFunc::getRecord($table, abs($id), 'pid');
+							$record = \t3lib_beFunc::getRecord($table, abs($id), 'pid');
 							$pid = $record['pid'];
 							unset($record);
 						} else {
 							$pid = intval($id);
 						}
-						$pageTS = t3lib_beFunc::getPagesTSconfig($pid);
+						$pageTS = \t3lib_beFunc::getPagesTSconfig($pid);
 						if (isset($pageTS['TCAdefaults.'])) {
 							$TCAPageTSOverride = $pageTS['TCAdefaults.'];
 							if (is_array($TCAPageTSOverride[$table . '.'])) {
@@ -161,10 +163,10 @@ class t3lib_transferData {
 						// Fetch default values if a previous record exists
 						if ($id < 0 && $GLOBALS['TCA'][$table]['ctrl']['useColumnsForDefaultValues']) {
 							// Fetches the previous record:
-							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $table, ('uid=' . abs($id)) . t3lib_BEfunc::deleteClause($table));
+							$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $table, ('uid=' . abs($id)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table));
 							if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 								// Gets the list of fields to copy from the previous record.
-								$fArr = t3lib_div::trimExplode(',', $GLOBALS['TCA'][$table]['ctrl']['useColumnsForDefaultValues'], 1);
+								$fArr = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['ctrl']['useColumnsForDefaultValues'], 1);
 								foreach ($fArr as $theF) {
 									if (isset($GLOBALS['TCA'][$table]['columns'][$theF])) {
 										$newRow[$theF] = $row[$theF];
@@ -178,9 +180,9 @@ class t3lib_transferData {
 					} else {
 						$id = intval($id);
 						// Fetch database values
-						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $table, ('uid=' . intval($id)) . t3lib_BEfunc::deleteClause($table));
+						$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $table, ('uid=' . intval($id)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table));
 						if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-							t3lib_BEfunc::fixVersioningPid($table, $row);
+							\TYPO3\CMS\Backend\Utility\BackendUtility::fixVersioningPid($table, $row);
 							$this->renderRecord($table, $id, $row['pid'], $row);
 							$contentTable = $GLOBALS['TYPO3_CONF_VARS']['SYS']['contentTable'];
 							$this->lockRecord($table, $id, $contentTable == $table ? $row['pid'] : 0);
@@ -209,17 +211,17 @@ class t3lib_transferData {
 	public function renderRecord($table, $id, $pid, $row) {
 		$dateTimeFormats = $GLOBALS['TYPO3_DB']->getDateTimeFormats($table);
 		foreach ($GLOBALS['TCA'][$table]['columns'] as $column => $config) {
-			if (isset($config['config']['dbType']) && t3lib_div::inList('date,datetime', $config['config']['dbType'])) {
+			if (isset($config['config']['dbType']) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('date,datetime', $config['config']['dbType'])) {
 				$emptyValue = $dateTimeFormats[$config['config']['dbType']]['empty'];
 				$row[$column] = !empty($row[$column]) && $row[$column] !== $emptyValue ? strtotime($row[$column]) : 0;
 			}
 		}
 		// Init:
 		$uniqueItemRef = ($table . '_') . $id;
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		// Fetches the true PAGE TSconfig pid to use later, if needed. (Until now, only for the RTE, but later..., who knows?)
-		list($tscPID) = t3lib_BEfunc::getTSCpid($table, $id, $pid);
-		$TSconfig = t3lib_BEfunc::getTCEFORM_TSconfig($table, array_merge($row, array('uid' => $id, 'pid' => $pid)));
+		list($tscPID) = \TYPO3\CMS\Backend\Utility\BackendUtility::getTSCpid($table, $id, $pid);
+		$TSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getTCEFORM_TSconfig($table, array_merge($row, array('uid' => $id, 'pid' => $pid)));
 		// If the record has not already been loaded (in which case we DON'T do it again)...
 		if (!$this->regTableItems[$uniqueItemRef]) {
 			$this->regTableItems[$uniqueItemRef] = 1;
@@ -260,7 +262,7 @@ class t3lib_transferData {
 		$totalRecordContent = array();
 		// Traverse the configured columns for the table (TCA):
 		// For each column configured, we will perform processing if needed based on the type (eg. for "group" and "select" types this is needed)
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		$copyOfColumns = $GLOBALS['TCA'][$table]['columns'];
 		foreach ($copyOfColumns as $field => $fieldConfig) {
 			// Set $data variable for the field, either inputted value from $row - or if not found, the default value as defined in the "config" array
@@ -275,7 +277,7 @@ class t3lib_transferData {
 		}
 		// Further processing may apply for each field in the record depending on the settings in the "types" configuration (the list of fields to currently display for a record in TCEforms).
 		// For instance this could be processing instructions for the Rich Text Editor.
-		$types_fieldConfig = t3lib_BEfunc::getTCAtypes($table, $totalRecordContent);
+		$types_fieldConfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getTCAtypes($table, $totalRecordContent);
 		if (is_array($types_fieldConfig)) {
 			$totalRecordContent = $this->renderRecord_typesProc($totalRecordContent, $types_fieldConfig, $tscPID, $table, $pid);
 		}
@@ -339,7 +341,7 @@ class t3lib_transferData {
 			$dataAcc = array();
 			// Now, load the files into the $dataAcc array, whether stored by MM or as a list of filenames:
 			if ($fieldConfig['config']['MM']) {
-				$loadDB = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				$loadDB = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 				$loadDB->start('', 'files', $fieldConfig['config']['MM'], $row['uid']);
 				// Setting dummy startup
 				foreach ($loadDB->itemArray as $value) {
@@ -348,7 +350,7 @@ class t3lib_transferData {
 					}
 				}
 			} else {
-				$fileList = t3lib_div::trimExplode(',', $data, 1);
+				$fileList = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $data, 1);
 				foreach ($fileList as $value) {
 					if ($value) {
 						$dataAcc[] = (rawurlencode($value) . '|') . rawurlencode($value);
@@ -359,8 +361,8 @@ class t3lib_transferData {
 			$data = implode(',', $dataAcc);
 			break;
 		case 'db':
-			$loadDB = t3lib_div::makeInstance('t3lib_loadDBGroup');
-			/** @var $loadDB t3lib_loadDBGroup */
+			$loadDB = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
+			/** @var $loadDB \TYPO3\CMS\Core\Database\RelationHandler */
 			$loadDB->start($data, $fieldConfig['config']['allowed'], $fieldConfig['config']['MM'], $row['uid'], $table, $fieldConfig['config']);
 			$loadDB->getFromDB();
 			$data = $loadDB->readyForInterface();
@@ -386,7 +388,7 @@ class t3lib_transferData {
 	public function renderRecord_selectProc($data, $fieldConfig, $TSconfig, $table, $row, $field) {
 		// Initialize:
 		// Current data set.
-		$elements = t3lib_div::trimExplode(',', $data, 1);
+		$elements = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $data, 1);
 		// New data set, ready for interface (list of values, rawurlencoded)
 		$dataAcc = array();
 		// For list selectors (multi-value):
@@ -446,19 +448,19 @@ class t3lib_transferData {
 	 */
 	public function renderRecord_flexProc($data, $fieldConfig, $TSconfig, $table, $row, $field) {
 		// Convert the XML data to PHP array:
-		$currentValueArray = t3lib_div::xml2array($data);
+		$currentValueArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($data);
 		if (is_array($currentValueArray)) {
 			// Get current value array:
-			$dataStructArray = t3lib_BEfunc::getFlexFormDS($fieldConfig['config'], $row, $table, $field);
+			$dataStructArray = \TYPO3\CMS\Backend\Utility\BackendUtility::getFlexFormDS($fieldConfig['config'], $row, $table, $field);
 			// Manipulate Flexform DS via TSConfig and group access lists
 			if (is_array($dataStructArray)) {
-				$flexFormHelper = t3lib_div::makeInstance('t3lib_TCEforms_Flexforms');
+				$flexFormHelper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Form\\FlexFormsHelper');
 				$dataStructArray = $flexFormHelper->modifyFlexFormDS($dataStructArray, $table, $field, $row, $fieldConfig);
 				unset($flexFormHelper);
 			}
 			if (is_array($dataStructArray)) {
 				$currentValueArray['data'] = $this->renderRecord_flexProc_procInData($currentValueArray['data'], $dataStructArray, array($data, $fieldConfig, $TSconfig, $table, $row, $field));
-				$flexObj = t3lib_div::makeInstance('t3lib_flexformtools');
+				$flexObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
 				$data = $flexObj->flexArray2Xml($currentValueArray, TRUE);
 			}
 		}
@@ -480,13 +482,13 @@ class t3lib_transferData {
 	public function renderRecord_typesProc($totalRecordContent, $types_fieldConfig, $tscPID, $table, $pid) {
 		foreach ($types_fieldConfig as $vconf) {
 			// Find file to write to, if configured:
-			$eFile = t3lib_parsehtml_proc::evalWriteFile($vconf['spec']['static_write'], $totalRecordContent);
+			$eFile = \TYPO3\CMS\Core\Html\RteHtmlParser::evalWriteFile($vconf['spec']['static_write'], $totalRecordContent);
 			// Write file configuration:
 			if (is_array($eFile)) {
 				if ($eFile['loadFromFileField'] && $totalRecordContent[$eFile['loadFromFileField']]) {
 					// Read the external file, and insert the content between the ###TYPO3_STATICFILE_EDIT### markers:
-					$SW_fileContent = t3lib_div::getUrl($eFile['editFile']);
-					$parseHTML = t3lib_div::makeInstance('t3lib_parsehtml_proc');
+					$SW_fileContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($eFile['editFile']);
+					$parseHTML = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\RteHtmlParser');
 					$parseHTML->init('', '');
 					$totalRecordContent[$vconf['field']] = $parseHTML->getSubpart($SW_fileContent, $eFile['markerField'] && trim($totalRecordContent[$eFile['markerField']]) ? trim($totalRecordContent[$eFile['markerField']]) : '###TYPO3_STATICFILE_EDIT###');
 				}
@@ -513,7 +515,7 @@ class t3lib_transferData {
 	public function renderRecord_inlineProc($data, $fieldConfig, $TSconfig, $table, $row, $field) {
 		// Initialize:
 		// Current data set.
-		$elements = t3lib_div::trimExplode(',', $data);
+		$elements = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $data);
 		// New data set, ready for interface (list of values, rawurlencoded)
 		$dataAcc = array();
 		// At this point all records that CAN be selected is found in $recordList
@@ -553,7 +555,7 @@ class t3lib_transferData {
 	public function renderRecord_flexProc_procInData($dataPart, $dataStructArray, $pParams) {
 		if (is_array($dataPart)) {
 			foreach ($dataPart as $sKey => $sheetDef) {
-				list($dataStruct, $actualSheet) = t3lib_div::resolveSheetDefInDS($dataStructArray, $sKey);
+				list($dataStruct, $actualSheet) = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveSheetDefInDS($dataStructArray, $sKey);
 				if ((is_array($dataStruct) && $actualSheet == $sKey) && is_array($sheetDef)) {
 					foreach ($sheetDef as $lKey => $lData) {
 						$this->renderRecord_flexProc_procInData_travDS($dataPart[$sKey][$lKey], $dataStruct['ROOT']['el'], $pParams);
@@ -657,7 +659,7 @@ class t3lib_transferData {
 			}
 			break;
 		case 'exclude':
-			$theExcludeFields = t3lib_BEfunc::getExcludeFields();
+			$theExcludeFields = \TYPO3\CMS\Backend\Utility\BackendUtility::getExcludeFields();
 			if (is_array($theExcludeFields)) {
 				foreach ($theExcludeFields as $theExcludeFieldsArrays) {
 					foreach ($elements as $eKey => $value) {
@@ -669,7 +671,7 @@ class t3lib_transferData {
 			}
 			break;
 		case 'explicitValues':
-			$theTypes = t3lib_BEfunc::getExplicitAuthFieldValues();
+			$theTypes = \TYPO3\CMS\Backend\Utility\BackendUtility::getExplicitAuthFieldValues();
 			foreach ($theTypes as $tableFieldKey => $theTypeArrays) {
 				if (is_array($theTypeArrays['items'])) {
 					foreach ($theTypeArrays['items'] as $itemValue => $itemContent) {
@@ -683,7 +685,7 @@ class t3lib_transferData {
 			}
 			break;
 		case 'languages':
-			$theLangs = t3lib_BEfunc::getSystemLanguages();
+			$theLangs = \TYPO3\CMS\Backend\Utility\BackendUtility::getSystemLanguages();
 			foreach ($theLangs as $lCfg) {
 				foreach ($elements as $eKey => $value) {
 					if (!strcmp($lCfg[1], $value)) {
@@ -713,7 +715,7 @@ class t3lib_transferData {
 
 		case 'modListUser':
 			if (!$this->loadModules) {
-				$this->loadModules = t3lib_div::makeInstance('t3lib_loadModules');
+				$this->loadModules = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Module\\ModuleLoader');
 				$this->loadModules->load($GLOBALS['TBE_MODULES']);
 			}
 			$modList = $specialKey == 'modListUser' ? $this->loadModules->modListUser : $this->loadModules->modListGroup;
@@ -756,16 +758,16 @@ class t3lib_transferData {
 		// Init:
 		$recordList = array();
 		// Foreign_table
-		$subres = t3lib_BEfunc::exec_foreign_table_where_query($fieldConfig, $field, $TSconfig);
+		$subres = \TYPO3\CMS\Backend\Utility\BackendUtility::exec_foreign_table_where_query($fieldConfig, $field, $TSconfig);
 		while ($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($subres)) {
-			$recordList[$subrow['uid']] = t3lib_BEfunc::getRecordTitle($fieldConfig['config']['foreign_table'], $subrow);
+			$recordList[$subrow['uid']] = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($fieldConfig['config']['foreign_table'], $subrow);
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($subres);
 		// neg_foreign_table
 		if (is_array($GLOBALS['TCA'][$fieldConfig['config']['neg_foreign_table']])) {
-			$subres = t3lib_BEfunc::exec_foreign_table_where_query($fieldConfig, $field, $TSconfig, 'neg_');
+			$subres = \TYPO3\CMS\Backend\Utility\BackendUtility::exec_foreign_table_where_query($fieldConfig, $field, $TSconfig, 'neg_');
 			while ($subrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($subres)) {
-				$recordList[-$subrow['uid']] = t3lib_BEfunc::getRecordTitle($fieldConfig['config']['neg_foreign_table'], $subrow);
+				$recordList[-$subrow['uid']] = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($fieldConfig['config']['neg_foreign_table'], $subrow);
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($subres);
 		}
@@ -781,11 +783,11 @@ class t3lib_transferData {
 			if (isset($recordList[$theId])) {
 				$lPrefix = $this->sL($fieldConfig['config'][($theId > 0 ? '' : 'neg_') . 'foreign_table_prefix']);
 				if ($fieldConfig['config']['MM'] || $fieldConfig['config']['foreign_field']) {
-					$dataAcc[] = (rawurlencode($theId) . '|') . rawurlencode(t3lib_div::fixed_lgd_cs(($lPrefix . strip_tags($recordList[$theId])), $GLOBALS['BE_USER']->uc['titleLen']));
+					$dataAcc[] = (rawurlencode($theId) . '|') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(($lPrefix . strip_tags($recordList[$theId])), $GLOBALS['BE_USER']->uc['titleLen']));
 				} else {
 					foreach ($elements as $eKey => $value) {
 						if (!strcmp($theId, $value)) {
-							$dataAcc[$eKey] = (rawurlencode($theId) . '|') . rawurlencode(t3lib_div::fixed_lgd_cs(($lPrefix . strip_tags($recordList[$theId])), $GLOBALS['BE_USER']->uc['titleLen']));
+							$dataAcc[$eKey] = (rawurlencode($theId) . '|') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(($lPrefix . strip_tags($recordList[$theId])), $GLOBALS['BE_USER']->uc['titleLen']));
 						}
 					}
 				}
@@ -806,7 +808,7 @@ class t3lib_transferData {
 	 * @todo Define visibility
 	 */
 	public function getDataIdList($elements, $fieldConfig, $row, $table) {
-		$loadDB = t3lib_div::makeInstance('t3lib_loadDBGroup');
+		$loadDB = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 		$loadDB->registerNonTableValues = $fieldConfig['config']['allowNonIdValues'] ? 1 : 0;
 		$loadDB->start(implode(',', $elements), ($fieldConfig['config']['foreign_table'] . ',') . $fieldConfig['config']['neg_foreign_table'], $fieldConfig['config']['MM'], $row['uid'], $table, $fieldConfig['config']);
 		$idList = $loadDB->convertPosNeg($loadDB->getValueArray(), $fieldConfig['config']['foreign_table'], $fieldConfig['config']['neg_foreign_table']);
@@ -876,7 +878,7 @@ class t3lib_transferData {
 		$params['table'] = $table;
 		$params['row'] = $row;
 		$params['field'] = $field;
-		t3lib_div::callUserFunction($config['itemsProcFunc'], $params, $this);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($config['itemsProcFunc'], $params, $this);
 		return $items;
 	}
 
@@ -896,7 +898,7 @@ class t3lib_transferData {
 	 */
 	public function lockRecord($table, $id, $pid = 0) {
 		if ($this->lockRecords) {
-			t3lib_BEfunc::lockRecords($table, $id, $pid);
+			\TYPO3\CMS\Backend\Utility\BackendUtility::lockRecords($table, $id, $pid);
 		}
 	}
 
@@ -929,5 +931,6 @@ class t3lib_transferData {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Confirmation\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Confirmation_Additional_Label extends tx_form_View_Confirmation_Additional {
+class LabelAdditionalElementView extends \TYPO3\CMS\Form\View\Confirmation\Additional\AdditionalElementView {
 
 	/**
 	 * Default layout of this object
@@ -42,5 +44,6 @@ class tx_form_View_Confirmation_Additional_Label extends tx_form_View_Confirmati
 	';
 
 }
+
 
 ?>

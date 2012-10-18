@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * @subpackage t3lib
  * @author Xavier Perseguers <typo3@perseguers.ch>
  */
-class t3lib_l10n_Locales implements t3lib_Singleton {
+class Locales implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Supported TYPO3 languages with locales
@@ -173,8 +175,8 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 	 * @return void
 	 */
 	static public function initialize() {
-		/** @var $instance t3lib_l10n_Locales */
-		$instance = t3lib_div::makeInstance('t3lib_l10n_Locales');
+		/** @var $instance \TYPO3\CMS\Core\Localization\Locales */
+		$instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Localization\\Locales');
 		$instance->isoMapping = array_flip($instance->isoReverseMapping);
 		// Allow user-defined locales
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user']) && is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user'])) {
@@ -193,7 +195,7 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 		}
 		// Merge user-provided locale dependencies
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies']) && is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies'])) {
-			$instance->localeDependencies = t3lib_div::array_merge_recursive_overrule($instance->localeDependencies, $GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies']);
+			$instance->localeDependencies = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($instance->localeDependencies, $GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies']);
 		}
 		/** @deprecated since TYPO3 4.6, will be removed in TYPO3 6.0 */
 		$instance->locales = array_keys($instance->languages);
@@ -287,5 +289,6 @@ class t3lib_l10n_Locales implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Updates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  *
  * @author 	Benjamin Mack <benni@typo3.org>
  */
-abstract class Tx_Install_Updates_Base {
+abstract class AbstractUpdate {
 
 	/**
 	 * the human-readable title of the upgrade wizard
@@ -40,7 +42,7 @@ abstract class Tx_Install_Updates_Base {
 	/**
 	 * parent object
 	 *
-	 * @var tx_install
+	 * @var \TYPO3\CMS\Install\Installer
 	 */
 	public $pObj;
 
@@ -140,11 +142,11 @@ abstract class Tx_Install_Updates_Base {
 		// Create an instance of language, if necessary.
 		// Needed in order to make the em_index work
 		if (!is_object($GLOBALS['LANG'])) {
-			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
-			$GLOBALS['LANG']->csConvObj = t3lib_div::makeInstance('t3lib_cs');
+			$GLOBALS['LANG'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Lang\\LanguageService');
+			$GLOBALS['LANG']->csConvObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 		}
 		// Create an instance of a connection class to the EM
-		$extensionManagerConnection = t3lib_div::makeInstance('tx_em_Connection_ExtDirectServer', FALSE);
+		$extensionManagerConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_em_Connection_ExtDirectServer', FALSE);
 		return $extensionManagerConnection;
 	}
 
@@ -171,7 +173,7 @@ abstract class Tx_Install_Updates_Base {
 	 * @return void
 	 */
 	protected function markWizardAsDone($confValue = 1) {
-		t3lib_Configuration::setLocalConfigurationValueByPath('INSTALL/wizardDone/' . get_class($this), $confValue);
+		\TYPO3\CMS\Core\Configuration\ConfigurationManager::setLocalConfigurationValueByPath('INSTALL/wizardDone/' . get_class($this), $confValue);
 	}
 
 	/**
@@ -189,5 +191,6 @@ abstract class Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

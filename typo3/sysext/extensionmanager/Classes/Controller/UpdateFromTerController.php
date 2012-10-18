@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,63 +33,63 @@
  * @package Extension Manager
  * @subpackage Controller
  */
-class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensionmanager_Controller_AbstractController {
+class UpdateFromTerController extends \TYPO3\CMS\Extensionmanager\Controller\AbstractController {
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Repository_Helper
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\Repository\Helper
 	 */
 	protected $repositoryHelper;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_RepositoryRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\RepositoryRepository
 	 */
 	protected $repositoryRepository;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_List
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\ListUtility
 	 */
 	protected $listUtility;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository
 	 */
 	protected $extensionRepository;
 
 	/**
 	 * Dependency injection of the Extension Repository
 	 *
-	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository
 	 * @return void
 	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+	public function injectExtensionRepository(\TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
 
 	/**
 	 * Dependency injection of the Repository Helper Utility
 	 *
-	 * @param Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\Repository\Helper $repositoryHelper
 	 * @return void
 	 */
-	public function injectRepositoryHelper(Tx_Extensionmanager_Utility_Repository_Helper $repositoryHelper) {
+	public function injectRepositoryHelper(\TYPO3\CMS\Extensionmanager\Utility\Repository\Helper $repositoryHelper) {
 		$this->repositoryHelper = $repositoryHelper;
 	}
 
 	/**
 	 * Dependency injection of repository repository
 	 *
-	 * @param Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Repository\RepositoryRepository $repositoryRepository
 	 * @return void
 	 */
-	public function injectRepositoryRepository(Tx_Extensionmanager_Domain_Repository_RepositoryRepository $repositoryRepository) {
+	public function injectRepositoryRepository(\TYPO3\CMS\Extensionmanager\Domain\Repository\RepositoryRepository $repositoryRepository) {
 		$this->repositoryRepository = $repositoryRepository;
 	}
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_List $listUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility
 	 * @return void
 	 */
-	public function injectListUtility(Tx_Extensionmanager_Utility_List $listUtility) {
+	public function injectListUtility(\TYPO3\CMS\Extensionmanager\Utility\ListUtility $listUtility) {
 		$this->listUtility = $listUtility;
 	}
 
@@ -100,12 +102,12 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 	public function updateExtensionListFromTerAction($forceUpdateCheck = FALSE) {
 		$updated = FALSE;
 		$errorMessage = '';
-		/** @var $repository Tx_Extensionmanager_Domain_Model_Repository */
+		/** @var $repository \TYPO3\CMS\Extensionmanager\Domain\Model\Repository */
 		$repository = $this->repositoryRepository->findOneByUid((int) $this->settings['repositoryUid']);
 		if ($repository->getLastUpdate()->getTimestamp() < $GLOBALS['EXEC_TIME'] - (24 * 60) * 60 || $forceUpdateCheck) {
 			try {
 				$updated = $this->repositoryHelper->updateExtList();
-			} catch (Tx_Extensionmanager_Exception_ExtensionManager $e) {
+			} catch (\TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException $e) {
 				$errorMessage = $e->getMessage();
 			}
 		}
@@ -113,5 +115,6 @@ class Tx_Extensionmanager_Controller_UpdateFromTerController extends Tx_Extensio
 	}
 
 }
+
 
 ?>

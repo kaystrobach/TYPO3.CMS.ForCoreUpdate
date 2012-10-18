@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_language extends tx_rtehtmlarea_api {
+class Language extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -62,10 +64,10 @@ class tx_rtehtmlarea_language extends tx_rtehtmlarea_api {
 	);
 
 	public function main($parentObject) {
-		if (t3lib_extMgm::isLoaded('static_info_tables') && file_exists(t3lib_extMgm::extPath('static_info_tables') . 'class.tx_staticinfotables_div.php')) {
-			require_once t3lib_extMgm::extPath('static_info_tables') . 'class.tx_staticinfotables_div.php';
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables') && file_exists(\TYPO3\CMS\Core\Extension\ExtensionManager::extPath('static_info_tables') . 'class.tx_staticinfotables_div.php')) {
+			require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('static_info_tables') . 'class.tx_staticinfotables_div.php';
 		} else {
-			$this->pluginButtons = t3lib_div::rmFromList('language', $this->pluginButtons);
+			$this->pluginButtons = \TYPO3\CMS\Core\Utility\GeneralUtility::rmFromList('language', $this->pluginButtons);
 		}
 		return parent::main($parentObject);
 	}
@@ -111,11 +113,11 @@ class tx_rtehtmlarea_language extends tx_rtehtmlarea_api {
 	 */
 	public function getLanguages() {
 		$nameArray = array();
-		if (t3lib_extMgm::isLoaded('static_info_tables')) {
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables')) {
 			$where = '1=1';
 			$table = 'static_languages';
-			$lang = tx_staticinfotables_div::getCurrentLanguage();
-			$titleFields = tx_staticinfotables_div::getTCAlabelField($table, TRUE, $lang);
+			$lang = \tx_staticinfotables_div::getCurrentLanguage();
+			$titleFields = \tx_staticinfotables_div::getTCAlabelField($table, TRUE, $lang);
 			$prefixedTitleFields = array();
 			foreach ($titleFields as $titleField) {
 				$prefixedTitleFields[] = ($table . '.') . $titleField;
@@ -123,10 +125,10 @@ class tx_rtehtmlarea_language extends tx_rtehtmlarea_api {
 			$labelFields = implode(',', $prefixedTitleFields);
 			// Restrict to certain languages
 			if ((is_array($this->thisConfig['buttons.']) && is_array($this->thisConfig['buttons.']['language.'])) && isset($this->thisConfig['buttons.']['language.']['restrictToItems'])) {
-				$languageList = implode('\',\'', t3lib_div::trimExplode(',', $GLOBALS['TYPO3_DB']->fullQuoteStr(strtoupper($this->thisConfig['buttons.']['language.']['restrictToItems']), $table)));
+				$languageList = implode('\',\'', \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_DB']->fullQuoteStr(strtoupper($this->thisConfig['buttons.']['language.']['restrictToItems']), $table)));
 				$where .= (((' AND ' . $table) . '.lg_iso_2 IN (') . $languageList) . ')';
 			}
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(((($table . '.lg_iso_2,') . $table) . '.lg_country_iso_2,') . $labelFields, $table, ($where . ' AND lg_constructed = 0 ') . ($this->htmlAreaRTE->is_FE() ? $GLOBALS['TSFE']->sys_page->enableFields($table) : t3lib_BEfunc::BEenableFields($table) . t3lib_BEfunc::deleteClause($table)));
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(((($table . '.lg_iso_2,') . $table) . '.lg_country_iso_2,') . $labelFields, $table, ($where . ' AND lg_constructed = 0 ') . ($this->htmlAreaRTE->is_FE() ? $GLOBALS['TSFE']->sys_page->enableFields($table) : \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table)));
 			$prefixLabelWithCode = !$this->thisConfig['buttons.']['language.']['prefixLabelWithCode'] ? FALSE : TRUE;
 			$postfixLabelWithCode = !$this->thisConfig['buttons.']['language.']['postfixLabelWithCode'] ? FALSE : TRUE;
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -151,7 +153,7 @@ class tx_rtehtmlarea_language extends tx_rtehtmlarea_api {
 	 * @return 	array		toolbar button array, possibly updated
 	 */
 	public function applyToolbarConstraints($show) {
-		if (!t3lib_extMgm::isLoaded('static_info_tables')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables')) {
 			return array_diff($show, array('language'));
 		} else {
 			return $show;
@@ -159,5 +161,6 @@ class tx_rtehtmlarea_language extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

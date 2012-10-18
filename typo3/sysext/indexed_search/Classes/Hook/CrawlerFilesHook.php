@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Hook;
+
 /**
  * Crawler hook for indexed search. Works with the "crawler" extension
  * This hook is specifically used to index external files found on pages through the crawler extension.
@@ -8,7 +10,7 @@
  * @subpackage tx_indexedsearch
  * @see tx_indexedsearch_indexer::extractLinks()
  */
-class tx_indexedsearch_files {
+class CrawlerFilesHook {
 
 	/**
 	 * Call back function for execution of a log element
@@ -23,7 +25,7 @@ class tx_indexedsearch_files {
 		$this->loadIndexerClass();
 		if (is_array($params['conf'])) {
 			// Initialize the indexer class:
-			$indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+			$indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\IndexedSearch\\Controller\\SearchFormController_indexer');
 			$indexerObj->conf = $params['conf'];
 			$indexerObj->init();
 			// Index document:
@@ -47,9 +49,10 @@ class tx_indexedsearch_files {
 	 */
 	public function loadIndexerClass() {
 		global $TYPO3_CONF_VARS;
-		require_once t3lib_extMgm::extPath('indexed_search') . 'class.indexer.php';
+		require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('indexed_search') . 'class.indexer.php';
 	}
 
 }
+
 
 ?>

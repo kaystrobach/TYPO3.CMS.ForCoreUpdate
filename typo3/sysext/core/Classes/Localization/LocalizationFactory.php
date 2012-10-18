@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,10 +33,10 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-class t3lib_l10n_Factory implements t3lib_Singleton {
+class LocalizationFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var t3lib_cache_frontend_StringFrontend
+	 * @var \TYPO3\CMS\Core\Cache\Frontend\StringFrontend
 	 */
 	protected $cacheInstance;
 
@@ -44,7 +46,7 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 	protected $errorMode;
 
 	/**
-	 * @var t3lib_l10n_Store
+	 * @var \TYPO3\CMS\Core\Localization\LanguageStore
 	 */
 	public $store;
 
@@ -61,7 +63,7 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 	 * @return void
 	 */
 	protected function initialize() {
-		$this->store = t3lib_div::makeInstance('t3lib_l10n_Store');
+		$this->store = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Localization\\LanguageStore');
 		$this->initializeCache();
 	}
 
@@ -105,7 +107,7 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 				return $this->store->getData($fileReference, $languageKey);
 			}
 			$this->store->setConfiguration($fileReference, $languageKey, $charset);
-			/** @var $parser t3lib_l10n_parser */
+			/** @var $parser \TYPO3\CMS\Core\Localization\Parser\LocalizationParserInterface */
 			$parser = $this->store->getParserInstance($fileReference);
 			// Get parsed data
 			$LOCAL_LANG = $parser->getParsedData($this->store->getAbsoluteFileReference($fileReference), $languageKey, $charset);
@@ -117,7 +119,7 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 			$this->store->setData($fileReference, $languageKey, $LOCAL_LANG[$languageKey]);
 			// Cache processed data
 			$this->cacheInstance->set($hash, $this->store->getDataByLanguage($fileReference, $languageKey));
-		} catch (t3lib_l10n_exception_FileNotFound $exception) {
+		} catch (\TYPO3\CMS\Core\Localization\Exception\FileNotFoundException $exception) {
 			// Source localization file not found
 			$this->store->setData($fileReference, $languageKey, array());
 		}
@@ -149,12 +151,13 @@ class t3lib_l10n_Factory implements t3lib_Singleton {
 		}
 		if (count($overrides) > 0) {
 			foreach ($overrides as $overrideFile) {
-				$languageOverrideFileName = t3lib_div::getFileAbsFileName($overrideFile);
-				$LOCAL_LANG = t3lib_div::array_merge_recursive_overrule($LOCAL_LANG, $this->getParsedData($languageOverrideFileName, $languageKey, $charset, $errorMode, TRUE));
+				$languageOverrideFileName = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overrideFile);
+				$LOCAL_LANG = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($LOCAL_LANG, $this->getParsedData($languageOverrideFileName, $languageKey, $charset, $errorMode, TRUE));
 			}
 		}
 	}
 
 }
+
 
 ?>

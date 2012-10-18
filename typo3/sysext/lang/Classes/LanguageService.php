@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Lang;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -43,7 +45,7 @@
  * @subpackage core
  * @see typo3/template.php, template
  */
-class language {
+class LanguageService {
 
 	/**
 	 * This is set to the language that is currently running for the user
@@ -106,14 +108,14 @@ class language {
 	/**
 	 * instance of the "t3lib_cs" class. May be used by any application.
 	 *
-	 * @var t3lib_cs
+	 * @var \TYPO3\CMS\Core\Charset\CharsetConverter
 	 */
 	public $csConvObj;
 
 	/**
 	 * instance of the parser factory
 	 *
-	 * @var t3lib_l10n_Factory
+	 * @var \TYPO3\CMS\Core\Localization\LocalizationFactory
 	 */
 	public $parserFactory;
 
@@ -139,14 +141,14 @@ class language {
 	 */
 	public function init($lang) {
 		// Initialize the conversion object:
-		$this->csConvObj = t3lib_div::makeInstance('t3lib_cs');
+		$this->csConvObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 		$this->charSetArray = $this->csConvObj->charSetArray;
 		// Initialize the parser factory object
-		$this->parserFactory = t3lib_div::makeInstance('t3lib_l10n_Factory');
+		$this->parserFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Localization\\LocalizationFactory');
 		// Finding the requested language in this list based
 		// on the $lang key being inputted to this function.
-		/** @var $locales t3lib_l10n_Locales */
-		$locales = t3lib_div::makeInstance('t3lib_l10n_Locales');
+		/** @var $locales \TYPO3\CMS\Core\Localization\Locales */
+		$locales = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Localization\\Locales');
 		// Language is found. Configure it:
 		if (in_array($lang, $locales->getLocales())) {
 			// The current language key
@@ -164,7 +166,7 @@ class language {
 	/**
 	 * Gets the parser factory.
 	 *
-	 * @return t3lib_l10n_Factory
+	 * @return \TYPO3\CMS\Core\Localization\LocalizationFactory
 	 */
 	public function getParserFactory() {
 		return $this->parserFactory;
@@ -333,7 +335,7 @@ class language {
 			$output = $input;
 		}
 		if ($hsc) {
-			$output = t3lib_div::deHSCentities(htmlspecialchars($output));
+			$output = \TYPO3\CMS\Core\Utility\GeneralUtility::deHSCentities(htmlspecialchars($output));
 		}
 		return $output . $this->debugLL($input);
 	}
@@ -421,7 +423,7 @@ class language {
 		if (is_array($localLanguage) && count($localLanguage)) {
 			// it depends on, whether we should return the result or set it in the global $LOCAL_LANG array
 			if ($setGlobal) {
-				$globalLanguage = t3lib_div::array_merge_recursive_overrule((array) $GLOBALS['LOCAL_LANG'], $localLanguage);
+				$globalLanguage = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule((array) $GLOBALS['LOCAL_LANG'], $localLanguage);
 			} else {
 				$globalLanguage = $localLanguage;
 			}
@@ -429,7 +431,7 @@ class language {
 			$lFileRef = $this->localizedFileRef($fileRef);
 			if ($lFileRef && (string) $globalLanguage[$this->lang] == 'EXT') {
 				$localLanguage = $this->readLLfile($lFileRef);
-				$globalLanguage = t3lib_div::array_merge_recursive_overrule($globalLanguage, $localLanguage);
+				$globalLanguage = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($globalLanguage, $localLanguage);
 			}
 			// Merge local onto default
 			if ((($mergeLocalOntoDefault && $this->lang !== 'default') && is_array($globalLanguage[$this->lang])) && is_array($globalLanguage['default'])) {
@@ -462,7 +464,7 @@ class language {
 		}
 		$localLanguage = array();
 		foreach ($languages as $language) {
-			$tempLL = t3lib_div::readLLfile($fileRef, $language, $this->charSet);
+			$tempLL = \TYPO3\CMS\Core\Utility\GeneralUtility::readLLfile($fileRef, $language, $this->charSet);
 			$localLanguage['default'] = $tempLL['default'];
 			if (!isset($localLanguage[$this->lang])) {
 				$localLanguage[$this->lang] = $localLanguage['default'];
@@ -470,7 +472,7 @@ class language {
 			if ($this->lang !== 'default' && isset($tempLL[$language])) {
 				// Merge current language labels onto labels from previous language
 				// This way we have a labels with fall back applied
-				$localLanguage[$this->lang] = t3lib_div::array_merge_recursive_overrule($localLanguage[$this->lang], $tempLL[$language], FALSE, FALSE);
+				$localLanguage[$this->lang] = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($localLanguage[$this->lang], $tempLL[$language], FALSE, FALSE);
 			}
 		}
 		return $localLanguage;
@@ -508,5 +510,6 @@ class language {
 	}
 
 }
+
 
 ?>

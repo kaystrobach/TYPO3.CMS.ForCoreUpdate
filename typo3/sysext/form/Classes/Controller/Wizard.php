@@ -29,10 +29,10 @@ require $BACK_PATH . 'init.php';
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/form/Classes/Controller/WizardController.php
  */
-require_once t3lib_extMgm::extPath('form') . 'Classes/Controller/WizardController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('form') . 'Classes/Controller/WizardController.php';
 /**
- * @var $wizard tx_form_Controller_Wizard
+ * @var $wizard \TYPO3\CMS\Form\Controller\WizardController
  */
-$wizard = t3lib_div::makeInstance('tx_form_Controller_Wizard');
+$wizard = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Controller\\WizardController');
 $wizard->dispatch();
 ?>

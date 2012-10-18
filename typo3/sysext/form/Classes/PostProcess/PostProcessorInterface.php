@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\PostProcess;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,15 +30,15 @@
  * @package TYPO3
  * @subpackage form
  */
-interface tx_form_System_Postprocessor_Interface
+interface PostProcessorInterface
 {
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Form $form Form domain model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Form $form Form domain model
 	 * @param array $typoScript Post processor TypoScript settings
 	 */
-	public function __construct(tx_form_Domain_Model_Form $form, array $typoScript);
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Form $form, array $typoScript);
 
 	/**
 	 * The main method called by the post processor
@@ -46,4 +48,5 @@ interface tx_form_System_Postprocessor_Interface
 	public function process();
 
 }
+
 ?>

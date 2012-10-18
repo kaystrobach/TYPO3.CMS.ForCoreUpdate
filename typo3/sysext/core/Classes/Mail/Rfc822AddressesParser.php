@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Mail;
+
 /**
  * RFC 822 Email address list validation Utility
  *
@@ -65,7 +67,7 @@
  * @license BSD
  * @package Mail
  */
-class t3lib_mail_Rfc822AddressesParser {
+class Rfc822AddressesParser {
 
 	/**
 	 * The address being parsed by the RFC822 object.
@@ -190,14 +192,14 @@ class t3lib_mail_Rfc822AddressesParser {
 
 		}
 		if ($this->address === FALSE || isset($this->error)) {
-			throw new InvalidArgumentException($this->error, 1294681466);
+			throw new \InvalidArgumentException($this->error, 1294681466);
 		}
 		// Validate each address individually.  If we encounter an invalid
 		// address, stop iterating and return an error immediately.
 		foreach ($this->addresses as $address) {
 			$valid = $this->_validateAddress($address);
 			if ($valid === FALSE || isset($this->error)) {
-				throw new InvalidArgumentException($this->error, 1294681467);
+				throw new \InvalidArgumentException($this->error, 1294681467);
 			}
 			$this->structure = array_merge($this->structure, $valid);
 		}
@@ -587,7 +589,7 @@ class t3lib_mail_Rfc822AddressesParser {
 			}
 		}
 		// Construct the object that will be returned.
-		$mbox = new stdClass();
+		$mbox = new \stdClass();
 		// Add the phrase (even if empty) and comments
 		$mbox->personal = $phrase;
 		$mbox->comment = isset($comments) ? $comments : array();
@@ -795,5 +797,6 @@ class t3lib_mail_Rfc822AddressesParser {
 	}
 
 }
+
 
 ?>

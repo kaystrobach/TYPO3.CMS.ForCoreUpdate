@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -42,7 +44,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_db_PreparedStatement {
+class PreparedStatement {
 
 	/**
 	 * Represents the SQL NULL data type.
@@ -179,7 +181,7 @@ class t3lib_db_PreparedStatement {
 	 * </code>
 	 *
 	 * @param array $values The values to bind to the parameter. The PHP type of each array value will be used to decide which PARAM_* type to use (int, string, boolean, NULL), so make sure your variables are properly casted, if needed.
-	 * @return t3lib_db_PreparedStatement The current prepared statement to allow method chaining
+	 * @return \TYPO3\CMS\Core\Database\PreparedStatement The current prepared statement to allow method chaining
 	 * @api
 	 */
 	public function bindValues(array $values) {
@@ -211,24 +213,24 @@ class t3lib_db_PreparedStatement {
 	 * @param mixed $parameter Parameter identifier. For a prepared statement using named placeholders, this will be a parameter name of the form :name. For a prepared statement using question mark placeholders, this will be the 1-indexed position of the parameter.
 	 * @param mixed $value The value to bind to the parameter.
 	 * @param integer $data_type Explicit data type for the parameter using the t3lib_db_PreparedStatement::PARAM_* constants. If not given, the PHP type of the value will be used instead (int, string, boolean).
-	 * @return t3lib_db_PreparedStatement The current prepared statement to allow method chaining
+	 * @return \TYPO3\CMS\Core\Database\PreparedStatement The current prepared statement to allow method chaining
 	 * @api
 	 */
 	public function bindValue($parameter, $value, $data_type = self::PARAM_AUTOTYPE) {
 		switch ($data_type) {
 		case self::PARAM_INT:
 			if (!is_int($value)) {
-				throw new InvalidArgumentException('$value is not an integer as expected: ' . $value, 1281868686);
+				throw new \InvalidArgumentException('$value is not an integer as expected: ' . $value, 1281868686);
 			}
 			break;
 		case self::PARAM_BOOL:
 			if (!is_bool($value)) {
-				throw new InvalidArgumentException('$value is not a boolean as expected: ' . $value, 1281868687);
+				throw new \InvalidArgumentException('$value is not a boolean as expected: ' . $value, 1281868687);
 			}
 			break;
 		case self::PARAM_NULL:
 			if (!is_null($value)) {
-				throw new InvalidArgumentException('$value is not NULL as expected: ' . $value, 1282489834);
+				throw new \InvalidArgumentException('$value is not NULL as expected: ' . $value, 1282489834);
 			}
 			break;
 		}
@@ -311,7 +313,7 @@ class t3lib_db_PreparedStatement {
 			$row = $GLOBALS['TYPO3_DB']->sql_fetch_row($this->resource);
 			break;
 		default:
-			throw new InvalidArgumentException('$fetch_style must be either t3lib_db_PreparedStatement::FETCH_ASSOC or t3lib_db_PreparedStatement::FETCH_NUM', 1281646455);
+			throw new \InvalidArgumentException('$fetch_style must be either TYPO3\\CMS\\Core\\Database\\PreparedStatement::FETCH_ASSOC or TYPO3\\CMS\\Core\\Database\\PreparedStatement::FETCH_NUM', 1281646455);
 		}
 		return $row;
 	}
@@ -405,7 +407,7 @@ class t3lib_db_PreparedStatement {
 			$this->defaultFetchMode = $mode;
 			break;
 		default:
-			throw new InvalidArgumentException('$mode must be either t3lib_db_PreparedStatement::FETCH_ASSOC or t3lib_db_PreparedStatement::FETCH_NUM', 1281875340);
+			throw new \InvalidArgumentException('$mode must be either TYPO3\\CMS\\Core\\Database\\PreparedStatement::FETCH_ASSOC or TYPO3\\CMS\\Core\\Database\\PreparedStatement::FETCH_NUM', 1281875340);
 		}
 	}
 
@@ -455,7 +457,7 @@ class t3lib_db_PreparedStatement {
 				$value = $typeValue['value'] ? 1 : 0;
 				break;
 			default:
-				throw new InvalidArgumentException(sprintf('Unknown type %s used for parameter %s.', $typeValue['type'], $key), 1281859196);
+				throw new \InvalidArgumentException(sprintf('Unknown type %s used for parameter %s.', $typeValue['type'], $key), 1281859196);
 			}
 			if (is_int($key)) {
 				if (count($precompiledQueryParts['queryParts']) > 0) {
@@ -489,7 +491,7 @@ class t3lib_db_PreparedStatement {
 		foreach ($parameterValues as $key => $typeValue) {
 			if (!is_int($key)) {
 				if (!preg_match('/^:[\\w]+$/', $key)) {
-					throw new InvalidArgumentException('Parameter names must start with ":" followed by an arbitrary number of alphanumerical characters.', 1282348825);
+					throw new \InvalidArgumentException('Parameter names must start with ":" followed by an arbitrary number of alphanumerical characters.', 1282348825);
 				}
 				// Replace the marker (not preceeded by a word character or a ':' but
 				// followed by a word boundary)
@@ -509,9 +511,10 @@ class t3lib_db_PreparedStatement {
 	 * @return string
 	 */
 	protected function generateParameterWrapToken() {
-		return ('__' . t3lib_div::getRandomHexString(16)) . '__';
+		return ('__' . \TYPO3\CMS\Core\Utility\GeneralUtility::getRandomHexString(16)) . '__';
 	}
 
 }
+
 
 ?>

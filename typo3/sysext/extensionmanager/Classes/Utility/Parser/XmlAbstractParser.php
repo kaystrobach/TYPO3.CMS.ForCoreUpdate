@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Parser;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
+abstract class XmlAbstractParser {
 
 	/**
 	 * Keeps XML parser instance.
@@ -71,10 +73,11 @@ abstract class Tx_Extensionmanager_Utility_Parser_XmlAbstractParser {
 	 * Method parses an XML file.
 	 *
 	 * @param string $file GZIP stream resource
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager in case of XML parser errors
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException in case of XML parser errors
 	 */
 	abstract public function parseXml($file);
 
 }
+
 
 ?>

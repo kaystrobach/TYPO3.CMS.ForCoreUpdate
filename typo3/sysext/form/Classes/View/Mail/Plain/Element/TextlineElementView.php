@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Plain\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,15 +30,15 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail_Plain_Element_Textline extends tx_form_View_Mail_Plain_Element_Abstract {
+class TextlineElementView extends \TYPO3\CMS\Form\View\Mail\Plain\Element\AbstractElementView {
 
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Textline $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\TextlineElement $model Model for this element
 	 * @param integer $spaces
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Textline $model, $spaces) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\TextlineElement $model, $spaces) {
 		parent::__construct($model, $spaces);
 	}
 
@@ -70,5 +72,6 @@ class tx_form_View_Mail_Plain_Element_Textline extends tx_form_View_Mail_Plain_E
 	}
 
 }
+
 
 ?>

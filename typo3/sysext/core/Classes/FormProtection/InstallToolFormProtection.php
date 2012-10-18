@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FormProtection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -69,12 +71,12 @@
  * @subpackage t3lib
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  */
-class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtection_Abstract {
+class InstallToolFormProtection extends AbstractFormProtection {
 
 	/**
 	 * an instance of the install tool used for displaying messages
 	 *
-	 * @var tx_install
+	 * @var \TYPO3\CMS\Install\Installer
 	 */
 	protected $installTool = NULL;
 
@@ -91,10 +93,10 @@ class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtectio
 	 *
 	 * This instance will be used for displaying messages.
 	 *
-	 * @param tx_install $installTool the current instance of the install tool
+	 * @param \TYPO3\CMS\Install\Installer $installTool the current instance of the install tool
 	 * @return void
 	 */
-	public function injectInstallTool(tx_install $installTool) {
+	public function injectInstallTool(\TYPO3\CMS\Install\Installer $installTool) {
 		$this->installTool = $installTool;
 	}
 
@@ -133,5 +135,6 @@ class t3lib_formprotection_InstallToolFormProtection extends t3lib_formProtectio
 	}
 
 }
+
 
 ?>

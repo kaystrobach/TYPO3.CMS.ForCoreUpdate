@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Controller_ActionController {
+abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
 	 * @var integer
@@ -75,17 +77,17 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	protected $pageId = 0;
 
 	/**
-	 * @var Tx_Belog_Domain_Repository_LogEntryRepository
+	 * @var \TYPO3\CMS\Belog\Domain\Repository\LogEntryRepository
 	 */
 	protected $logEntryRepository = NULL;
 
 	/**
 	 * Injects the log entry repository.
 	 *
-	 * @param Tx_Belog_Domain_Repository_LogEntryRepository $logEntryRepository
+	 * @param \TYPO3\CMS\Belog\Domain\Repository\LogEntryRepository $logEntryRepository
 	 * @return void
 	 */
-	public function injectLogEntryRepository(Tx_Belog_Domain_Repository_LogEntryRepository $logEntryRepository) {
+	public function injectLogEntryRepository(\TYPO3\CMS\Belog\Domain\Repository\LogEntryRepository $logEntryRepository) {
 		$this->logEntryRepository = $logEntryRepository;
 	}
 
@@ -101,7 +103,7 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 		// circumvented until there is a better solution in extbase.
 		// For now we throw an exception if no settings are detected.
 		if (empty($this->settings)) {
-			throw new RuntimeException('No settings detected. This usually happens if there is no frontend TypoScript template with root flag set. ' . 'Please create one.', 1333650506);
+			throw new \RuntimeException('No settings detected. This usually happens if there is no frontend TypoScript TYPO3\\CMS\\Backend\\Template\\DocumentTemplate with root flag set. ' . 'Please create one.', 1333650506);
 		}
 		if (!isset($this->settings['dateFormat'])) {
 			$this->settings['dateFormat'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'];
@@ -123,16 +125,16 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	/**
 	 * Show general information and the installed modules
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
 	 * @return void
 	 */
-	public function indexAction(Tx_Belog_Domain_Model_Constraint $constraint = NULL) {
+	public function indexAction(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint = NULL) {
 		// Constraint object handling:
 		// If there is none from GET, try to get it from BE user data, else create new
 		if ($constraint === NULL) {
 			$constraint = $this->getConstraintFromBeUserData();
 			if ($constraint === NULL) {
-				$constraint = $this->objectManager->create('Tx_Belog_Domain_Model_Constraint');
+				$constraint = $this->objectManager->create('TYPO3\\CMS\\Belog\\Domain\\Model\\Constraint');
 			}
 		} else {
 			$this->persistConstraintInBeUserData($constraint);
@@ -162,10 +164,10 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	/**
 	 * Save current constraint object in be user settings (uC)
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
 	 * @return void
 	 */
-	protected function persistConstraintInBeUserData(Tx_Belog_Domain_Model_Constraint $constraint) {
+	protected function persistConstraintInBeUserData(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint) {
 		$GLOBALS['BE_USER']->pushModuleData(get_class($this), serialize($constraint));
 	}
 
@@ -183,9 +185,9 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * @param boolean $groupByPage Whether or not log entries should be grouped by page
 	 * @return array
 	 */
-	protected function groupLogEntriesByPageAndDay(Tx_Extbase_Persistence_QueryResult $logEntries, $groupByPage = FALSE) {
+	protected function groupLogEntriesByPageAndDay(\TYPO3\CMS\Extbase\Persistence\Generic\QueryResult $logEntries, $groupByPage = FALSE) {
 		$targetStructure = array();
-		/** @var $entry Tx_Belog_Domain_Model_LogEntry */
+		/** @var $entry \TYPO3\CMS\Belog\Domain\Model\LogEntry */
 		foreach ($logEntries as $entry) {
 			// Create page split list or flat list
 			if ($groupByPage) {
@@ -212,11 +214,11 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	/**
 	 * Configure the property mapper to expect date strings in configured BE format
 	 *
-	 * @param Tx_Extbase_Property_PropertyMappingConfiguration $propertyMapperDate
+	 * @param \TYPO3\CMS\Extbase\Property\PropertyMappingConfiguration $propertyMapperDate
 	 * @return void
 	 */
-	protected function configurePropertyMapperForDateTimeFormat(Tx_Extbase_Property_PropertyMappingConfiguration $propertyMapperDate) {
-		$propertyMapperDate->setTypeConverterOption('Tx_Extbase_Property_TypeConverter_DateTimeConverter', Tx_Extbase_Property_TypeConverter_DateTimeConverter::CONFIGURATION_DATE_FORMAT, ($this->settings['dateFormat'] . ' ') . $this->settings['timeFormat']);
+	protected function configurePropertyMapperForDateTimeFormat(\TYPO3\CMS\Extbase\Property\PropertyMappingConfiguration $propertyMapperDate) {
+		$propertyMapperDate->setTypeConverterOption('TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\DateTimeConverter', \TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter::CONFIGURATION_DATE_FORMAT, ($this->settings['dateFormat'] . ' ') . $this->settings['timeFormat']);
 	}
 
 	/**
@@ -229,17 +231,17 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	protected function createUserAndGroupListForSelectOptions() {
 		$userGroupArray = array();
 		// Two meta entries: 'all' and 'self'
-		$userGroupArray[0] = Tx_Extbase_Utility_Localization::translate('allUsers', 'Belog');
-		$userGroupArray[-1] = Tx_Extbase_Utility_Localization::translate('self', 'Belog');
+		$userGroupArray[0] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('allUsers', 'Belog');
+		$userGroupArray[-1] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('self', 'Belog');
 		// List of groups, key is gr-'uid'
-		$groups = t3lib_BEfunc::getGroupNames();
+		$groups = \TYPO3\CMS\Backend\Utility\BackendUtility::getGroupNames();
 		foreach ($groups as $group) {
-			$userGroupArray['gr-' . $group['uid']] = (Tx_Extbase_Utility_Localization::translate('group', 'Belog') . ' ') . $group['title'];
+			$userGroupArray['gr-' . $group['uid']] = (\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('group', 'Belog') . ' ') . $group['title'];
 		}
 		// List of users, key is us-'uid'
-		$users = t3lib_BEfunc::getUserNames();
+		$users = \TYPO3\CMS\Backend\Utility\BackendUtility::getUserNames();
 		foreach ($users as $user) {
-			$userGroupArray['us-' . $user['uid']] = (Tx_Extbase_Utility_Localization::translate('user', 'Belog') . ' ') . $user['username'];
+			$userGroupArray['us-' . $user['uid']] = (\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('user', 'Belog') . ' ') . $user['username'];
 		}
 		return $userGroupArray;
 	}
@@ -250,15 +252,15 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * @return array Key is uid of workspace, value its label
 	 */
 	protected function createWorkspaceListForSelectOptions() {
-		if (!t3lib_extMgm::isLoaded('workspaces')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('workspaces')) {
 			return array();
 		}
 		$workspaceArray = array();
 		// Two meta entries: 'all' and 'live'
-		$workspaceArray[-99] = Tx_Extbase_Utility_Localization::translate('any', 'Belog');
-		$workspaceArray[0] = Tx_Extbase_Utility_Localization::translate('live', 'Belog');
-		$workspaces = $this->objectManager->get('Tx_Belog_Domain_Repository_WorkspaceRepository')->findAll();
-		/** @var $workspace Tx_Belog_Domain_Model_Workspace */
+		$workspaceArray[-99] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('any', 'Belog');
+		$workspaceArray[0] = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('live', 'Belog');
+		$workspaces = $this->objectManager->get('TYPO3\\CMS\\Belog\\Domain\\Repository\\WorkspaceRepository')->findAll();
+		/** @var $workspace \TYPO3\CMS\Belog\Domain\Model\Workspace */
 		foreach ($workspaces as $workspace) {
 			$workspaceArray[$workspace->getUid()] = ($workspace->getUid() . ': ') . $workspace->getTitle();
 		}
@@ -270,10 +272,10 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 * we force to show only log entries from the selected workspace,
 	 * and the workspace selector is not shown.
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
 	 * @return void
 	 */
-	protected function forceWorkspaceSelectionIfInWorkspace(Tx_Belog_Domain_Model_Constraint $constraint) {
+	protected function forceWorkspaceSelectionIfInWorkspace(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint) {
 		if ($GLOBALS['BE_USER']->workspace !== 0) {
 			$constraint->setWorkspaceUid($GLOBALS['BE_USER']->workspace);
 			$this->view->assign('showWorkspaceSelector', FALSE);
@@ -290,10 +292,10 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	 */
 	protected function createPageDepthOptions() {
 		$options = array(
-			0 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_0', 'lang'),
-			1 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_1', 'lang'),
-			2 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_2', 'lang'),
-			3 => Tx_Extbase_Utility_Localization::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_3', 'lang')
+			0 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_0', 'lang'),
+			1 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_1', 'lang'),
+			2 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_2', 'lang'),
+			3 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('LLL:EXT:lang/locallang_mod_web_info.xlf:depth_3', 'lang')
 		);
 		return $options;
 	}
@@ -301,10 +303,10 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	/**
 	 * Calculate the start- and end timestamp from the different time selector options
 	 *
-	 * @param Tx_Belog_Domain_Model_Constraint $constraint
+	 * @param \TYPO3\CMS\Belog\Domain\Model\Constraint $constraint
 	 * @return void
 	 */
-	protected function setStartAndEndTimeFromTimeSelector(Tx_Belog_Domain_Model_Constraint $constraint) {
+	protected function setStartAndEndTimeFromTimeSelector(\TYPO3\CMS\Belog\Domain\Model\Constraint $constraint) {
 		$startTime = 0;
 		$endTime = $GLOBALS['EXEC_TIME'];
 		// @TODO: Refactor this construct
@@ -338,9 +340,9 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 			$startTime = mktime(0, 0, 0) - (31 * 3600) * 24;
 			break;
 		case self::TIMEFRAME_CUSTOM:
-			if ($constraint->getManualDateStart() instanceof DateTime) {
+			if ($constraint->getManualDateStart() instanceof \DateTime) {
 				$startTime = $constraint->getManualDateStart()->format('U');
-				if ($constraint->getManualDateStop() instanceof DateTime) {
+				if ($constraint->getManualDateStop() instanceof \DateTime) {
 					$manualEndTime = $constraint->getManualDateStop()->format('U');
 					if ($manualEndTime > $startTime) {
 						$endTime = $manualEndTime;
@@ -358,5 +360,6 @@ abstract class Tx_Belog_Controller_AbstractController extends Tx_Extbase_MVC_Con
 	}
 
 }
+
 
 ?>

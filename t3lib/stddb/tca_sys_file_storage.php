@@ -74,7 +74,7 @@ $TCA['sys_file_storage'] = array(
 			'label' => 'LLL:EXT:lang/locallang_tca.xlf:sys_file_storage.processingfolder',
 			'config' => array(
 				'type' => 'input',
-				'placeholder' => t3lib_file_Storage::DEFAULT_ProcessingFolder,
+				'placeholder' => \TYPO3\CMS\Core\Resource\ResourceStorage::DEFAULT_ProcessingFolder,
 				'size' => '20'
 			)
 		),
@@ -106,8 +106,8 @@ $TCA['sys_file_storage'] = array(
 	)
 );
 /**
- * @var t3lib_file_Driver_DriverRegistry $registry
+ * @var \TYPO3\CMS\Core\Resource\Driver\DriverRegistry $registry
  */
-$registry = t3lib_div::makeInstance('t3lib_file_Driver_DriverRegistry');
+$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\Driver\\DriverRegistry');
 $registry->addDriversToTCA();
 ?>

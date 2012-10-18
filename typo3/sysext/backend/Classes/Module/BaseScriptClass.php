@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -87,7 +89,7 @@
  * @subpackage t3lib
  * @see t3lib_extobjbase
  */
-class t3lib_SCbase {
+class BaseScriptClass {
 
 	/**
 	 * Loaded with the global array $MCONF which holds some module configuration from the conf.php file of backend modules.
@@ -200,7 +202,7 @@ class t3lib_SCbase {
 	/**
 	 * Generally used to hold an instance of the 'template' class from typo3/template.php
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -225,8 +227,8 @@ class t3lib_SCbase {
 		if (!$this->MCONF['name']) {
 			$this->MCONF = $GLOBALS['MCONF'];
 		}
-		$this->id = intval(t3lib_div::_GP('id'));
-		$this->CMD = t3lib_div::_GP('CMD');
+		$this->id = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'));
+		$this->CMD = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('CMD');
 		$this->perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(1);
 		$this->menuConfig();
 		$this->handleExternalFunctionValue();
@@ -243,10 +245,10 @@ class t3lib_SCbase {
 	 */
 	public function menuConfig() {
 		// Page/be_user TSconfig settings and blinding of menu-items
-		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id, 'mod.' . $this->MCONF['name']);
+		$this->modTSconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($this->id, 'mod.' . $this->MCONF['name']);
 		$this->MOD_MENU['function'] = $this->mergeExternalItems($this->MCONF['name'], 'function', $this->MOD_MENU['function']);
-		$this->MOD_MENU['function'] = t3lib_BEfunc::unsetMenuItems($this->modTSconfig['properties'], $this->MOD_MENU['function'], 'menu.function');
-		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name'], $this->modMenu_type, $this->modMenu_dontValidateList, $this->modMenu_setDefaultList);
+		$this->MOD_MENU['function'] = \TYPO3\CMS\Backend\Utility\BackendUtility::unsetMenuItems($this->modTSconfig['properties'], $this->MOD_MENU['function'], 'menu.function');
+		$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name'], $this->modMenu_type, $this->modMenu_dontValidateList, $this->modMenu_setDefaultList);
 	}
 
 	/**
@@ -264,7 +266,7 @@ class t3lib_SCbase {
 		$mergeArray = $GLOBALS['TBE_MODULES_EXT'][$modName]['MOD_MENU'][$menuKey];
 		if (is_array($mergeArray)) {
 			foreach ($mergeArray as $k => $v) {
-				if ((((string) $v['ws'] === '' || $GLOBALS['BE_USER']->workspace === 0 && t3lib_div::inList($v['ws'], 'online')) || $GLOBALS['BE_USER']->workspace === -1 && t3lib_div::inList($v['ws'], 'offline')) || $GLOBALS['BE_USER']->workspace > 0 && t3lib_div::inList($v['ws'], 'custom')) {
+				if ((((string) $v['ws'] === '' || $GLOBALS['BE_USER']->workspace === 0 && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($v['ws'], 'online')) || $GLOBALS['BE_USER']->workspace === -1 && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($v['ws'], 'offline')) || $GLOBALS['BE_USER']->workspace > 0 && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($v['ws'], 'custom')) {
 					$menuArr[$k] = $GLOBALS['LANG']->sL($v['title']);
 				}
 			}
@@ -318,10 +320,10 @@ class t3lib_SCbase {
 	 */
 	public function checkExtObj() {
 		if (is_array($this->extClassConf) && $this->extClassConf['name']) {
-			$this->extObj = t3lib_div::makeInstance($this->extClassConf['name']);
+			$this->extObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($this->extClassConf['name']);
 			$this->extObj->init($this, $this->extClassConf);
 			// Re-write:
-			$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name'], $this->modMenu_type, $this->modMenu_dontValidateList, $this->modMenu_setDefaultList);
+			$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name'], $this->modMenu_type, $this->modMenu_dontValidateList, $this->modMenu_setDefaultList);
 		}
 	}
 
@@ -366,5 +368,6 @@ class t3lib_SCbase {
 	}
 
 }
+
 
 ?>

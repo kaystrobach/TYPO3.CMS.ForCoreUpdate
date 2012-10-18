@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\View;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,16 +33,17 @@
  * @package TYPO3
  * @subpackage cms
  */
-interface tslib_adminPanelHook
+interface AdminPanelViewHookInterface
 {
 	/**
 	 * Extend the adminPanel
 	 *
 	 * @param string $moduleContent Content of the admin panel
-	 * @param tslib_AdminPanel $obj The adminPanel object
+	 * @param \TYPO3\CMS\Frontend\View\AdminPanelView $obj The adminPanel object
 	 * @return string Returns content of admin panel
 	 */
-	public function extendAdminPanel($moduleContent, tslib_AdminPanel $obj);
+	public function extendAdminPanel($moduleContent, \TYPO3\CMS\Frontend\View\AdminPanelView $obj);
 
 }
+
 ?>

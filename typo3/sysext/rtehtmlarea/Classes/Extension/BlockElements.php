@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_blockelements extends tx_rtehtmlarea_api {
+class BlockElements extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -121,26 +123,26 @@ class tx_rtehtmlarea_blockelements extends tx_rtehtmlarea_api {
 					if ($this->htmlAreaRTE->cleanList($this->thisConfig['buttons.']['formatblock.']['removeItems']) == '*') {
 						$hideItems = array_diff(array_keys($defaultBlockElements), array('none'));
 					} else {
-						$hideItems = t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList(t3lib_div::strtolower($this->thisConfig['buttons.']['formatblock.']['removeItems'])), 1);
+						$hideItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList(\TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($this->thisConfig['buttons.']['formatblock.']['removeItems'])), 1);
 					}
 				}
 				// Adding elements
 				if ($this->thisConfig['buttons.']['formatblock.']['addItems']) {
-					$addItems = t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList(t3lib_div::strtolower($this->thisConfig['buttons.']['formatblock.']['addItems'])), 1);
+					$addItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList(\TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($this->thisConfig['buttons.']['formatblock.']['addItems'])), 1);
 				}
 				// Restriction clause
 				if ($this->thisConfig['buttons.']['formatblock.']['restrictToItems']) {
-					$restrictTo = t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList('none,' . t3lib_div::strtolower($this->thisConfig['buttons.']['formatblock.']['restrictToItems'])), 1);
+					$restrictTo = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList('none,' . \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($this->thisConfig['buttons.']['formatblock.']['restrictToItems'])), 1);
 				}
 				// Elements order
 				if ($this->thisConfig['buttons.']['formatblock.']['orderItems']) {
-					$blockElementsOrder = 'none,' . t3lib_div::strtolower($this->thisConfig['buttons.']['formatblock.']['orderItems']);
+					$blockElementsOrder = 'none,' . \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($this->thisConfig['buttons.']['formatblock.']['orderItems']);
 				}
 				$prefixLabelWithTag = $this->thisConfig['buttons.']['formatblock.']['prefixLabelWithTag'] ? TRUE : $prefixLabelWithTag;
 				$postfixLabelWithTag = $this->thisConfig['buttons.']['formatblock.']['postfixLabelWithTag'] ? TRUE : $postfixLabelWithTag;
 			}
 			// Adding custom items
-			$blockElementsOrder = array_merge(t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList($blockElementsOrder), 1), $addItems);
+			$blockElementsOrder = array_merge(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList($blockElementsOrder), 1), $addItems);
 			// Add div element if indent is configured in the toolbar
 			if (in_array('indent', $this->toolbar) || in_array('outdent', $this->toolbar)) {
 				$blockElementsOrder = array_merge($blockElementsOrder, array('div'));
@@ -194,5 +196,6 @@ class tx_rtehtmlarea_blockelements extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

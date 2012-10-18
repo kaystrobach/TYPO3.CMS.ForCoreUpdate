@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author 	Kasper Skårhøj <kasper@typo3.com>
  * @author 	Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_user {
+class User {
 
 	/**
 	 * @todo Define visibility
@@ -51,7 +53,7 @@ class tx_rtehtmlarea_user {
 	/**
 	 * document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -66,15 +68,15 @@ class tx_rtehtmlarea_user {
 	 * @todo Define visibility
 	 */
 	public function init() {
-		$this->editorNo = t3lib_div::_GP('editorNo');
-		$this->siteUrl = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->editorNo = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('editorNo');
+		$this->siteUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->bodyTagAdditions = 'onload="Init();"';
 		$this->doc->form = ('
 	<form action="" id="process" name="process" method="post">
 		<input type="hidden" name="processContent" value="" />
-		<input type="hidden" name="returnUrl" value="' . htmlspecialchars(t3lib_div::getIndpEnv('REQUEST_URI'))) . '" />
+		<input type="hidden" name="returnUrl" value="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'))) . '" />
 		';
 		$JScode = ((((((((('
 			var plugin = window.parent.RTEarea["' . $this->editorNo) . '"].editor.getPlugin("UserElements");
@@ -104,16 +106,16 @@ class tx_rtehtmlarea_user {
 				document.process.submit();
 			};
 			function jumpToUrl(URL) {
-				var RTEtsConfigParams = "&RTEtsConfigParams=') . rawurlencode(t3lib_div::_GP('RTEtsConfigParams'))) . '";
+				var RTEtsConfigParams = "&RTEtsConfigParams=') . rawurlencode(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('RTEtsConfigParams'))) . '";
 				var editorNo = "&editorNo=') . rawurlencode($this->editorNo)) . '";
-				theLocation = "') . t3lib_div::getIndpEnv('SCRIPT_NAME')) . '"+URL+RTEtsConfigParams+editorNo;
+				theLocation = "') . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME')) . '"+URL+RTEtsConfigParams+editorNo;
 				window.location.href = theLocation;
 			}
 		';
 		$this->doc->JScode = $this->doc->wrapScriptTags($JScode);
 		$this->modData = $GLOBALS['BE_USER']->getModuleData('user.php', 'ses');
-		if (t3lib_div::_GP('OC_key')) {
-			$parts = explode('|', t3lib_div::_GP('OC_key'));
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('OC_key')) {
+			$parts = explode('|', \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('OC_key'));
 			$this->modData['openKeys'][$parts[1]] = $parts[0] == 'O' ? 1 : 0;
 			$GLOBALS['BE_USER']->pushModuleData('user.php', $this->modData);
 		}
@@ -177,9 +179,9 @@ class tx_rtehtmlarea_user {
 	public function main_user($openKeys) {
 		// Starting content:
 		$content = $this->doc->startPage($GLOBALS['LANG']->getLL('Insert Custom Element', 1));
-		$RTEtsConfigParts = explode(':', t3lib_div::_GP('RTEtsConfigParams'));
-		$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE', t3lib_BEfunc::getPagesTSconfig($RTEtsConfigParts[5]));
-		$thisConfig = t3lib_BEfunc::RTEsetup($RTEsetup['properties'], $RTEtsConfigParts[0], $RTEtsConfigParts[2], $RTEtsConfigParts[4]);
+		$RTEtsConfigParts = explode(':', \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('RTEtsConfigParams'));
+		$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE', \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($RTEtsConfigParts[5]));
+		$thisConfig = \TYPO3\CMS\Backend\Utility\BackendUtility::RTEsetup($RTEsetup['properties'], $RTEtsConfigParts[0], $RTEtsConfigParts[2], $RTEtsConfigParts[4]);
 		if (is_array($thisConfig['userElements.'])) {
 			$categories = array();
 			foreach ($thisConfig['userElements.'] as $k => $value) {
@@ -194,7 +196,7 @@ class tx_rtehtmlarea_user {
 						case 'images_from_folder':
 							$mArray = array();
 							if ($v['path'] && @is_dir((PATH_site . $v['path']))) {
-								$files = t3lib_div::getFilesInDir(PATH_site . $v['path'], 'gif,jpg,jpeg,png', 0, '');
+								$files = \TYPO3\CMS\Core\Utility\GeneralUtility::getFilesInDir(PATH_site . $v['path'], 'gif,jpg,jpeg,png', 0, '');
 								if (is_array($files)) {
 									$c = 0;
 									foreach ($files as $filename) {
@@ -205,7 +207,7 @@ class tx_rtehtmlarea_user {
 										$mArray[$ks . '.'] = array(
 											'content' => ((('<img src="' . $this->siteUrl) . $v['path']) . $filename) . '" />',
 											'_icon' => ((((('<img src="' . $this->siteUrl) . $v['path']) . $filename) . '" ') . $iInfo[3]) . ' />',
-											'description' => ((((((($GLOBALS['LANG']->getLL('filesize') . ': ') . str_replace('&nbsp;', ' ', t3lib_div::formatSize(@filesize(((PATH_site . $v['path']) . $filename))))) . ', ') . $GLOBALS['LANG']->getLL('pixels', 1)) . ': ') . $iInfo[0]) . 'x') . $iInfo[1]
+											'description' => ((((((($GLOBALS['LANG']->getLL('filesize') . ': ') . str_replace('&nbsp;', ' ', \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize(@filesize(((PATH_site . $v['path']) . $filename))))) . ', ') . $GLOBALS['LANG']->getLL('pixels', 1)) . ': ') . $iInfo[0]) . 'x') . $iInfo[1]
 										);
 										$c++;
 									}
@@ -215,7 +217,7 @@ class tx_rtehtmlarea_user {
 						}
 						if (is_array($mArray)) {
 							if ($v['merge']) {
-								$v = t3lib_div::array_merge_recursive_overrule($mArray, $v);
+								$v = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($mArray, $v);
 							} else {
 								$v = $mArray;
 							}
@@ -279,7 +281,7 @@ class tx_rtehtmlarea_user {
 				} else {
 					$title = $GLOBALS['LANG']->sL($title, 1);
 				}
-				$lines[] = (((((((((('<tr><td colspan="3" class="bgColor5"><a href="#" title="' . $GLOBALS['LANG']->getLL('expand', 1)) . '" onClick="jumpToUrl(\'?OC_key=') . ($openKeys[$openK] ? 'C|' : 'O|')) . $openK) . '\');return false;"><img') . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], (('gfx/ol/' . ($openKeys[$openK] ? 'minus' : 'plus')) . 'bullet.gif'), 'width="18" height="16"')) . ' title="') . $GLOBALS['LANG']->getLL('expand', 1)) . '" /><strong>') . $title) . '</strong></a></td></tr>';
+				$lines[] = (((((((((('<tr><td colspan="3" class="bgColor5"><a href="#" title="' . $GLOBALS['LANG']->getLL('expand', 1)) . '" onClick="jumpToUrl(\'?OC_key=') . ($openKeys[$openK] ? 'C|' : 'O|')) . $openK) . '\');return false;"><img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], (('gfx/ol/' . ($openKeys[$openK] ? 'minus' : 'plus')) . 'bullet.gif'), 'width="18" height="16"')) . ' title="') . $GLOBALS['LANG']->getLL('expand', 1)) . '" /><strong>') . $title) . '</strong></a></td></tr>';
 				$lines[] = $v;
 			}
 			$content .= ('<table border="0" cellpadding="1" cellspacing="1">' . implode('', $lines)) . '</table>';
@@ -289,5 +291,6 @@ class tx_rtehtmlarea_user {
 	}
 
 }
+
 
 ?>

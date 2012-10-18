@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-final class t3lib_utility_String {
+final class StringUtility {
 
 	/**
 	 * Returns TRUE if $haystack ends with $needle.
@@ -49,5 +51,6 @@ final class t3lib_utility_String {
 	}
 
 }
+
 
 ?>

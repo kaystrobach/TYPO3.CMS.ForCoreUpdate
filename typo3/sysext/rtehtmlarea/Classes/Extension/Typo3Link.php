@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_typo3link extends tx_rtehtmlarea_api {
+class Typo3Link extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -114,7 +116,7 @@ class tx_rtehtmlarea_typo3link extends tx_rtehtmlarea_api {
 					$JSClassesAnchorArray .= (((($index++ ? ',' : '') . 'type : "') . str_replace('"', '', str_replace('\'', '', $conf['type']))) . '"') . LF;
 				}
 				if (trim(str_replace('\'', '', str_replace('"', '', $conf['image'])))) {
-					$JSClassesAnchorArray .= ((((($index++ ? ',' : '') . 'image : "') . $this->htmlAreaRTE->siteURL) . t3lib_div::resolveBackPath((TYPO3_mainDir . $this->htmlAreaRTE->getFullFileName(trim(str_replace('\'', '', str_replace('"', '', $conf['image']))))))) . '"') . LF;
+					$JSClassesAnchorArray .= ((((($index++ ? ',' : '') . 'image : "') . $this->htmlAreaRTE->siteURL) . \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath((TYPO3_mainDir . $this->htmlAreaRTE->getFullFileName(trim(str_replace('\'', '', str_replace('"', '', $conf['image']))))))) . '"') . LF;
 				}
 				$JSClassesAnchorArray .= ((($index++ ? ',' : '') . 'addIconAfterLink : ') . ($conf['addIconAfterLink'] ? 'true' : 'false')) . LF;
 				if (trim($conf['altText'])) {
@@ -144,12 +146,13 @@ class tx_rtehtmlarea_typo3link extends tx_rtehtmlarea_api {
 	public function applyToolbarConstraints($show) {
 		// We will not allow unlink if link is not enabled
 		if (!in_array('link', $show)) {
-			return array_diff($show, t3lib_div::trimExplode(',', $this->pluginButtons));
+			return array_diff($show, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pluginButtons));
 		} else {
 			return $show;
 		}
 	}
 
 }
+
 
 ?>

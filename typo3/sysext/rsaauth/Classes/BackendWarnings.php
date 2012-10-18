@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_backendwarnings {
+class BackendWarnings {
 
 	/**
 	 * Checks RSA configuration and creates warnings if necessary.
@@ -39,8 +41,8 @@ class tx_rsaauth_backendwarnings {
 	 * @see 	t3lib_BEfunc::displayWarningMessages()
 	 */
 	public function displayWarningMessages_postProcess(array &$warnings) {
-		$backend = tx_rsaauth_backendfactory::getBackend();
-		if ($backend instanceof tx_rsaauth_cmdline_backend) {
+		$backend = \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend();
+		if ($backend instanceof \TYPO3\CMS\Rsaauth\Backend\CommandLineBackend) {
 			// Not using the PHP extension!
 			$warnings['rsaauth_cmdline'] = $GLOBALS['LANG']->sL('LLL:EXT:rsaauth/hooks/locallang.xml:hook_using_cmdline');
 			// Check the path
@@ -49,7 +51,7 @@ class tx_rsaauth_backendwarnings {
 			if ($path == '') {
 				// Path is empty
 				$warnings['rsaauth'] = $GLOBALS['LANG']->sL('LLL:EXT:rsaauth/hooks/locallang.xml:hook_empty_directory');
-			} elseif (!t3lib_div::isAbsPath($path)) {
+			} elseif (!\TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($path)) {
 				// Path is not absolute
 				$warnings['rsaauth'] = $GLOBALS['LANG']->sL('LLL:EXT:rsaauth/hooks/locallang.xml:hook_directory_not_absolute');
 			} elseif (!@is_dir($path)) {
@@ -66,5 +68,6 @@ class tx_rsaauth_backendwarnings {
 	}
 
 }
+
 
 ?>

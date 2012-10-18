@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author 	Steffen Ritter <info@rs-websystems.de>
  */
-class tx_coreupdates_compressionlevel extends Tx_Install_Updates_Base {
+class CompressionLevelUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Check Compression Level';
 
@@ -84,5 +86,6 @@ AddEncoding gzip .gzip
 	}
 
 }
+
 
 ?>

@@ -103,13 +103,13 @@ class t3lib_syntaxhl {
 	 */
 	public function highLight_DS($str) {
 		// Parse DS to verify that it is valid:
-		$DS = t3lib_div::xml2array($str);
+		$DS = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($str);
 		if (is_array($DS)) {
 			// Complete list of tags in DS
 			$completeTagList = array_unique($this->getAllTags($str));
 			// Highlighting source:
 			// Init parser object
-			$this->htmlParse = t3lib_div::makeInstance('t3lib_parsehtml');
+			$this->htmlParse = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 			// Split the XML by the found tags, recursively into LARGE array.
 			$struct = $this->splitXMLbyTags(implode(',', $completeTagList), $str);
 			// Perform color-markup on the parsed content. Markup preserves the LINE formatting of the XML.
@@ -197,13 +197,13 @@ class t3lib_syntaxhl {
 	 */
 	public function highLight_FF($str) {
 		// Parse DS to verify that it is valid:
-		$DS = t3lib_div::xml2array($str);
+		$DS = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($str);
 		if (is_array($DS)) {
 			// Complete list of tags in DS
 			$completeTagList = array_unique($this->getAllTags($str));
 			// Highlighting source:
 			// Init parser object
-			$this->htmlParse = t3lib_div::makeInstance('t3lib_parsehtml');
+			$this->htmlParse = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 			// Split the XML by the found tags, recursively into LARGE array.
 			$struct = $this->splitXMLbyTags(implode(',', $completeTagList), $str);
 			// Perform color-markup on the parsed content. Markup preserves the LINE formatting of the XML.

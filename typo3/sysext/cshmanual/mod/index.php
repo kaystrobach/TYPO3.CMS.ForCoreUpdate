@@ -31,7 +31,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class local_t3lib_parsehtml extends t3lib_parsehtml {
+class local_t3lib_parsehtml extends \TYPO3\CMS\Core\Html\HtmlParser {
 
 	/**
 	 * Processing content between tags for HTML_cleaner
@@ -55,8 +55,8 @@ class local_t3lib_parsehtml extends t3lib_parsehtml {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/cshmanual/Classes/Controller/HelpModuleController.php
  */
-require_once t3lib_extMgm::extPath('cshmanual') . 'Classes/Controller/HelpModuleController.php';
-$SOBE = t3lib_div::makeInstance('SC_view_help');
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('cshmanual') . 'Classes/Controller/HelpModuleController.php';
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Cshmanual\\Controller\\HelpModuleController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

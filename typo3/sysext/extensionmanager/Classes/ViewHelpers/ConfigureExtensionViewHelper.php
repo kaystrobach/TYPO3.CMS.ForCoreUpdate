@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage ViewHelpers
  */
-class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fluid_ViewHelpers_Link_ActionViewHelper {
+class ConfigureExtensionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelper {
 
 	/**
 	 * @var string
@@ -63,5 +65,6 @@ class Tx_Extensionmanager_ViewHelpers_ConfigureExtensionViewHelper extends Tx_Fl
 	}
 
 }
+
 
 ?>

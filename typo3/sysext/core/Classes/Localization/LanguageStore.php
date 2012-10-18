@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dominique.feyer@reelpeek.net>
  */
-class t3lib_l10n_Store implements t3lib_Singleton {
+class LanguageStore implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * File extension supported by the localization parser
@@ -71,7 +73,7 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 	 */
 	public function initialize() {
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['format']['priority']) && trim($GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['format']['priority']) !== '') {
-			$this->supportedExtensions = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['format']['priority']);
+			$this->supportedExtensions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['format']['priority']);
 		} else {
 			$this->supportedExtensions = array('xlf', 'xml', 'php');
 		}
@@ -121,7 +123,7 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 	 * @param string $fileReference File reference
 	 * @param string $languageKey Valid language key
 	 * @param array $data
-	 * @return t3lib_l10n_Store This instance to allow method chaining
+	 * @return \TYPO3\CMS\Core\Localization\LanguageStore This instance to allow method chaining
 	 */
 	public function setData($fileReference, $languageKey, $data) {
 		$this->data[$fileReference][$languageKey] = $data;
@@ -132,7 +134,7 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 	 * Flushes data.
 	 *
 	 * @param string $fileReference
-	 * @return t3lib_l10n_Store This instance to allow method chaining
+	 * @return \TYPO3\CMS\Core\Localization\LanguageStore This instance to allow method chaining
 	 */
 	public function flushData($fileReference) {
 		unset($this->data[$fileReference]);
@@ -145,7 +147,7 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 	 * @param string $fileReference File reference
 	 * @param string $languageKey Valid language key
 	 * @param string $charset Rendering charset
-	 * @return t3lib_l10n_Store This instance to allow method chaining
+	 * @return \TYPO3\CMS\Core\Localization\LanguageStore This instance to allow method chaining
 	 * @throws t3lib_l10n_exception_InvalidParser|t3lib_l10n_exception_FileNotFound
 	 */
 	public function setConfiguration($fileReference, $languageKey, $charset) {
@@ -156,7 +158,7 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 			'languageKey' => $languageKey,
 			'charset' => $charset
 		);
-		$fileWithoutExtension = t3lib_div::getFileAbsFileName($this->getFileReferenceWithoutExtension($fileReference));
+		$fileWithoutExtension = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->getFileReferenceWithoutExtension($fileReference));
 		foreach ($this->supportedExtensions as $extension) {
 			if (@is_file((($fileWithoutExtension . '.') . $extension))) {
 				$this->configuration[$fileReference]['fileReference'] = ($fileWithoutExtension . '.') . $extension;
@@ -165,16 +167,16 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 			}
 		}
 		if ($this->configuration[$fileReference]['fileExtension'] === FALSE) {
-			throw new t3lib_l10n_exception_FileNotFound(sprintf('Source localization file (%s) not found', $fileReference), 1306410755);
+			throw new \TYPO3\CMS\Core\Localization\Exception\FileNotFoundException(sprintf('Source localization file (%s) not found', $fileReference), 1306410755);
 		}
 		$extension = $this->configuration[$fileReference]['fileExtension'];
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['parser'][$extension]) && trim($GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['parser'][$extension]) !== '') {
 			$this->configuration[$fileReference]['parserClass'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['parser'][$extension];
 		} else {
-			throw new t3lib_l10n_exception_InvalidParser(('TYPO3 Fatal Error: l10n parser for file extension "' . $extension) . '" is not configured! Please check you configuration.', 1301579637);
+			throw new \TYPO3\CMS\Core\Localization\Exception\InvalidParserException(('TYPO3 Fatal Error: l10n parser for file extension "' . $extension) . '" is not configured! Please check you configuration.', 1301579637);
 		}
 		if (!class_exists($this->configuration[$fileReference]['parserClass']) || trim($this->configuration[$fileReference]['parserClass']) === '') {
-			throw new t3lib_l10n_exception_InvalidParser(('TYPO3 Fatal Error: l10n parser "' . $this->configuration[$fileReference]['parserClass']) . '" cannot be found or is an empty parser!', 1270853900);
+			throw new \TYPO3\CMS\Core\Localization\Exception\InvalidParserException(('TYPO3 Fatal Error: l10n parser "' . $this->configuration[$fileReference]['parserClass']) . '" cannot be found or is an empty parser!', 1270853900);
 		}
 		return $this;
 	}
@@ -196,14 +198,14 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 	 * Returns the correct parser for a specific file reference.
 	 *
 	 * @param string $fileReference File reference
-	 * @return t3lib_l10n_parser
-	 * @throws t3lib_l10n_exception_InvalidParser
+	 * @return \TYPO3\CMS\Core\Localization\Parser\LocalizationParserInterface
+	 * @throws \TYPO3\CMS\Core\Localization\Exception\InvalidParserException
 	 */
 	public function getParserInstance($fileReference) {
 		if (isset($this->configuration[$fileReference]['parserClass']) && trim($this->configuration[$fileReference]['parserClass']) !== '') {
-			return t3lib_div::makeInstance((string) $this->configuration[$fileReference]['parserClass']);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance((string) $this->configuration[$fileReference]['parserClass']);
 		} else {
-			throw new t3lib_l10n_exception_InvalidParser(sprintf('Invalid parser configuration for the current file (%s)', $fileReference), 1307293692);
+			throw new \TYPO3\CMS\Core\Localization\Exception\InvalidParserException(sprintf('Invalid parser configuration for the current file (%s)', $fileReference), 1307293692);
 		}
 	}
 
@@ -218,7 +220,7 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 		if (isset($this->configuration[$fileReference]['fileReference']) && trim($this->configuration[$fileReference]['fileReference']) !== '') {
 			return (string) $this->configuration[$fileReference]['fileReference'];
 		} else {
-			throw new InvalidArgumentException(sprintf('Invalid file reference configuration for the current file (%s)', $fileReference), 1307293692);
+			throw new \InvalidArgumentException(sprintf('Invalid file reference configuration for the current file (%s)', $fileReference), 1307293692);
 		}
 	}
 
@@ -232,5 +234,6 @@ class t3lib_l10n_Store implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

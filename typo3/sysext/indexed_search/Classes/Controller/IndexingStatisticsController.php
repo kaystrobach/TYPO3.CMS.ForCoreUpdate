@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package TYPO3
  * @subpackage tx_indexedsearch
  */
-class tx_indexedsearch_modfunc2 extends t3lib_extobjbase {
+class IndexingStatisticsController extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 
 	/**
 	 * Calls showStats to generate output.
@@ -46,7 +48,7 @@ class tx_indexedsearch_modfunc2 extends t3lib_extobjbase {
 		$theOutput = $this->pObj->doc->header($GLOBALS['LANG']->getLL('title'));
 		$theOutput .= $this->pObj->doc->section('', $this->showStats(), 0, 1);
 		$menu = array();
-		$functionMenu = t3lib_BEfunc::getFuncCheck($this->pObj->id, 'SET[tx_indexedsearch_modfunc2_check]', $this->pObj->MOD_SETTINGS['tx_indexedsearch_modfunc2_check'], '', '', 'id="checkTx_indexedsearch_modfunc2_check"');
+		$functionMenu = \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->pObj->id, 'SET[tx_indexedsearch_modfunc2_check]', $this->pObj->MOD_SETTINGS['tx_indexedsearch_modfunc2_check'], '', '', 'id="checkTx_indexedsearch_modfunc2_check"');
 		$menu[] = (($functionMenu . '<label for="checkTx_indexedsearch_modfunc2_check"') . $GLOBALS['LANG']->getLL('checklabel')) . '</label>';
 		$theOutput .= $this->pObj->doc->spacer(5);
 		return $theOutput;
@@ -62,7 +64,7 @@ class tx_indexedsearch_modfunc2 extends t3lib_extobjbase {
 	public function showStats() {
 		$conf['words'] = 50;
 		// max words in result list
-		$conf['bid'] = intval(t3lib_div::_GET('id'));
+		$conf['bid'] = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GET('id'));
 		// pageid for several statistics
 		$addwhere1 = '';
 		// all records
@@ -145,7 +147,7 @@ class tx_indexedsearch_modfunc2 extends t3lib_extobjbase {
 	 */
 	public function extGetTreeList($id, $depth, $begin = 0, $perms_clause) {
 		// TODO: Fix this as this calls a non-static method
-		return t3lib_tsfeBeUserAuth::extGetTreeList($id, $depth, $begin, $perms_clause);
+		return \TYPO3\CMS\Backend\FrontendBackendUserAuthentication::extGetTreeList($id, $depth, $begin, $perms_clause);
 	}
 
 	/**
@@ -159,7 +161,7 @@ class tx_indexedsearch_modfunc2 extends t3lib_extobjbase {
 	public function hookRequest($functionName) {
 		// Hook: menuConfig_preProcessModMenu
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['be_hooks'][$functionName]) {
-			$hookObj = t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['be_hooks'][$functionName]);
+			$hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['be_hooks'][$functionName]);
 			if (method_exists($hookObj, $functionName)) {
 				$hookObj->pObj = $this;
 				return $hookObj;
@@ -168,5 +170,6 @@ class tx_indexedsearch_modfunc2 extends t3lib_extobjbase {
 	}
 
 }
+
 
 ?>

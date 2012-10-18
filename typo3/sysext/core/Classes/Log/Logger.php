@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_Logger {
+class Logger {
 
 	/**
 	 * Logger name or component for which this logger is meant to be used for.
@@ -49,7 +51,7 @@ class t3lib_log_Logger {
 	 *
 	 * @var integer
 	 */
-	protected $minimumLogLevel = t3lib_log_Level::EMERGENCY;
+	protected $minimumLogLevel = \TYPO3\CMS\Core\Log\LogLevel::EMERGENCY;
 
 	/**
 	 * Writers used by this logger
@@ -69,7 +71,7 @@ class t3lib_log_Logger {
 	 * Constructor.
 	 *
 	 * @param string $name A name for the logger.
-	 * @return t3lib_log_Logger
+	 * @return \TYPO3\CMS\Core\Log\Logger
 	 */
 	public function __construct($name) {
 		$this->name = $name;
@@ -79,10 +81,10 @@ class t3lib_log_Logger {
 	 * Sets the minimum log level for which log records are written.
 	 *
 	 * @param integer $level Minimum log level
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	protected function setMinimumLogLevel($level) {
-		t3lib_log_Level::validateLevel($level);
+		\TYPO3\CMS\Core\Log\LogLevel::validateLevel($level);
 		$this->minimumLogLevel = $level;
 		return $this;
 	}
@@ -109,14 +111,14 @@ class t3lib_log_Logger {
 	 * Adds a writer to this logger
 	 *
 	 * @param integer $minimumLevel
-	 * @param t3lib_log_writer_Writer $writer Writer object
-	 * @return t3lib_log_Logger $this
+	 * @param \TYPO3\CMS\Core\Log\Writer\Writer $writer Writer object
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
-	public function addWriter($minimumLevel, t3lib_log_writer_Writer $writer) {
-		t3lib_log_Level::validateLevel($minimumLevel);
+	public function addWriter($minimumLevel, \TYPO3\CMS\Core\Log\Writer\Writer $writer) {
+		\TYPO3\CMS\Core\Log\LogLevel::validateLevel($minimumLevel);
 		// Cycle through all the log levels which are as severe as or higher
 		// than $minimumLevel and add $writer to each severity level
-		for ($logLevelWhichTriggersWriter = t3lib_log_Level::EMERGENCY; $logLevelWhichTriggersWriter <= $minimumLevel; $logLevelWhichTriggersWriter++) {
+		for ($logLevelWhichTriggersWriter = \TYPO3\CMS\Core\Log\LogLevel::EMERGENCY; $logLevelWhichTriggersWriter <= $minimumLevel; $logLevelWhichTriggersWriter++) {
 			if (!isset($this->writers[$logLevelWhichTriggersWriter])) {
 				$this->writers[$logLevelWhichTriggersWriter] = array();
 			}
@@ -141,14 +143,14 @@ class t3lib_log_Logger {
 	 * Adds a processor to the logger.
 	 *
 	 * @param integer $minimumLevel
-	 * @param t3lib_log_processor_Processor $processor The processor to add.
+	 * @param \TYPO3\CMS\Core\Log\Processor\Processor $processor The processor to add.
 	 * @return void
 	 */
-	public function addProcessor($minimumLevel, t3lib_log_processor_Processor $processor) {
-		t3lib_log_Level::validateLevel($minimumLevel);
+	public function addProcessor($minimumLevel, \TYPO3\CMS\Core\Log\Processor\Processor $processor) {
+		\TYPO3\CMS\Core\Log\LogLevel::validateLevel($minimumLevel);
 		// Cycle through all the log levels which are as severe as or higher
 		// than $minimumLevel and add $processor to each severity level
-		for ($logLevelWhichTriggersProcessor = t3lib_log_Level::EMERGENCY; $logLevelWhichTriggersProcessor <= $minimumLevel; $logLevelWhichTriggersProcessor++) {
+		for ($logLevelWhichTriggersProcessor = \TYPO3\CMS\Core\Log\LogLevel::EMERGENCY; $logLevelWhichTriggersProcessor <= $minimumLevel; $logLevelWhichTriggersProcessor++) {
 			if (!isset($this->processors[$logLevelWhichTriggersProcessor])) {
 				$this->processors[$logLevelWhichTriggersProcessor] = array();
 			}
@@ -177,12 +179,12 @@ class t3lib_log_Logger {
 	 * @return mixed
 	 */
 	public function log($level, $message, array $data = array()) {
-		t3lib_log_Level::validateLevel($level);
+		\TYPO3\CMS\Core\Log\LogLevel::validateLevel($level);
 		if ($level > $this->minimumLogLevel) {
 			return $this;
 		}
-		/** @var $record t3lib_log_Record */
-		$record = t3lib_div::makeInstance('t3lib_log_Record', $this->name, $level, $message, $data);
+		/** @var $record \TYPO3\CMS\Core\Log\LogRecord */
+		$record = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogRecord', $this->name, $level, $message, $data);
 		$record = $this->callProcessors($record);
 		$this->writeLog($record);
 		return $this;
@@ -191,16 +193,16 @@ class t3lib_log_Logger {
 	/**
 	 * Calls all processors and returns log record
 	 *
-	 * @param t3lib_log_Record $record Record to process
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record Record to process
 	 * @throws RuntimeException
-	 * @return t3lib_log_Record Processed log record
+	 * @return \TYPO3\CMS\Core\Log\LogRecord Processed log record
 	 */
-	protected function callProcessors(t3lib_log_Record $record) {
+	protected function callProcessors(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		if (!empty($this->processors[$record->getLevel()])) {
 			foreach ($this->processors[$record->getLevel()] as $processor) {
 				$processedRecord = $processor->processLogRecord($record);
-				if (!$processedRecord instanceof t3lib_log_Record) {
-					throw new RuntimeException(('Processor ' . get_class($processor)) . ' returned invalid data. Instance of t3lib_log_Record expected', 1343593398);
+				if (!$processedRecord instanceof \TYPO3\CMS\Core\Log\LogRecord) {
+					throw new \RuntimeException(('Processor ' . get_class($processor)) . ' returned invalid data. Instance of TYPO3\\CMS\\Core\\Log\\LogRecord expected', 1343593398);
 				}
 				$record = $processedRecord;
 			}
@@ -211,10 +213,10 @@ class t3lib_log_Logger {
 	/**
 	 * Passes the t3lib_log_Record to all registered writers.
 	 *
-	 * @param t3lib_log_Record $record
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record
 	 * @return void
 	 */
-	protected function writeLog(t3lib_log_Record $record) {
+	protected function writeLog(\TYPO3\CMS\Core\Log\LogRecord $record) {
 		if (!empty($this->writers[$record->getLevel()])) {
 			foreach ($this->writers[$record->getLevel()] as $writer) {
 				$writer->writeLog($record);
@@ -227,10 +229,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function emergency($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::EMERGENCY, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::EMERGENCY, $message, $data);
 	}
 
 	/**
@@ -238,10 +240,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function alert($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::ALERT, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::ALERT, $message, $data);
 	}
 
 	/**
@@ -249,10 +251,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function critical($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::CRITICAL, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::CRITICAL, $message, $data);
 	}
 
 	/**
@@ -260,10 +262,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function error($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::ERROR, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::ERROR, $message, $data);
 	}
 
 	/**
@@ -271,10 +273,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function warning($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::WARNING, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::WARNING, $message, $data);
 	}
 
 	/**
@@ -282,10 +284,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function notice($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::NOTICE, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::NOTICE, $message, $data);
 	}
 
 	/**
@@ -293,10 +295,10 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function info($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::INFO, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::INFO, $message, $data);
 	}
 
 	/**
@@ -304,12 +306,13 @@ class t3lib_log_Logger {
 	 *
 	 * @param string $message Log message.
 	 * @param array $data Additional data to log
-	 * @return t3lib_log_Logger $this
+	 * @return \TYPO3\CMS\Core\Log\Logger $this
 	 */
 	public function debug($message, array $data = array()) {
-		return $this->log(t3lib_log_Level::DEBUG, $message, $data);
+		return $this->log(\TYPO3\CMS\Core\Log\LogLevel::DEBUG, $message, $data);
 	}
 
 }
+
 
 ?>

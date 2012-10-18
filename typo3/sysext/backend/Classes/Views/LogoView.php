@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Views;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class TYPO3Logo {
+class LogoView {
 
 	protected $logo;
 
@@ -55,10 +57,10 @@ class TYPO3Logo {
 			$logoFile = $this->logo;
 		}
 		$imgInfo = getimagesize((PATH_site . TYPO3_mainDir) . $logoFile);
-		$logo = ((((('<a href="' . TYPO3_URL_GENERAL) . '" target="_blank">') . '<img') . t3lib_iconWorks::skinImg('', $logoFile, $imgInfo[3])) . ' title="TYPO3 Content Management System" alt="" />') . '</a>';
+		$logo = ((((('<a href="' . TYPO3_URL_GENERAL) . '" target="_blank">') . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg('', $logoFile, $imgInfo[3])) . ' title="TYPO3 Content Management System" alt="" />') . '</a>';
 		// Overwrite with custom logo
 		if ($GLOBALS['TBE_STYLES']['logo']) {
-			$imgInfo = @getimagesize(t3lib_div::resolveBackPath((PATH_typo3 . $GLOBALS['TBE_STYLES']['logo']), 3));
+			$imgInfo = @getimagesize(\TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath((PATH_typo3 . $GLOBALS['TBE_STYLES']['logo']), 3));
 			$logo = ((((((('<a href="' . TYPO3_URL_GENERAL) . '" target="_blank">') . '<img src="') . $GLOBALS['TBE_STYLES']['logo']) . '" ') . $imgInfo[3]) . ' title="TYPO3 Content Management System" alt="" />') . '</a>';
 		}
 		return $logo;
@@ -72,11 +74,12 @@ class TYPO3Logo {
 	 */
 	public function setLogo($logo) {
 		if (!is_string($logo)) {
-			throw new InvalidArgumentException('parameter $logo must be of type string', 1194041104);
+			throw new \InvalidArgumentException('parameter $logo must be of type string', 1194041104);
 		}
 		$this->logo = $logo;
 	}
 
 }
+
 
 ?>

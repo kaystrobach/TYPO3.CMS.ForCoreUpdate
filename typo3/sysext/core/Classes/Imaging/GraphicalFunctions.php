@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Imaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -43,7 +45,7 @@
  * @subpackage t3lib
  * @see tslib_gifBuilder
  */
-class t3lib_stdGraphic {
+class GraphicalFunctions {
 
 	// Internal configuration, set in init()
 	// The ImageMagick filename used for combining two images. This name changed during the versions.
@@ -261,7 +263,7 @@ class t3lib_stdGraphic {
 	/**
 	 * Charset conversion object:
 	 *
-	 * @var t3lib_cs
+	 * @var \TYPO3\CMS\Core\Charset\CharsetConverter
 	 * @todo Define visibility
 	 */
 	public $csConvObj;
@@ -297,7 +299,7 @@ class t3lib_stdGraphic {
 			$this->NO_IMAGE_MAGICK = 1;
 		}
 		if (!$this->NO_IMAGE_MAGICK && ((!$gfxConf['im_version_5'] || $gfxConf['im_version_5'] === 'im4') || $gfxConf['im_version_5'] === 'im5')) {
-			throw new RuntimeException('Your TYPO3 installation is configured to use an old version of ImageMagick, which is not supported anymore. ' . 'Please upgrade to ImageMagick version 6 or GraphicksMagick and set $TYPO3_CONF_VARS[\'GFX\'][\'im_version_5\'] appropriately.', 1305059666);
+			throw new \RuntimeException('Your TYPO3 installation is configured to use an old version of ImageMagick, which is not supported anymore. ' . 'Please upgrade to ImageMagick version 6 or GraphicksMagick and set $TYPO3_CONF_VARS[\'GFX\'][\'im_version_5\'] appropriately.', 1305059666);
 		}
 		// When GIFBUILDER gets used in truecolor mode
 		// No colors parameter if we generate truecolor images.
@@ -305,7 +307,7 @@ class t3lib_stdGraphic {
 			$this->cmds['png'] = '';
 		}
 		// Setting default JPG parameters:
-		$this->jpegQuality = t3lib_utility_Math::forceIntegerInRange($gfxConf['jpg_quality'], 10, 100, 75);
+		$this->jpegQuality = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($gfxConf['jpg_quality'], 10, 100, 75);
 		$this->cmds['jpg'] = ($this->cmds['jpeg'] = '-colorspace RGB -sharpen 50 -quality ' . $this->jpegQuality);
 		if ($gfxConf['im_combine_filename']) {
 			$this->combineScript = $gfxConf['im_combine_filename'];
@@ -357,7 +359,7 @@ class t3lib_stdGraphic {
 			$this->csConvObj = $GLOBALS['LANG']->csConvObj;
 		} else {
 			// The object may not exist yet, so we need to create it now. Happens in the Install Tool for example.
-			$this->csConvObj = t3lib_div::makeInstance('t3lib_cs');
+			$this->csConvObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 		}
 		$this->nativeCharset = 'utf-8';
 	}
@@ -383,14 +385,14 @@ class t3lib_stdGraphic {
 		if ($conf['file'] && $conf['mask']) {
 			$imgInf = pathinfo($conf['file']);
 			$imgExt = strtolower($imgInf['extension']);
-			if (!t3lib_div::inList($this->gdlibExtensions, $imgExt)) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->gdlibExtensions, $imgExt)) {
 				$BBimage = $this->imageMagickConvert($conf['file'], $this->gifExtension, '', '', '', '', '');
 			} else {
 				$BBimage = $this->getImageDimensions($conf['file']);
 			}
 			$maskInf = pathinfo($conf['mask']);
 			$maskExt = strtolower($maskInf['extension']);
-			if (!t3lib_div::inList($this->gdlibExtensions, $maskExt)) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->gdlibExtensions, $maskExt)) {
 				$BBmask = $this->imageMagickConvert($conf['mask'], $this->gifExtension, '', '', '', '', '');
 			} else {
 				$BBmask = $this->getImageDimensions($conf['mask']);
@@ -468,7 +470,7 @@ class t3lib_stdGraphic {
 	 */
 	public function copyImageOntoImage(&$im, $conf, $workArea) {
 		if ($conf['file']) {
-			if (!t3lib_div::inList($this->gdlibExtensions, $conf['BBOX'][2])) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->gdlibExtensions, $conf['BBOX'][2])) {
 				$conf['BBOX'] = $this->imageMagickConvert($conf['BBOX'][3], $this->gifExtension, '', '', '', '', '');
 				$conf['file'] = $conf['BBOX'][3];
 			}
@@ -492,9 +494,9 @@ class t3lib_stdGraphic {
 	public function copyGifOntoGif(&$im, $cpImg, $conf, $workArea) {
 		$cpW = imagesx($cpImg);
 		$cpH = imagesy($cpImg);
-		$tile = t3lib_div::intExplode(',', $conf['tile']);
-		$tile[0] = t3lib_utility_Math::forceIntegerInRange($tile[0], 1, 20);
-		$tile[1] = t3lib_utility_Math::forceIntegerInRange($tile[1], 1, 20);
+		$tile = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['tile']);
+		$tile[0] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($tile[0], 1, 20);
+		$tile[1] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($tile[1], 1, 20);
 		$cpOff = $this->objPosition($conf, $workArea, array($cpW * $tile[0], $cpH * $tile[1]));
 		for ($xt = 0; $xt < $tile[0]; $xt++) {
 			$Xstart = $cpOff[0] + $cpW * $xt;
@@ -635,7 +637,7 @@ class t3lib_stdGraphic {
 				$fileColor = ($tmpStr . '_colorNT.') . $this->gifExtension;
 				$fileMask = ($tmpStr . '_maskNT.') . $this->gifExtension;
 				// Scalefactor
-				$sF = t3lib_utility_Math::forceIntegerInRange($conf['niceText.']['scaleFactor'], 2, 5);
+				$sF = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($conf['niceText.']['scaleFactor'], 2, 5);
 				$newW = ceil($sF * imagesx($im));
 				$newH = ceil($sF * imagesy($im));
 				// Make mask
@@ -669,7 +671,7 @@ class t3lib_stdGraphic {
 						if ($this->V5_EFFECTS) {
 							$command .= $this->v5_sharpen($conf['niceText.']['sharpen']);
 						} else {
-							$command .= ' -sharpen ' . t3lib_utility_Math::forceIntegerInRange($conf['niceText.']['sharpen'], 1, 99);
+							$command .= ' -sharpen ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($conf['niceText.']['sharpen'], 1, 99);
 						}
 					}
 				}
@@ -754,7 +756,7 @@ class t3lib_stdGraphic {
 			$result[1] = 0;
 			break;
 		}
-		$result = $this->applyOffset($result, t3lib_div::intExplode(',', $conf['offset']));
+		$result = $this->applyOffset($result, \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['offset']));
 		$result = $this->applyOffset($result, $workArea);
 		return $result;
 	}
@@ -864,7 +866,7 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function calcTextCordsForMap($cords, $offset, $conf) {
-		$pars = t3lib_div::intExplode(',', $conf['explode'] . ',');
+		$pars = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['explode'] . ',');
 		$newCords[0] = ($cords[0] + $offset[0]) - $pars[0];
 		$newCords[1] = ($cords[1] + $offset[1]) + $pars[1];
 		$newCords[2] = ($cords[2] + $offset[0]) + $pars[0];
@@ -990,7 +992,7 @@ class t3lib_stdGraphic {
 				 */
 				$try = 0;
 				do {
-					$calc = ImageTTFBBox(t3lib_div::freetypeDpiComp($sF * $strCfg['fontSize']), $angle, $fontFile, $strCfg['str']);
+					$calc = ImageTTFBBox(\TYPO3\CMS\Core\Utility\GeneralUtility::freetypeDpiComp($sF * $strCfg['fontSize']), $angle, $fontFile, $strCfg['str']);
 				} while ($calc[2] < 0 && $try++ < 10);
 				// Calculate offsets:
 				if (!count($offsetInfo)) {
@@ -1003,7 +1005,7 @@ class t3lib_stdGraphic {
 					$offsetInfo[5] += ((($calc[5] - $calc[7]) - intval($splitRendering['compY'])) - intval($strCfg['ySpaceBefore'])) - intval($strCfg['ySpaceAfter']);
 				}
 			} else {
-				debug('cannot read file: ' . $fontFile, 't3lib_stdGraphic::ImageTTFBBoxWrapper()');
+				debug('cannot read file: ' . $fontFile, 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions::ImageTTFBBoxWrapper()');
 			}
 		}
 		return $offsetInfo;
@@ -1048,13 +1050,13 @@ class t3lib_stdGraphic {
 			$fontFile = self::prependAbsolutePath($strCfg['fontFile']);
 			if (is_readable($fontFile)) {
 				// Render part:
-				ImageTTFText($im, t3lib_div::freetypeDpiComp($sF * $strCfg['fontSize']), $angle, $x, $y, $colorIndex, $fontFile, $strCfg['str']);
+				ImageTTFText($im, \TYPO3\CMS\Core\Utility\GeneralUtility::freetypeDpiComp($sF * $strCfg['fontSize']), $angle, $x, $y, $colorIndex, $fontFile, $strCfg['str']);
 				// Calculate offset to apply:
-				$wordInf = ImageTTFBBox(t3lib_div::freetypeDpiComp($sF * $strCfg['fontSize']), $angle, self::prependAbsolutePath($strCfg['fontFile']), $strCfg['str']);
+				$wordInf = ImageTTFBBox(\TYPO3\CMS\Core\Utility\GeneralUtility::freetypeDpiComp($sF * $strCfg['fontSize']), $angle, self::prependAbsolutePath($strCfg['fontFile']), $strCfg['str']);
 				$x += (($wordInf[2] - $wordInf[0]) + intval($splitRendering['compX'])) + intval($strCfg['xSpaceAfter']);
 				$y += (($wordInf[5] - $wordInf[7]) - intval($splitRendering['compY'])) - intval($strCfg['ySpaceAfter']);
 			} else {
-				debug('cannot read file: ' . $fontFile, 't3lib_stdGraphic::ImageTTFTextWrapper()');
+				debug('cannot read file: ' . $fontFile, 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions::ImageTTFTextWrapper()');
 			}
 		}
 	}
@@ -1080,7 +1082,7 @@ class t3lib_stdGraphic {
 		// Traverse the split-rendering configuration:
 		// Splitting will create more entries in $result with individual configurations.
 		if (is_array($splitRendering)) {
-			$sKeyArray = t3lib_TStemplate::sortedKeyList($splitRendering);
+			$sKeyArray = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($splitRendering);
 			// Traverse configured options:
 			foreach ($sKeyArray as $key) {
 				$cfg = $splitRendering[$key . '.'];
@@ -1120,9 +1122,9 @@ class t3lib_stdGraphic {
 				case 'charRange':
 					if (strlen($cfg['value'])) {
 						// Initialize range:
-						$ranges = t3lib_div::trimExplode(',', $cfg['value'], 1);
+						$ranges = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $cfg['value'], 1);
 						foreach ($ranges as $i => $rangeDef) {
-							$ranges[$i] = t3lib_div::intExplode('-', $ranges[$i]);
+							$ranges[$i] = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('-', $ranges[$i]);
 							if (!isset($ranges[$i][1])) {
 								$ranges[$i][1] = $ranges[$i][0];
 							}
@@ -1150,7 +1152,7 @@ class t3lib_stdGraphic {
 								}
 								// Initialize first char
 								// Switch bank:
-								if ($inRange != $currentState && !t3lib_div::inList('32,10,13,9', $uNumber)) {
+								if ($inRange != $currentState && !\TYPO3\CMS\Core\Utility\GeneralUtility::inList('32,10,13,9', $uNumber)) {
 									// Set result:
 									if (strlen($bankAccum)) {
 										$newResult[] = array(
@@ -1229,7 +1231,7 @@ class t3lib_stdGraphic {
 			$sF = 1;
 		} else {
 			// NICETEXT::
-			$sF = t3lib_utility_Math::forceIntegerInRange($conf['niceText.']['scaleFactor'], 2, 5);
+			$sF = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($conf['niceText.']['scaleFactor'], 2, 5);
 		}
 		return $sF;
 	}
@@ -1357,7 +1359,7 @@ class t3lib_stdGraphic {
 		$thickness = intval($conf['thickness']);
 		if ($thickness) {
 			$txtConf['fontColor'] = $conf['color'];
-			$outLineDist = t3lib_utility_Math::forceIntegerInRange($thickness, 1, 2);
+			$outLineDist = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($thickness, 1, 2);
 			for ($b = 1; $b <= $outLineDist; $b++) {
 				if ($b == 1) {
 					$it = 8;
@@ -1415,7 +1417,7 @@ class t3lib_stdGraphic {
 	public function makeEmboss(&$im, $conf, $workArea, $txtConf) {
 		$conf['color'] = $conf['highColor'];
 		$this->makeShadow($im, $conf, $workArea, $txtConf);
-		$newOffset = t3lib_div::intExplode(',', $conf['offset']);
+		$newOffset = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['offset']);
 		$newOffset[0] *= -1;
 		$newOffset[1] *= -1;
 		$conf['offset'] = implode(',', $newOffset);
@@ -1436,8 +1438,8 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function makeShadow(&$im, $conf, $workArea, $txtConf) {
-		$workArea = $this->applyOffset($workArea, t3lib_div::intExplode(',', $conf['offset']));
-		$blurRate = t3lib_utility_Math::forceIntegerInRange(intval($conf['blur']), 0, 99);
+		$workArea = $this->applyOffset($workArea, \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['offset']));
+		$blurRate = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(intval($conf['blur']), 0, 99);
 		// No effects if ImageMagick ver. 5+
 		if (!$blurRate || $this->NO_IM_EFFECTS) {
 			$txtConf['fontColor'] = $conf['color'];
@@ -1480,7 +1482,7 @@ class t3lib_stdGraphic {
 				$times = ceil($blurRate / 10);
 				// Here I boost the blur-rate so that it is 100 already at 25. The rest is done by up to 99 iterations of the blur-command.
 				$newBlurRate = $blurRate * 4;
-				$newBlurRate = t3lib_utility_Math::forceIntegerInRange($newBlurRate, 1, 99);
+				$newBlurRate = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($newBlurRate, 1, 99);
 				// Building blur-command
 				for ($a = 0; $a < $times; $a++) {
 					$command .= ' -blur ' . $blurRate;
@@ -1499,11 +1501,11 @@ class t3lib_stdGraphic {
 				// Adjust the mask
 				$intensity = 40;
 				if ($conf['intensity']) {
-					$intensity = t3lib_utility_Math::forceIntegerInRange($conf['intensity'], 0, 100);
+					$intensity = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($conf['intensity'], 0, 100);
 				}
 				$intensity = ceil(255 - ($intensity / 100) * 255);
 				$this->inputLevels($blurTextImg, 0, $intensity, $this->maskNegate);
-				$opacity = t3lib_utility_Math::forceIntegerInRange(intval($conf['opacity']), 0, 100);
+				$opacity = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(intval($conf['opacity']), 0, 100);
 				if ($opacity && $opacity < 100) {
 					$high = ceil((255 * $opacity) / 100);
 					// Reducing levels as the opacity demands
@@ -1552,7 +1554,7 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function makeBox(&$im, $conf, $workArea) {
-		$cords = t3lib_div::intExplode(',', $conf['dimensions'] . ',,,');
+		$cords = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['dimensions'] . ',,,');
 		$conf['offset'] = ($cords[0] . ',') . $cords[1];
 		$cords = $this->objPosition($conf, $workArea, array($cords[2], $cords[3]));
 		$cols = $this->convertColor($conf['color']);
@@ -1561,7 +1563,7 @@ class t3lib_stdGraphic {
 			// conversion:
 			// PHP 0 = opaque, 127 = transparent
 			// TYPO3 100 = opaque, 0 = transparent
-			$opacity = t3lib_utility_Math::forceIntegerInRange(intval($conf['opacity']), 1, 100, 1);
+			$opacity = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(intval($conf['opacity']), 1, 100, 1);
 			$opacity = abs($opacity - 100);
 			$opacity = round((127 * $opacity) / 100);
 		}
@@ -1591,7 +1593,7 @@ class t3lib_stdGraphic {
 	 * @see tslib_gifBuilder::make()
 	 */
 	public function makeEllipse(&$im, array $conf, array $workArea) {
-		$ellipseConfiguration = t3lib_div::intExplode(',', $conf['dimensions'] . ',,,');
+		$ellipseConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['dimensions'] . ',,,');
 		// Ellipse offset inside workArea (x/y)
 		$conf['offset'] = ($ellipseConfiguration[0] . ',') . $ellipseConfiguration[1];
 		// @see objPosition
@@ -1646,7 +1648,7 @@ class t3lib_stdGraphic {
 					if ($this->V5_EFFECTS) {
 						$commands .= $this->v5_blur($value);
 					} else {
-						$commands .= ' -blur ' . t3lib_utility_Math::forceIntegerInRange($value, 1, 99);
+						$commands .= ' -blur ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 1, 99);
 					}
 				}
 				break;
@@ -1655,31 +1657,31 @@ class t3lib_stdGraphic {
 					if ($this->V5_EFFECTS) {
 						$commands .= $this->v5_sharpen($value);
 					} else {
-						$commands .= ' -sharpen ' . t3lib_utility_Math::forceIntegerInRange($value, 1, 99);
+						$commands .= ' -sharpen ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 1, 99);
 					}
 				}
 				break;
 			case 'rotate':
-				$commands .= ' -rotate ' . t3lib_utility_Math::forceIntegerInRange($value, 0, 360);
+				$commands .= ' -rotate ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 0, 360);
 				break;
 			case 'solarize':
-				$commands .= ' -solarize ' . t3lib_utility_Math::forceIntegerInRange($value, 0, 99);
+				$commands .= ' -solarize ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 0, 99);
 				break;
 			case 'swirl':
-				$commands .= ' -swirl ' . t3lib_utility_Math::forceIntegerInRange($value, 0, 1000);
+				$commands .= ' -swirl ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 0, 1000);
 				break;
 			case 'wave':
-				$params = t3lib_div::intExplode(',', $value);
-				$commands .= ((' -wave ' . t3lib_utility_Math::forceIntegerInRange($params[0], 0, 99)) . 'x') . t3lib_utility_Math::forceIntegerInRange($params[1], 0, 99);
+				$params = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
+				$commands .= ((' -wave ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($params[0], 0, 99)) . 'x') . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($params[1], 0, 99);
 				break;
 			case 'charcoal':
-				$commands .= ' -charcoal ' . t3lib_utility_Math::forceIntegerInRange($value, 0, 100);
+				$commands .= ' -charcoal ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 0, 100);
 				break;
 			case 'gray':
 				$commands .= ' -colorspace GRAY';
 				break;
 			case 'edge':
-				$commands .= ' -edge ' . t3lib_utility_Math::forceIntegerInRange($value, 0, 99);
+				$commands .= ' -edge ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 0, 99);
 				break;
 			case 'emboss':
 				$commands .= ' -emboss';
@@ -1691,10 +1693,10 @@ class t3lib_stdGraphic {
 				$commands .= ' -flop';
 				break;
 			case 'colors':
-				$commands .= ' -colors ' . t3lib_utility_Math::forceIntegerInRange($value, 2, 255);
+				$commands .= ' -colors ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, 2, 255);
 				break;
 			case 'shear':
-				$commands .= ' -shear ' . t3lib_utility_Math::forceIntegerInRange($value, -90, 90);
+				$commands .= ' -shear ' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($value, -90, 90);
 				break;
 			case 'invert':
 				$commands .= ' -negate';
@@ -1726,11 +1728,11 @@ class t3lib_stdGraphic {
 			switch ($effect) {
 			case 'inputlevels':
 				// low,high
-				$params = t3lib_div::intExplode(',', $value);
+				$params = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
 				$this->inputLevels($im, $params[0], $params[1]);
 				break;
 			case 'outputlevels':
-				$params = t3lib_div::intExplode(',', $value);
+				$params = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
 				$this->outputLevels($im, $params[0], $params[1]);
 				break;
 			case 'autolevels':
@@ -1752,7 +1754,7 @@ class t3lib_stdGraphic {
 	public function crop(&$im, $conf) {
 		// Clears workArea to total image
 		$this->setWorkArea('');
-		$cords = t3lib_div::intExplode(',', $conf['crop'] . ',,,');
+		$cords = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['crop'] . ',,,');
 		$conf['offset'] = ($cords[0] . ',') . $cords[1];
 		$cords = $this->objPosition($conf, $this->workArea, array($cords[2], $cords[3]));
 		$newIm = imagecreatetruecolor($cords[2], $cords[3]);
@@ -1823,7 +1825,7 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function setWorkArea($workArea) {
-		$this->workArea = t3lib_div::intExplode(',', $workArea);
+		$this->workArea = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $workArea);
 		$this->workArea = $this->applyOffset($this->workArea, $this->OFFSET);
 		if (!$this->workArea[2]) {
 			$this->workArea[2] = $this->w;
@@ -1879,8 +1881,8 @@ class t3lib_stdGraphic {
 	 */
 	public function outputLevels(&$im, $low, $high, $swap = '') {
 		if ($low < $high) {
-			$low = t3lib_utility_Math::forceIntegerInRange($low, 0, 255);
-			$high = t3lib_utility_Math::forceIntegerInRange($high, 0, 255);
+			$low = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($low, 0, 255);
+			$high = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($high, 0, 255);
 			if ($swap) {
 				$temp = $low;
 				$low = 255 - $high;
@@ -1910,8 +1912,8 @@ class t3lib_stdGraphic {
 	 */
 	public function inputLevels(&$im, $low, $high, $swap = '') {
 		if ($low < $high) {
-			$low = t3lib_utility_Math::forceIntegerInRange($low, 0, 255);
-			$high = t3lib_utility_Math::forceIntegerInRange($high, 0, 255);
+			$low = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($low, 0, 255);
+			$high = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($high, 0, 255);
 			if ($swap) {
 				$temp = $low;
 				$low = 255 - $high;
@@ -1921,9 +1923,9 @@ class t3lib_stdGraphic {
 			$totalCols = ImageColorsTotal($im);
 			for ($c = 0; $c < $totalCols; $c++) {
 				$cols = ImageColorsForIndex($im, $c);
-				$cols['red'] = t3lib_utility_Math::forceIntegerInRange((($cols['red'] - $low) / $delta) * 255, 0, 255);
-				$cols['green'] = t3lib_utility_Math::forceIntegerInRange((($cols['green'] - $low) / $delta) * 255, 0, 255);
-				$cols['blue'] = t3lib_utility_Math::forceIntegerInRange((($cols['blue'] - $low) / $delta) * 255, 0, 255);
+				$cols['red'] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange((($cols['red'] - $low) / $delta) * 255, 0, 255);
+				$cols['green'] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange((($cols['green'] - $low) / $delta) * 255, 0, 255);
+				$cols['blue'] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange((($cols['blue'] - $low) / $delta) * 255, 0, 255);
 				ImageColorSet($im, $c, $cols['red'], $cols['green'], $cols['blue']);
 			}
 		}
@@ -1938,10 +1940,10 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function IMreduceColors($file, $cols) {
-		$fI = t3lib_div::split_fileref($file);
+		$fI = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($file);
 		$ext = strtolower($fI['fileext']);
 		$result = ($this->randomName() . '.') . $ext;
-		if (($reduce = t3lib_utility_Math::forceIntegerInRange($cols, 0, $ext == 'gif' ? 256 : $this->truecolorColors, 0)) > 0) {
+		if (($reduce = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($cols, 0, $ext == 'gif' ? 256 : $this->truecolorColors, 0)) > 0) {
 			$params = ' -colors ' . $reduce;
 			if ($reduce <= 256) {
 				$params .= ' -type Palette';
@@ -1973,7 +1975,7 @@ class t3lib_stdGraphic {
 	 */
 	public function prependAbsolutePath($fontFile) {
 		$absPath = defined('PATH_typo3') ? dirname(PATH_thisScript) . '/' : PATH_site;
-		$fontFile = t3lib_div::isAbsPath($fontFile) ? $fontFile : t3lib_div::resolveBackPath($absPath . $fontFile);
+		$fontFile = \TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($fontFile) ? $fontFile : \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($absPath . $fontFile);
 		return $fontFile;
 	}
 
@@ -1987,7 +1989,7 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function v5_sharpen($factor) {
-		$factor = t3lib_utility_Math::forceIntegerInRange(ceil($factor / 10), 0, 10);
+		$factor = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(ceil($factor / 10), 0, 10);
 		$sharpenArr = explode(',', ',' . $this->im5fx_sharpenSteps);
 		$sharpenF = trim($sharpenArr[$factor]);
 		if ($sharpenF) {
@@ -2006,7 +2008,7 @@ class t3lib_stdGraphic {
 	 * @todo Define visibility
 	 */
 	public function v5_blur($factor) {
-		$factor = t3lib_utility_Math::forceIntegerInRange(ceil($factor / 10), 0, 10);
+		$factor = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(ceil($factor / 10), 0, 10);
 		$blurArr = explode(',', ',' . $this->im5fx_blurSteps);
 		$blurF = trim($blurArr[$factor]);
 		if ($blurF) {
@@ -2079,14 +2081,14 @@ class t3lib_stdGraphic {
 			$cParts[1] = trim($cParts[1]);
 			if (substr($cParts[1], 0, 1) == '*') {
 				$val = doubleval(substr($cParts[1], 1));
-				$col[0] = t3lib_utility_Math::forceIntegerInRange($col[0] * $val, 0, 255);
-				$col[1] = t3lib_utility_Math::forceIntegerInRange($col[1] * $val, 0, 255);
-				$col[2] = t3lib_utility_Math::forceIntegerInRange($col[2] * $val, 0, 255);
+				$col[0] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($col[0] * $val, 0, 255);
+				$col[1] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($col[1] * $val, 0, 255);
+				$col[2] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($col[2] * $val, 0, 255);
 			} else {
 				$val = intval($cParts[1]);
-				$col[0] = t3lib_utility_Math::forceIntegerInRange($col[0] + $val, 0, 255);
-				$col[1] = t3lib_utility_Math::forceIntegerInRange($col[1] + $val, 0, 255);
-				$col[2] = t3lib_utility_Math::forceIntegerInRange($col[2] + $val, 0, 255);
+				$col[0] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($col[0] + $val, 0, 255);
+				$col[1] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($col[1] + $val, 0, 255);
+				$col[2] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($col[2] + $val, 0, 255);
 			}
 		}
 		return $col;
@@ -2176,7 +2178,7 @@ class t3lib_stdGraphic {
 			$result[1] = 0;
 			break;
 		}
-		$result = $this->applyOffset($result, t3lib_div::intExplode(',', $conf['offset']));
+		$result = $this->applyOffset($result, \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['offset']));
 		$result = $this->applyOffset($result, $workArea);
 		return $result;
 	}
@@ -2213,7 +2215,7 @@ class t3lib_stdGraphic {
 				$newExt = $info[2];
 			}
 			if ($newExt == 'web') {
-				if (t3lib_div::inList($this->webImageExt, $info[2])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->webImageExt, $info[2])) {
 					$newExt = $info[2];
 				} else {
 					$newExt = $this->gif_or_jpg($info[2], $info[0], $info[1]);
@@ -2222,7 +2224,7 @@ class t3lib_stdGraphic {
 					}
 				}
 			}
-			if (t3lib_div::inList($this->imageFileExt, $newExt)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->imageFileExt, $newExt)) {
 				if (strstr($w . $h, 'm')) {
 					$max = 1;
 				} else {
@@ -2268,9 +2270,9 @@ class t3lib_stdGraphic {
 				$command = (((((($this->scalecmd . ' ') . $info[0]) . 'x') . $info[1]) . '! ') . $params) . ' ';
 				$cropscale = $data['crs'] ? (('crs-V' . $data['cropV']) . 'H') . $data['cropH'] : '';
 				if ($this->alternativeOutputKey) {
-					$theOutputName = t3lib_div::shortMD5(((((($command . $cropscale) . basename($imagefile)) . $this->alternativeOutputKey) . '[') . $frame) . ']');
+					$theOutputName = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(((((($command . $cropscale) . basename($imagefile)) . $this->alternativeOutputKey) . '[') . $frame) . ']');
 				} else {
-					$theOutputName = t3lib_div::shortMD5(((((($command . $cropscale) . $imagefile) . filemtime($imagefile)) . '[') . $frame) . ']');
+					$theOutputName = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(((((($command . $cropscale) . $imagefile) . filemtime($imagefile)) . '[') . $frame) . ']');
 				}
 				if ($this->imageMagickConvert_forceFileNameBody) {
 					$theOutputName = $this->imageMagickConvert_forceFileNameBody;
@@ -2293,7 +2295,7 @@ class t3lib_stdGraphic {
 					}
 					if ($info[2] == $this->gifExtension && !$this->dontCompress) {
 						// Compress with IM (lzw) or GD (rle)  (Workaround for the absence of lzw-compression in GD)
-						t3lib_div::gif_compress($info[3], '');
+						\TYPO3\CMS\Core\Utility\GeneralUtility::gif_compress($info[3], '');
 					}
 					return $info;
 				}
@@ -2311,7 +2313,7 @@ class t3lib_stdGraphic {
 	 */
 	public function getImageDimensions($imageFile) {
 		preg_match('/([^\\.]*)$/', $imageFile, $reg);
-		if (file_exists($imageFile) && t3lib_div::inList($this->imageFileExt, strtolower($reg[0]))) {
+		if (file_exists($imageFile) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->imageFileExt, strtolower($reg[0]))) {
 			if ($returnArr = $this->getCachedImageDimensions($imageFile)) {
 				return $returnArr;
 			} else {
@@ -2576,9 +2578,9 @@ class t3lib_stdGraphic {
 	public function imageMagickIdentify($imagefile) {
 		if (!$this->NO_IMAGE_MAGICK) {
 			$frame = $this->noFramePrepended ? '' : '[0]';
-			$cmd = t3lib_div::imageMagickCommand('identify', $this->wrapFileName($imagefile) . $frame);
+			$cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::imageMagickCommand('identify', $this->wrapFileName($imagefile) . $frame);
 			$returnVal = array();
-			t3lib_utility_Command::exec($cmd, $returnVal);
+			\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $returnVal);
 			$splitstring = $returnVal[0];
 			$this->IM_commands[] = array('identify', $cmd, $returnVal[0]);
 			if ($splitstring) {
@@ -2621,11 +2623,11 @@ class t3lib_stdGraphic {
 			} else {
 				$frame = '';
 			}
-			$cmd = t3lib_div::imageMagickCommand('convert', (((($params . ' ') . $this->wrapFileName($input)) . $frame) . ' ') . $this->wrapFileName($output));
+			$cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::imageMagickCommand('convert', (((($params . ' ') . $this->wrapFileName($input)) . $frame) . ' ') . $this->wrapFileName($output));
 			$this->IM_commands[] = array($output, $cmd);
-			$ret = t3lib_utility_Command::exec($cmd);
+			$ret = \TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd);
 			// Change the permissions of the file
-			t3lib_div::fixPermissions($output);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($output);
 			return $ret;
 		}
 	}
@@ -2652,12 +2654,12 @@ class t3lib_stdGraphic {
 			}
 			$theMask = ($this->randomName() . '.') . $this->gifExtension;
 			$this->imageMagickExec($mask, $theMask, $params);
-			$cmd = t3lib_div::imageMagickCommand('combine', (((((('-compose over +matte ' . $this->wrapFileName($input)) . ' ') . $this->wrapFileName($overlay)) . ' ') . $this->wrapFileName($theMask)) . ' ') . $this->wrapFileName($output));
+			$cmd = \TYPO3\CMS\Core\Utility\GeneralUtility::imageMagickCommand('combine', (((((('-compose over +matte ' . $this->wrapFileName($input)) . ' ') . $this->wrapFileName($overlay)) . ' ') . $this->wrapFileName($theMask)) . ' ') . $this->wrapFileName($output));
 			// +matte = no alpha layer in output
 			$this->IM_commands[] = array($output, $cmd);
-			$ret = t3lib_utility_Command::exec($cmd);
+			$ret = \TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd);
 			// Change the permissions of the file
-			t3lib_div::fixPermissions($output);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($output);
 			if (is_file($theMask)) {
 				@unlink($theMask);
 			}
@@ -2712,14 +2714,14 @@ class t3lib_stdGraphic {
 	 */
 	public function createTempSubDir($dirName) {
 		// Checking if the this->tempPath is already prefixed with PATH_site and if not, prefix it with that constant.
-		if (t3lib_div::isFirstPartOfStr($this->tempPath, PATH_site)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($this->tempPath, PATH_site)) {
 			$tmpPath = $this->tempPath;
 		} else {
 			$tmpPath = PATH_site . $this->tempPath;
 		}
 		// Making the temporary filename:
 		if (!@is_dir(($tmpPath . $dirName))) {
-			return t3lib_div::mkdir($tmpPath . $dirName);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($tmpPath . $dirName);
 		}
 	}
 
@@ -2788,7 +2790,7 @@ class t3lib_stdGraphic {
 				if ($this->ImageWrite($this->im, $file)) {
 					// ImageMagick operations
 					if ($this->setup['reduceColors'] || !$this->png_truecolor) {
-						$reduced = $this->IMreduceColors($file, t3lib_utility_Math::forceIntegerInRange($this->setup['reduceColors'], 256, $this->truecolorColors, 256));
+						$reduced = $this->IMreduceColors($file, \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->setup['reduceColors'], 256, $this->truecolorColors, 256));
 						if ($reduced) {
 							@copy($reduced, $file);
 							@unlink($reduced);
@@ -2796,7 +2798,7 @@ class t3lib_stdGraphic {
 					}
 					// Compress with IM! (adds extra compression, LZW from ImageMagick)
 					// (Workaround for the absence of lzw-compression in GD)
-					t3lib_div::gif_compress($file, 'IM');
+					\TYPO3\CMS\Core\Utility\GeneralUtility::gif_compress($file, 'IM');
 				}
 				break;
 			case 'jpg':
@@ -2805,7 +2807,7 @@ class t3lib_stdGraphic {
 				// Use the default
 				$quality = 0;
 				if ($this->setup['quality']) {
-					$quality = t3lib_utility_Math::forceIntegerInRange($this->setup['quality'], 10, 100);
+					$quality = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->setup['quality'], 10, 100);
 				}
 				if ($this->ImageWrite($this->im, $file, $quality)) {
 
@@ -2877,7 +2879,7 @@ class t3lib_stdGraphic {
 			break;
 		}
 		if ($result) {
-			t3lib_div::fixPermissions($theImage);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($theImage);
 		}
 		return $result;
 	}
@@ -3002,5 +3004,6 @@ class t3lib_stdGraphic {
 	}
 
 }
+
 
 ?>

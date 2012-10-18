@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractRecordCollection implements t3lib_collection_Editable {
+class StaticRecordCollection extends \TYPO3\CMS\Core\Collection\AbstractRecordCollection implements \TYPO3\CMS\Core\Collection\EditableCollectionInterface {
 
 	/**
 	 * Creates a new collection objects and reconstitutes the
@@ -39,11 +41,11 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	 *
 	 * @param array $collectionRecord Database record
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
-	 * @return t3lib_collection_StaticRecordCollection
+	 * @return \TYPO3\CMS\Core\Collection\StaticRecordCollection
 	 */
 	static public function create(array $collectionRecord, $fillItems = FALSE) {
-		/** @var $collection t3lib_collection_StaticRecordCollection */
-		$collection = t3lib_div::makeInstance('t3lib_collection_StaticRecordCollection', $collectionRecord['table_name']);
+		/** @var $collection \TYPO3\CMS\Core\Collection\StaticRecordCollection */
+		$collection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Collection\\StaticRecordCollection', $collectionRecord['table_name']);
 		$collection->fromArray($collectionRecord);
 		if ($fillItems) {
 			$collection->loadContents();
@@ -61,7 +63,7 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 		if (!empty($tableName)) {
 			$this->setItemTableName($tableName);
 		} elseif (empty($this->itemTableName)) {
-			throw new RuntimeException('t3lib_collection_StaticRecordCollection needs a valid itemTableName.', 1330293778);
+			throw new \RuntimeException('TYPO3\\CMS\\Core\\Collection\\StaticRecordCollection needs a valid itemTableName.', 1330293778);
 		}
 	}
 
@@ -116,10 +118,10 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	/**
 	 * Adds a set of entries to the collection
 	 *
-	 * @param t3lib_collection_Collection $other
+	 * @param \TYPO3\CMS\Core\Collection\CollectionInterface $other
 	 * @return void
 	 */
-	public function addAll(t3lib_collection_Collection $other) {
+	public function addAll(\TYPO3\CMS\Core\Collection\CollectionInterface $other) {
 		foreach ($other as $value) {
 			$this->add($value);
 		}
@@ -152,7 +154,7 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	 * @return void
 	 */
 	public function removeAll() {
-		$this->storage = new SplDoublyLinkedList();
+		$this->storage = new \SplDoublyLinkedList();
 	}
 
 	/**
@@ -175,5 +177,6 @@ class t3lib_collection_StaticRecordCollection extends t3lib_collection_AbstractR
 	}
 
 }
+
 
 ?>

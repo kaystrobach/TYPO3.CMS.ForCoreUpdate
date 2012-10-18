@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea;
+
 /**
  * Script class for the Element Browser window.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class tx_rtehtmlarea_browse_links extends browse_links {
+class BrowseLinks extends \TYPO3\CMS\Recordlist\Browser\ElementBrowser {
 
 	public $editorNo;
 
@@ -47,10 +49,10 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 		$this->initVariables();
 		$this->initConfiguration();
 		// init fileProcessor
-		$this->fileProcessor = t3lib_div::makeInstance('t3lib_basicFileFunctions');
+		$this->fileProcessor = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\File\\BasicFileUtility');
 		$this->fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 		// Creating backend template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		// Loading the Prototype library and browse_links.js
 		$this->doc->getPageRenderer()->loadPrototype();
@@ -61,9 +63,9 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 		// Initializing hooking browsers
 		$this->initHookObjects('ext/rtehtmlarea/mod3/class.tx_rtehtmlarea_browse_links.php');
 		// CurrentUrl - the current link url must be passed around if it exists
-		$this->curUrlArray = t3lib_div::_GP('curUrl');
+		$this->curUrlArray = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('curUrl');
 		if ($this->curUrlArray['all']) {
-			$this->curUrlArray = t3lib_div::get_tag_attributes($this->curUrlArray['all']);
+			$this->curUrlArray = \TYPO3\CMS\Core\Utility\GeneralUtility::get_tag_attributes($this->curUrlArray['all']);
 			$this->curUrlArray['href'] = htmlspecialchars_decode($this->curUrlArray['href']);
 		}
 		// Note: parseCurUrl will invoke the hooks
@@ -73,7 +75,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 			$this->curUrlInfo['info'] = $this->curUrlArray['href'];
 		}
 		// Determine nature of current url:
-		$this->act = t3lib_div::_GP('act');
+		$this->act = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('act');
 		if (!$this->act) {
 			$this->act = $this->curUrlInfo['act'];
 		}
@@ -94,12 +96,12 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 	 */
 	public function initVariables() {
 		// Main GPvars:
-		$this->pointer = t3lib_div::_GP('pointer');
-		$this->bparams = t3lib_div::_GP('bparams');
-		$this->P = t3lib_div::_GP('P');
-		$this->expandPage = t3lib_div::_GP('expandPage');
-		$this->expandFolder = t3lib_div::_GP('expandFolder');
-		$this->PM = t3lib_div::_GP('PM');
+		$this->pointer = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pointer');
+		$this->bparams = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('bparams');
+		$this->P = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
+		$this->expandPage = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('expandPage');
+		$this->expandFolder = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('expandFolder');
+		$this->PM = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('PM');
 		// Process bparams
 		$pArr = explode('|', $this->bparams);
 		$pRteArr = explode(':', $pArr[1]);
@@ -107,22 +109,22 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 		$this->contentTypo3Language = $pRteArr[1];
 		$this->RTEtsConfigParams = $pArr[2];
 		if (!$this->editorNo) {
-			$this->editorNo = t3lib_div::_GP('editorNo');
-			$this->contentTypo3Language = t3lib_div::_GP('contentTypo3Language');
-			$this->RTEtsConfigParams = t3lib_div::_GP('RTEtsConfigParams');
+			$this->editorNo = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('editorNo');
+			$this->contentTypo3Language = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('contentTypo3Language');
+			$this->RTEtsConfigParams = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('RTEtsConfigParams');
 		}
 		$pArr[1] = implode(':', array($this->editorNo, $this->contentTypo3Language, $this->contentTypo3Charset));
 		$pArr[2] = $this->RTEtsConfigParams;
 		$this->bparams = implode('|', $pArr);
 		// Find "mode"
-		$this->mode = t3lib_div::_GP('mode');
+		$this->mode = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('mode');
 		if (!$this->mode) {
 			$this->mode = 'rte';
 		}
 		// Current site url
-		$this->siteURL = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+		$this->siteURL = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL');
 		// the script to link to
-		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
+		$this->thisScript = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('SCRIPT_NAME');
 	}
 
 	/**
@@ -142,9 +144,9 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 	 */
 	protected function getRTEConfig() {
 		$RTEtsConfigParts = explode(':', $this->RTEtsConfigParams);
-		$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE', t3lib_BEfunc::getPagesTSconfig($RTEtsConfigParts[5]));
+		$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE', \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($RTEtsConfigParts[5]));
 		$this->RTEProperties = $RTEsetup['properties'];
-		return t3lib_BEfunc::RTEsetup($this->RTEProperties, $RTEtsConfigParts[0], $RTEtsConfigParts[2], $RTEtsConfigParts[4]);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::RTEsetup($this->RTEProperties, $RTEtsConfigParts[0], $RTEtsConfigParts[2], $RTEtsConfigParts[4]);
 	}
 
 	/**
@@ -166,9 +168,9 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 	protected function initHookObjects($hookKey) {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$hookKey]['browseLinksHook'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$hookKey]['browseLinksHook'] as $classData) {
-				$processObject = t3lib_div::getUserObj($classData);
-				if (!$processObject instanceof t3lib_browseLinksHook) {
-					throw new UnexpectedValueException('$processObject must implement interface t3lib_browseLinksHook', 1195115652);
+				$processObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classData);
+				if (!$processObject instanceof \TYPO3\CMS\Core\ElementBrowser\ElementBrowserHookInterface) {
+					throw new \UnexpectedValueException('$processObject must implement interface TYPO3\\CMS\\Core\\ElementBrowser\\ElementBrowserHookInterface', 1195115652);
 				}
 				$parameters = array();
 				$processObject->init($this, $parameters);
@@ -189,7 +191,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 		$classSelected = array();
 		if ($this->buttonConfig['properties.']['class.']['allowedClasses']) {
 			$this->setClass = $this->curUrlArray['class'];
-			$classesAnchorArray = t3lib_div::trimExplode(',', $this->buttonConfig['properties.']['class.']['allowedClasses'], 1);
+			$classesAnchorArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->buttonConfig['properties.']['class.']['allowedClasses'], 1);
 			$classesAnchorConfigArray = array();
 			// Collecting allowed classes and configured default values
 			$classesAnchor = array();
@@ -253,7 +255,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 		}
 		// Initializing additional attributes
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rtehtmlarea']['plugins']['TYPO3Link']['additionalAttributes']) {
-			$addAttributes = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rtehtmlarea']['plugins']['TYPO3Link']['additionalAttributes'], 1);
+			$addAttributes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rtehtmlarea']['plugins']['TYPO3Link']['additionalAttributes'], 1);
 			foreach ($addAttributes as $attribute) {
 				$this->additionalAttributes[$attribute] = isset($this->curUrlArray[$attribute]) ? $this->curUrlArray[$attribute] : '';
 			}
@@ -273,7 +275,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 				$bodyTagAdditions = $hookObject->addBodyTagAdditions($bodyTagAdditions);
 			}
 		}
-		return t3lib_div::implodeAttributes($bodyTagAdditions, TRUE);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::implodeAttributes($bodyTagAdditions, TRUE);
 	}
 
 	/**
@@ -402,7 +404,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 				'conf' => &$conf
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/rtehtmlarea/mod3/class.tx_rtehtmlarea_browse_links.php']['extendJScode'] as $objRef) {
-				$processor =& t3lib_div::getUserObj($objRef);
+				$processor =& \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($objRef);
 				$JScode .= $processor->extendJScode($_params, $this);
 			}
 		}
@@ -434,7 +436,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 		}
 		// Removing items as per configuration
 		if (is_array($this->buttonConfig['options.']) && $this->buttonConfig['options.']['removeItems']) {
-			$this->allowedItems = array_diff($this->allowedItems, t3lib_div::trimExplode(',', $this->buttonConfig['options.']['removeItems'], 1));
+			$this->allowedItems = array_diff($this->allowedItems, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->buttonConfig['options.']['removeItems'], 1));
 		}
 		reset($this->allowedItems);
 		if (!in_array($this->act, $this->allowedItems)) {
@@ -531,9 +533,9 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 			$content .= $this->addAttributesForm();
 			// Create folder tree:
 			$this->doc->JScode .= $this->doc->wrapScriptTags('
-					Tree.ajaxID = "SC_alt_file_navframe::expandCollapse";
+					Tree.ajaxID = "TYPO3\\CMS\\Backend\\Controller\\FileSystemNavigationFrameController::expandCollapse";
 				');
-			$foldertree = t3lib_div::makeInstance('tx_rtehtmlarea_folderTree');
+			$foldertree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rtehtmlarea\\FolderTree');
 			$foldertree->thisScript = $this->thisScript;
 			$tree = $foldertree->getBrowsableTree();
 			if (!$this->curUrlInfo['value'] || $this->curUrlInfo['act'] != $this->act) {
@@ -547,11 +549,11 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 			// Get the selected folder
 			if ($this->expandFolder) {
 				$selectedFolder = FALSE;
-				$fileOrFolderObject = t3lib_file_Factory::getInstance()->retrieveFileOrFolderObject($this->expandFolder);
-				if ($fileOrFolderObject instanceof t3lib_file_Folder) {
+				$fileOrFolderObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->expandFolder);
+				if ($fileOrFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 					// it's a folder
 					$selectedFolder = $fileOrFolderObject;
-				} elseif ($fileOrFolderObject instanceof t3lib_file_FileInterface) {
+				} elseif ($fileOrFolderObject instanceof \TYPO3\CMS\Core\Resource\FileInterface) {
 					// it's a file
 					// @todo: find the parent folder, right now done a bit ugly, because the file does not
 					// support finding the parent folder of a file on purpose
@@ -619,7 +621,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 						// URL + onclick event:
 						$onClickEvent = '';
 						if (isset($v[$k2i . '.']['target'])) {
-							$onClickEvent .= ('browse_links_setTarget(\'' . $v[($k2i . '.')]['target']) . '\');';
+							$onClickEvent .= ('TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser_setTarget(\'' . $v[($k2i . '.')]['target']) . '\');';
 						}
 						$v[$k2i . '.']['url'] = str_replace('###_URL###', $this->siteURL, $v[$k2i . '.']['url']);
 						if (substr($v[$k2i . '.']['url'], 0, 7) == 'http://' || substr($v[$k2i . '.']['url'], 0, 7) == 'mailto:') {
@@ -632,7 +634,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 						// Adding link to menu of user defined links:
 						$subcats[$k2i] = ((((((('
 								<tr>
-									<td class="bgColor4">' . $A[0]) . '<strong>') . htmlspecialchars($title)) . ($this->curUrlInfo['info'] == $v[$k2i . '.']['url'] ? ('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/blinkarrow_right.gif', 'width="5" height="9"')) . ' class="c-blinkArrowR" alt="" />' : '')) . '</strong><br />') . $description) . $A[1]) . '</td>
+									<td class="bgColor4">' . $A[0]) . '<strong>') . htmlspecialchars($title)) . ($this->curUrlInfo['info'] == $v[$k2i . '.']['url'] ? ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/blinkarrow_right.gif', 'width="5" height="9"')) . ' class="c-blinkArrowR" alt="" />' : '')) . '</strong><br />') . $description) . $A[1]) . '</td>
 								</tr>';
 					}
 				}
@@ -654,7 +656,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 			break;
 		case 'page':
 			$content .= $this->addAttributesForm();
-			$pagetree = t3lib_div::makeInstance('tx_rtehtmlarea_pageTree');
+			$pagetree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rtehtmlarea\\PageTree');
 			$pagetree->ext_showNavTitle = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showNavTitle');
 			$pagetree->ext_showPageId = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showPageIdWithTitle');
 			$pagetree->addField('nav_title');
@@ -662,8 +664,8 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 			$cElements = $this->expandPage();
 			// Outputting Temporary DB mount notice:
 			if (intval($GLOBALS['BE_USER']->getSessionData('pageTree_temporaryMountPoint'))) {
-				$link = ((('<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => 0)))) . '">') . $GLOBALS['LANG']->sl('LLL:EXT:lang/locallang_core.xml:labels.temporaryDBmount', 1)) . '</a>';
-				$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $link, '', t3lib_FlashMessage::INFO);
+				$link = ((('<a href="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('setTempDBmount' => 0)))) . '">') . $GLOBALS['LANG']->sl('LLL:EXT:lang/locallang_core.xml:labels.temporaryDBmount', 1)) . '</a>';
+				$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $link, '', \TYPO3\CMS\Core\Messaging\FlashMessage::INFO);
 				$dbmount = $flashMessage->render();
 			}
 			$content .= ((((('
@@ -712,7 +714,7 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 				'conf' => &$conf
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/rtehtmlarea/mod3/class.tx_rtehtmlarea_browse_links.php']['addAttributeFields'] as $objRef) {
-				$processor =& t3lib_div::getUserObj($objRef);
+				$processor =& \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($objRef);
 				$additionalAttributeFields .= $processor->getAttributefields($_params, $this);
 			}
 		}
@@ -965,5 +967,6 @@ class tx_rtehtmlarea_browse_links extends browse_links {
 	}
 
 }
+
 
 ?>

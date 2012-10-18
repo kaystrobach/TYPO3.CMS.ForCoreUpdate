@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Storage;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_session_storage extends tx_rsaauth_abstract_storage {
+class SessionStorage extends \TYPO3\CMS\Rsaauth\Storage\AbstractStorage {
 
 	/**
 	 * Creates an instance of this class. It checks and initializes PHP
@@ -67,5 +69,6 @@ class tx_rsaauth_session_storage extends tx_rsaauth_abstract_storage {
 	}
 
 }
+
 
 ?>

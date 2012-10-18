@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_contextmenu_Action {
+class ContextMenuAction {
 
 	/**
 	 * Label
@@ -78,7 +80,7 @@ class t3lib_contextmenu_Action {
 	/**
 	 * Child Action Collection
 	 *
-	 * @var t3lib_contextmenu_ActionCollection
+	 * @var \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection
 	 */
 	protected $childActions = NULL;
 
@@ -202,7 +204,7 @@ class t3lib_contextmenu_Action {
 	/**
 	 * Returns the child actions
 	 *
-	 * @return t3lib_contextmenu_ActionCollection
+	 * @return \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection
 	 */
 	public function getChildActions() {
 		return $this->childActions;
@@ -211,10 +213,10 @@ class t3lib_contextmenu_Action {
 	/**
 	 * Sets the child actions
 	 *
-	 * @param t3lib_contextmenu_ActionCollection $actions
+	 * @param \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection $actions
 	 * @return void
 	 */
-	public function setChildActions(t3lib_contextmenu_ActionCollection $actions) {
+	public function setChildActions(\TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection $actions) {
 		$this->childActions = $actions;
 	}
 
@@ -272,5 +274,6 @@ class t3lib_contextmenu_Action {
 	}
 
 }
+
 
 ?>

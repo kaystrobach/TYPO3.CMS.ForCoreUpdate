@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Model_LogEntry extends Tx_Extbase_DomainObject_AbstractEntity {
+class LogEntry extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * storage page ID of the log entry
@@ -462,5 +464,6 @@ class Tx_Belog_Domain_Model_LogEntry extends Tx_Extbase_DomainObject_AbstractEnt
 	}
 
 }
+
 
 ?>

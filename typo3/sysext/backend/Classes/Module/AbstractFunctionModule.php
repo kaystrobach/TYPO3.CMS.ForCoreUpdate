@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -131,12 +133,12 @@
  * @see tx_funcwizards_webfunc
  * @see tx_wizardsortpages_webfunc_2
  */
-abstract class t3lib_extobjbase {
+abstract class AbstractFunctionModule {
 
 	/**
 	 * Contains a reference to the parent (calling) object (which is probably an instance of an extension class to t3lib_SCbase)
 	 *
-	 * @var t3lib_SCbase
+	 * @var \TYPO3\CMS\Backend\Module\BaseScriptClass
 	 * @see init()
 	 * @todo Define visibility
 	 */
@@ -190,7 +192,7 @@ abstract class t3lib_extobjbase {
 		// Path of this script:
 		$this->thisPath = dirname($conf['path']);
 		if (!@is_dir($this->thisPath)) {
-			throw new RuntimeException(('TYPO3 Fatal Error: Extension "' . $this->thisPath) . ' was not a directory as expected...', 1270853912);
+			throw new \RuntimeException(('TYPO3 Fatal Error: Extension "' . $this->thisPath) . ' was not a directory as expected...', 1270853912);
 		}
 		// Local lang:
 		$this->incLocalLang();
@@ -207,7 +209,7 @@ abstract class t3lib_extobjbase {
 	 */
 	public function handleExternalFunctionValue() {
 		// Must clean first to make sure the correct key is set...
-		$this->pObj->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->pObj->MOD_MENU, t3lib_div::_GP('SET'), $this->pObj->MCONF['name']);
+		$this->pObj->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->pObj->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->pObj->MCONF['name']);
 		if ($this->function_key) {
 			$this->extClassConf = $this->pObj->getExternalItemConfig($this->pObj->MCONF['name'], $this->function_key, $this->pObj->MOD_SETTINGS[$this->function_key]);
 			if (is_array($this->extClassConf) && $this->extClassConf['path']) {
@@ -226,7 +228,7 @@ abstract class t3lib_extobjbase {
 		if ($this->localLangFile && ((@is_file((($this->thisPath . '/') . $this->localLangFile)) || @is_file(((($this->thisPath . '/') . substr($this->localLangFile, 0, -4)) . '.xml'))) || @is_file(((($this->thisPath . '/') . substr($this->localLangFile, 0, -4)) . '.xlf')))) {
 			$LOCAL_LANG = $GLOBALS['LANG']->includeLLFile(($this->thisPath . '/') . $this->localLangFile, FALSE);
 			if (is_array($LOCAL_LANG)) {
-				$GLOBALS['LOCAL_LANG'] = t3lib_div::array_merge_recursive_overrule((array) $GLOBALS['LOCAL_LANG'], $LOCAL_LANG);
+				$GLOBALS['LOCAL_LANG'] = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule((array) $GLOBALS['LOCAL_LANG'], $LOCAL_LANG);
 			}
 		}
 	}
@@ -240,10 +242,10 @@ abstract class t3lib_extobjbase {
 	 */
 	public function checkExtObj() {
 		if (is_array($this->extClassConf) && $this->extClassConf['name']) {
-			$this->extObj = t3lib_div::makeInstance($this->extClassConf['name']);
+			$this->extObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($this->extClassConf['name']);
 			$this->extObj->init($this->pObj, $this->extClassConf);
 			// Re-write:
-			$this->pObj->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->pObj->MOD_MENU, t3lib_div::_GP('SET'), $this->pObj->MCONF['name']);
+			$this->pObj->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->pObj->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->pObj->MCONF['name']);
 		}
 	}
 
@@ -272,5 +274,6 @@ abstract class t3lib_extobjbase {
 	}
 
 }
+
 
 ?>

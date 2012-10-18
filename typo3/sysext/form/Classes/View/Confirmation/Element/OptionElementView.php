@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Confirmation\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Confirmation_Element_Option extends tx_form_View_Confirmation_Element_Abstract {
+class OptionElementView extends \TYPO3\CMS\Form\View\Confirmation\Element\AbstractElementView {
 
 	/**
 	 * Default layout of this object
@@ -42,13 +44,14 @@ class tx_form_View_Confirmation_Element_Option extends tx_form_View_Confirmation
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Option $model Model for this element
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\OptionElement $model Model for this element
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Option $model) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\OptionElement $model) {
 		parent::__construct($model);
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_extjs_ExtDirectDebug {
+class ExtDirectDebug {
 
 	/**
 	 * Internal debug message array
@@ -71,11 +73,12 @@ class t3lib_extjs_ExtDirectDebug {
 	public function toString() {
 		$messagesAsString = '';
 		if (count($this->debugMessages)) {
-			$messagesAsString = t3lib_utility_Debug::viewArray($this->debugMessages);
+			$messagesAsString = \TYPO3\CMS\Core\Utility\DebugUtility::viewArray($this->debugMessages);
 		}
 		return $messagesAsString;
 	}
 
 }
+
 
 ?>

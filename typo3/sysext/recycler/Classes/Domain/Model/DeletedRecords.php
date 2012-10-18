@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recycler\Domain\Model;
+
 /**
  * Model class for the 'recycler' extension.
  *
@@ -6,7 +8,7 @@
  * @package 	TYPO3
  * @subpackage 	tx_recycler
  */
-class tx_recycler_model_deletedRecords {
+class DeletedRecords {
 
 	/**
 	 * Array with all deleted rows
@@ -32,7 +34,7 @@ class tx_recycler_model_deletedRecords {
 	/**
 	 * Object from helper class
 	 *
-	 * @var tx_recycler_helper
+	 * @var \TYPO3\CMS\Recycler\Utility\RecyclerUtility
 	 */
 	protected $recyclerHelper;
 
@@ -78,7 +80,7 @@ class tx_recycler_model_deletedRecords {
 			foreach ($GLOBALS['TCA'] as $tableKey => $tableValue) {
 				// only go into this table if the limit allows it
 				if ($this->limit != '') {
-					$parts = t3lib_div::trimExplode(',', $this->limit);
+					$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->limit);
 					// abort loop if LIMIT 0,0
 					if ($parts[0] == 0 && $parts[1] == 0) {
 						break;
@@ -123,17 +125,17 @@ class tx_recycler_model_deletedRecords {
 		$id = intval($id);
 		if (array_key_exists('delete', $tcaCtrl)) {
 			// find the 'deleted' field for this table
-			$deletedField = tx_recycler_helper::getDeletedField($table);
+			$deletedField = \TYPO3\CMS\Recycler\Utility\RecyclerUtility::getDeletedField($table);
 			// create the filter WHERE-clause
 			if (trim($filter) != '') {
-				$filterWhere = (((((' AND (' . (t3lib_utility_Math::canBeInterpretedAsInteger($filter) ? ((('uid = ' . $filter) . ' OR pid = ') . $filter) . ' OR ' : '')) . $tcaCtrl['label']) . ' LIKE "%') . $this->escapeValueForLike($filter, $table)) . '%"') . ')';
+				$filterWhere = (((((' AND (' . (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($filter) ? ((('uid = ' . $filter) . ' OR pid = ') . $filter) . ' OR ' : '')) . $tcaCtrl['label']) . ' LIKE "%') . $this->escapeValueForLike($filter, $table)) . '%"') . ')';
 			}
 			// get the limit
 			if ($this->limit != '') {
 				// count the number of deleted records for this pid
 				$deletedCount = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('uid', $table, (($deletedField . '<>0 AND pid = ') . $id) . $filterWhere);
 				// split the limit
-				$parts = t3lib_div::trimExplode(',', $this->limit);
+				$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->limit);
 				$offset = $parts[0];
 				$rowCount = $parts[1];
 				// subtract the number of deleted records from the limit's offset
@@ -195,7 +197,7 @@ class tx_recycler_model_deletedRecords {
 			}
 			// query for actual deleted records
 			if ($allowQuery) {
-				$recordsToCheck = t3lib_BEfunc::getRecordsByField($table, $deletedField, '1', (' AND pid = ' . $id) . $filterWhere, '', '', $limit, FALSE);
+				$recordsToCheck = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordsByField($table, $deletedField, '1', (' AND pid = ' . $id) . $filterWhere, '', '', $limit, FALSE);
 				if ($recordsToCheck) {
 					$this->checkRecordAccess($table, $recordsToCheck);
 				}
@@ -209,7 +211,7 @@ class tx_recycler_model_deletedRecords {
 						$this->setData($rowPages['uid'], $table, $depth - 1, $tcaCtrl, $filter);
 						// some records might have been added, check if we still have the limit for further queries
 						if ('' != $this->limit) {
-							$parts = t3lib_div::trimExplode(',', $this->limit);
+							$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->limit);
 							// abort loop if LIMIT 0,0
 							if ($parts[0] == 0 && $parts[1] == 0) {
 								break;
@@ -233,7 +235,7 @@ class tx_recycler_model_deletedRecords {
 	 */
 	protected function checkRecordAccess($table, array $rows) {
 		foreach ($rows as $key => $row) {
-			if (tx_recycler_helper::checkAccess($table, $row)) {
+			if (\TYPO3\CMS\Recycler\Utility\RecyclerUtility::checkAccess($table, $row)) {
 				$this->setDeletedRows($table, $row);
 			}
 		}
@@ -263,7 +265,7 @@ class tx_recycler_model_deletedRecords {
 	public function deleteData($recordsArray) {
 		$recordsArray = json_decode($recordsArray);
 		if (is_array($recordsArray)) {
-			$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+			$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 			$tce->start('', '');
 			$tce->disableDeleteClause();
 			foreach ($recordsArray as $key => $record) {
@@ -308,7 +310,7 @@ class tx_recycler_model_deletedRecords {
 				}
 			}
 			if ($cmd) {
-				$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+				$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 				$tce->start(array(), $cmd);
 				$tce->process_cmdmap();
 				$result = TRUE;
@@ -353,5 +355,6 @@ class tx_recycler_model_deletedRecords {
 	}
 
 }
+
 
 ?>

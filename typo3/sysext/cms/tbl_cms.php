@@ -601,7 +601,7 @@ $TCA['pages_language_overlay'] = array(
 		'media' => array(
 			'exclude' => 1,
 			'label' => $TCA['pages']['columns']['media']['label'],
-			'config' => t3lib_extMgm::getFileFieldTCAConfig('media')
+			'config' => \TYPO3\CMS\Core\Extension\ExtensionManager::getFileFieldTCAConfig('media')
 		),
 		'url' => array(
 			'exclude' => 1,
@@ -673,7 +673,7 @@ $TCA['pages_language_overlay'] = array(
 	),
 	'types' => array(
 		// normal
-		(string) t3lib_pageSelect::DOKTYPE_DEFAULT => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_DEFAULT => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -689,7 +689,7 @@ $TCA['pages_language_overlay'] = array(
 		'
 		),
 		// external URL
-		(string) t3lib_pageSelect::DOKTYPE_LINK => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_LINK => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.external;external,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -704,7 +704,7 @@ $TCA['pages_language_overlay'] = array(
 		'
 		),
 		// shortcut
-		(string) t3lib_pageSelect::DOKTYPE_SHORTCUT => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SHORTCUT => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.shortcut;shortcut,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.shortcutpage;shortcutpage,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
@@ -720,7 +720,7 @@ $TCA['pages_language_overlay'] = array(
 				'
 		),
 		// mount page
-		(string) t3lib_pageSelect::DOKTYPE_MOUNTPOINT => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_MOUNTPOINT => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;title,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -735,7 +735,7 @@ $TCA['pages_language_overlay'] = array(
 		'
 		),
 		// spacer
-		(string) t3lib_pageSelect::DOKTYPE_SPACER => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SPACER => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;titleonly,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -745,7 +745,7 @@ $TCA['pages_language_overlay'] = array(
 			'
 		),
 		// sysfolder
-		(string) t3lib_pageSelect::DOKTYPE_SYSFOLDER => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SYSFOLDER => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;titleonly,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -756,7 +756,7 @@ $TCA['pages_language_overlay'] = array(
 		'
 		),
 		// trash
-		(string) t3lib_pageSelect::DOKTYPE_RECYCLER => array(
+		(string) \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_RECYCLER => array(
 			'showitem' => '--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.standard;standard,
 					--palette--;LLL:EXT:cms/locallang_tca.xml:pages.palettes.title;titleonly,
 				--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access,
@@ -824,8 +824,8 @@ $TCA['pages_language_overlay'] = array(
 // Keep old code (pre-FAL) for installations that haven't upgraded yet.
 // @deprecated since TYPO3 6.0, please remove in TYPO3 7.0
 // existing installation - and files are merged, nothing to do
-if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'pages_language_overlay:media')) && !t3lib_div::compat_version('6.0')) {
-	t3lib_div::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[pages_language_overlay][columns][media] yet. Please do so before TYPO3 v7.');
+if ((!isset($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard']) || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['INSTALL']['wizardDone']['Tx_Install_Updates_File_TceformsUpdateWizard'], 'pages_language_overlay:media')) && !\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6.0')) {
+	\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('This installation hasn\'t been migrated to FAL for the field $TCA[pages_language_overlay][columns][media] yet. Please do so before TYPO3 v7.');
 	// Existing installation and no upgrade wizard was executed - and files haven't been merged: use the old code
 	$TCA['pages_language_overlay']['columns']['media']['config'] = array(
 		'type' => 'group',
@@ -1094,8 +1094,8 @@ $TCA['backend_layout'] = array(
 					0 => array(
 						'title' => 'LLL:EXT:cms/locallang_tca.xml:backend_layout.wizard',
 						'type' => 'popup',
-						'icon' => t3lib_extMgm::extRelPath('cms') . 'layout/wizard_backend_layout.png',
-						'script' => t3lib_extMgm::extRelPath('cms') . 'layout/wizard_backend_layout.php',
+						'icon' => \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath('cms') . 'layout/wizard_backend_layout.png',
+						'script' => \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath('cms') . 'layout/wizard_backend_layout.php',
 						'JSopenParams' => 'height=800,width=800,status=0,menubar=0,scrollbars=0'
 					)
 				)

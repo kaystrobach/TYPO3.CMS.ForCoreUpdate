@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\ExtDirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_extjs_ExtDirectApi {
+class ExtDirectApi {
 
 	/**
 	 * @var array
@@ -59,10 +61,10 @@ class t3lib_extjs_ExtDirectApi {
 	 * performance.
 	 *
 	 * @param array $ajaxParams Ajax parameters
-	 * @param TYPO3AJAX $ajaxObj typo3ajax instance
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj typo3ajax instance
 	 * @return void
 	 */
-	public function getAPI($ajaxParams, TYPO3AJAX $ajaxObj) {
+	public function getAPI($ajaxParams, \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj) {
 		$ajaxObj->setContent(array());
 	}
 
@@ -85,7 +87,7 @@ class t3lib_extjs_ExtDirectApi {
 			';
 		} else {
 			$errorMessage = $this->getNamespaceError($filterNamespaces);
-			throw new InvalidArgumentException($errorMessage, 1297645190);
+			throw new \InvalidArgumentException($errorMessage, 1297645190);
 		}
 	}
 
@@ -118,10 +120,10 @@ class t3lib_extjs_ExtDirectApi {
 				if (is_array($configuration)) {
 					$className = $configuration['callbackClass'];
 				}
-				$serverObject = t3lib_div::getUserObj($className, FALSE);
+				$serverObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($className, FALSE);
 				$javascriptNamespaces[$javascriptNamespace]['actions'][$javascriptObjectName] = array();
 				foreach (get_class_methods($serverObject) as $methodName) {
-					$reflectionMethod = new ReflectionMethod($serverObject, $methodName);
+					$reflectionMethod = new \ReflectionMethod($serverObject, $methodName);
 					$numberOfParameters = $reflectionMethod->getNumberOfParameters();
 					$docHeader = $reflectionMethod->getDocComment();
 					$formHandler = strpos($docHeader, '@formHandler') !== FALSE;
@@ -145,9 +147,9 @@ class t3lib_extjs_ExtDirectApi {
 	public function getRoutingUrl($namespace) {
 		$url = '';
 		if (TYPO3_MODE === 'FE') {
-			$url = t3lib_div::locationHeaderUrl('?eID=ExtDirect&action=route&namespace=');
+			$url = \TYPO3\CMS\Core\Utility\GeneralUtility::locationHeaderUrl('?eID=ExtDirect&action=route&namespace=');
 		} else {
-			$url = t3lib_div::locationHeaderUrl((t3lib_div::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir) . 'ajax.php?ajaxID=ExtDirect::route&namespace=');
+			$url = \TYPO3\CMS\Core\Utility\GeneralUtility::locationHeaderUrl((\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir) . 'ajax.php?ajaxID=ExtDirect::route&namespace=');
 		}
 		$url .= rawurlencode($namespace);
 		return $url;
@@ -161,17 +163,17 @@ class t3lib_extjs_ExtDirectApi {
 	 * @return string $javascriptNamespaces
 	 */
 	protected function getExtDirectApi(array $filterNamespaces) {
-		$noCache = t3lib_div::_GET('no_cache') ? TRUE : FALSE;
+		$noCache = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('no_cache') ? TRUE : FALSE;
 		// Look up into the cache
 		$cacheIdentifier = 'ExtDirectApi';
-		$cacheHash = md5((((($cacheIdentifier . implode(',', $filterNamespaces)) . t3lib_div::getIndpEnv('TYPO3_SSL')) . serialize($this->settings)) . TYPO3_MODE) . t3lib_div::getIndpEnv('HTTP_HOST'));
+		$cacheHash = md5((((($cacheIdentifier . implode(',', $filterNamespaces)) . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) . serialize($this->settings)) . TYPO3_MODE) . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_HOST'));
 		// With no_cache always generate the javascript content
-		$cacheContent = $noCache ? '' : t3lib_pageSelect::getHash($cacheHash);
+		$cacheContent = $noCache ? '' : \TYPO3\CMS\Frontend\Page\PageRepository::getHash($cacheHash);
 		// Generate the javascript content if it wasn't found inside the cache and cache it!
 		if (!$cacheContent) {
 			$javascriptNamespaces = $this->generateAPI($filterNamespaces);
 			if (count($javascriptNamespaces)) {
-				t3lib_pageSelect::storeHash($cacheHash, serialize($javascriptNamespaces), $cacheIdentifier);
+				\TYPO3\CMS\Frontend\Page\PageRepository::storeHash($cacheHash, serialize($javascriptNamespaces), $cacheIdentifier);
 			}
 		} else {
 			$javascriptNamespaces = unserialize($cacheContent);
@@ -209,7 +211,7 @@ class t3lib_extjs_ExtDirectApi {
 		}
 		$found = FALSE;
 		foreach ($filterNamespaces as $filter) {
-			if (t3lib_div::isFirstPartOfStr($filter, $namespace)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($filter, $namespace)) {
 				$found = TRUE;
 				break;
 			}
@@ -218,5 +220,6 @@ class t3lib_extjs_ExtDirectApi {
 	}
 
 }
+
 
 ?>

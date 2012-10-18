@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Tests\Unit\CrondCommand;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @subpackage tx_scheduler
  * @author Christian Kuhn <lolli@schwarzbu.ch>
  */
-class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
+class CronCommandTest extends tx_phpunit_testcase {
 
 	/**
 	 * @const 	integer	timestamp of 1.1.2010 0:00 (Friday)
@@ -38,7 +40,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function constructorSetsNormalizedCronCommandSections() {
-		$instance = new tx_scheduler_CronCmd('2-3 * * * *');
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('2-3 * * * *');
 		$this->assertSame($instance->getCronCommandSections(), array('2,3', '*', '*', '*', '*'));
 	}
 
@@ -47,14 +49,14 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @expectedException InvalidArgumentException
 	 */
 	public function constructorThrowsExceptionForInvalidCronCommand() {
-		new tx_scheduler_CronCmd('61 * * * *');
+		new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('61 * * * *');
 	}
 
 	/**
 	 * @test
 	 */
 	public function constructorSetsTimestampToNowPlusOneMinuteRoundedDownToSixtySeconds() {
-		$instance = new tx_scheduler_CronCmd('* * * * *');
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* * * * *');
 		$this->assertSame($instance->getTimestamp(), $GLOBALS['ACCESS_TIME'] + 60);
 	}
 
@@ -62,7 +64,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function constructorSetsTimestampToGivenTimestampPlusSixtySeconds() {
-		$instance = new tx_scheduler_CronCmd('* * * * *', self::TIMESTAMP);
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* * * * *', self::TIMESTAMP);
 		$this->assertSame($instance->getTimestamp(), self::TIMESTAMP + 60);
 	}
 
@@ -70,7 +72,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function constructorSetsTimestampToGiveTimestampRoundedDownToSixtySeconds() {
-		$instance = new tx_scheduler_CronCmd('* * * * *', self::TIMESTAMP + 1);
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* * * * *', self::TIMESTAMP + 1);
 		$this->assertSame($instance->getTimestamp(), self::TIMESTAMP + 60);
 	}
 
@@ -210,7 +212,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @param integer $expectedTimestamp Expected result (next time of execution)
 	 */
 	public function calculateNextValueDeterminesCorrectNextTimestamp($cronCommand, $startTimestamp, $expectedTimestamp) {
-		$instance = new tx_scheduler_CronCmd($cronCommand, $startTimestamp);
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand($cronCommand, $startTimestamp);
 		$instance->calculateNextValue();
 		$this->assertSame($instance->getTimestamp(), $expectedTimestamp);
 	}
@@ -224,7 +226,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @param integer $secondTimestamp Timestamp of the further execution
 	 */
 	public function calculateNextValueDeterminesCorrectNextTimestampOnConsecutiveCall($cronCommand, $startTimestamp, $firstTimestamp, $secondTimestamp) {
-		$instance = new tx_scheduler_CronCmd($cronCommand, $firstTimestamp);
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand($cronCommand, $firstTimestamp);
 		$instance->calculateNextValue();
 		$this->assertSame($instance->getTimestamp(), $secondTimestamp);
 	}
@@ -235,7 +237,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	public function calculateNextValueDeterminesCorrectNextTimestampOnChangeToSummertime() {
 		$backupTimezone = date_default_timezone_get();
 		date_default_timezone_set('Europe/Berlin');
-		$instance = new tx_scheduler_CronCmd('* 3 28 mar *', self::TIMESTAMP);
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* 3 28 mar *', self::TIMESTAMP);
 		$instance->calculateNextValue();
 		date_default_timezone_set($backupTimezone);
 		$this->assertSame($instance->getTimestamp(), 1269741600);
@@ -246,7 +248,7 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @expectedException RuntimeException
 	 */
 	public function calculateNextValueThrowsExceptionWithImpossibleCronCommand() {
-		$instance = new tx_scheduler_CronCmd('* * 31 apr *', self::TIMESTAMP);
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* * 31 apr *', self::TIMESTAMP);
 		$instance->calculateNextValue();
 	}
 
@@ -254,18 +256,19 @@ class tx_scheduler_croncmdTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function getTimestampReturnsInteger() {
-		$instance = new tx_scheduler_CronCmd('* * * * *');
-		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_INT, $instance->getTimestamp());
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* * * * *');
+		$this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT, $instance->getTimestamp());
 	}
 
 	/**
 	 * @test
 	 */
 	public function getCronCommandSectionsReturnsArray() {
-		$instance = new tx_scheduler_CronCmd('* * * * *');
-		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $instance->getCronCommandSections());
+		$instance = new \TYPO3\CMS\Scheduler\CronCommand\CronCommand('* * * * *');
+		$this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $instance->getCronCommandSections());
 	}
 
 }
+
 
 ?>

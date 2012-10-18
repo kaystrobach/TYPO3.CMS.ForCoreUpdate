@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Domain\Model\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class Typo3_Domain_Model_BackendModule {
+class BackendModule {
 
 	/**
 	 * @var string $title
@@ -77,7 +79,7 @@ class Typo3_Domain_Model_BackendModule {
 	 * construct
 	 */
 	public function __construct() {
-		$this->children = new SplObjectStorage();
+		$this->children = new \SplObjectStorage();
 	}
 
 	/**
@@ -102,10 +104,10 @@ class Typo3_Domain_Model_BackendModule {
 	/**
 	 * Add Child
 	 *
-	 * @param Typo3_Domain_Model_BackendModule $child
+	 * @param \TYPO3\CMS\Backend\Domain\Model\Module\BackendModule $child
 	 * @return void
 	 */
-	public function addChild(Typo3_Domain_Model_BackendModule $child) {
+	public function addChild(\TYPO3\CMS\Backend\Domain\Model\Module\BackendModule $child) {
 		$this->children->attach($child);
 	}
 
@@ -243,5 +245,6 @@ class Typo3_Domain_Model_BackendModule {
 	}
 
 }
+
 
 ?>

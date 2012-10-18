@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_ViewHelpers_ErrorIconViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class ErrorIconViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Renders an error icon link as known from the TYPO3 backend.
@@ -40,9 +42,10 @@ class Tx_Belog_ViewHelpers_ErrorIconViewHelper extends Tx_Fluid_Core_ViewHelper_
 	 * @return string the rendered error icon link
 	 */
 	public function render($errorNumber = 0) {
-		return $GLOBALS['SOBE']->doc->icons($errorNumber >= 2 ? template::STATUS_ICON_ERROR : template::STATUS_ICON_WARNING);
+		return $GLOBALS['SOBE']->doc->icons($errorNumber >= 2 ? \TYPO3\CMS\Backend\Template\DocumentTemplate::STATUS_ICON_ERROR : \TYPO3\CMS\Backend\Template\DocumentTemplate::STATUS_ICON_WARNING);
 	}
 
 }
+
 
 ?>

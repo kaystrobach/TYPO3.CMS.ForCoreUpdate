@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Controller;
+
 /**
  * Backend module providing boring statistics of the index-tables.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tx_indexedsearch
  */
-class SC_mod_tools_isearch_index {
+class ModuleController {
 
 	/**
 	 * @todo Define visibility
@@ -26,7 +28,7 @@ class SC_mod_tools_isearch_index {
 	/**
 	 * document template object
 	 *
-	 * @var noDoc
+	 * @var \TYPO3\CMS\Backend\Template\StandardDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -50,10 +52,10 @@ class SC_mod_tools_isearch_index {
 	public function init() {
 		$this->MCONF = $GLOBALS['MCONF'];
 		$this->menuConfig();
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->form = '<form action="" method="post">';
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
-		$this->doc->setModuleTemplate(t3lib_extMgm::extRelPath('indexed_search') . '/mod/mod_template.html');
+		$this->doc->setModuleTemplate(\TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath('indexed_search') . '/mod/mod_template.html');
 		// JavaScript
 		$this->doc->JScodeArray['indexed_search'] = '
 			script_ended = 0;
@@ -66,7 +68,7 @@ class SC_mod_tools_isearch_index {
 				'defCol' => array(('<td><img src="' . $this->doc->backPath) . 'clear.gif" width=10 height=1></td><td valign="top" nowrap>', '</td>')
 			)
 		);
-		$indexer = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+		$indexer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\IndexedSearch\\Controller\\SearchFormController_indexer');
 		$indexer->initializeExternalParsers();
 	}
 
@@ -88,7 +90,7 @@ class SC_mod_tools_isearch_index {
 			)
 		);
 		// cleanse settings
-		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name'], 'ses');
+		$this->MOD_SETTINGS = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleData($this->MOD_MENU, \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('SET'), $this->MCONF['name'], 'ses');
 	}
 
 	/**
@@ -119,7 +121,7 @@ class SC_mod_tools_isearch_index {
 		$docHeaderButtons = $this->getButtons();
 		$markers = array(
 			'CSH' => $docHeaderButtons['csh'],
-			'FUNC_MENU' => t3lib_BEfunc::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
+			'FUNC_MENU' => \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
 			'CONTENT' => $this->content
 		);
 		$this->content = $this->doc->startPage('Indexing Engine Statistics');
@@ -249,12 +251,12 @@ class SC_mod_tools_isearch_index {
 			$grListRec = $this->getGrlistRecord($row['phash']);
 			$recList[] = array(
 				$row['data_page_id'] . ($row['data_page_type'] ? '/' . $row['data_page_type'] : ''),
-				htmlentities(t3lib_div::fixed_lgd_cs($row['item_title'], 30)),
-				t3lib_div::formatSize($row['item_size']),
+				htmlentities(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($row['item_title'], 30)),
+				\TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($row['item_size']),
 				$this->getNumberOfWords($row['phash']),
-				t3lib_BEfunc::datetime($row['item_mtime']),
-				t3lib_BEfunc::datetime($row['crdate']),
-				$row['tstamp'] != $row['crdate'] ? t3lib_BEfunc::datetime($row['tstamp']) : '',
+				\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row['item_mtime']),
+				\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row['crdate']),
+				$row['tstamp'] != $row['crdate'] ? \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row['tstamp']) : '',
 				$row['parsetime'],
 				((($this->getNumberOfSections($row['phash']) . '/') . $grListRec[0]['pcount']) . '/') . $this->getNumberOfFulltext($row['phash']),
 				($row['pcount'] . '/') . $this->formatFeGroup($grListRec),
@@ -269,11 +271,11 @@ class SC_mod_tools_isearch_index {
 					$recList[] = array(
 						'',
 						'',
-						t3lib_div::formatSize($row2['item_size']),
+						\TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($row2['item_size']),
 						$this->getNumberOfWords($row2['phash']),
-						t3lib_BEfunc::datetime($row2['item_mtime']),
-						t3lib_BEfunc::datetime($row2['crdate']),
-						$row2['tstamp'] != $row2['crdate'] ? t3lib_BEfunc::datetime($row2['tstamp']) : '',
+						\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row2['item_mtime']),
+						\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row2['crdate']),
+						$row2['tstamp'] != $row2['crdate'] ? \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row2['tstamp']) : '',
 						$row2['parsetime'],
 						((($this->getNumberOfSections($row2['phash']) . '/') . $grListRec[0]['pcount']) . '/') . $this->getNumberOfFulltext($row2['phash']),
 						'-/' . $this->formatFeGroup($grListRec),
@@ -314,18 +316,18 @@ class SC_mod_tools_isearch_index {
 			$cHash = count(unserialize($row['cHashParams'])) ? $this->formatCHash(unserialize($row['cHashParams'])) : '';
 			$grListRec = $this->getGrlistRecord($row['phash']);
 			$recList[] = array(
-				htmlentities(t3lib_div::fixed_lgd_cs($row['item_title'], 30)),
-				t3lib_div::formatSize($row['item_size']),
+				htmlentities(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($row['item_title'], 30)),
+				\TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($row['item_size']),
 				$this->getNumberOfWords($row['phash']),
-				t3lib_BEfunc::datetime($row['item_mtime']),
-				t3lib_BEfunc::datetime($row['crdate']),
-				$row['tstamp'] != $row['crdate'] ? t3lib_BEfunc::datetime($row['tstamp']) : '',
+				\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row['item_mtime']),
+				\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row['crdate']),
+				$row['tstamp'] != $row['crdate'] ? \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row['tstamp']) : '',
 				$row['parsetime'],
 				((($this->getNumberOfSections($row['phash']) . '/') . $grListRec[0]['pcount']) . '/') . $this->getNumberOfFulltext($row['phash']),
 				$row['pcount'],
 				$cHash,
 				$row['phash'],
-				htmlentities(t3lib_div::fixed_lgd_cs($row['data_filename'], 100))
+				htmlentities(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($row['data_filename'], 100))
 			);
 			if ($row['pcount'] > 1) {
 				$res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('index_phash.*', 'index_phash', (('phash_grouping=' . intval($row['phash_grouping'])) . ' AND phash<>') . intval($row['phash']));
@@ -337,8 +339,8 @@ class SC_mod_tools_isearch_index {
 						'',
 						$this->getNumberOfWords($row2['phash']),
 						'',
-						t3lib_BEfunc::datetime($row2['crdate']),
-						$row2['tstamp'] != $row2['crdate'] ? t3lib_BEfunc::datetime($row2['tstamp']) : '',
+						\TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row2['crdate']),
+						$row2['tstamp'] != $row2['crdate'] ? \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($row2['tstamp']) : '',
 						$row2['parsetime'],
 						((($this->getNumberOfSections($row2['phash']) . '/') . $grListRec[0]['pcount']) . '/') . $this->getNumberOfFulltext($row2['phash']),
 						'',
@@ -479,5 +481,6 @@ class SC_mod_tools_isearch_index {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\CssStyledContent\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_cssstyledcontent
  */
-class tx_cssstyledcontent_pi1 extends tslib_pibase {
+class CssStyledContentController extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	// Default plugin variables:
 	// Same as class name
@@ -89,7 +91,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 				return '';
 			}
 			// Split into single lines:
-			$lines = t3lib_div::trimExplode(LF, $content);
+			$lines = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $content);
 			foreach ($lines as &$val) {
 				$val = ('<li>' . $this->cObj->stdWrap($val, $conf['innerStdWrap.'])) . '</li>';
 			}
@@ -153,10 +155,10 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 			$headerScope = $headerPos == 'top' ? 'col' : 'row';
 			$headerIdPrefix = ($headerScope . $this->cObj->data['uid']) . '-';
 			// Split into single lines (will become table-rows):
-			$rows = t3lib_div::trimExplode(LF, $content);
+			$rows = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $content);
 			reset($rows);
 			// Find number of columns to render:
-			$cols = t3lib_utility_Math::forceIntegerInRange($this->cObj->data['cols'] ? $this->cObj->data['cols'] : count(explode($delimiter, current($rows))), 0, 100);
+			$cols = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->cObj->data['cols'] ? $this->cObj->data['cols'] : count(explode($delimiter, current($rows))), 0, 100);
 			// Traverse rows (rendering the table here)
 			$rCount = count($rows);
 			foreach ($rows as $k => $v) {
@@ -228,7 +230,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 			}
 			// Compile table output:
 			$out = ((('
-				<table ' . t3lib_div::implodeAttributes($tableTagParams)) . '>') . $tableContents) . '
+				<table ' . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeAttributes($tableTagParams)) . '>') . $tableContents) . '
 				</table>';
 			// Calling stdWrap:
 			if ($conf['stdWrap.']) {
@@ -267,7 +269,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 				// Get the list of files from the field
 				$field = trim($conf['field']) ? trim($conf['field']) : 'media';
 				$fileList = $this->cObj->data[$field];
-				t3lib_div::loadTCA('tt_content');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 				$path = 'uploads/media/';
 				if (is_array($GLOBALS['TCA']['tt_content']['columns'][$field]) && !empty($GLOBALS['TCA']['tt_content']['columns'][$field]['config']['uploadfolder'])) {
 					// In TCA-Array folders are saved without trailing slash, so $path.$fileName won't work
@@ -276,15 +278,15 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 			}
 			$path = trim($path);
 			// Explode into an array:
-			$fileArray = t3lib_div::trimExplode(',', $fileList, 1);
+			$fileArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $fileList, 1);
 			// If there were files to list...:
 			if (count($fileArray)) {
 				// Get the descriptions for the files (if any):
-				$descriptions = t3lib_div::trimExplode(LF, $this->cObj->data['imagecaption']);
+				$descriptions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $this->cObj->data['imagecaption']);
 				// Get the titles for the files (if any)
-				$titles = t3lib_div::trimExplode(LF, $this->cObj->data['titleText']);
+				$titles = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $this->cObj->data['titleText']);
 				// Get the alternative text for icons/thumbnails
-				$altTexts = t3lib_div::trimExplode(LF, $this->cObj->data['altText']);
+				$altTexts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $this->cObj->data['altText']);
 				// Add the target to linkProc when explicitly set
 				if ($this->cObj->data['target']) {
 					$conf['linkProc.']['target'] = $this->cObj->data['target'];
@@ -313,12 +315,12 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 				// Traverse the files found:
 				$filesData = array();
 				foreach ($fileArray as $key => $fileName) {
-					$absPath = t3lib_div::getFileAbsFileName(t3lib_div::resolveBackPath($path . $fileName));
+					$absPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(\TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($path . $fileName));
 					if (@is_file($absPath)) {
 						$fI = pathinfo($fileName);
 						$filesData[$key] = array();
 						$currentPath = $path;
-						if (t3lib_div::isFirstPartOfStr($fileName, '../../')) {
+						if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($fileName, '../../')) {
 							$currentPath = '';
 							$fileName = substr($fileName, 6);
 						}
@@ -365,7 +367,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 					// Table tag params
 					$tableTagParams = $this->getTableAttributes($conf, $type);
 					$tableTagParams['class'] = 'csc-uploads csc-uploads-' . $type;
-					$outerWrap = ('<table ' . t3lib_div::implodeAttributes($tableTagParams)) . '>|</table>';
+					$outerWrap = ('<table ' . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeAttributes($tableTagParams)) . '>|</table>';
 				}
 				// Compile it all into table tags:
 				$out = $this->cObj->wrap(implode('', $outputEntries), $outerWrap);
@@ -404,7 +406,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 					if ($currentRelationValue >= 1) {
 						$out[$a] = $currentRelationValue;
 					} else {
-						t3lib_div::devLog('colRelations used with a value smaller than 1 therefore colRelations setting is ignored.', $this->extKey, 2);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('colRelations used with a value smaller than 1 therefore colRelations setting is ignored.', $this->extKey, 2);
 						unset($out);
 						break;
 					}
@@ -412,7 +414,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 				if (max($out) / min($out) <= 10) {
 					$relations = $out;
 				} else {
-					t3lib_div::devLog('The difference in size between the largest and smallest colRelation was not within a factor of ten therefore colRelations setting is ignored..', $this->extKey, 2);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('The difference in size between the largest and smallest colRelation was not within a factor of ten therefore colRelations setting is ignored..', $this->extKey, 2);
 				}
 			}
 		}
@@ -488,12 +490,12 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 			}
 			return $content;
 		}
-		$imgs = t3lib_div::trimExplode(',', $imgList);
+		$imgs = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $imgList);
 		$imgStart = intval($this->cObj->stdWrap($conf['imgStart'], $conf['imgStart.']));
 		$imgCount = count($imgs) - $imgStart;
 		$imgMax = intval($this->cObj->stdWrap($conf['imgMax'], $conf['imgMax.']));
 		if ($imgMax) {
-			$imgCount = t3lib_utility_Math::forceIntegerInRange($imgCount, 0, $imgMax);
+			$imgCount = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($imgCount, 0, $imgMax);
 		}
 		$imgPath = $this->cObj->stdWrap($conf['imgPath'], $conf['imgPath.']);
 		// Does we need to render a "global caption" (below the whole image block)?
@@ -578,7 +580,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 		$equalHeight = intval($this->cObj->stdWrap($conf['equalH'], $conf['equalH.']));
 		if ($equalHeight) {
 			// Initiate gifbuilder object in order to get dimensions AND calculate the imageWidth's
-			$gifCreator = t3lib_div::makeInstance('tslib_gifbuilder');
+			$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tslib_gifbuilder');
 			$gifCreator->init();
 			$relations_cols = array();
 			// contains the individual width of all images after scaling to $equalHeight
@@ -1187,7 +1189,7 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 		global $TYPO3_CONF_VARS;
 		// Hook: menuConfig_preProcessModMenu
 		if ($TYPO3_CONF_VARS['EXTCONF']['css_styled_content']['pi1_hooks'][$functionName]) {
-			$hookObj = t3lib_div::getUserObj($TYPO3_CONF_VARS['EXTCONF']['css_styled_content']['pi1_hooks'][$functionName]);
+			$hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($TYPO3_CONF_VARS['EXTCONF']['css_styled_content']['pi1_hooks'][$functionName]);
 			if (method_exists($hookObj, $functionName)) {
 				$hookObj->pObj = $this;
 				return $hookObj;
@@ -1196,5 +1198,6 @@ class tx_cssstyledcontent_pi1 extends tslib_pibase {
 	}
 
 }
+
 
 ?>

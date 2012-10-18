@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Processor;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,21 +33,22 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_processor_Web extends t3lib_log_processor_Abstract {
+class WebProcessor extends \TYPO3\CMS\Core\Log\Processor\AbstractProcessor {
 
 	/**
 	 * Processes a log record and adds webserver environment data.
 	 * We use the usual "Debug System Information"
 	 *
-	 * @param t3lib_log_Record $logRecord The log record to process
-	 * @return t3lib_log_Record The processed log record with additional data
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $logRecord The log record to process
+	 * @return \TYPO3\CMS\Core\Log\LogRecord The processed log record with additional data
 	 * @see t3lib_div::getIndpEnv()
 	 */
-	public function processLogRecord(t3lib_log_Record $logRecord) {
-		$logRecord->addData(t3lib_div::getIndpEnv('_ARRAY'));
+	public function processLogRecord(\TYPO3\CMS\Core\Log\LogRecord $logRecord) {
+		$logRecord->addData(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('_ARRAY'));
 		return $logRecord;
 	}
 
 }
+
 
 ?>

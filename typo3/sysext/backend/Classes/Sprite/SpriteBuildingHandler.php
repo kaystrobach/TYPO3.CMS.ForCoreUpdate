@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Sprite;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,10 +33,10 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_spritemanager_SpriteBuildingHandler extends t3lib_spritemanager_AbstractHandler {
+class SpriteBuildingHandler extends \TYPO3\CMS\Backend\Sprite\AbstractSpriteHandler {
 
 	/**
-	 * @var t3lib_spritemanager_SpriteGenerator
+	 * @var \TYPO3\CMS\Backend\Sprite\SpriteGenerator
 	 */
 	protected $generatorInstance = NULL;
 
@@ -45,11 +47,11 @@ class t3lib_spritemanager_SpriteBuildingHandler extends t3lib_spritemanager_Abst
 	 * @return void
 	 */
 	public function generate() {
-		$this->generatorInstance = t3lib_div::makeInstance('t3lib_spritemanager_SpriteGenerator', 'GeneratorHandler');
-		$this->generatorInstance->setOmmitSpriteNameInIconName(TRUE)->setIncludeTimestampInCSS(TRUE)->setSpriteFolder(t3lib_SpriteManager::$tempPath)->setCSSFolder(t3lib_SpriteManager::$tempPath);
+		$this->generatorInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Sprite\\SpriteGenerator', 'GeneratorHandler');
+		$this->generatorInstance->setOmmitSpriteNameInIconName(TRUE)->setIncludeTimestampInCSS(TRUE)->setSpriteFolder(\TYPO3\CMS\Backend\Sprite\SpriteManager::$tempPath)->setCSSFolder(\TYPO3\CMS\Backend\Sprite\SpriteManager::$tempPath);
 		$iconsToProcess = array_merge((array) $GLOBALS['TBE_STYLES']['spritemanager']['singleIcons'], $this->collectTcaSpriteIcons());
 		foreach ($iconsToProcess as $iconName => $iconFile) {
-			$iconsToProcess[$iconName] = t3lib_div::resolveBackPath('typo3/' . $iconFile);
+			$iconsToProcess[$iconName] = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath('typo3/' . $iconFile);
 		}
 		$generatorResponse = $this->generatorInstance->generateSpriteFromArray($iconsToProcess);
 		$this->iconNames = array_merge($this->iconNames, $generatorResponse['iconNames']);
@@ -57,5 +59,6 @@ class t3lib_spritemanager_SpriteBuildingHandler extends t3lib_spritemanager_Abst
 	}
 
 }
+
 
 ?>

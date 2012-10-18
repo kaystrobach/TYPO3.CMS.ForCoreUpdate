@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail\Plain\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,10 +30,10 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_View_Mail_Plain_Element_Abstract {
+abstract class AbstractElementView {
 
 	/**
-	 * @var tx_form_Domain_Model_Element_Abstract
+	 * @var \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement
 	 */
 	protected $model;
 
@@ -43,14 +45,15 @@ abstract class tx_form_View_Mail_Plain_Element_Abstract {
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Abstract $model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model
 	 * @param integer $spaces
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Abstract $model, $spaces) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model, $spaces) {
 		$this->model = $model;
 		$this->spaces = (int) $spaces;
 	}
 
 }
+
 
 ?>

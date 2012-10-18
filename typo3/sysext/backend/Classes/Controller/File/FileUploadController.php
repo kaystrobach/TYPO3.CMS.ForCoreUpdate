@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\File;
+
 /**
  * Script Class for display up to 10 upload fields
  *
@@ -6,13 +8,13 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_file_upload {
+class FileUploadController {
 
 	// Internal, static:
 	/**
 	 * Document template object
 	 *
-	 * @var smallDoc
+	 * @var \TYPO3\CMS\Backend\Template\SmallDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -46,7 +48,7 @@ class SC_file_upload {
 	/**
 	 * The folder object which is the target directory for the upload
 	 *
-	 * @var t3lib_file_Folder $folderObject
+	 * @var \TYPO3\CMS\Core\Resource\Folder $folderObject
 	 */
 	protected $folderObject;
 
@@ -58,26 +60,26 @@ class SC_file_upload {
 	 */
 	public function init() {
 		// Initialize GPvars:
-		$this->target = t3lib_div::_GP('target');
-		$this->returnUrl = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
+		$this->target = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('target');
+		$this->returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
 		if (!$this->returnUrl) {
-			$this->returnUrl = (((t3lib_div::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir) . t3lib_BEfunc::getModuleUrl('file_list')) . '&id=') . rawurlencode($this->target);
+			$this->returnUrl = (((\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir) . \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('file_list')) . '&id=') . rawurlencode($this->target);
 		}
 		// Create the folder object
 		if ($this->target) {
-			$this->folderObject = t3lib_file_Factory::getInstance()->retrieveFileOrFolderObject($this->target);
+			$this->folderObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->target);
 		}
 		// Cleaning and checking target directory
 		if (!$this->folderObject) {
 			$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:paramError', TRUE);
 			$message = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:targetNoDir', TRUE);
-			throw new RuntimeException(($title . ': ') . $message, 1294586843);
+			throw new \RuntimeException(($title . ': ') . $message, 1294586843);
 		}
 		// Setting the title and the icon
-		$icon = t3lib_iconWorks::getSpriteIcon('apps-filetree-root');
+		$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-filetree-root');
 		$this->title = (($icon . htmlspecialchars($this->folderObject->getStorage()->getName())) . ': ') . htmlspecialchars($this->folderObject->getIdentifier());
 		// Setting template object
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->setModuleTemplate('templates/file_upload.html');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->form = ('<form action="tce_file.php" method="post" name="editform" enctype="' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype']) . '">';
@@ -96,11 +98,11 @@ class SC_file_upload {
 		$pageContent = $this->doc->header($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:file_upload.php.pagetitle')) . $this->doc->section('', $form);
 		// Header Buttons
 		$docHeaderButtons = array(
-			'csh' => t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'file_upload', $GLOBALS['BACK_PATH'])
+			'csh' => \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'file_upload', $GLOBALS['BACK_PATH'])
 		);
 		$markerArray = array(
 			'CSH' => $docHeaderButtons['csh'],
-			'FUNC_MENU' => t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
+			'FUNC_MENU' => \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
 			'CONTENT' => $pageContent,
 			'PATH' => $this->title
 		);
@@ -158,5 +160,6 @@ class SC_file_upload {
 	}
 
 }
+
 
 ?>

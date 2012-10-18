@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_syslog extends tx_lowlevel_cleaner_core {
+class SyslogCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * Constructor
@@ -74,9 +76,9 @@ Showing last 25 hour entries from the syslog. More features pending. This is the
 		$rows = $TYPO3_DB->exec_SELECTgetRows('*', 'sys_log', 'tstamp>' . ($GLOBALS['EXEC_TIME'] - 25 * 3600));
 		foreach ($rows as $r) {
 			$l = unserialize($r['log_data']);
-			$explained = (((((('#' . $r['uid']) . ' ') . t3lib_BEfunc::datetime($r['tstamp'])) . ' USER[') . $r['userid']) . ']: ') . sprintf($r['details'], $l[0], $l[1], $l[2], $l[3], $l[4], $l[5]);
+			$explained = (((((('#' . $r['uid']) . ' ') . \TYPO3\CMS\Backend\Utility\BackendUtility::datetime($r['tstamp'])) . ' USER[') . $r['userid']) . ']: ') . sprintf($r['details'], $l[0], $l[1], $l[2], $l[3], $l[4], $l[5]);
 			$resultArray['listing'][$r['uid']] = $explained;
-			$resultArray['allDetails'][$r['uid']] = array($explained, t3lib_div::arrayToLogString($r, 'uid,userid,action,recuid,tablename,recpid,error,tstamp,type,details_nr,IP,event_pid,NEWid,workspace'));
+			$resultArray['allDetails'][$r['uid']] = array($explained, \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($r, 'uid,userid,action,recuid,tablename,recpid,error,tstamp,type,details_nr,IP,event_pid,NEWid,workspace'));
 		}
 		return $resultArray;
 	}
@@ -94,5 +96,6 @@ Showing last 25 hour entries from the syslog. More features pending. This is the
 	}
 
 }
+
 
 ?>

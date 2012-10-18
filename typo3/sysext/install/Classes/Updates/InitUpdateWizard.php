@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Updates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @author Tolleiv Nietsch <info@tolleiv.de>
  * @license http://www.gnu.org/copyleft/gpl.html
  */
-class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
+class InitUpdateWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	/**
 	 * @var string
@@ -37,7 +39,7 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	protected $title = 'Initialize database tables for the File Abstraction Layer (FAL)';
 
 	/**
-	 * @var t3lib_install_Sql
+	 * @var \TYPO3\CMS\Install\Sql\SchemaMigrator
 	 */
 	protected $installerSql;
 
@@ -45,7 +47,7 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	 * Creates this object.
 	 */
 	public function __construct() {
-		$this->installerSql = t3lib_div::makeInstance('t3lib_install_Sql');
+		$this->installerSql = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Sql\\SchemaMigrator');
 	}
 
 	/**
@@ -82,7 +84,7 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	 */
 	protected function getRequiredUpdates() {
 		$requiredUpdates = array();
-		$fileContent = t3lib_div::getUrl(PATH_t3lib . 'stddb/tables.sql');
+		$fileContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl(PATH_t3lib . 'stddb/tables.sql');
 		$FDfile = $this->installerSql->getFieldDefinitions_fileContent($fileContent);
 		$FDdb = $this->installerSql->getFieldDefinitions_database(TYPO3_db);
 		$diff = $this->installerSql->getDatabaseExtra($FDfile, $FDdb);
@@ -96,5 +98,6 @@ class Tx_Install_Updates_File_InitUpdateWizard extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

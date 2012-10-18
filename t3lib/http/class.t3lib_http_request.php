@@ -22,12 +22,12 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 if (!class_exists('HTTP_request2')) {
-	t3lib_div::requireOnce('HTTP/Request2.php');
+	\TYPO3\CMS\Core\Utility\GeneralUtility::requireOnce('HTTP/Request2.php');
 }
 /*
  * @deprecated since 6.0, the classname t3lib_http_Request and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/core/Classes/Http/HttpRequest.php
  */
-require_once t3lib_extMgm::extPath('core') . 'Classes/Http/HttpRequest.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('core') . 'Classes/Http/HttpRequest.php';
 ?>

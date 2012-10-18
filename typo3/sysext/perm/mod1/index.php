@@ -39,9 +39,9 @@ $BE_USER->modAccess($MCONF, 1);
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/perm/Classes/Controller/PermissionModuleController.php
  */
-require_once t3lib_extMgm::extPath('perm') . 'Classes/Controller/PermissionModuleController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('perm') . 'Classes/Controller/PermissionModuleController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_mod_web_perm_index');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Perm\\Controller\\PermissionModuleController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

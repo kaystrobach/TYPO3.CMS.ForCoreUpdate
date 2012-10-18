@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -42,7 +44,7 @@
  * @subpackage tslib
  * @see 	tslib_cObj::SEARCHRESULT()
  */
-class tslib_search {
+class SearchResultContentObject {
 
 	/**
 	 * @todo Define visibility
@@ -498,5 +500,6 @@ class tslib_search {
 	}
 
 }
+
 
 ?>

@@ -38,9 +38,9 @@ require 'init.php';
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/recordlist/Classes/Controller/ElementBrowserFramesetController.php
  */
-require_once t3lib_extMgm::extPath('recordlist') . 'Classes/Controller/ElementBrowserFramesetController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recordlist') . 'Classes/Controller/ElementBrowserFramesetController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_browser');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recordlist\\Controller\\ElementBrowserFramesetController');
 $SOBE->main();
 $SOBE->printContent();
 ?>

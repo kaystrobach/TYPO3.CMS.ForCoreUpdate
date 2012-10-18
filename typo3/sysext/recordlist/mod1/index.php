@@ -40,15 +40,15 @@
  */
 $LANG->includeLLFile('EXT:lang/locallang_mod_web_list.xml');
 $BE_USER->modAccess($MCONF, 1);
-t3lib_BEfunc::lockRecords();
+\TYPO3\CMS\Backend\Utility\BackendUtility::lockRecords();
 /*
  * @deprecated since 6.0, the classname SC_db_list and this file is obsolete
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/recordlist/Classes/RecordList.php
  */
-require_once t3lib_extMgm::extPath('recordlist') . 'Classes/RecordList.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recordlist') . 'Classes/RecordList.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_db_list');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recordlist\\RecordList');
 $SOBE->init();
 // Include files?
 foreach ($SOBE->include_once as $INC_FILE) {

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\WizardCreatePages\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @package TYPO3
  * @subpackage tx_wizardcrpages
  */
-class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
+class CreatePagesWizardModuleFunctionController extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 
 	/**
 	 * Holds reference of lorem ipsum class
@@ -89,21 +91,21 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 	public function main() {
 		global $SOBE, $LANG;
 		$theCode = '';
-		$this->tsConfig = t3lib_BEfunc::getPagesTSconfig($this->pObj->id);
+		$this->tsConfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($this->pObj->id);
 		$this->pagesTsConfig = isset($this->tsConfig['TCEFORM.']['pages.']) ? $this->tsConfig['TCEFORM.']['pages.'] : array();
 		// Create loremIpsum code:
-		if (t3lib_extMgm::isLoaded('lorem_ipsum')) {
-			$this->loremIpsumObject = t3lib_div::getUserObj('EXT:lorem_ipsum/class.tx_loremipsum_wiz.php:tx_loremipsum_wiz');
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('lorem_ipsum')) {
+			$this->loremIpsumObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj('EXT:lorem_ipsum/class.tx_loremipsum_wiz.php:tx_loremipsum_wiz');
 		}
 		// Create new pages here?
 		$m_perms_clause = $GLOBALS['BE_USER']->getPagePermsClause(8);
-		$pRec = t3lib_BEfunc::getRecord('pages', $this->pObj->id, 'uid', ' AND ' . $m_perms_clause);
-		$sys_pages = t3lib_div::makeInstance('t3lib_pageSelect');
+		$pRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $this->pObj->id, 'uid', ' AND ' . $m_perms_clause);
+		$sys_pages = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 		$menuItems = $sys_pages->getMenu($this->pObj->id, '*', 'sorting', '', 0);
 		if (is_array($pRec)) {
-			$data = t3lib_div::_GP('data');
+			$data = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('data');
 			if (is_array($data['pages'])) {
-				if (t3lib_div::_GP('createInListEnd')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('createInListEnd')) {
 					$endI = end($menuItems);
 					$thePid = -intval($endI['uid']);
 					if (!$thePid) {
@@ -118,7 +120,7 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 					if (!trim($dat['title'])) {
 						unset($data['pages'][$identifier]);
 					} else {
-						$data['pages'][$identifier]['hidden'] = t3lib_div::_GP('hidePages') ? 1 : 0;
+						$data['pages'][$identifier]['hidden'] = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('hidePages') ? 1 : 0;
 						if ($firstRecord) {
 							$firstRecord = FALSE;
 							$data['pages'][$identifier]['pid'] = $thePid;
@@ -130,7 +132,7 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 				}
 				if (count($data['pages'])) {
 					reset($data);
-					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+					$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 					$tce->stripslashes_values = 0;
 					// set default TCA values specific for the user
 					$TCAdefaultOverride = $GLOBALS['BE_USER']->getTSConfigProp('TCAdefaults');
@@ -139,19 +141,19 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 					}
 					$tce->start($data, array());
 					$tce->process_datamap();
-					t3lib_BEfunc::setUpdateSignal('updatePageTree');
-					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', '', $GLOBALS['LANG']->getLL('wiz_newPages_create'));
+					\TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updatePageTree');
+					$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', '', $GLOBALS['LANG']->getLL('wiz_newPages_create'));
 				} else {
-					$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', '', $GLOBALS['LANG']->getLL('wiz_newPages_noCreate'), t3lib_FlashMessage::ERROR);
+					$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', '', $GLOBALS['LANG']->getLL('wiz_newPages_noCreate'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 				}
 				$theCode .= $flashMessage->render();
 				// Display result:
 				$menuItems = $sys_pages->getMenu($this->pObj->id, '*', 'sorting', '', 0);
 				$lines = array();
 				foreach ($menuItems as $rec) {
-					t3lib_BEfunc::workspaceOL('pages', $rec);
+					\TYPO3\CMS\Backend\Utility\BackendUtility::workspaceOL('pages', $rec);
 					if (is_array($rec)) {
-						$lines[] = (('<nobr>' . t3lib_iconWorks::getSpriteIconForRecord('pages', $rec, array('title' => t3lib_BEfunc::titleAttribForPages($rec, '', FALSE)))) . htmlspecialchars(t3lib_div::fixed_lgd_cs($rec['title'], $GLOBALS['BE_USER']->uc['titleLen']))) . '</nobr>';
+						$lines[] = (('<nobr>' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord('pages', $rec, array('title' => \TYPO3\CMS\Backend\Utility\BackendUtility::titleAttribForPages($rec, '', FALSE)))) . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($rec['title'], $GLOBALS['BE_USER']->uc['titleLen']))) . '</nobr>';
 					}
 				}
 				$theCode .= (('<h4>' . $LANG->getLL('wiz_newPages_currentMenu')) . '</h4>') . implode('<br />', $lines);
@@ -184,7 +186,7 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 				$pageRenderer = $GLOBALS['TBE_TEMPLATE']->getPageRenderer();
 				$pageRenderer->loadExtJS();
 				$pageRenderer->addExtOnReadyCode($extCode);
-				$pageRenderer->addCssInlineBlock('tx_wizardcrpages_webfunc_2', '
+				$pageRenderer->addCssInlineBlock('TYPO3\\CMS\\WizardCreatePages\\Controller\\CreatePagesWizardModuleFunctionController', '
 				#formFieldContainer {float: left; margin: 0 0 10px 0;}
 				.clearLeft {clear: left;}
 				#formFieldContainer label {width: 70px; display: inline-block;}
@@ -196,7 +198,7 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 			$theCode .= $GLOBALS['TBE_TEMPLATE']->rfw($LANG->getLL('wiz_newPages_errorMsg1'));
 		}
 		// CSH
-		$theCode .= t3lib_BEfunc::cshItem('_MOD_web_func', 'tx_wizardcrpages', $GLOBALS['BACK_PATH'], '<br />|');
+		$theCode .= \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('_MOD_web_func', 'tx_wizardcrpages', $GLOBALS['BACK_PATH'], '<br />|');
 		$out = $this->pObj->doc->header($LANG->getLL('wiz_crMany'));
 		$out .= $this->pObj->doc->section('', $theCode, 0, 1);
 		return $out;
@@ -245,9 +247,9 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 		$types = array_keys($types);
 		$types[] = 1;
 		if (!$GLOBALS['BE_USER']->isAdmin() && isset($GLOBALS['BE_USER']->groupData['pagetypes_select'])) {
-			$types = t3lib_div::trimExplode(',', $GLOBALS['BE_USER']->groupData['pagetypes_select'], TRUE);
+			$types = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['BE_USER']->groupData['pagetypes_select'], TRUE);
 		}
-		$removeItems = isset($this->pagesTsConfig['doktype.']['removeItems']) ? t3lib_div::trimExplode(',', $this->pagesTsConfig['doktype.']['removeItems'], TRUE) : array();
+		$removeItems = isset($this->pagesTsConfig['doktype.']['removeItems']) ? \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pagesTsConfig['doktype.']['removeItems'], TRUE) : array();
 		$group = '';
 		if (in_array(1, $types) && !in_array(1, $removeItems)) {
 			$group .= ('<option style="background: url(&quot;' . $backPath) . 'sysext/t3skin/icons/gfx/i/pages.gif&quot;) no-repeat scroll 0% 50% rgb(255, 255, 255); height: 16px; padding-top: 2px; padding-left: 22px;" selected="selected" value="1">Standard</option>';
@@ -283,5 +285,6 @@ class tx_wizardcrpages_webfunc_2 extends t3lib_extobjbase {
 	}
 
 }
+
 
 ?>

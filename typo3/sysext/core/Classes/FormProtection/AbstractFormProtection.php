@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FormProtection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -35,7 +37,7 @@
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
-abstract class t3lib_formprotection_Abstract {
+abstract class AbstractFormProtection {
 
 	/**
 	 * The session token which is used to be hashed during token generation.
@@ -85,9 +87,9 @@ abstract class t3lib_formprotection_Abstract {
 	 */
 	public function generateToken($formName, $action = '', $formInstanceName = '') {
 		if ($formName == '') {
-			throw new InvalidArgumentException('$formName must not be empty.', 1294586643);
+			throw new \InvalidArgumentException('$formName must not be empty.', 1294586643);
 		}
-		$tokenId = t3lib_div::hmac((($formName . $action) . $formInstanceName) . $this->sessionToken);
+		$tokenId = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac((($formName . $action) . $formInstanceName) . $this->sessionToken);
 		return $tokenId;
 	}
 
@@ -102,7 +104,7 @@ abstract class t3lib_formprotection_Abstract {
 	 * @return boolean
 	 */
 	public function validateToken($tokenId, $formName, $action = '', $formInstanceName = '') {
-		$validTokenId = t3lib_div::hmac((((string) $formName . (string) $action) . (string) $formInstanceName) . $this->sessionToken);
+		$validTokenId = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac((((string) $formName . (string) $action) . (string) $formInstanceName) . $this->sessionToken);
 		if ((string) $tokenId === $validTokenId) {
 			$isValid = TRUE;
 		} else {
@@ -120,7 +122,7 @@ abstract class t3lib_formprotection_Abstract {
 	 * @return string
 	 */
 	protected function generateSessionToken() {
-		return bin2hex(t3lib_div::generateRandomBytes(32));
+		return bin2hex(\TYPO3\CMS\Core\Utility\GeneralUtility::generateRandomBytes(32));
 	}
 
 	/**
@@ -151,5 +153,6 @@ abstract class t3lib_formprotection_Abstract {
 	abstract public function persistSessionToken();
 
 }
+
 
 ?>

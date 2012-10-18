@@ -4,9 +4,9 @@
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/View/ThumbnailView.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/View/ThumbnailView.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/View/ThumbnailView.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_t3lib_thumbs');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\ThumbnailView');
 $SOBE->init();
 $SOBE->main();
 ?>

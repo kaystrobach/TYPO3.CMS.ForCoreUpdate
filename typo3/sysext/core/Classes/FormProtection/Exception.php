@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FormProtection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,9 +30,10 @@
  * @subpackage t3lib_formprotection
  * @api
  */
-class t3lib_formprotection_InvalidTokenException extends UnexpectedValueException {
+class Exception extends UnexpectedValueException {
 
 
 }
+
 
 ?>

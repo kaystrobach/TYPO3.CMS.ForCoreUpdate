@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Kai Vogel <kai.vogel(at)speedprogs.de>
  */
-class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
+class AddFlexFormsToAclUpdate extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Add Excludable FlexForm Fields to Group Access Lists';
 
@@ -105,7 +107,7 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 		}
 		// Get all excludeable FlexForm fields from content-table
 		$flexExcludeFields = array();
-		$flexFormArray = t3lib_BEfunc::getRegisteredFlexForms($contentTable);
+		$flexFormArray = \TYPO3\CMS\Backend\Utility\BackendUtility::getRegisteredFlexForms($contentTable);
 		if (!empty($flexFormArray) && is_array($flexFormArray)) {
 			foreach ($flexFormArray as $tableField => $flexForms) {
 				// Get all sheets
@@ -130,7 +132,7 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 		}
 		// Get FlexForm fields from access lists
 		foreach ($accessLists as $accessList) {
-			$nonExcludeFields = t3lib_div::trimExplode(',', $accessList['non_exclude_fields']);
+			$nonExcludeFields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $accessList['non_exclude_fields']);
 			if (empty($nonExcludeFields)) {
 				continue;
 			}
@@ -176,5 +178,6 @@ class tx_coreupdates_addflexformstoacl extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

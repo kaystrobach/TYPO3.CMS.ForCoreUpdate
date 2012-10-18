@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu\Pagetree\Extdirect;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_contextmenu_pagetree_extdirect_ContextMenu extends t3lib_contextmenu_extdirect_ContextMenu {
+class ContextMenuConfiguration extends \TYPO3\CMS\Backend\ContextMenu\Extdirect\AbstractExtdirectContextMenu {
 
 	/**
 	 * Sets the data provider
@@ -39,8 +41,8 @@ class t3lib_contextmenu_pagetree_extdirect_ContextMenu extends t3lib_contextmenu
 	 * @return void
 	 */
 	protected function initDataProvider() {
-		/** @var $dataProvider t3lib_contextmenu_pagetree_DataProvider */
-		$dataProvider = t3lib_div::makeInstance('t3lib_contextmenu_pagetree_DataProvider');
+		/** @var $dataProvider \TYPO3\CMS\Backend\ContextMenu\Pagetree\ContextMenuDataProvider */
+		$dataProvider = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\ContextMenu\\Pagetree\\ContextMenuDataProvider');
 		$this->setDataProvider($dataProvider);
 	}
 
@@ -51,18 +53,19 @@ class t3lib_contextmenu_pagetree_extdirect_ContextMenu extends t3lib_contextmenu
 	 * @return array
 	 */
 	public function getActionsForNodeArray($nodeData) {
-		/** @var $node t3lib_tree_pagetree_Node */
-		$node = t3lib_div::makeInstance('t3lib_tree_pagetree_Node', (array) $nodeData);
-		$node->setRecord(t3lib_tree_pagetree_Commands::getNodeRecord($node->getId()));
+		/** @var $node \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode */
+		$node = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\Pagetree\\PagetreeNode', (array) $nodeData);
+		$node->setRecord(\TYPO3\CMS\Backend\Tree\Pagetree\Commands::getNodeRecord($node->getId()));
 		$this->initDataProvider();
 		$this->dataProvider->setContextMenuType('table.' . $node->getType());
 		$actionCollection = $this->dataProvider->getActionsForNode($node);
-		if ($actionCollection instanceof t3lib_contextmenu_ActionCollection) {
+		if ($actionCollection instanceof \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection) {
 			$actions = $actionCollection->toArray();
 		}
 		return $actions;
 	}
 
 }
+
 
 ?>

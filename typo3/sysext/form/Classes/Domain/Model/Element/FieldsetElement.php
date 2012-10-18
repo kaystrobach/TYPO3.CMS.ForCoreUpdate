@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Element_Fieldset extends tx_form_Domain_Model_Element_Container {
+class FieldsetElement extends \TYPO3\CMS\Form\Domain\Model\Element\ContainerElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -44,5 +46,6 @@ class tx_form_Domain_Model_Element_Fieldset extends tx_form_Domain_Model_Element
 	);
 
 }
+
 
 ?>

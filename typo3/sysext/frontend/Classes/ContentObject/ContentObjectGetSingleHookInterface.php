@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface tslib_content_cObjGetSingleHook
+interface ContentObjectGetSingleHookInterface
 {
 	/**
 	 * Renders content objects, that are not defined in the core
@@ -39,10 +41,11 @@ interface tslib_content_cObjGetSingleHook
 	 * @param string $contentObjectName The content object name, eg. "TEXT" or "USER" or "IMAGE
 	 * @param array $configuration Array with TypoScript properties for the content object
 	 * @param string $TypoScriptKey Label used for the internal debug tracking
-	 * @param tslib_cObj $parentObject Parent content object
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject Parent content object
 	 * @return string cObject output
 	 */
-	public function getSingleContentObject($contentObjectName, array $configuration, $TypoScriptKey, tslib_cObj &$parentObject);
+	public function getSingleContentObject($contentObjectName, array $configuration, $TypoScriptKey, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer &$parentObject);
 
 }
+
 ?>

@@ -39,10 +39,10 @@ require_once 'init.php';
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/PageTreeNavigationController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/PageTreeNavigationController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/PageTreeNavigationController.php';
 // Make instance if it is not an AJAX call
 if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_AJAX)) {
-	$SOBE = t3lib_div::makeInstance('SC_alt_db_navframe');
+	$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\PageTreeNavigationController');
 	$SOBE->init();
 	$SOBE->initPage();
 	$SOBE->main();

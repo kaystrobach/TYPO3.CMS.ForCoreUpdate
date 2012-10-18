@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Report\Status;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage reports
  */
-class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvider {
+class SystemStatus implements \TYPO3\CMS\Reports\StatusProviderInterface {
 
 	/**
 	 * PHP modules which are required. Can be changed by hook in getMissingPhpModules()
@@ -72,38 +74,38 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	/**
 	 * Checks the current PHP version against a minimum required version.
 	 *
-	 * @return tx_reports_reports_status_Status A status of whether a minimum PHP version requirement is met
+	 * @return \TYPO3\CMS\Reports\Status A status of whether a minimum PHP version requirement is met
 	 */
 	protected function getPhpStatus() {
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		if (version_compare(phpversion(), TYPO3_REQUIREMENTS_MINIMUM_PHP) < 0) {
 			$message = $GLOBALS['LANG']->getLL('status_phpTooOld');
-			$severity = tx_reports_reports_status_Status::ERROR;
+			$severity = \TYPO3\CMS\Reports\Status::ERROR;
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpVersion'), phpversion(), $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_phpVersion'), phpversion(), $message, $severity);
 	}
 
 	/**
 	 * Checks the current memory limit against a minimum required version.
 	 *
-	 * @return tx_reports_reports_status_Status A status of whether a minimum memory limit requirement is met
+	 * @return \TYPO3\CMS\Reports\Status A status of whether a minimum memory limit requirement is met
 	 */
 	protected function getPhpMemoryLimitStatus() {
 		$memoryLimit = ini_get('memory_limit');
-		$memoryLimitBytes = t3lib_div::getBytesFromSizeMeasurement($memoryLimit);
+		$memoryLimitBytes = \TYPO3\CMS\Core\Utility\GeneralUtility::getBytesFromSizeMeasurement($memoryLimit);
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		if ($memoryLimitBytes > 0) {
-			if ($memoryLimitBytes < t3lib_div::getBytesFromSizeMeasurement(TYPO3_REQUIREMENTS_RECOMMENDED_PHP_MEMORY_LIMIT)) {
+			if ($memoryLimitBytes < \TYPO3\CMS\Core\Utility\GeneralUtility::getBytesFromSizeMeasurement(TYPO3_REQUIREMENTS_RECOMMENDED_PHP_MEMORY_LIMIT)) {
 				$message = sprintf($GLOBALS['LANG']->getLL('status_phpMemoryRecommendation'), $memoryLimit, TYPO3_REQUIREMENTS_RECOMMENDED_PHP_MEMORY_LIMIT);
-				$severity = tx_reports_reports_status_Status::WARNING;
+				$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			}
-			if ($memoryLimitBytes < t3lib_div::getBytesFromSizeMeasurement(TYPO3_REQUIREMENTS_MINIMUM_PHP_MEMORY_LIMIT)) {
+			if ($memoryLimitBytes < \TYPO3\CMS\Core\Utility\GeneralUtility::getBytesFromSizeMeasurement(TYPO3_REQUIREMENTS_MINIMUM_PHP_MEMORY_LIMIT)) {
 				$message = sprintf($GLOBALS['LANG']->getLL('status_phpMemoryRequirement'), $memoryLimit, TYPO3_REQUIREMENTS_MINIMUM_PHP_MEMORY_LIMIT);
-				$severity = tx_reports_reports_status_Status::ERROR;
+				$severity = \TYPO3\CMS\Reports\Status::ERROR;
 			}
-			if ($severity > tx_reports_reports_status_Status::OK) {
+			if ($severity > \TYPO3\CMS\Reports\Status::OK) {
 				if ($php_ini_path = get_cfg_var('cfg_file_path')) {
 					$message .= ' ' . sprintf($GLOBALS['LANG']->getLL('status_phpMemoryEditLimit'), $php_ini_path);
 				} else {
@@ -111,7 +113,7 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 				}
 			}
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpMemory'), $memoryLimitBytes > 0 ? $memoryLimit : $GLOBALS['LANG']->getLL('status_phpMemoryUnlimited'), $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_phpMemory'), $memoryLimitBytes > 0 ? $memoryLimit : $GLOBALS['LANG']->getLL('status_phpMemoryUnlimited'), $message, $severity);
 	}
 
 	/**
@@ -120,11 +122,11 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 * @return void
 	 */
 	protected function executeAdminCommand() {
-		$command = t3lib_div::_GET('adminCmd');
+		$command = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('adminCmd');
 		switch ($command) {
 		case 'clear_peak_memory_usage_flag':
-			/** @var $registry t3lib_Registry */
-			$registry = t3lib_div::makeInstance('t3lib_Registry');
+			/** @var $registry \TYPO3\CMS\Core\Registry */
+			$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 			$registry->remove('core', 'reports-peakMemoryUsage');
 			break;
 		}
@@ -136,47 +138,47 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 	 * @return tx_reports_reports_status_Status	A status of whether the memory limit was approached by one of the requests
 	 */
 	protected function getPhpPeakMemoryStatus() {
-		/** @var $registry t3lib_Registry */
-		$registry = t3lib_div::makeInstance('t3lib_Registry');
+		/** @var $registry \TYPO3\CMS\Core\Registry */
+		$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$peakMemoryUsage = $registry->get('core', 'reports-peakMemoryUsage');
-		$memoryLimit = t3lib_div::getBytesFromSizeMeasurement(ini_get('memory_limit'));
+		$memoryLimit = \TYPO3\CMS\Core\Utility\GeneralUtility::getBytesFromSizeMeasurement(ini_get('memory_limit'));
 		$value = $GLOBALS['LANG']->getLL('status_ok');
 		$message = '';
-		$severity = tx_reports_reports_status_Status::OK;
+		$severity = \TYPO3\CMS\Reports\Status::OK;
 		$bytesUsed = $peakMemoryUsage['used'];
 		$percentageUsed = $memoryLimit ? number_format(($bytesUsed / $memoryLimit) * 100, 1) . '%' : '?';
 		$dateOfPeak = date($GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'], $peakMemoryUsage['tstamp']);
 		$urlOfPeak = ((('<a href="' . htmlspecialchars($peakMemoryUsage['url'])) . '">') . htmlspecialchars($peakMemoryUsage['url'])) . '</a>';
-		$clearFlagUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL') . '&amp;adminCmd=clear_peak_memory_usage_flag';
+		$clearFlagUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL') . '&amp;adminCmd=clear_peak_memory_usage_flag';
 		if ($peakMemoryUsage['used']) {
-			$message = sprintf($GLOBALS['LANG']->getLL('status_phpPeakMemoryTooHigh'), t3lib_div::formatSize($peakMemoryUsage['used']), $percentageUsed, t3lib_div::formatSize($memoryLimit), $dateOfPeak, $urlOfPeak);
+			$message = sprintf($GLOBALS['LANG']->getLL('status_phpPeakMemoryTooHigh'), \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($peakMemoryUsage['used']), $percentageUsed, \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($memoryLimit), $dateOfPeak, $urlOfPeak);
 			$message .= (((' <a href="' . $clearFlagUrl) . '">') . $GLOBALS['LANG']->getLL('status_phpPeakMemoryClearFlag')) . '</a>.';
-			$severity = tx_reports_reports_status_Status::WARNING;
+			$severity = \TYPO3\CMS\Reports\Status::WARNING;
 			$value = $percentageUsed;
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpPeakMemory'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_phpPeakMemory'), $value, $message, $severity);
 	}
 
 	/**
 	 * Reports the webserver TYPO3 is running on.
 	 *
-	 * @return tx_reports_reports_status_Status The server software as a status
+	 * @return \TYPO3\CMS\Reports\Status The server software as a status
 	 */
 	protected function getWebserverStatus() {
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_webServer'), $_SERVER['SERVER_SOFTWARE']);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_webServer'), $_SERVER['SERVER_SOFTWARE']);
 	}
 
 	/**
 	 * Reports whether any of the required PHP modules are missing
 	 *
-	 * @return tx_reports_reports_status_Status A status of missing PHP modules
+	 * @return \TYPO3\CMS\Reports\Status A status of missing PHP modules
 	 */
 	protected function getMissingPhpModules() {
 		// Hook to adjust the required PHP modules
 		$modules = $this->requiredPhpModules;
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install/mod/class.tx_install.php']['requiredPhpModules'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install/mod/class.tx_install.php']['requiredPhpModules'] as $classData) {
-				$hookObject = t3lib_div::getUserObj($classData);
+		if (is_array(${$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install/mod/class.tx_install.php']['requiredPhpModules']})) {
+			foreach (${$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install/mod/class.tx_install.php']['requiredPhpModules']} as $classData) {
+				$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classData);
 				$modules = $hookObject->setRequiredPhpModules($modules, $this);
 			}
 		}
@@ -200,15 +202,16 @@ class tx_reports_reports_status_SystemStatus implements tx_reports_StatusProvide
 			$value = $GLOBALS['LANG']->getLL('status_phpModulesMissing');
 			$message = sprintf($GLOBALS['LANG']->getLL('status_phpModulesList'), implode(', ', $missingPhpModules));
 			$message .= ' ' . $GLOBALS['LANG']->getLL('status_phpModulesInfo');
-			$severity = tx_reports_reports_status_Status::ERROR;
+			$severity = \TYPO3\CMS\Reports\Status::ERROR;
 		} else {
 			$value = $GLOBALS['LANG']->getLL('status_phpModulesPresent');
 			$message = '';
-			$severity = tx_reports_reports_status_Status::OK;
+			$severity = \TYPO3\CMS\Reports\Status::OK;
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $GLOBALS['LANG']->getLL('status_phpModules'), $value, $message, $severity);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $GLOBALS['LANG']->getLL('status_phpModules'), $value, $message, $severity);
 	}
 
 }
+
 
 ?>

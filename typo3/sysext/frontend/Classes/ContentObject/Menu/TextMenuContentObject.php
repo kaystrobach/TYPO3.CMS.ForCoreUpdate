@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject\Menu;
+
 /**
  * Extension class creating text based menus
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_tmenu extends tslib_menu {
+class TextMenuContentObject extends \TYPO3\CMS\Frontend\ContentObject\Menu\AbstractMenuContentObject {
 
 	/**
 	 * Calls procesItemStates() so that the common configuration for the menu items are resolved into individual configuration per item.
@@ -39,7 +41,7 @@ class tslib_tmenu extends tslib_menu {
 	public function writeMenu() {
 		if (is_array($this->result) && count($this->result)) {
 			// Create new tslib_cObj for our use
-			$this->WMcObj = t3lib_div::makeInstance('tslib_cObj');
+			$this->WMcObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 			$this->WMresult = '';
 			$this->INPfixMD5 = substr(md5(microtime() . 'tmenu'), 0, 4);
 			$this->WMmenuItems = count($this->result);
@@ -97,7 +99,7 @@ class tslib_tmenu extends tslib_menu {
 					// Change background color:
 					if ($this->I['val']['RO_chBgColor']) {
 						$this->addJScolorShiftFunction();
-						$chBgP = t3lib_div::trimExplode('|', $this->I['val']['RO_chBgColor']);
+						$chBgP = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $this->I['val']['RO_chBgColor']);
 						$this->I['linkHREF']['onMouseover'] .= (((('changeBGcolor(\'' . $chBgP[2]) . $this->I['uid']) . '\', \'') . $chBgP[0]) . '\');';
 						$this->I['linkHREF']['onMouseout'] .= (((('changeBGcolor(\'' . $chBgP[2]) . $this->I['uid']) . '\', \'') . $chBgP[1]) . '\');';
 					}
@@ -186,10 +188,10 @@ class tslib_tmenu extends tslib_menu {
 	public function getBeforeAfter($pref) {
 		$res = '';
 		if ($imgInfo = $this->WMcObj->getImgResource($this->I['val'][$pref . 'Img'], $this->I['val'][$pref . 'Img.'])) {
-			$imgInfo[3] = t3lib_div::png_to_gif_by_imagemagick($imgInfo[3]);
+			$imgInfo[3] = \TYPO3\CMS\Core\Utility\GeneralUtility::png_to_gif_by_imagemagick($imgInfo[3]);
 			if (($this->I['val']['RO'] && $this->I['val'][$pref . 'ROImg']) && !$this->I['spacer']) {
 				$imgROInfo = $this->WMcObj->getImgResource($this->I['val'][$pref . 'ROImg'], $this->I['val'][$pref . 'ROImg.']);
-				$imgROInfo[3] = t3lib_div::png_to_gif_by_imagemagick($imgROInfo[3]);
+				$imgROInfo[3] = \TYPO3\CMS\Core\Utility\GeneralUtility::png_to_gif_by_imagemagick($imgROInfo[3]);
 				if ($imgROInfo) {
 					$theName = (($this->imgNamePrefix . $this->I['uid']) . $this->I['INPfix']) . $pref;
 					$name = (((' ' . $this->nameAttribute) . '="') . $theName) . '"';
@@ -198,7 +200,7 @@ class tslib_tmenu extends tslib_menu {
 				}
 			}
 			$GLOBALS['TSFE']->imagesOnPage[] = $imgInfo[3];
-			$res = (((((((((((('<img' . ' src="') . $GLOBALS['TSFE']->absRefPrefix) . $imgInfo[3]) . '"') . ' width="') . $imgInfo[0]) . '"') . ' height="') . $imgInfo[1]) . '"') . $name) . ($this->I['val'][$pref . 'ImgTagParams'] ? ' ' . $this->I['val'][($pref . 'ImgTagParams')] : '')) . tslib_cObj::getBorderAttr(' border="0"');
+			$res = (((((((((((('<img' . ' src="') . $GLOBALS['TSFE']->absRefPrefix) . $imgInfo[3]) . '"') . ' width="') . $imgInfo[0]) . '"') . ' height="') . $imgInfo[1]) . '"') . $name) . ($this->I['val'][$pref . 'ImgTagParams'] ? ' ' . $this->I['val'][($pref . 'ImgTagParams')] : '')) . \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getBorderAttr(' border="0"');
 			if (!strstr($res, 'alt="')) {
 				// Adding alt attribute if not set.
 				$res .= ' alt=""';
@@ -327,5 +329,6 @@ class tslib_tmenu extends tslib_menu {
 	}
 
 }
+
 
 ?>

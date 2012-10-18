@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -44,7 +46,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_loadModules {
+class ModuleLoader {
 
 	// After the init() function this array will contain the structure of available modules for the backend user.
 	/**
@@ -73,7 +75,7 @@ class t3lib_loadModules {
 	/**
 	 * The backend user for use internally
 	 *
-	 * @var t3lib_beUserAuth
+	 * @var \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
 	 * @todo Define visibility
 	 */
 	public $BE_USER;
@@ -235,7 +237,7 @@ class t3lib_loadModules {
 	 * @todo Define visibility
 	 */
 	public function checkMod($name, $fullpath) {
-		if ($name == 'user_ws' && !t3lib_extMgm::isLoaded('version')) {
+		if ($name == 'user_ws' && !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('version')) {
 			return FALSE;
 		}
 		// Check for own way of configuring module
@@ -271,7 +273,7 @@ class t3lib_loadModules {
 						// Initializing search for alternative icon:
 						// Alternative icon key (might have an alternative set in $TBE_STYLES['skinImg']
 						$altIconKey = (('MOD:' . $name) . '/') . $MLANG['default']['tabs_images']['tab'];
-						$altIconAbsPath = is_array($GLOBALS['TBE_STYLES']['skinImg'][$altIconKey]) ? t3lib_div::resolveBackPath(PATH_typo3 . $GLOBALS['TBE_STYLES']['skinImg'][$altIconKey][0]) : '';
+						$altIconAbsPath = is_array($GLOBALS['TBE_STYLES']['skinImg'][$altIconKey]) ? \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath(PATH_typo3 . $GLOBALS['TBE_STYLES']['skinImg'][$altIconKey][0]) : '';
 						// Setting icon, either default or alternative:
 						if ($altIconAbsPath && @is_file($altIconAbsPath)) {
 							$MLANG['default']['tabs_images']['tab'] = $this->getRelativePath(PATH_typo3, $altIconAbsPath);
@@ -390,7 +392,7 @@ class t3lib_loadModules {
 			$status = TRUE;
 			if ($MCONF['workspaces']) {
 				$status = FALSE;
-				if (($this->BE_USER->workspace === 0 && t3lib_div::inList($MCONF['workspaces'], 'online') || $this->BE_USER->workspace === -1 && t3lib_div::inList($MCONF['workspaces'], 'offline')) || $this->BE_USER->workspace > 0 && t3lib_div::inList($MCONF['workspaces'], 'custom')) {
+				if (($this->BE_USER->workspace === 0 && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($MCONF['workspaces'], 'online') || $this->BE_USER->workspace === -1 && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($MCONF['workspaces'], 'offline')) || $this->BE_USER->workspace > 0 && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($MCONF['workspaces'], 'custom')) {
 					$status = TRUE;
 				}
 			} elseif ($this->BE_USER->workspace === -99) {
@@ -418,7 +420,7 @@ class t3lib_loadModules {
 				$mod = $this->cleanName($mod);
 				if ($mod) {
 					if ($subs) {
-						$subsArr = t3lib_div::trimExplode(',', $subs);
+						$subsArr = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $subs);
 						foreach ($subsArr as $subMod) {
 							$subMod = $this->cleanName($subMod);
 							if ($subMod) {
@@ -476,9 +478,10 @@ class t3lib_loadModules {
 		for ($i = 0; $i < $slashes; $i++) {
 			$destDir = '../' . $destDir;
 		}
-		return t3lib_div::resolveBackPath($destDir);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($destDir);
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_missing_files extends tx_lowlevel_cleaner_core {
+class MissingFilesCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * @todo Define visibility
@@ -135,10 +137,10 @@ This will show you missing files in the TYPO3 system and only report back if err
 				if ($bypass = $this->cli_noExecutionCheck($recReference)) {
 					echo $bypass;
 				} else {
-					$sysRefObj = t3lib_div::makeInstance('t3lib_refindex');
+					$sysRefObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 					$error = $sysRefObj->setReferenceValue($hash, NULL);
 					if ($error) {
-						echo ('		t3lib_refindex::setReferenceValue(): ' . $error) . LF;
+						echo ('		TYPO3\\CMS\\Core\\Database\\ReferenceIndex::setReferenceValue(): ' . $error) . LF;
 						echo 'missing_files: exit on error' . LF;
 						die;
 					} else {
@@ -151,5 +153,6 @@ This will show you missing files in the TYPO3 system and only report back if err
 	}
 
 }
+
 
 ?>

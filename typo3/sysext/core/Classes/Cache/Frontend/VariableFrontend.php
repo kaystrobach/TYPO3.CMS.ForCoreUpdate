@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Frontend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @author Karsten Dambekalns <karsten@typo3.org>
  * @api
  */
-class t3lib_cache_frontend_VariableFrontend extends t3lib_cache_frontend_AbstractFrontend {
+class VariableFrontend extends \TYPO3\CMS\Core\Cache\Frontend\AbstractFrontend {
 
 	/**
 	 * If the extension "igbinary" is installed, use it for increased performance.
@@ -72,15 +74,15 @@ class t3lib_cache_frontend_VariableFrontend extends t3lib_cache_frontend_Abstrac
 				throw new \InvalidArgumentException(('"' . $tag) . '" is not a valid tag for a cache entry.', 1233058269);
 			}
 		}
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_cache_frontend_variablefrontend.php']['set'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_cache_frontend_variablefrontend.php']['set'] as $_funcRef) {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_Cache\Frontend\VariableFrontend.php']['set'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_Cache\Frontend\VariableFrontend.php']['set'] as $_funcRef) {
 				$params = array(
 					'entryIdentifier' => &$entryIdentifier,
 					'variable' => &$variable,
 					'tags' => &$tags,
 					'lifetime' => &$lifetime
 				);
-				t3lib_div::callUserFunction($_funcRef, $params, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $params, $this);
 			}
 		}
 		if ($this->useIgBinary === TRUE) {
@@ -134,5 +136,6 @@ class t3lib_cache_frontend_VariableFrontend extends t3lib_cache_frontend_Abstrac
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recycler\Controller;
+
 // This checks permissions and exits if the users has no permission for entry.
 /**
  * Module 'Recycler' for the 'recycler' extension.
@@ -7,10 +9,10 @@
  * @package 	TYPO3
  * @subpackage 	tx_recycler
  */
-class tx_recycler_module1 extends t3lib_SCbase {
+class RecyclerModuleController extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 	/**
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 */
 	public $doc;
 
@@ -36,13 +38,13 @@ class tx_recycler_module1 extends t3lib_SCbase {
 	 */
 	public function initialize() {
 		parent::init();
-		$this->doc = t3lib_div::makeInstance('template');
-		$this->doc->setModuleTemplate(t3lib_extMgm::extPath('recycler') . 'mod1/mod_template.html');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
+		$this->doc->setModuleTemplate(\TYPO3\CMS\Core\Extension\ExtensionManager::extPath('recycler') . 'mod1/mod_template.html');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setExtDirectStateProvider();
 		$this->pageRenderer = $this->doc->getPageRenderer();
-		$this->relativePath = t3lib_extMgm::extRelPath('recycler');
-		$this->pageRecord = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
+		$this->relativePath = \TYPO3\CMS\Core\Extension\ExtensionManager::extRelPath('recycler');
+		$this->pageRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $this->perms_clause);
 		$this->isAccessibleForCurrentUser = $this->id && is_array($this->pageRecord) || !$this->id && $this->isCurrentUserAdmin();
 		//don't access in workspace
 		if ($GLOBALS['BE_USER']->workspace !== 0) {
@@ -137,7 +139,7 @@ class tx_recycler_module1 extends t3lib_SCbase {
 			'startUid' => $this->id,
 			'tableDefault' => 'pages',
 			'renderTo' => 'recyclerContent',
-			'isSSL' => t3lib_div::getIndpEnv('TYPO3_SSL'),
+			'isSSL' => \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL'),
 			'ajaxController' => $this->doc->backPath . 'ajax.php?ajaxID=tx_recycler::controller',
 			'deleteDisable' => $this->allowDelete ? 0 : 1,
 			'depthSelection' => $this->getDataFromSession('depthSelection', 0),
@@ -200,7 +202,7 @@ class tx_recycler_module1 extends t3lib_SCbase {
 	 */
 	protected function getDocHeaderButtons() {
 		$buttons = array(
-			'csh' => t3lib_BEfunc::cshItem('_MOD_web_func', '', $GLOBALS['BACK_PATH']),
+			'csh' => \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('_MOD_web_func', '', $GLOBALS['BACK_PATH']),
 			'shortcut' => $this->getShortcutButton(),
 			'save' => ''
 		);
@@ -243,7 +245,7 @@ class tx_recycler_module1 extends t3lib_SCbase {
 	 * @return 	string		The HTML representation of the function menu selector
 	 */
 	protected function getFunctionMenu() {
-		return t3lib_BEfunc::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
 	}
 
 	/**
@@ -264,5 +266,6 @@ class tx_recycler_module1 extends t3lib_SCbase {
 	}
 
 }
+
 
 ?>

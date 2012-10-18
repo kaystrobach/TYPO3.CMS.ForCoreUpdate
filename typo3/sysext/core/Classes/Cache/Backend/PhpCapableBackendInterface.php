@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @api
  * @author Robert Lemke <robert@typo3.org>
  */
-interface t3lib_cache_backend_PhpCapableBackend extends t3lib_cache_backend_Backend
+interface PhpCapableBackendInterface extends \TYPO3\CMS\Core\Cache\Backend\BackendInterface
 {
 	/**
 	 * Loads PHP code from the cache and require_onces it right away.
@@ -43,4 +45,5 @@ interface t3lib_cache_backend_PhpCapableBackend extends t3lib_cache_backend_Back
 	public function requireOnce($entryIdentifier);
 
 }
+
 ?>

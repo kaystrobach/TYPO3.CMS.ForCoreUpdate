@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recycler\Controller;
+
 /**
  * Controller class for the 'recycler' extension. Handles the AJAX Requests
  *
@@ -7,7 +9,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_recycler
  */
-class tx_recycler_controller_ajax {
+class RecyclerAjaxController {
 
 	/**
 	 * Stores the content for the ajax output
@@ -48,8 +50,8 @@ class tx_recycler_controller_ajax {
 	 * @return void
 	 */
 	public function mapCommand() {
-		$this->command = t3lib_div::_GP('cmd');
-		$this->data = t3lib_div::_GP('data');
+		$this->command = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cmd');
+		$this->data = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('data');
 		// check params
 		if (!is_string($this->command)) {
 			// @TODO make devlog output
@@ -68,42 +70,42 @@ class tx_recycler_controller_ajax {
 		$str = '';
 		switch ($this->command) {
 		case 'getDeletedRecords':
-			$table = t3lib_div::_GP('table') ? t3lib_div::_GP('table') : t3lib_div::_GP('tableDefault');
-			$limit = t3lib_div::_GP('limit') ? (int) t3lib_div::_GP('limit') : (int) t3lib_div::_GP('pagingSizeDefault');
-			$start = t3lib_div::_GP('start') ? (int) t3lib_div::_GP('start') : 0;
-			$filter = t3lib_div::_GP('filterTxt') ? t3lib_div::_GP('filterTxt') : '';
-			$startUid = t3lib_div::_GP('startUid') ? t3lib_div::_GP('startUid') : '';
-			$depth = t3lib_div::_GP('depth') ? t3lib_div::_GP('depth') : '';
+			$table = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('table') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('table') : \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('tableDefault');
+			$limit = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('limit') ? (int) \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('limit') : (int) \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pagingSizeDefault');
+			$start = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('start') ? (int) \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('start') : 0;
+			$filter = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('filterTxt') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('filterTxt') : '';
+			$startUid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('startUid') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('startUid') : '';
+			$depth = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('depth') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('depth') : '';
 			$this->setDataInSession('tableSelection', $table);
-			$model = t3lib_div::makeInstance('tx_recycler_model_deletedRecords');
+			$model = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Domain\\Model\\DeletedRecords');
 			$model->loadData($startUid, $table, $depth, ($start . ',') . $limit, $filter);
 			$deletedRowsArray = $model->getDeletedRows();
-			$model = t3lib_div::makeInstance('tx_recycler_model_deletedRecords');
+			$model = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Domain\\Model\\DeletedRecords');
 			$totalDeleted = $model->getTotalCount($startUid, $table, $depth, $filter);
 			// load view
-			$view = t3lib_div::makeInstance('tx_recycler_view_deletedRecords');
+			$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Controller\\DeletedRecordsController');
 			$str = $view->transform($deletedRowsArray, $totalDeleted);
 			break;
 		case 'doDelete':
 			$str = FALSE;
-			$model = t3lib_div::makeInstance('tx_recycler_model_deletedRecords');
+			$model = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Domain\\Model\\DeletedRecords');
 			if ($model->deleteData($this->data)) {
 				$str = TRUE;
 			}
 			break;
 		case 'doUndelete':
 			$str = FALSE;
-			$recursive = t3lib_div::_GP('recursive');
-			$model = t3lib_div::makeInstance('tx_recycler_model_deletedRecords');
+			$recursive = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('recursive');
+			$model = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Domain\\Model\\DeletedRecords');
 			if ($model->undeleteData($this->data, $recursive)) {
 				$str = TRUE;
 			}
 			break;
 		case 'getTables':
-			$depth = t3lib_div::_GP('depth') ? t3lib_div::_GP('depth') : 0;
-			$startUid = t3lib_div::_GP('startUid') ? t3lib_div::_GP('startUid') : '';
+			$depth = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('depth') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('depth') : 0;
+			$startUid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('startUid') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('startUid') : '';
 			$this->setDataInSession('depthSelection', $depth);
-			$model = t3lib_div::makeInstance('tx_recycler_model_tables');
+			$model = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recycler\\Domain\\Model\\Tables');
 			$str = $model->getTables('json', 1, $startUid, $depth);
 			break;
 		default:
@@ -135,5 +137,6 @@ class tx_recycler_controller_ajax {
 	}
 
 }
+
 
 ?>

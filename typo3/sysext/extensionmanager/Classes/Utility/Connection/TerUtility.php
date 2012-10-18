@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Connection;
+
 /* **************************************************************
  *  Copyright notice
  *
@@ -35,7 +37,7 @@
  * @package TYPO3
  * @subpackage EM
  */
-class Tx_Extensionmanager_Utility_Connection_Ter {
+class TerUtility {
 
 	/**
 	 * @var string
@@ -49,22 +51,22 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 	 * @param string $version Version to install
 	 * @param string $expectedMd5 Expected MD5 hash of extension file
 	 * @param string $mirrorUrl URL of mirror to use
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return array T3X data
 	 */
 	public function fetchExtension($extensionKey, $version, $expectedMd5, $mirrorUrl) {
-		$extensionPath = t3lib_div::strtolower($extensionKey);
+		$extensionPath = \TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($extensionKey);
 		$mirrorUrl .= (((((($extensionPath[0] . '/') . $extensionPath[1]) . '/') . $extensionPath) . '_') . $version) . '.t3x';
-		$t3x = t3lib_div::getUrl($mirrorUrl, 0, array(TYPO3_user_agent));
+		$t3x = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($mirrorUrl, 0, array(TYPO3_user_agent));
 		$md5 = md5($t3x);
 		if ($t3x === FALSE) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('The T3X file "%s" could not be fetched. Possible reasons: network problems, allow_url_fopen is off,' . ' cURL is not enabled in Install Tool.', $mirrorUrl), 1334426097);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('The T3X file "%s" could not be fetched. Possible reasons: network problems, allow_url_fopen is off,' . ' cURL is not enabled in Install Tool.', $mirrorUrl), 1334426097);
 		}
 		if ($md5 == $expectedMd5) {
 			// Fetch and return:
 			$extensionData = $this->decodeExchangeData($t3x);
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager((('Error: MD5 hash of downloaded file not as expected:<br />' . $md5) . ' != ') . $expectedMd5, 1334426098);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException((('Error: MD5 hash of downloaded file not as expected:<br />' . $md5) . ' != ') . $expectedMd5, 1334426098);
 		}
 		return $extensionData;
 	}
@@ -77,7 +79,7 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 	 * array as key 0 and 1.
 	 *
 	 * @param string $externalData Data stream from remove server
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return array $externalData
 	 * @see fetchServerData(), processRepositoryReturnData()
 	 */
@@ -91,15 +93,15 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 				if (function_exists('gzuncompress')) {
 					$dat = gzuncompress($dat);
 				} else {
-					throw new Tx_Extensionmanager_Exception_ExtensionManager('Decoding Error: No decompressor available for compressed content. gzuncompress() function is not available!', 1342859463);
+					throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Decoding Error: No decompressor available for compressed content. gzuncompress() function is not available!', 1342859463);
 				}
 			}
 			$listArr = unserialize($dat);
 			if (!is_array($listArr)) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: Unserialized information was not an array - strange!', 1342859489);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Error: Unserialized information was not an array - strange!', 1342859489);
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: MD5 hashes in T3X data did not match!', 1342859505);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Error: MD5 hashes in T3X data did not match!', 1342859505);
 		}
 		return $listArr;
 	}
@@ -109,7 +111,7 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 	 * This kind of data is when an extension is uploaded to TER
 	 *
 	 * @param string $stream Data stream
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return array Array with result on success, otherwise an error string.
 	 */
 	public function decodeExchangeData($stream) {
@@ -118,20 +120,21 @@ class Tx_Extensionmanager_Utility_Connection_Ter {
 			if (function_exists('gzuncompress')) {
 				$parts[2] = gzuncompress($parts[2]);
 			} else {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Decoding Error: No decompressor available for compressed content. gzcompress()/gzuncompress() ' . 'functions are not available!', 1344761814);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Decoding Error: No decompressor available for compressed content. gzcompress()/gzuncompress() ' . 'functions are not available!', 1344761814);
 			}
 		}
 		if (md5($parts[2]) == $parts[0]) {
 			$output = unserialize($parts[2]);
 			if (!is_array($output)) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: Content could not be unserialized to an array. Strange (since MD5 hashes match!)', 1344761938);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Error: Content could not be unserialized to an array. Strange (since MD5 hashes match!)', 1344761938);
 			}
 		} else {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Error: MD5 mismatch. Maybe the extension file was downloaded and saved as a text file by the ' . 'browser and thereby corrupted!? (Always select "All" filetype when saving extensions)', 1344761991);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Error: MD5 mismatch. Maybe the extension file was downloaded and saved as a text file by the ' . 'browser and thereby corrupted!? (Always select "All" filetype when saving extensions)', 1344761991);
 		}
 		return $output;
 	}
 
 }
+
 
 ?>

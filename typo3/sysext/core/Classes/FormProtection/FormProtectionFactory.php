@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FormProtection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -48,7 +50,7 @@
  * @author Ernesto Baschny <ernst@cron-it.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
-final class t3lib_formprotection_Factory {
+final class FormProtectionFactory {
 
 	/**
 	 * created instances of form protections using the type as array key
@@ -72,7 +74,7 @@ final class t3lib_formprotection_Factory {
 	 * detects the scope and returns the appropriate form protection object.
 	 *
 	 * @param string $className
-	 * @return t3lib_formprotection_Abstract the requested instance
+	 * @return \TYPO3\CMS\Core\FormProtection\AbstractFormProtection the requested instance
 	 */
 	static public function get($className = NULL) {
 		if ($className === NULL) {
@@ -93,15 +95,15 @@ final class t3lib_formprotection_Factory {
 	static protected function getClassNameByState() {
 		switch (TRUE) {
 		case self::isInstallToolSession():
-			$className = 't3lib_formprotection_InstallToolFormProtection';
+			$className = 'TYPO3\\CMS\\Core\\FormProtection\\InstallToolFormProtection';
 			break;
 		case self::isBackendSession():
-			$className = 't3lib_formprotection_BackendFormProtection';
+			$className = 'TYPO3\\CMS\\Core\\FormProtection\\BackendFormProtection';
 			break;
 		case self::isFrontendSession():
 
 		default:
-			$className = 't3lib_formprotection_DisabledFormProtection';
+			$className = 'TYPO3\\CMS\\Core\\FormProtection\\DisabledFormProtection';
 		}
 		return $className;
 	}
@@ -121,7 +123,7 @@ final class t3lib_formprotection_Factory {
 	 * @return boolean
 	 */
 	static protected function isBackendSession() {
-		return ((isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof t3lib_beUserAuth) && isset($GLOBALS['BE_USER']->user['uid'])) && !(TYPO3_MODE === 'FE');
+		return ((isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof \TYPO3\CMS\Core\Authentication\BackendUserAuthentication) && isset($GLOBALS['BE_USER']->user['uid'])) && !(TYPO3_MODE === 'FE');
 	}
 
 	/**
@@ -130,7 +132,7 @@ final class t3lib_formprotection_Factory {
 	 * @return boolean
 	 */
 	static protected function isFrontendSession() {
-		return ((is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->fe_user instanceof tslib_feUserAuth) && isset($GLOBALS['TSFE']->fe_user->user['uid'])) && TYPO3_MODE === 'FE';
+		return ((is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->fe_user instanceof \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthtenication) && isset($GLOBALS['TSFE']->fe_user->user['uid'])) && TYPO3_MODE === 'FE';
 	}
 
 	/**
@@ -142,11 +144,11 @@ final class t3lib_formprotection_Factory {
 	 */
 	static protected function createAndStoreInstance($className) {
 		if (!class_exists($className, TRUE)) {
-			throw new InvalidArgumentException((('$className must be the name of an existing class, but ' . 'actually was "') . $className) . '".', 1285352962);
+			throw new \InvalidArgumentException((('$className must be the name of an existing class, but ' . 'actually was "') . $className) . '".', 1285352962);
 		}
-		$instance = t3lib_div::makeInstance($className);
-		if (!$instance instanceof t3lib_formprotection_Abstract) {
-			throw new InvalidArgumentException((('$className must be a subclass of ' . 't3lib_formprotection_Abstract, but actually was "') . $className) . '".', 1285353026);
+		$instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
+		if (!$instance instanceof \TYPO3\CMS\Core\FormProtection\AbstractFormProtection) {
+			throw new \InvalidArgumentException((('$className must be a subclass of ' . 'TYPO3\\CMS\\Core\\FormProtection\\AbstractFormProtection, but actually was "') . $className) . '".', 1285353026);
 		}
 		self::$instances[$className] = $instance;
 	}
@@ -159,10 +161,10 @@ final class t3lib_formprotection_Factory {
 	 *
 	 * @access private
 	 * @param string $className
-	 * @param t3lib_formprotection_Abstract $instance
+	 * @param \TYPO3\CMS\Core\FormProtection\AbstractFormProtection $instance
 	 * @return void
 	 */
-	static public function set($className, t3lib_formprotection_Abstract $instance) {
+	static public function set($className, \TYPO3\CMS\Core\FormProtection\AbstractFormProtection $instance) {
 		self::$instances[$className] = $instance;
 	}
 
@@ -181,5 +183,6 @@ final class t3lib_formprotection_Factory {
 	}
 
 }
+
 
 ?>

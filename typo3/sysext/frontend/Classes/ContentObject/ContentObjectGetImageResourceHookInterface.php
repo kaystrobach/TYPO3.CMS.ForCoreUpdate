@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage cms
  */
-interface tslib_cObj_getImgResourceHook
+interface ContentObjectGetImageResourceHookInterface
 {
 	/**
 	 * Hook for post-processing image resources
@@ -39,10 +41,11 @@ interface tslib_cObj_getImgResourceHook
 	 * @param string $file Original image file
 	 * @param array $configuration TypoScript getImgResource properties
 	 * @param array $imageResource Information of the created/converted image resource
-	 * @param tslib_cObj $parent Parent content object
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parent Parent content object
 	 * @return array Modified image resource information
 	 */
-	public function getImgResourcePostProcess($file, array $configuration, array $imageResource, tslib_cObj $parent);
+	public function getImgResourcePostProcess($file, array $configuration, array $imageResource, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parent);
 
 }
+
 ?>

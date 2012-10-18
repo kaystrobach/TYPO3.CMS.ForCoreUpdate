@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Attributes_Selected extends tx_form_Domain_Model_Attributes_Abstract {
+class SelectedAttribute extends \TYPO3\CMS\Form\Domain\Model\Attribute\AbstractAttribute {
 
 	/**
 	 * Gets the attribute 'selected'
@@ -45,5 +47,6 @@ class tx_form_Domain_Model_Attributes_Selected extends tx_form_Domain_Model_Attr
 	}
 
 }
+
 
 ?>

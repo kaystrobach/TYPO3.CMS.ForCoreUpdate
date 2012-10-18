@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,12 +30,12 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_View_Form_Element_Abstract {
+abstract class AbstractElementView {
 
 	/**
 	 * The model for the current object
 	 *
-	 * @var tx_form_Domain_Model_Element_Abstract
+	 * @var \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement
 	 */
 	protected $model;
 
@@ -64,12 +66,12 @@ abstract class tx_form_View_Form_Element_Abstract {
 	/**
 	 * Constructor
 	 *
-	 * @param tx_form_Domain_Model_Element_Abstract $model Current elements model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model Current elements model
 	 * @return void
 	 */
-	public function __construct(tx_form_Domain_Model_Element_Abstract $model) {
+	public function __construct(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model) {
 		if ($this->isValidModel($model) === FALSE) {
-			throw new RuntimeException(('Unexpected model "' . get_class($model)) . '".');
+			throw new \RuntimeException(('Unexpected model "' . get_class($model)) . '".');
 		}
 		$this->model = $model;
 	}
@@ -77,22 +79,22 @@ abstract class tx_form_View_Form_Element_Abstract {
 	/**
 	 * Determines whether the model is expected in this object.
 	 *
-	 * @param tx_form_Domain_Model_Element_Abstract $model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model
 	 * @return boolean
 	 */
-	protected function isValidModel(tx_form_Domain_Model_Element_Abstract $model) {
+	protected function isValidModel(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model) {
 		return is_a($model, $this->getExpectedModelName($model));
 	}
 
 	/**
 	 * Gets the expected model name.
 	 *
-	 * @param tx_form_Domain_Model_Element_Abstract $model
+	 * @param \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model
 	 * @return string
 	 */
-	protected function getExpectedModelName(tx_form_Domain_Model_Element_Abstract $model) {
+	protected function getExpectedModelName(\TYPO3\CMS\Form\Domain\Model\Element\AbstractElement $model) {
 		if (!isset($this->expectedModelName)) {
-			$specificName = tx_form_Common::getInstance()->getLastPartOfClassName($this);
+			$specificName = \TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this);
 			$this->expectedModelName = 'tx_form_Domain_Model_Element_' . $specificName;
 		}
 		return $this->expectedModelName;
@@ -108,7 +110,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @param DOMNode $reference Current XML structure
 	 * @return void
 	 */
-	protected function parseXML(DOMDocument $dom, DOMNode $reference) {
+	protected function parseXML(\DOMDocument $dom, \DOMNode $reference) {
 		$node = $reference->firstChild;
 		while (!is_null($node)) {
 			$deleteNode = FALSE;
@@ -224,7 +226,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	public function render($type = 'element', $returnFirstChild = TRUE) {
 		$useLayout = $this->getLayout((string) $type);
-		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom = new \DOMDocument('1.0', 'utf-8');
 		$dom->formatOutput = TRUE;
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->loadXML($useLayout);
@@ -243,13 +245,13 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @return string HTML string of the layout to use for this element
 	 */
 	public function getLayout($type) {
-		/** @var $layoutHandler tx_form_System_Layout */
-		$layoutHandler = t3lib_div::makeInstance('tx_form_System_Layout');
+		/** @var $layoutHandler \TYPO3\CMS\Form\Layout */
+		$layoutHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Layout');
 		switch ($type) {
 		case 'element':
 			$layoutDefault = $this->layout;
 			$objectClass = get_class($this);
-			$type = tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE);
+			$type = \TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this, TRUE);
 			if (strstr($objectClass, '_Additional_')) {
 				$additionalModel = $this->model->getAdditionalObjectByKey($type);
 				$layoutOverride = $additionalModel->getLayout();
@@ -279,7 +281,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @param DOMNode $value Value to import
 	 * @return void
 	 */
-	public function replaceNodeWithFragment(DOMDocument $dom, DOMNode $node, DOMNode $value) {
+	public function replaceNodeWithFragment(\DOMDocument $dom, \DOMNode $node, \DOMNode $value) {
 		$replaceNode = $dom->createDocumentFragment();
 		$domNode = $dom->importNode($value, TRUE);
 		$replaceNode->appendChild($domNode);
@@ -293,7 +295,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @param DOMElement $domElement DOM element of the specific HTML tag
 	 * @return void
 	 */
-	public function setAttributes(DOMElement $domElement) {
+	public function setAttributes(\DOMElement $domElement) {
 		$attributes = $this->model->getAttributes();
 		foreach ($attributes as $key => $attribute) {
 			if (!empty($attribute)) {
@@ -312,7 +314,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @param string $key Attribute key
 	 * @return void
 	 */
-	public function setAttribute(DOMElement $domElement, $key) {
+	public function setAttribute(\DOMElement $domElement, $key) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $key), ENT_QUOTES);
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
@@ -328,7 +330,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @param string $other Key of the attribute to take the value from
 	 * @return unknown_type
 	 */
-	public function setAttributeWithValueofOtherAttribute(DOMElement $domElement, $key, $other) {
+	public function setAttributeWithValueofOtherAttribute(\DOMElement $domElement, $key, $other) {
 		$value = htmlspecialchars($this->model->getAttributeValue((string) $other), ENT_QUOTES);
 		if (!empty($value)) {
 			$domElement->setAttribute($key, $value);
@@ -343,8 +345,8 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 */
 	protected function createAdditional($class) {
 		$class = strtolower((string) $class);
-		$className = 'tx_form_View_Form_Additional_' . ucfirst($class);
-		return t3lib_div::makeInstance($className, $this->model);
+		$className = 'TYPO3\\CMS\\Form\\View\\Form\\Additional\\AdditionalElementView_' . ucfirst($class);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $this->model);
 	}
 
 	/**
@@ -393,7 +395,7 @@ abstract class tx_form_View_Form_Element_Abstract {
 	 * @return string
 	 */
 	public function getElementWrapType() {
-		$elementType = strtolower(tx_form_Common::getInstance()->getLastPartOfClassName($this));
+		$elementType = strtolower(\TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this));
 		$wrapType = 'csc-form-element csc-form-element-' . $elementType;
 		return $wrapType;
 	}
@@ -423,5 +425,6 @@ abstract class tx_form_View_Form_Element_Abstract {
 	}
 
 }
+
 
 ?>

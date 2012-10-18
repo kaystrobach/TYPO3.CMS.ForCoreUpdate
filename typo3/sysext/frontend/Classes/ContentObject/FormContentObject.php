@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Form extends tslib_content_Abstract {
+class FormContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, FORM
@@ -68,7 +70,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 			// Adding the new dataArray config form:
 			if (is_array($conf['dataArray.'])) {
 				// dataArray is supplied
-				$sortedKeyArray = t3lib_TStemplate::sortedKeyList($conf['dataArray.'], TRUE);
+				$sortedKeyArray = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($conf['dataArray.'], TRUE);
 				foreach ($sortedKeyArray as $theKey) {
 					$singleKeyArray = $conf['dataArray.'][$theKey . '.'];
 					if (is_array($singleKeyArray)) {
@@ -116,7 +118,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 		$propertyOverride = array();
 		$fieldname_hashArray = array();
 		$counter = 0;
-		$xhtmlStrict = t3lib_div::inList('xhtml_strict,xhtml_11,xhtml_2', $GLOBALS['TSFE']->xhtmlDoctype);
+		$xhtmlStrict = \TYPO3\CMS\Core\Utility\GeneralUtility::inList('xhtml_strict,xhtml_11,xhtml_2', $GLOBALS['TSFE']->xhtmlDoctype);
 		// Formname
 		$formName = isset($conf['formName.']) ? $this->cObj->stdWrap($conf['formName'], $conf['formName.']) : $conf['formName'];
 		if ($formName) {
@@ -148,7 +150,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 			}
 			if ($dataValue && strcspn($dataValue, '#/')) {
 				// label:
-				$confData['label'] = t3lib_div::removeXSS(trim($parts[0]));
+				$confData['label'] = \TYPO3\CMS\Core\Utility\GeneralUtility::removeXSS(trim($parts[0]));
 				// field:
 				$fParts = explode(',', $parts[1]);
 				$fParts[0] = trim($fParts[0]);
@@ -217,8 +219,8 @@ class tslib_content_Form extends tslib_content_Abstract {
 					$compensateFieldWidth = isset($conf['compensateFieldWidth.']) ? $this->cObj->stdWrap($conf['compensateFieldWidth'], $conf['compensateFieldWidth.']) : $conf['compensateFieldWidth'];
 					$compWidth = doubleval($compensateFieldWidth ? $compensateFieldWidth : $GLOBALS['TSFE']->compensateFieldWidth);
 					$compWidth = $compWidth ? $compWidth : 1;
-					$cols = t3lib_utility_Math::forceIntegerInRange($cols * $compWidth, 1, 120);
-					$rows = trim($fParts[2]) ? t3lib_utility_Math::forceIntegerInRange($fParts[2], 1, 30) : 5;
+					$cols = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($cols * $compWidth, 1, 120);
+					$rows = trim($fParts[2]) ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($fParts[2], 1, 30) : 5;
 					$wrap = trim($fParts[3]);
 					$noWrapAttr = isset($conf['noWrapAttr.']) ? $this->cObj->stdWrap($conf['noWrapAttr'], $conf['noWrapAttr.']) : $conf['noWrapAttr'];
 					if ($noWrapAttr || $wrap === 'disabled') {
@@ -228,7 +230,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 					}
 					$noValueInsert = isset($conf['noValueInsert.']) ? $this->cObj->stdWrap($conf['noValueInsert'], $conf['noValueInsert.']) : $conf['noValueInsert'];
 					$default = $this->cObj->getFieldDefaultValue($noValueInsert, $confData['fieldname'], str_replace('\\n', LF, trim($parts[2])));
-					$fieldCode = sprintf('<textarea name="%s"%s cols="%s" rows="%s"%s%s>%s</textarea>', $confData['fieldname'], $elementIdAttribute, $cols, $rows, $wrap, $addParams, t3lib_div::formatForTextarea($default));
+					$fieldCode = sprintf('<textarea name="%s"%s cols="%s" rows="%s"%s%s>%s</textarea>', $confData['fieldname'], $elementIdAttribute, $cols, $rows, $wrap, $addParams, \TYPO3\CMS\Core\Utility\GeneralUtility::formatForTextarea($default));
 					break;
 				case 'input':
 
@@ -237,18 +239,18 @@ class tslib_content_Form extends tslib_content_Abstract {
 					$compensateFieldWidth = isset($conf['compensateFieldWidth.']) ? $this->cObj->stdWrap($conf['compensateFieldWidth'], $conf['compensateFieldWidth.']) : $conf['compensateFieldWidth'];
 					$compWidth = doubleval($compensateFieldWidth ? $compensateFieldWidth : $GLOBALS['TSFE']->compensateFieldWidth);
 					$compWidth = $compWidth ? $compWidth : 1;
-					$size = t3lib_utility_Math::forceIntegerInRange($size * $compWidth, 1, 120);
+					$size = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($size * $compWidth, 1, 120);
 					$noValueInsert = isset($conf['noValueInsert.']) ? $this->cObj->stdWrap($conf['noValueInsert'], $conf['noValueInsert.']) : $conf['noValueInsert'];
 					$default = $this->cObj->getFieldDefaultValue($noValueInsert, $confData['fieldname'], trim($parts[2]));
 					if ($confData['type'] == 'password') {
 						$default = '';
 					}
-					$max = trim($fParts[2]) ? (' maxlength="' . t3lib_utility_Math::forceIntegerInRange($fParts[2], 1, 1000)) . '"' : '';
+					$max = trim($fParts[2]) ? (' maxlength="' . \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($fParts[2], 1, 1000)) . '"' : '';
 					$theType = $confData['type'] == 'input' ? 'text' : 'password';
 					$fieldCode = sprintf('<input type="%s" name="%s"%s size="%s"%s value="%s"%s />', $theType, $confData['fieldname'], $elementIdAttribute, $size, $max, htmlspecialchars($default), $addParams);
 					break;
 				case 'file':
-					$size = trim($fParts[1]) ? t3lib_utility_Math::forceIntegerInRange($fParts[1], 1, 60) : 20;
+					$size = trim($fParts[1]) ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($fParts[1], 1, 60) : 20;
 					$fieldCode = sprintf('<input type="file" name="%s"%s size="%s"%s />', $confData['fieldname'], $elementIdAttribute, $size, $addParams);
 					break;
 				case 'check':
@@ -266,7 +268,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 						$fParts[1] = count($valueParts);
 					}
 					// Auto size set here. Max 20
-					$size = trim($fParts[1]) ? t3lib_utility_Math::forceIntegerInRange($fParts[1], 1, 20) : 1;
+					$size = trim($fParts[1]) ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($fParts[1], 1, 20) : 1;
 					// multiple
 					$multiple = strtolower(trim($fParts[2])) == 'm' ? ' multiple="multiple"' : '';
 					// Where the items will be
@@ -382,20 +384,20 @@ class tslib_content_Form extends tslib_content_Abstract {
 					$value = trim($parts[2]);
 					// If this form includes an auto responder message, include a HMAC checksum field
 					// in order to verify potential abuse of this feature.
-					if (strlen($value) && t3lib_div::inList($confData['fieldname'], 'auto_respond_msg')) {
-						$hmacChecksum = t3lib_div::hmac($value);
+					if (strlen($value) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($confData['fieldname'], 'auto_respond_msg')) {
+						$hmacChecksum = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($value);
 						$hiddenfields .= sprintf('<input type="hidden" name="auto_respond_checksum" id="%sauto_respond_checksum" value="%s" />', $prefix, $hmacChecksum);
 					}
-					if ((strlen($value) && t3lib_div::inList('recipient_copy,recipient', $confData['fieldname'])) && $GLOBALS['TYPO3_CONF_VARS']['FE']['secureFormmail']) {
+					if ((strlen($value) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('recipient_copy,recipient', $confData['fieldname'])) && $GLOBALS['TYPO3_CONF_VARS']['FE']['secureFormmail']) {
 						break;
 					}
-					if (strlen($value) && t3lib_div::inList('recipient_copy,recipient', $confData['fieldname'])) {
+					if (strlen($value) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('recipient_copy,recipient', $confData['fieldname'])) {
 						$value = $GLOBALS['TSFE']->codeString($value);
 					}
 					$hiddenfields .= sprintf('<input type="hidden" name="%s"%s value="%s" />', $confData['fieldname'], $elementIdAttribute, htmlspecialchars($value));
 					break;
 				case 'property':
-					if (t3lib_div::inList('type,locationData,goodMess,badMess,emailMess', $confData['fieldname'])) {
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('type,locationData,goodMess,badMess,emailMess', $confData['fieldname'])) {
 						$value = trim($parts[2]);
 						$propertyOverride[$confData['fieldname']] = $value;
 						$conf[$confData['fieldname']] = $value;
@@ -415,12 +417,12 @@ class tslib_content_Form extends tslib_content_Abstract {
 					if ($image) {
 						$fieldCode = sprintf('<input type="image" name="%s"%s src="%s"%s />', $confData['fieldname'], $elementIdAttribute, $image, $params);
 					} else {
-						$fieldCode = sprintf('<input type="submit" name="%s"%s value="%s"%s />', $confData['fieldname'], $elementIdAttribute, t3lib_div::deHSCentities(htmlspecialchars($value)), $addParams);
+						$fieldCode = sprintf('<input type="submit" name="%s"%s value="%s"%s />', $confData['fieldname'], $elementIdAttribute, \TYPO3\CMS\Core\Utility\GeneralUtility::deHSCentities(htmlspecialchars($value)), $addParams);
 					}
 					break;
 				case 'reset':
 					$value = trim($parts[2]);
-					$fieldCode = sprintf('<input type="reset" name="%s"%s value="%s"%s />', $confData['fieldname'], $elementIdAttribute, t3lib_div::deHSCentities(htmlspecialchars($value)), $addParams);
+					$fieldCode = sprintf('<input type="reset" name="%s"%s value="%s"%s />', $confData['fieldname'], $elementIdAttribute, \TYPO3\CMS\Core\Utility\GeneralUtility::deHSCentities(htmlspecialchars($value)), $addParams);
 					break;
 				case 'label':
 					$fieldCode = nl2br(htmlspecialchars(trim($parts[2])));
@@ -432,8 +434,8 @@ class tslib_content_Form extends tslib_content_Abstract {
 				}
 				if ($fieldCode) {
 					// Checking for special evaluation modes:
-					if (t3lib_div::inList('textarea,input,password', $confData['type']) && strlen(trim($parts[3]))) {
-						$modeParameters = t3lib_div::trimExplode(':', $parts[3]);
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('textarea,input,password', $confData['type']) && strlen(trim($parts[3]))) {
+						$modeParameters = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $parts[3]);
 					} else {
 						$modeParameters = array();
 					}
@@ -533,7 +535,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 		// Internal: Just submit to current page
 		if (!$theRedirect) {
 			$LD = $GLOBALS['TSFE']->tmpl->linkData($page, $target, $noCache, 'index.php', '', $this->cObj->getClosestMPvalueForPage($page['uid']));
-		} elseif (t3lib_utility_Math::canBeInterpretedAsInteger($theRedirect)) {
+		} elseif (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($theRedirect)) {
 			// Internal: Submit to page with ID $theRedirect
 			$page = $GLOBALS['TSFE']->sys_page->getPage_noCheck($theRedirect);
 			$LD = $GLOBALS['TSFE']->tmpl->linkData($page, $target, $noCache, 'index.php', '', $this->cObj->getClosestMPvalueForPage($page['uid']));
@@ -550,7 +552,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 			$formtype = isset($conf['type.']) ? $this->cObj->stdWrap($conf['type'], $conf['type.']) : $conf['type'];
 		}
 		// Submit to a specific page
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($formtype)) {
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($formtype)) {
 			$page = $GLOBALS['TSFE']->sys_page->getPage_noCheck($formtype);
 			$LD_A = $GLOBALS['TSFE']->tmpl->linkData($page, $target, $noCache, '', '', $this->cObj->getClosestMPvalueForPage($page['uid']));
 			$action = $LD_A['totalURL'];
@@ -558,7 +560,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 			// Submit to external script
 			$LD_A = $LD;
 			$action = $formtype;
-		} elseif (t3lib_utility_Math::canBeInterpretedAsInteger($theRedirect)) {
+		} elseif (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($theRedirect)) {
 			$LD_A = $LD;
 			$action = $LD_A['totalURL'];
 		} else {
@@ -576,7 +578,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 		$location = isset($conf['locationData.']) ? $this->cObj->stdWrap($conf['locationData'], $conf['locationData.']) : $conf['locationData'];
 		if ($location) {
 			if ($location == 'HTTP_POST_VARS' && isset($_POST['locationData'])) {
-				$locationData = t3lib_div::_POST('locationData');
+				$locationData = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('locationData');
 			} else {
 				// locationData is [the page id]:[tablename]:[uid of record]. Indicates on which page the record (from tablename with uid) is shown. Used to check access.
 				if (isset($this->data['_LOCALIZED_UID'])) {
@@ -592,7 +594,7 @@ class tslib_content_Form extends tslib_content_Abstract {
 			foreach ($conf['hiddenFields.'] as $hF_key => $hF_conf) {
 				if (substr($hF_key, -1) != '.') {
 					$hF_value = $this->cObj->cObjGetSingle($hF_conf, $conf['hiddenFields.'][$hF_key . '.'], 'hiddenfields');
-					if (strlen($hF_value) && t3lib_div::inList('recipient_copy,recipient', $hF_key)) {
+					if (strlen($hF_value) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('recipient_copy,recipient', $hF_key)) {
 						if ($GLOBALS['TYPO3_CONF_VARS']['FE']['secureFormmail']) {
 							continue;
 						}
@@ -608,8 +610,8 @@ class tslib_content_Form extends tslib_content_Abstract {
 			$goodMess = isset($conf['goodMess.']) ? $this->cObj->stdWrap($conf['goodMess'], $conf['goodMess.']) : $conf['goodMess'];
 			$badMess = isset($conf['badMess.']) ? $this->cObj->stdWrap($conf['badMess'], $conf['badMess.']) : $conf['badMess'];
 			$emailMess = isset($conf['emailMess.']) ? $this->cObj->stdWrap($conf['emailMess'], $conf['emailMess.']) : $conf['emailMess'];
-			$validateForm = (((((((((' onsubmit="return validateForm(' . t3lib_div::quoteJSvalue($formName)) . ',') . t3lib_div::quoteJSvalue(implode(',', $fieldlist))) . ',') . t3lib_div::quoteJSvalue($goodMess)) . ',') . t3lib_div::quoteJSvalue($badMess)) . ',') . t3lib_div::quoteJSvalue($emailMess)) . ')"';
-			$GLOBALS['TSFE']->additionalHeaderData['JSFormValidate'] = ('<script type="text/javascript" src="' . t3lib_div::createVersionNumberedFilename(($GLOBALS['TSFE']->absRefPrefix . 't3lib/jsfunc.validateform.js'))) . '"></script>';
+			$validateForm = (((((((((' onsubmit="return validateForm(' . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($formName)) . ',') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue(implode(',', $fieldlist))) . ',') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($goodMess)) . ',') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($badMess)) . ',') . \TYPO3\CMS\Core\Utility\GeneralUtility::quoteJSvalue($emailMess)) . ')"';
+			$GLOBALS['TSFE']->additionalHeaderData['JSFormValidate'] = ('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Utility\GeneralUtility::createVersionNumberedFilename(($GLOBALS['TSFE']->absRefPrefix . 't3lib/jsfunc.validateform.js'))) . '"></script>';
 		} else {
 			$validateForm = '';
 		}
@@ -632,5 +634,6 @@ class tslib_content_Form extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

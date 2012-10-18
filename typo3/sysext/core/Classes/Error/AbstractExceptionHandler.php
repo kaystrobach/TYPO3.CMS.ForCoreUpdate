@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage error
  */
-abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_ExceptionHandlerInterface, t3lib_Singleton {
+abstract class AbstractExceptionHandler implements \TYPO3\CMS\Core\Error\ExceptionHandlerInterface, \TYPO3\CMS\Core\SingletonInterface {
 
 	const CONTEXT_WEB = 'WEB';
 	const CONTEXT_CLI = 'CLI';
@@ -40,7 +42,7 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 	 * @param Exception $exception The exception object
 	 * @return void
 	 */
-	public function handleException(Exception $exception) {
+	public function handleException(\Exception $exception) {
 		switch (PHP_SAPI) {
 		case 'cli':
 			$this->echoExceptionCLI($exception);
@@ -58,17 +60,17 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 	 * @return void
 	 * @see t3lib_div::sysLog(), t3lib_div::devLog()
 	 */
-	protected function writeLogEntries(Exception $exception, $context) {
+	protected function writeLogEntries(\Exception $exception, $context) {
 		$filePathAndName = $exception->getFile();
 		$exceptionCodeNumber = $exception->getCode() > 0 ? ('#' . $exception->getCode()) . ': ' : '';
 		$logTitle = ('Core: Exception handler (' . $context) . ')';
 		$logMessage = ((((((('Uncaught TYPO3 Exception: ' . $exceptionCodeNumber) . $exception->getMessage()) . ' | ') . get_class($exception)) . ' thrown in file ') . $filePathAndName) . ' in line ') . $exception->getLine();
 		if ($context === 'WEB') {
-			$logMessage .= '. Requested URL: ' . t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+			$logMessage .= '. Requested URL: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL');
 		}
 		$backtrace = $exception->getTrace();
 		// Write error message to the configured syslogs
-		t3lib_div::sysLog($logMessage, $logTitle, t3lib_div::SYSLOG_SEVERITY_FATAL);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog($logMessage, $logTitle, \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
 		// When database credentials are wrong, the exception is probably
 		// caused by this. Therefor we cannot do any database operation,
 		// otherwise this will lead into recurring exceptions.
@@ -81,14 +83,14 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 			// Write error message to devlog
 			// see: $TYPO3_CONF_VARS['SYS']['enable_exceptionDLOG']
 			if (TYPO3_EXCEPTION_DLOG) {
-				t3lib_div::devLog($logMessage, $logTitle, 3, array(
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog($logMessage, $logTitle, 3, array(
 					'TYPO3_MODE' => TYPO3_MODE,
 					'backtrace' => $backtrace
 				));
 			}
 			// Write error message to sys_log table
 			$this->writeLog(($logTitle . ': ') . $logMessage);
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 
 		}
 	}
@@ -118,7 +120,7 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 				'error' => 2,
 				'details_nr' => 0,
 				'details' => $logMessage,
-				'IP' => t3lib_div::getIndpEnv('REMOTE_ADDR'),
+				'IP' => \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'),
 				'tstamp' => $GLOBALS['EXEC_TIME'],
 				'workspace' => $workspace
 			);
@@ -133,11 +135,11 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 	 * @param Exception $exception
 	 * @return void
 	 */
-	protected function sendStatusHeaders(Exception $exception) {
+	protected function sendStatusHeaders(\Exception $exception) {
 		if (method_exists($exception, 'getStatusHeaders')) {
 			$headers = $exception->getStatusHeaders();
 		} else {
-			$headers = array(t3lib_utility_Http::HTTP_STATUS_500);
+			$headers = array(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_500);
 		}
 		if (!headers_sent()) {
 			foreach ($headers as $header) {
@@ -147,5 +149,6 @@ abstract class t3lib_error_AbstractExceptionHandler implements t3lib_error_Excep
 	}
 
 }
+
 
 ?>

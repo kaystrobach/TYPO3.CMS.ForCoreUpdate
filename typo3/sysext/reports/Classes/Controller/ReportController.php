@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +29,7 @@
  * @package TYPO3
  * @subpackage tx_reports
  */
-class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_ActionController {
+class ReportController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
 	 * Redirect to the saved report
@@ -35,7 +37,7 @@ class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_A
 	 * @return void
 	 */
 	public function initializeAction() {
-		$vars = t3lib_div::_GET('tx_reports_tools_reportstxreportsm1');
+		$vars = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('tx_reports_tools_reportstxreportsm1');
 		if (((!isset($vars['redirect']) && $vars['action'] !== 'index') && !isset($vars['extension'])) && is_array($GLOBALS['BE_USER']->uc['reports']['selection'])) {
 			$previousSelection = $GLOBALS['BE_USER']->uc['reports']['selection'];
 			if (!empty($previousSelection['extension']) && !empty($previousSelection['report'])) {
@@ -69,8 +71,8 @@ class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_A
 	public function detailAction($extension, $report) {
 		$content = ($error = '');
 		$reportClass = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['reports'][$extension][$report]['report'];
-		$reportInstance = t3lib_div::makeInstance($reportClass, $this);
-		if ($reportInstance instanceof tx_reports_Report) {
+		$reportInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($reportClass, $this);
+		if ($reportInstance instanceof \TYPO3\CMS\Reports\ReportInterface) {
 			$content = $reportInstance->getReport();
 			$this->saveState($extension, $report);
 		} else {
@@ -116,5 +118,6 @@ class Tx_Reports_Controller_ReportController extends Tx_Extbase_MVC_Controller_A
 	}
 
 }
+
 
 ?>

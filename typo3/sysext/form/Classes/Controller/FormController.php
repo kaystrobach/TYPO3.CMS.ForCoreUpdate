@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @subpackage form
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
-class tx_form_Controller_Form {
+class FormController {
 
 	/**
 	 * The TypoScript array
@@ -40,22 +42,22 @@ class tx_form_Controller_Form {
 	protected $typoscript = array();
 
 	/**
-	 * @var tx_form_Domain_Factory_Typoscript
+	 * @var \TYPO3\CMS\Form\Domain\Factory\TypoScriptFactory
 	 */
 	protected $typoscriptFactory;
 
 	/**
-	 * @var tx_form_System_Localization
+	 * @var \TYPO3\CMS\Form\Localization
 	 */
 	protected $localizationHandler;
 
 	/**
-	 * @var tx_form_System_Request
+	 * @var \TYPO3\CMS\Form\Request
 	 */
 	protected $requestHandler;
 
 	/**
-	 * @var tx_form_System_Validate
+	 * @var \TYPO3\CMS\Form\Utility\ValidatorUtility
 	 */
 	protected $validate;
 
@@ -66,9 +68,9 @@ class tx_form_Controller_Form {
 	 * @return void
 	 */
 	public function initialize(array $typoscript) {
-		t3lib_div::makeInstance('tx_form_System_Localization', 'LLL:EXT:form/Resources/Private/Language/locallang_controller.xml');
-		$this->typoscriptFactory = t3lib_div::makeInstance('tx_form_Domain_Factory_Typoscript');
-		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization', 'LLL:EXT:form/Resources/Private/Language/locallang_controller.xml');
+		$this->typoscriptFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Domain\\Factory\\TypoScriptFactory');
+		$this->localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
 		$this->requestHandler = $this->typoscriptFactory->setRequestHandler($typoscript);
 		$this->validate = $this->typoscriptFactory->setRules($typoscript);
 		$this->typoscript = $typoscript;
@@ -88,20 +90,20 @@ class tx_form_Controller_Form {
 	 * @param string $typoScriptObjectName Name of the object
 	 * @param array $typoScript TS configuration for this cObject
 	 * @param string $typoScriptKey A string label used for the internal debugging tracking.
-	 * @param tslib_cObj $contentObject reference
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject reference
 	 * @return string HTML output
 	 */
-	public function cObjGetSingleExt($typoScriptObjectName, array $typoScript, $typoScriptKey, tslib_cObj $contentObject) {
+	public function cObjGetSingleExt($typoScriptObjectName, array $typoScript, $typoScriptKey, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject) {
 		$content = '';
 		if ($typoScriptObjectName === 'FORM') {
 			if ($contentObject->data['CType'] === 'mailform') {
 				$bodytext = $contentObject->data['bodytext'];
 				/** @var $typoScriptParser t3lib_tsparser */
-				$typoScriptParser = t3lib_div::makeInstance('t3lib_tsparser');
+				$typoScriptParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_tsparser');
 				$typoScriptParser->parse($bodytext);
-				$mergedTypoScript = t3lib_div::array_merge_recursive_overrule((array) $typoScriptParser->setup, (array) $typoScript);
+				$mergedTypoScript = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule((array) $typoScriptParser->setup, (array) $typoScript);
 				// Disables content elements since TypoScript is handled that could contain insecure settings:
-				$mergedTypoScript[tx_form_Domain_Factory_Typoscript::PROPERTY_DisableContentElement] = TRUE;
+				$mergedTypoScript[\TYPO3\CMS\Form\Domain\Factory\TypoScriptFactory::PROPERTY_DisableContentElement] = TRUE;
 			}
 			$newTypoScript = array(
 				'10' => 'FORM_INT',
@@ -162,8 +164,8 @@ class tx_form_Controller_Form {
 	protected function renderForm() {
 		$this->requestHandler->destroySession();
 		$form = $this->typoscriptFactory->buildModelFromTyposcript($this->typoscript);
-		/** @var $view tx_form_View_Form */
-		$view = t3lib_div::makeInstance('tx_form_View_Form', $form);
+		/** @var $view \TYPO3\CMS\Form\View\Form\FormView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Form\\FormView', $form);
 		return $view->get();
 	}
 
@@ -199,8 +201,8 @@ class tx_form_Controller_Form {
 		if (isset($this->typoscript['confirmation.'])) {
 			$confirmationTyposcript = $this->typoscript['confirmation.'];
 		}
-		/** @var $view tx_form_View_Confirmation */
-		$view = t3lib_div::makeInstance('tx_form_View_Confirmation', $form, $confirmationTyposcript);
+		/** @var $view \TYPO3\CMS\Form\View\Confirmation\ConfirmationView */
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\View\\Confirmation\\ConfirmationView', $form, $confirmationTyposcript);
 		return $view->get();
 	}
 
@@ -217,13 +219,14 @@ class tx_form_Controller_Form {
 		if (isset($this->typoscript['postProcessor.'])) {
 			$postProcessorTypoScript = $this->typoscript['postProcessor.'];
 		}
-		/** @var $postProcessor tx_form_System_Postprocessor */
-		$postProcessor = t3lib_div::makeInstance('tx_form_System_Postprocessor', $form, $postProcessorTypoScript);
+		/** @var $postProcessor \TYPO3\CMS\Form\PostProcess\PostProcessor */
+		$postProcessor = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\PostProcess\\PostProcessor', $form, $postProcessorTypoScript);
 		$content = $postProcessor->process();
 		$this->requestHandler->destroySession();
 		return $content;
 	}
 
 }
+
 
 ?>

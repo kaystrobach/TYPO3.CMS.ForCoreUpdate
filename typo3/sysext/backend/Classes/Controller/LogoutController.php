@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Script Class for logging a user out.
  * Does not display any content, just calls the logout-function for the current user and then makes a redirect.
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_logout {
+class LogoutController {
 
 	/**
 	 * Performs the logout processing
@@ -18,13 +20,14 @@ class SC_logout {
 	public function logout() {
 		// Logout written to log
 		$GLOBALS['BE_USER']->writelog(255, 2, 0, 1, 'User %s logged out from TYPO3 Backend', array($GLOBALS['BE_USER']->user['username']));
-		t3lib_formProtection_Factory::get()->removeSessionTokenFromRegistry();
+		\t3lib_formProtection_Factory::get()->removeSessionTokenFromRegistry();
 		$GLOBALS['BE_USER']->logoff();
-		$redirect = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('redirect'));
+		$redirect = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect'));
 		$redirectUrl = $redirect ? $redirect : 'index.php';
-		t3lib_utility_Http::redirect($redirectUrl);
+		\TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
 	}
 
 }
+
 
 ?>

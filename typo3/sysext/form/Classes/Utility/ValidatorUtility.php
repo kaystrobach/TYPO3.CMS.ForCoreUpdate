@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate implements t3lib_Singleton {
+class ValidatorUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Validation objects to use
@@ -67,7 +69,7 @@ class tx_form_System_Validate implements t3lib_Singleton {
 	 * @return String
 	 */
 	protected function getPrefix() {
-		return t3lib_div::makeInstance('tx_form_System_Request')->getPrefix();
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Request')->getPrefix();
 	}
 
 	/**
@@ -76,12 +78,12 @@ class tx_form_System_Validate implements t3lib_Singleton {
 	 *
 	 * @param string $class Name of the validation rule
 	 * @param array $arguments Configuration of the rule
-	 * @return tx_form_System_Validate_Abstract The rule object
+	 * @return \TYPO3\CMS\Form\Validation\AbstractValidator The rule object
 	 */
 	public function createRule($class, $arguments = array()) {
 		$class = strtolower((string) $class);
-		$className = 'tx_form_System_Validate_' . ucfirst($class);
-		$rule = t3lib_div::makeInstance($className, $arguments);
+		$className = 'TYPO3\\CMS\\Form\\Utility\\ValidatorUtility_' . ucfirst($class);
+		$rule = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $arguments);
 		return $rule;
 	}
 
@@ -210,5 +212,6 @@ class tx_form_System_Validate implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

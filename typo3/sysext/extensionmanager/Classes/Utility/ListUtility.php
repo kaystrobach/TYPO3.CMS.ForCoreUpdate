@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,61 +33,61 @@
  * @package Extension Manager
  * @subpackage Utility
  */
-class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
+class ListUtility implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	public $objectManager;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_EmConf
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\EmConfUtility
 	 */
 	public $emConfUtility;
 
 	/**
 	 * Inject emConfUtility
 	 *
-	 * @param Tx_Extensionmanager_Utility_EmConf $emConfUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\EmConfUtility $emConfUtility
 	 * @return void
 	 */
-	public function injectEmConfUtility(Tx_Extensionmanager_Utility_EmConf $emConfUtility) {
+	public function injectEmConfUtility(\TYPO3\CMS\Extensionmanager\Utility\EmConfUtility $emConfUtility) {
 		$this->emConfUtility = $emConfUtility;
 	}
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository
 	 */
 	public $extensionRepository;
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_Install
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\InstallUtility
 	 */
 	protected $installUtility;
 
 	/**
-	 * @param Tx_Extensionmanager_Utility_Install $installUtility
+	 * @param \TYPO3\CMS\Extensionmanager\Utility\InstallUtility $installUtility
 	 * @return void
 	 */
-	public function injectInstallUtility(Tx_Extensionmanager_Utility_Install $installUtility) {
+	public function injectInstallUtility(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility $installUtility) {
 		$this->installUtility = $installUtility;
 	}
 
 	/**
 	 * Inject emConfUtility
 	 *
-	 * @param Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository
 	 * @return void
 	 */
-	public function injectExtensionRepository(Tx_Extensionmanager_Domain_Repository_ExtensionRepository $extensionRepository) {
+	public function injectExtensionRepository(\TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $extensionRepository) {
 		$this->extensionRepository = $extensionRepository;
 	}
 
@@ -97,24 +99,24 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	 */
 	public function getAvailableExtensions() {
 		$extensions = array();
-		$paths = Tx_Extensionmanager_Domain_Model_Extension::returnInstallPaths();
+		$paths = \TYPO3\CMS\Extensionmanager\Domain\Model\Extension::returnInstallPaths();
 		foreach ($paths as $installationType => $path) {
 			try {
 				if (is_dir($path)) {
-					$extList = t3lib_div::get_dirs($path);
+					$extList = \TYPO3\CMS\Core\Utility\GeneralUtility::get_dirs($path);
 					if (is_array($extList)) {
 						foreach ($extList as $extKey) {
 							$extensions[$extKey] = array(
 								'siteRelPath' => str_replace(PATH_site, '', $path . $extKey),
 								'type' => $installationType,
 								'key' => $extKey,
-								'ext_icon' => t3lib_extMgm::getExtensionIcon(($path . $extKey) . '/')
+								'ext_icon' => \TYPO3\CMS\Core\Extension\ExtensionManager::getExtensionIcon(($path . $extKey) . '/')
 							);
 						}
 					}
 				}
-			} catch (Exception $e) {
-				t3lib_div::sysLog($e->getMessage(), 'extensionmanager');
+			} catch (\Exception $e) {
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog($e->getMessage(), 'extensionmanager');
 			}
 		}
 		return $extensions;
@@ -147,7 +149,7 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 			if ($emconf) {
 				$extensions[$extensionKey] = array_merge($emconf, $properties);
 				$terObject = $this->extensionRepository->findOneByExtensionKeyAndVersion($extensionKey, $extensions[$extensionKey]['version']);
-				if ($terObject instanceof Tx_Extensionmanager_Domain_Model_Extension) {
+				if ($terObject instanceof \TYPO3\CMS\Extensionmanager\Domain\Model\Extension) {
 					$extensions[$extensionKey]['terObject'] = $terObject;
 					$extensions[$extensionKey]['updateAvailable'] = $this->installUtility->isUpdateAvailable($terObject);
 				}
@@ -171,5 +173,6 @@ class Tx_Extensionmanager_Utility_List implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

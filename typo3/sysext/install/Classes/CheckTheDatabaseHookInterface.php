@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage install
  */
-interface Tx_Install_Interfaces_CheckTheDatabaseHook
+interface CheckTheDatabaseHookInterface
 {
 	/**
 	 * Hook that allows to dynamically extend the table definitions on a per extension base
@@ -41,11 +43,11 @@ interface Tx_Install_Interfaces_CheckTheDatabaseHook
 	 * @param string $extKey: Extension key
 	 * @param array $loadedExtConf: The extension's configuration from $GLOBALS['TYPO3_LOADED_EXT']
 	 * @param string $extensionSqlContent: The content of the extensions ext_tables.sql
-	 * @param t3lib_install_Sql $instSqlObj: Instance of the installer sql object
+	 * @param \TYPO3\CMS\Install\Sql\SchemaMigrator $instSqlObj: Instance of the installer sql object
 	 * @param tx_em_Install $parent: The calling parent object
 	 * @return string Either empty string or table create strings
 	 */
-	public function appendExtensionTableDefinitions($extKey, array $loadedExtConf, $extensionSqlContent, t3lib_install_Sql $instSqlObj, tx_install $parent);
+	public function appendExtensionTableDefinitions($extKey, array $loadedExtConf, $extensionSqlContent, \TYPO3\CMS\Install\Sql\SchemaMigrator $instSqlObj, \TYPO3\CMS\Install\Installer $parent);
 
 	/**
 	 * Hook that allows to dynamically extend the table definitions for the whole system
@@ -53,11 +55,12 @@ interface Tx_Install_Interfaces_CheckTheDatabaseHook
 	 * will be respected by the install tool.
 	 *
 	 * @param string $allSqlContent: The content of all relevant sql files
-	 * @param t3lib_install_Sql $instSqlObj: Instance of the installer sql object
+	 * @param \TYPO3\CMS\Install\Sql\SchemaMigrator $instSqlObj: Instance of the installer sql object
 	 * @param tx_em_Install $parent: The calling parent object
 	 * @return string Either empty string or table create strings
 	 */
-	public function appendGlobalTableDefinitions($allSqlContent, t3lib_install_Sql $instSqlObj, tx_install $parent);
+	public function appendGlobalTableDefinitions($allSqlContent, \TYPO3\CMS\Install\Sql\SchemaMigrator $instSqlObj, \TYPO3\CMS\Install\Installer $parent);
 
 }
+
 ?>

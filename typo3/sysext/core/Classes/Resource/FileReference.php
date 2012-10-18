@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_FileReference implements t3lib_file_FileInterface {
+class FileReference implements \TYPO3\CMS\Core\Resource\FileInterface {
 
 	/**
 	 * Various properties of the FileReference. Note that these information can be different
@@ -70,14 +72,14 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * The FileRepository object. Is needed e.g. for the delete() method to delete the usage record
 	 * (sys_file_reference record) of this file usage.
 	 *
-	 * @var t3lib_file_Repository_FileRepository
+	 * @var \TYPO3\CMS\Core\Resource\FileRepository
 	 */
 	protected $fileRepository;
 
 	/**
 	 * Reference to the original File object underlying this FileReference.
 	 *
-	 * @var t3lib_file_File
+	 * @var \TYPO3\CMS\Core\Resource\File
 	 */
 	protected $originalFile;
 
@@ -86,21 +88,21 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * directly, use the corresponding factory methods instead.
 	 *
 	 * @param array $fileReferenceData
-	 * @param t3lib_file_Factory $factory
+	 * @param \TYPO3\CMS\Core\Resource\ResourceFactory $factory
 	 */
 	public function __construct(array $fileReferenceData, $factory = NULL) {
 		$this->propertiesOfFileReference = $fileReferenceData;
 		if (!$fileReferenceData['uid_local']) {
-			throw new InvalidArgumentException('Incorrect reference to original file given for FileReference.', 1300098528);
+			throw new \InvalidArgumentException('Incorrect reference to original file given for FileReference.', 1300098528);
 		}
 		if (!$factory) {
-			/** @var $factory t3lib_file_Factory */
-			$factory = t3lib_div::makeInstance('t3lib_file_Factory');
+			/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
+			$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 		}
 		$this->originalFile = $factory->getFileObject($fileReferenceData['uid_local']);
-		$this->fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+		$this->fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		if (!is_object($this->originalFile)) {
-			throw new RuntimeException('Original File not found for FileReference.', 1300098529);
+			throw new \RuntimeException('Original File not found for FileReference.', 1300098529);
 		}
 		$this->name = $fileReferenceData['name'] !== '' ? $fileReferenceData['name'] : $this->originalFile->getName();
 	}
@@ -127,7 +129,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 */
 	public function getProperty($key) {
 		if (!$this->hasProperty($key)) {
-			throw new InvalidArgumentException(('Property "' . $key) . '" was not found.', 1314226805);
+			throw new \InvalidArgumentException(('Property "' . $key) . '" was not found.', 1314226805);
 		}
 		return $this->propertiesOfFileReference[$key];
 	}
@@ -138,7 +140,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * @return array
 	 */
 	public function getProperties() {
-		return t3lib_div::array_merge_recursive_overrule($this->originalFile->getProperties(), $this->propertiesOfFileReference);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($this->originalFile->getProperties(), $this->propertiesOfFileReference);
 	}
 
 	/**
@@ -282,7 +284,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * Replace the current file contents with the given string
 	 *
 	 * @param string $contents The contents to write to the file.
-	 * @return t3lib_file_File The file object (allows chaining).
+	 * @return \TYPO3\CMS\Core\Resource\File The file object (allows chaining).
 	 */
 	public function setContents($contents) {
 		return $this->originalFile->setContents($contents);
@@ -294,7 +296,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	/**
 	 * Get the storage the original file is located in
 	 *
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	public function getStorage() {
 		return $this->originalFile->getStorage();
@@ -327,7 +329,7 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	public function delete() {
 		// TODO: Implement this function. This should only delete the
 		// FileReference (sys_file_reference) record, not the file itself.
-		throw new BadMethodCallException('Function not implemented FileReference::delete().', 1333754461);
+		throw new \BadMethodCallException('Function not implemented FileReference::delete().', 1333754461);
 		return $this->fileRepository->removeUsageRecord($this);
 	}
 
@@ -335,12 +337,12 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	 * Renames the fileName in this particular usage.
 	 *
 	 * @param string $newName The new name
-	 * @return t3lib_file_FileReference
+	 * @return \TYPO3\CMS\Core\Resource\FileReference
 	 */
 	public function rename($newName) {
 		// TODO: Implement this function. This should only rename the
 		// FileReference (sys_file_reference) record, not the file itself.
-		throw new BadMethodCallException('Function not implemented FileReference::rename().', 1333754473);
+		throw new \BadMethodCallException('Function not implemented FileReference::rename().', 1333754473);
 		return $this->fileRepository->renameUsageRecord($this, $newName);
 	}
 
@@ -398,12 +400,13 @@ class t3lib_file_FileReference implements t3lib_file_FileInterface {
 	/**
 	 * Gets the original file being referenced.
 	 *
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function getOriginalFile() {
 		return $this->originalFile;
 	}
 
 }
+
 
 ?>

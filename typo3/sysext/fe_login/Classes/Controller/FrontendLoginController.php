@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\FeLogin\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package 	TYPO3
  * @subpackage tx_felogin
  */
-class tx_felogin_pi1 extends tslib_pibase {
+class FrontendLoginController extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	// Same as class name
 	/**
@@ -104,15 +106,15 @@ class tx_felogin_pi1 extends tslib_pibase {
 			$this->spid = $pids['_STORAGE_PID'];
 		}
 		// GPvars:
-		$this->logintype = t3lib_div::_GP('logintype');
-		$this->referer = $this->validateRedirectUrl(t3lib_div::_GP('referer'));
+		$this->logintype = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('logintype');
+		$this->referer = $this->validateRedirectUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('referer'));
 		$this->noRedirect = $this->piVars['noredirect'] || $this->conf['redirectDisable'];
 		// If config.typolinkLinkAccessRestrictedPages is set, the var is return_url
-		$returnUrl = t3lib_div::_GP('return_url');
+		$returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('return_url');
 		if ($returnUrl) {
 			$this->redirectUrl = $returnUrl;
 		} else {
-			$this->redirectUrl = t3lib_div::_GP('redirect_url');
+			$this->redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect_url');
 		}
 		$this->redirectUrl = $this->validateRedirectUrl($this->redirectUrl);
 		// Get Template
@@ -155,11 +157,11 @@ class tx_felogin_pi1 extends tslib_pibase {
 					);
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['beforeRedirect'] as $_funcRef) {
 						if ($_funcRef) {
-							t3lib_div::callUserFunction($_funcRef, $_params, $this);
+							\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 						}
 					}
 				}
-				t3lib_utility_Http::redirect($this->redirectUrl);
+				\TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->redirectUrl);
 			}
 		}
 		// Adds hook for processing of extra item markers / special
@@ -168,7 +170,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 				'content' => $content
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['postProcContent'] as $_funcRef) {
-				$content = t3lib_div::callUserFunction($_funcRef, $_params, $this);
+				$content = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 		return $this->conf['wrapContentInBaseClass'] ? $this->pi_wrapInBaseClass($content) : $content;
@@ -182,7 +184,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 	protected function showForgot() {
 		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_FORGOT###');
 		$subpartArray = ($linkpartArray = array());
-		$postData = t3lib_div::_POST($this->prefixId);
+		$postData = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->prefixId);
 		if ($postData['forgot_email']) {
 			// Get hashes for compare
 			$postedHash = $postData['forgot_hash'];
@@ -265,7 +267,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 				$subpartArray['###CHANGEPASSWORD_FORM###'] = '';
 			} else {
 				// All is fine, continue with new password
-				$postData = t3lib_div::_POST($this->prefixId);
+				$postData = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->prefixId);
 				if (isset($postData['changepasswordsubmit'])) {
 					if (strlen($postData['password1']) < $minLength) {
 						$markerArray['###STATUS_MESSAGE###'] = sprintf($this->getDisplayText('change_password_tooshort_message', $this->conf['changePasswordTooShortMessage_stdWrap.']), $minLength);
@@ -280,7 +282,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 							);
 							foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['password_changed'] as $_funcRef) {
 								if ($_funcRef) {
-									t3lib_div::callUserFunction($_funcRef, $_params, $this);
+									\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 								}
 							}
 							$newPass = $_params['newPassword'];
@@ -323,7 +325,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 		$hours = intval($this->conf['forgotLinkHashValidTime']) > 0 ? intval($this->conf['forgotLinkHashValidTime']) : 24;
 		$validEnd = time() + 3600 * $hours;
 		$validEndString = date($this->conf['dateFormat'], $validEnd);
-		$hash = md5(t3lib_div::generateRandomBytes(64));
+		$hash = md5(\TYPO3\CMS\Core\Utility\GeneralUtility::generateRandomBytes(64));
 		$randHash = ($validEnd . '|') . $hash;
 		$randHashDB = ($validEnd . '|') . md5($hash);
 		// Write hash to DB
@@ -348,7 +350,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 		} elseif ($isAbsRelPrefix) {
 			// Second priority
 			// absRefPrefix must not necessarily contain a hostname and URL scheme, so add it if needed
-			$link = t3lib_div::locationHeaderUrl($link);
+			$link = \TYPO3\CMS\Core\Utility\GeneralUtility::locationHeaderUrl($link);
 		} elseif ($isBaseURL) {
 			// Third priority
 			// Add the global base URL to the link
@@ -366,7 +368,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['forgotPasswordMail'] as $reference) {
 				if ($reference) {
-					t3lib_div::callUserFunction($reference, $params, $this);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($reference, $params, $this);
 				}
 			}
 		}
@@ -431,7 +433,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 					$_params = array();
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_confirmed'] as $_funcRef) {
 						if ($_funcRef) {
-							t3lib_div::callUserFunction($_funcRef, $_params, $this);
+							\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 						}
 					}
 				}
@@ -446,14 +448,14 @@ class tx_felogin_pi1 extends tslib_pibase {
 					$params = array();
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['login_error'] as $funcRef) {
 						if ($funcRef) {
-							t3lib_div::callUserFunction($funcRef, $params, $this);
+							\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($funcRef, $params, $this);
 						}
 					}
 				}
 				// login error
 				$markerArray['###STATUS_HEADER###'] = $this->getDisplayText('error_header', $this->conf['errorHeader_stdWrap.']);
 				$markerArray['###STATUS_MESSAGE###'] = $this->getDisplayText('error_message', $this->conf['errorMessage_stdWrap.']);
-				$gpRedirectUrl = t3lib_div::_GP('redirect_url');
+				$gpRedirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect_url');
 			}
 		} else {
 			if ($this->logintype === 'logout') {
@@ -474,8 +476,8 @@ class tx_felogin_pi1 extends tslib_pibase {
 		$onSubmitAr = array();
 		$extraHiddenAr = array();
 		// Check for referer redirect method. if present, save referer in form field
-		if (t3lib_div::inList($this->conf['redirectMode'], 'referer') || t3lib_div::inList($this->conf['redirectMode'], 'refererDomains')) {
-			$referer = $this->referer ? $this->referer : t3lib_div::getIndpEnv('HTTP_REFERER');
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->conf['redirectMode'], 'referer') || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->conf['redirectMode'], 'refererDomains')) {
+			$referer = $this->referer ? $this->referer : \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_REFERER');
 			if ($referer) {
 				$extraHiddenAr[] = ('<input type="hidden" name="referer" value="' . htmlspecialchars($referer)) . '" />';
 				if ($this->piVars['redirectReferrer'] === 'off') {
@@ -486,7 +488,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['loginFormOnSubmitFuncs'])) {
 			$_params = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['loginFormOnSubmitFuncs'] as $funcRef) {
-				list($onSub, $hid) = t3lib_div::callUserFunction($funcRef, $_params, $this);
+				list($onSub, $hid) = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($funcRef, $_params, $this);
 				$onSubmitAr[] = $onSub;
 				$extraHiddenAr[] = $hid;
 			}
@@ -522,7 +524,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 			$subpartArray['###FORGOTP_VALID###'] = '';
 		}
 		// The permanent login checkbox should only be shown if permalogin is not deactivated (-1), not forced to be always active (2) and lifetime is greater than 0
-		if (($this->conf['showPermaLogin'] && t3lib_div::inList('0,1', $GLOBALS['TYPO3_CONF_VARS']['FE']['permalogin'])) && $GLOBALS['TYPO3_CONF_VARS']['FE']['lifetime'] > 0) {
+		if (($this->conf['showPermaLogin'] && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('0,1', $GLOBALS['TYPO3_CONF_VARS']['FE']['permalogin'])) && $GLOBALS['TYPO3_CONF_VARS']['FE']['lifetime'] > 0) {
 			$markerArray['###PERMALOGIN###'] = $this->pi_getLL('permalogin', '', 1);
 			if ($GLOBALS['TYPO3_CONF_VARS']['FE']['permalogin'] == 1) {
 				$markerArray['###PERMALOGIN_HIDDENFIELD_ATTRIBUTES###'] = 'disabled="disabled"';
@@ -545,7 +547,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 	protected function processRedirect() {
 		$redirect_url = array();
 		if ($this->conf['redirectMode']) {
-			$redirectMethods = t3lib_div::trimExplode(',', $this->conf['redirectMode'], TRUE);
+			$redirectMethods = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->conf['redirectMode'], TRUE);
 			foreach ($redirectMethods as $redirMethod) {
 				if ($GLOBALS['TSFE']->loginUser && $this->logintype === 'login') {
 					// Logintype is needed because the login-page wouldn't be accessible anymore after a login (would always redirect)
@@ -593,7 +595,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 							if (preg_match('/^http://([[:alnum:]._-]+)//', $url, $match)) {
 								$redirect_domain = $match[1];
 								$found = FALSE;
-								foreach (t3lib_div::trimExplode(',', $this->conf['domains'], TRUE) as $d) {
+								foreach (\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->conf['domains'], TRUE) as $d) {
 									if (preg_match(('/(^|\\.)/' . $d) . '$', $redirect_domain)) {
 										$found = TRUE;
 										break;
@@ -636,7 +638,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 						$_params = array();
 						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['felogin']['logout_confirmed'] as $_funcRef) {
 							if ($_funcRef) {
-								t3lib_div::callUserFunction($_funcRef, $_params, $this);
+								\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 							}
 						}
 					}
@@ -661,7 +663,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 		}
 		// Remove empty values
 		if (count($redirect_url)) {
-			return t3lib_div::trimExplode(',', implode(',', $redirect_url), TRUE);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', implode(',', $redirect_url), TRUE);
 		} else {
 			return array();
 		}
@@ -768,7 +770,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 	protected function getPreserveGetVars() {
 		$params = '';
 		$preserveVars = !($this->conf['preserveGETvars'] || $this->conf['preserveGETvars'] == 'all' ? array() : implode(',', (array) $this->conf['preserveGETvars']));
-		$getVars = t3lib_div::_GET();
+		$getVars = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET();
 		foreach ($getVars as $key => $val) {
 			if (stristr($key, $this->prefixId) === FALSE) {
 				if (is_array($val)) {
@@ -831,7 +833,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 		if ($GLOBALS['TSFE']->fe_user->user) {
 			// All fields of fe_user will be replaced, scheme is ###FEUSER_FIELDNAME###
 			foreach ($GLOBALS['TSFE']->fe_user->user as $field => $value) {
-				$marker[('###FEUSER_' . t3lib_div::strtoupper($field)) . '###'] = $this->cObj->stdWrap($value, $this->conf['userfields.'][$field . '.']);
+				$marker[('###FEUSER_' . \TYPO3\CMS\Core\Utility\GeneralUtility::strtoupper($field)) . '###'] = $this->cObj->stdWrap($value, $this->conf['userfields.'][$field . '.']);
 			}
 			// Add ###USER### for compatibility
 			$marker['###USER###'] = $marker['###FEUSER_USERNAME###'];
@@ -851,9 +853,9 @@ class tx_felogin_pi1 extends tslib_pibase {
 			return '';
 		}
 		$decodedUrl = rawurldecode($url);
-		$sanitizedUrl = t3lib_div::removeXSS($decodedUrl);
+		$sanitizedUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::removeXSS($decodedUrl);
 		if ($decodedUrl !== $sanitizedUrl || preg_match('#["<>\\\\]+#', $url)) {
-			t3lib_div::sysLog(sprintf($this->pi_getLL('xssAttackDetected'), $url), 'felogin', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf($this->pi_getLL('xssAttackDetected'), $url), 'felogin', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			return '';
 		}
 		// Validate the URL:
@@ -861,7 +863,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 			return $url;
 		}
 		// URL is not allowed
-		t3lib_div::sysLog(sprintf($this->pi_getLL('noValidRedirectUrl'), $url), 'felogin', t3lib_div::SYSLOG_SEVERITY_WARNING);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf($this->pi_getLL('noValidRedirectUrl'), $url), 'felogin', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 		return '';
 	}
 
@@ -873,7 +875,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 	 * @return boolean Whether the URL belongs to the current TYPO3 installation
 	 */
 	protected function isInCurrentDomain($url) {
-		return t3lib_div::isOnCurrentHost($url) && t3lib_div::isFirstPartOfStr($url, t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::isOnCurrentHost($url) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($url, \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
 	}
 
 	/**
@@ -885,7 +887,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 	 */
 	protected function isInLocalDomain($url) {
 		$result = FALSE;
-		if (t3lib_div::isValidUrl($url)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($url)) {
 			$parsedUrl = parse_url($url);
 			if ($parsedUrl['scheme'] === 'http' || $parsedUrl['scheme'] === 'https') {
 				$host = $parsedUrl['host'];
@@ -896,7 +898,7 @@ class tx_felogin_pi1 extends tslib_pibase {
 					foreach ($localDomains as $localDomain) {
 						// strip trailing slashes (if given)
 						$domainName = rtrim($localDomain['domainName'], '/');
-						if (t3lib_div::isFirstPartOfStr(($host . $path) . '/', $domainName . '/')) {
+						if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr(($host . $path) . '/', $domainName . '/')) {
 							$result = TRUE;
 							break;
 						}
@@ -918,11 +920,12 @@ class tx_felogin_pi1 extends tslib_pibase {
 		$parsedUrl = @parse_url($url);
 		if (($parsedUrl !== FALSE && !isset($parsedUrl['scheme'])) && !isset($parsedUrl['host'])) {
 			// If the relative URL starts with a slash, we need to check if it's within the current site path
-			return !t3lib_div::isFirstPartOfStr($parsedUrl['path'], '/') || t3lib_div::isFirstPartOfStr($parsedUrl['path'], t3lib_div::getIndpEnv('TYPO3_SITE_PATH'));
+			return !\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($parsedUrl['path'], '/') || \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($parsedUrl['path'], \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'));
 		}
 		return FALSE;
 	}
 
 }
+
 
 ?>

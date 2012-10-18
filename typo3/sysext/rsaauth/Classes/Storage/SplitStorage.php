@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Storage;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_split_storage extends tx_rsaauth_abstract_storage {
+class SplitStorage extends \TYPO3\CMS\Rsaauth\Storage\AbstractStorage {
 
 	/**
 	 * Creates an instance of this class. It checks and initializes PHP
@@ -50,7 +52,7 @@ class tx_rsaauth_split_storage extends tx_rsaauth_abstract_storage {
 	public function get() {
 		$result = NULL;
 		list($keyId, $keyPart1) = $_SESSION['tx_rsaauth_key'];
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($keyId)) {
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($keyId)) {
 			// Remove expired keys (more than 30 minutes old)
 			$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_rsaauth_keys', 'crdate<' . ($GLOBALS['EXEC_TIME'] - 30 * 60));
 			// Get our value
@@ -73,7 +75,7 @@ class tx_rsaauth_split_storage extends tx_rsaauth_abstract_storage {
 		if ($key == NULL) {
 			// Remove existing key
 			list($keyId) = $_SESSION['tx_rsaauth_key'];
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($keyId)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($keyId)) {
 				$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_rsaauth_keys', 'uid=' . $keyId);
 				unset($_SESSION['tx_rsaauth_key']);
 			}
@@ -105,5 +107,6 @@ class tx_rsaauth_split_storage extends tx_rsaauth_abstract_storage {
 	}
 
 }
+
 
 ?>

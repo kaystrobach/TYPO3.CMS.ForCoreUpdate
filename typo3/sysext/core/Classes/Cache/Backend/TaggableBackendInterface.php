@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /*                                                                        *
  * This script belongs to the FLOW3 framework.                            *
  *                                                                        *
@@ -13,7 +15,7 @@
  *
  * @api
  */
-interface t3lib_cache_backend_TaggableBackend extends t3lib_cache_backend_Backend
+interface TaggableBackendInterface extends \TYPO3\CMS\Core\Cache\Backend\BackendInterface
 {
 	/**
 	 * Removes all cache entries of this cache which are tagged by the specified tag.
@@ -35,4 +37,5 @@ interface t3lib_cache_backend_TaggableBackend extends t3lib_cache_backend_Backen
 	public function findIdentifiersByTag($tag);
 
 }
+
 ?>

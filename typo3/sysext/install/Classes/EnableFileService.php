@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +29,7 @@
 /**
  * Basic Service to check and create install tool files
  */
-class Tx_Install_Service_BasicService {
+class EnableFileService {
 
 	const INSTALL_TOOL_ENABLE_FILE_PATH = 'typo3conf/ENABLE_INSTALL_TOOL';
 	const QUICKSTART_FILE_PATH = 'typo3conf/FIRST_INSTALL';
@@ -53,7 +55,7 @@ class Tx_Install_Service_BasicService {
 	static public function createInstallToolEnableFile() {
 		$installEnableFilePath = self::getInstallToolEnableFilePath();
 		$result = touch($installEnableFilePath);
-		t3lib_div::fixPermissions($installEnableFilePath);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($installEnableFilePath);
 		return $result;
 	}
 
@@ -123,5 +125,6 @@ class Tx_Install_Service_BasicService {
 	}
 
 }
+
 
 ?>

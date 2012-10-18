@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Frontend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @author Karsten Dambekalns <karsten@typo3.org>
  * @api
  */
-abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_frontend_Frontend {
+abstract class AbstractFrontend implements \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface {
 
 	/**
 	 * Identifies this cache
@@ -50,10 +52,10 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	 * Constructs the cache
 	 *
 	 * @param string $identifier A identifier which describes this cache
-	 * @param t3lib_cache_backend_Backend $backend Backend to be used for this cache
+	 * @param \TYPO3\CMS\Core\Cache\Backend\BackendInterface $backend Backend to be used for this cache
 	 * @throws \InvalidArgumentException if the identifier doesn't match PATTERN_ENTRYIDENTIFIER
 	 */
-	public function __construct($identifier, t3lib_cache_backend_Backend $backend) {
+	public function __construct($identifier, \TYPO3\CMS\Core\Cache\Backend\BackendInterface $backend) {
 		if (preg_match(self::PATTERN_ENTRYIDENTIFIER, $identifier) !== 1) {
 			throw new \InvalidArgumentException(('"' . $identifier) . '" is not a valid cache identifier.', 1203584729);
 		}
@@ -75,7 +77,7 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	/**
 	 * Returns the backend used by this cache
 	 *
-	 * @return t3lib_cache_backend_Backend The backend used by this cache
+	 * @return \TYPO3\CMS\Core\Cache\Backend\BackendInterface The backend used by this cache
 	 * @api
 	 */
 	public function getBackend() {
@@ -137,10 +139,10 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php']['flushByTag'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/cache/frontend/class.t3lib_cache_frontend_abstractfrontend.php']['flushByTag'] as $_funcRef) {
 				$params = array('tag' => $tag);
-				t3lib_div::callUserFunction($_funcRef, $params, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $params, $this);
 			}
 		}
-		if ($this->backend instanceof t3lib_cache_backend_TaggableBackend) {
+		if ($this->backend instanceof \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface) {
 			$this->backend->flushByTag($tag);
 		}
 	}
@@ -178,5 +180,6 @@ abstract class t3lib_cache_frontend_AbstractFrontend implements t3lib_cache_fron
 	}
 
 }
+
 
 ?>

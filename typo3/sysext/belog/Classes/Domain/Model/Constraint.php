@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractEntity {
+class Constraint extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * Selected user/group; possible values are "gr-<uid>" for a group, "us-<uid>" for a user or -1 for "all users"
@@ -51,7 +53,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	 *
 	 * @var integer
 	 */
-	protected $workspaceUid = Tx_Belog_Domain_Model_Workspace::UID_ANY_WORKSPACE;
+	protected $workspaceUid = \TYPO3\CMS\Belog\Domain\Model\Workspace::UID_ANY_WORKSPACE;
 
 	/**
 	 * selected time frame
@@ -250,7 +252,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	 * @param DateTime $manualDateStart
 	 * @return void
 	 */
-	public function setManualDateStart(DateTime $manualDateStart) {
+	public function setManualDateStart(\DateTime $manualDateStart) {
 		$this->manualDateStart = $manualDateStart;
 	}
 
@@ -269,7 +271,7 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	 * @param DateTime $manualDateStop
 	 * @return void
 	 */
-	public function setManualDateStop(DateTime $manualDateStop) {
+	public function setManualDateStop(\DateTime $manualDateStop) {
 		$this->manualDateStop = $manualDateStop;
 	}
 
@@ -378,5 +380,6 @@ class Tx_Belog_Domain_Model_Constraint extends Tx_Extbase_DomainObject_AbstractE
 	}
 
 }
+
 
 ?>

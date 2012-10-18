@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @author Karsten Dambekalns <karsten@typo3.org>
  * @api
  */
-class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_PhpCapableBackend, t3lib_cache_backend_TaggableBackend {
+class NullBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\PhpCapableBackendInterface, \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * Acts as if it would save data
@@ -135,5 +137,6 @@ class t3lib_cache_backend_NullBackend extends t3lib_cache_backend_AbstractBacken
 	}
 
 }
+
 
 ?>

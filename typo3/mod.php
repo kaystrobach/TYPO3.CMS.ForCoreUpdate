@@ -32,7 +32,7 @@
 unset($MCONF);
 require 'init.php';
 // Find module path:
-$temp_M = (string) t3lib_div::_GET('M');
+$temp_M = (string) \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('M');
 $isDispatched = FALSE;
 if ($temp_path = $TBE_MODULES['_PATHS'][$temp_M]) {
 	$MCONF['_'] = 'mod.php?M=' . rawurlencode($temp_M);
@@ -43,7 +43,7 @@ if ($temp_path = $TBE_MODULES['_PATHS'][$temp_M]) {
 } else {
 	if (is_array($TBE_MODULES['_dispatcher'])) {
 		foreach ($TBE_MODULES['_dispatcher'] as $dispatcherClassName) {
-			$dispatcher = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager')->get($dispatcherClassName);
+			$dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get($dispatcherClassName);
 			if ($dispatcher->callModule($temp_M) === TRUE) {
 				$isDispatched = TRUE;
 				break;
@@ -54,5 +54,5 @@ if ($temp_path = $TBE_MODULES['_PATHS'][$temp_M]) {
 if ($isDispatched === FALSE) {
 	throw new UnexpectedValueException(('No module "' . htmlspecialchars($temp_M)) . '" could be found.', 1294585070);
 }
-Typo3_Bootstrap::getInstance()->shutdown();
+\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->shutdown();
 ?>

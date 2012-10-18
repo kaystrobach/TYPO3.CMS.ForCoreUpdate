@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,21 +33,21 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-abstract class tslib_content_Abstract {
+abstract class AbstractContentObject {
 
 	/**
-	 * @var tslib_cObj $cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $cObj
 	 */
 	protected $cObj;
 
 	/**
 	 * Default constructor.
 	 *
-	 * @param tslib_cObj $cObj
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $cObj
 	 */
-	public function __construct(tslib_cObj $cObj) {
+	public function __construct(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $cObj) {
 		$this->cObj = $cObj;
-		$this->fileFactory = t3lib_file_Factory::getInstance();
+		$this->fileFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
 	}
 
 	/**
@@ -59,17 +61,18 @@ abstract class tslib_content_Abstract {
 	/**
 	 * Getter for current cObj
 	 *
-	 * @return tslib_cObj
+	 * @return \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	public function getContentObject() {
 		return $this->cObj;
 	}
 
 	/**
-	 * @var t3lib_file_Factory
+	 * @var \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	protected $fileFactory = NULL;
 
 }
+
 
 ?>

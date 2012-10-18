@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,25 +33,25 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_tree_ExtDirect_AbstractExtJsTree extends t3lib_tree_AbstractTree {
+abstract class AbstractExtJsTree extends \TYPO3\CMS\Backend\Tree\AbstractTree {
 
 	/**
 	 * State Provider
 	 *
-	 * @var t3lib_tree_AbstractStateProvider
+	 * @var \TYPO3\CMS\Backend\Tree\AbstractTreeStateProvider
 	 */
 	protected $stateProvider = NULL;
 
 	/**
-	 * @param t3lib_tree_AbstractStateProvider $stateProvider
+	 * @param \TYPO3\CMS\Backend\Tree\AbstractTreeStateProvider $stateProvider
 	 * @return void
 	 */
-	public function setStateProvider(t3lib_tree_AbstractStateProvider $stateProvider) {
+	public function setStateProvider(\TYPO3\CMS\Backend\Tree\AbstractTreeStateProvider $stateProvider) {
 		$this->stateProvider = $stateProvider;
 	}
 
 	/**
-	 * @return t3lib_tree_AbstractStateProvider
+	 * @return \TYPO3\CMS\Backend\Tree\AbstractTreeStateProvider
 	 */
 	public function getStateProvider() {
 		return $this->stateProvider;
@@ -65,5 +67,6 @@ abstract class t3lib_tree_ExtDirect_AbstractExtJsTree extends t3lib_tree_Abstrac
 	abstract public function getNextTreeLevel($nodeId, $nodeData);
 
 }
+
 
 ?>

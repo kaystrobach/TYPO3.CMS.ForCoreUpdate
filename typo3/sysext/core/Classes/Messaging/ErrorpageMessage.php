@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Messaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib/message
  */
-class t3lib_message_ErrorpageMessage extends t3lib_message_AbstractStandaloneMessage {
+class ErrorpageMessage extends \TYPO3\CMS\Core\Messaging\AbstractStandaloneMessage {
 
 	/**
 	 * Constructor for an Error message
@@ -41,11 +43,12 @@ class t3lib_message_ErrorpageMessage extends t3lib_message_AbstractStandaloneMes
 	 * @param string $title Title of the message, can be empty
 	 * @param integer $severity Optional severity, must be either of t3lib_message_AbstractMessage::INFO, t3lib_message_AbstractMessage::OK,
 	 */
-	public function __construct($message = '', $title = '', $severity = t3lib_message_AbstractMessage::ERROR) {
+	public function __construct($message = '', $title = '', $severity = \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR) {
 		$this->setHtmlTemplate(TYPO3_mainDir . 'sysext/t3skin/templates/errorpage-message.html');
 		parent::__construct($message, $title, $severity);
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log;
+
 /***************************************************************
  * Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_LogManager implements t3lib_Singleton {
+class LogManager implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var string
@@ -54,7 +56,7 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	/**
 	 * Default / global / root logger.
 	 *
-	 * @var t3lib_log_Logger
+	 * @var \TYPO3\CMS\Core\Log\Logger
 	 */
 	protected $rootLogger = NULL;
 
@@ -62,7 +64,7 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->rootLogger = t3lib_div::makeInstance('t3lib_log_Logger', '');
+		$this->rootLogger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\Logger', '');
 		$this->loggers[''] = $this->rootLogger;
 	}
 
@@ -85,10 +87,10 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	 * as parameter.
 	 *
 	 * @param string $name Logger name, empty to get the global "root" logger.
-	 * @return t3lib_log_Logger Logger with name $name
+	 * @return \TYPO3\CMS\Core\Log\Logger Logger with name $name
 	 */
 	public function getLogger($name = '') {
-		/** @var $logger t3lib_log_Logger */
+		/** @var $logger \TYPO3\CMS\Core\Log\Logger */
 		$logger = NULL;
 		// Transform class names to the dot-name style
 		$name = str_replace('_', '.', $name);
@@ -96,8 +98,8 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 			$logger = $this->loggers[$name];
 		} else {
 			// Lazy instantiation
-			/** @var $logger t3lib_log_Logger */
-			$logger = t3lib_div::makeInstance('t3lib_log_Logger', $name);
+			/** @var $logger \TYPO3\CMS\Core\Log\Logger */
+			$logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\Logger', $name);
 			$this->loggers[$name] = $logger;
 			$this->setWritersForLogger($logger);
 			$this->setProcessorsForLogger($logger);
@@ -127,20 +129,20 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	/**
 	 * Appends the writers to the given logger as configured.
 	 *
-	 * @param t3lib_log_Logger $logger Logger to configure
+	 * @param \TYPO3\CMS\Core\Log\Logger $logger Logger to configure
 	 * @return void
 	 * @throws RangeException
 	 */
-	protected function setWritersForLogger(t3lib_log_Logger $logger) {
+	protected function setWritersForLogger(\TYPO3\CMS\Core\Log\Logger $logger) {
 		$configuration = $this->getConfigurationForLogger(self::CONFIGURATION_TYPE_WRITER, $logger->getName());
 		foreach ($configuration as $severityLevel => $writer) {
 			foreach ($writer as $logWriterClassName => $logWriterOptions) {
-				/** @var $logWriter t3lib_log_writer_Writer */
+				/** @var $logWriter \TYPO3\CMS\Core\Log\Writer\Writer */
 				$logWriter = NULL;
 				try {
-					$logWriter = t3lib_div::makeInstance($logWriterClassName, $logWriterOptions);
+					$logWriter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($logWriterClassName, $logWriterOptions);
 					$logger->addWriter($severityLevel, $logWriter);
-				} catch (RangeException $e) {
+				} catch (\RangeException $e) {
 					$logger->warning(((((('Instantiation of LogWriter "' . $logWriterClassName) . '" failed for logger ') . $logger->getName()) . ' (') . $e->getMessage()) . ')');
 				}
 			}
@@ -150,20 +152,20 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 	/**
 	 * Appends the processors to the given logger as configured.
 	 *
-	 * @param t3lib_log_Logger $logger Logger to configure
+	 * @param \TYPO3\CMS\Core\Log\Logger $logger Logger to configure
 	 * @return void
 	 * @throws RangeException
 	 */
-	protected function setProcessorsForLogger(t3lib_log_Logger $logger) {
+	protected function setProcessorsForLogger(\TYPO3\CMS\Core\Log\Logger $logger) {
 		$configuration = $this->getConfigurationForLogger(self::CONFIGURATION_TYPE_PROCESSOR, $logger->getName());
 		foreach ($configuration as $severityLevel => $processor) {
 			foreach ($processor as $logProcessorClassName => $logProcessorOptions) {
-				/** @var $logProcessor t3lib_log_processor_Processor */
+				/** @var $logProcessor \TYPO3\CMS\Core\Log\Processor\Processor */
 				$logProcessor = NULL;
 				try {
-					$logProcessor = t3lib_div::makeInstance($logProcessorClassName, $logProcessorOptions);
+					$logProcessor = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($logProcessorClassName, $logProcessorOptions);
 					$logger->addProcessor($severityLevel, $logProcessor);
-				} catch (RangeException $e) {
+				} catch (\RangeException $e) {
 					$logger->warning(((((('Instantiation of LogProcessor "' . $logProcessorClassName) . '" failed for logger ') . $logger->getName()) . ' (') . $e->getMessage()) . ')');
 				}
 			}
@@ -198,14 +200,15 @@ class t3lib_log_LogManager implements t3lib_Singleton {
 		// Validate the config
 		foreach ($result as $level => $unused) {
 			try {
-				t3lib_log_Level::validateLevel($level);
-			} catch (RangeException $e) {
-				throw new RangeException(((((('The given severity level "' . htmlspecialchars($level)) . '" for ') . $configurationKey) . ' of logger "') . $loggerName) . '" is not valid.', 1326406447);
+				\TYPO3\CMS\Core\Log\LogLevel::validateLevel($level);
+			} catch (\RangeException $e) {
+				throw new \RangeException(((((('The given severity level "' . htmlspecialchars($level)) . '" for ') . $configurationKey) . ' of logger "') . $loggerName) . '" is not valid.', 1326406447);
 			}
 		}
 		return $result;
 	}
 
 }
+
 
 ?>

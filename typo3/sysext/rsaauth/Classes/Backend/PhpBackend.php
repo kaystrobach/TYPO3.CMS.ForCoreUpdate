@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,12 +32,12 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
+class PhpBackend extends \TYPO3\CMS\Rsaauth\Backend\AbstractBackend {
 
 	/**
 	 * Creates a new public/private key pair using PHP OpenSSL extension.
 	 *
-	 * @return tx_rsaauth_keypair A new key pair or NULL in case of error
+	 * @return \TYPO3\CMS\Rsaauth\Keypair A new key pair or NULL in case of error
 	 * @see tx_rsaauth_abstract_backend::createNewKeyPair()
 	 */
 	public function createNewKeyPair() {
@@ -53,8 +55,8 @@ class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
 			$publicKey = $this->extractPublicKeyModulus($exportedData);
 			$exponent = $this->extractExponent($exportedData);
 			// Create result object
-			$result = t3lib_div::makeInstance('tx_rsaauth_keypair');
-			/** @var $result tx_rsaauth_keypair */
+			$result = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Rsaauth\\Keypair');
+			/** @var $result \TYPO3\CMS\Rsaauth\Keypair */
 			$result->setExponent($exponent);
 			$result->setPrivateKey($privateKeyStr);
 			$result->setPublicKey($publicKey);
@@ -130,5 +132,6 @@ class tx_rsaauth_php_backend extends tx_rsaauth_abstract_backend {
 	}
 
 }
+
 
 ?>

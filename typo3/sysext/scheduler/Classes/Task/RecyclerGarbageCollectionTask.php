@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage scheduler
  */
-class tx_scheduler_RecyclerGarbageCollection extends tx_scheduler_Task {
+class RecyclerGarbageCollectionTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * Elapsed period since last modification before a file will
@@ -57,7 +59,7 @@ class tx_scheduler_RecyclerGarbageCollection extends tx_scheduler_Task {
 	public function execute() {
 		// There is no file ctime on windows, so this task disables itself if OS = win
 		if (TYPO3_OS == 'WIN') {
-			throw new BadMethodCallException('This task is not reliable for Windows OS', 1308270454);
+			throw new \BadMethodCallException('This task is not reliable for Windows OS', 1308270454);
 		}
 		$seconds = ((60 * 60) * 24) * (int) $this->numberOfDays;
 		$timestamp = $GLOBALS['EXEC_TIME'] - $seconds;
@@ -80,14 +82,14 @@ class tx_scheduler_RecyclerGarbageCollection extends tx_scheduler_Task {
 	 * @return boolean TRUE if success
 	 */
 	protected function cleanupRecycledFiles($directory, $timestamp) {
-		$directory = t3lib_div::getFileAbsFileName($directory);
+		$directory = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($directory);
 		$timestamp = (int) $timestamp;
 		// Check if given directory exists
 		if (!@is_dir($directory)) {
-			throw new RuntimeException(('Given directory "' . $directory) . '" does not exist', 1301614535);
+			throw new \RuntimeException(('Given directory "' . $directory) . '" does not exist', 1301614535);
 		}
 		// Find all _recycler_ directories
-		$directoryContent = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+		$directoryContent = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
 		foreach ($directoryContent as $fileName => $file) {
 			// Skip directories and files without recycler directory in absolute path
 			$filePath = $file->getPath();
@@ -97,7 +99,7 @@ class tx_scheduler_RecyclerGarbageCollection extends tx_scheduler_Task {
 			// Remove files from _recycler_ that where moved to this folder for more than 'number of days'
 			if ($file->isFile() && $timestamp > $file->getCTime()) {
 				if (!@unlink($fileName)) {
-					throw new RuntimeException(('Could not remove file "' . $fileName) . '"', 1301614537);
+					throw new \RuntimeException(('Could not remove file "' . $fileName) . '"', 1301614537);
 				}
 			}
 		}
@@ -105,5 +107,6 @@ class tx_scheduler_RecyclerGarbageCollection extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

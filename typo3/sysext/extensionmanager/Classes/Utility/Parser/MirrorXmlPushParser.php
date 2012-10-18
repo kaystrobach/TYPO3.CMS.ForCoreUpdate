@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Parser;
+
 /***************************************************************
  * Copyright notice
  *
@@ -38,7 +40,7 @@
  * @package Extension Manager
  * @subpackage Utility/Parser
  */
-class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensionmanager_Utility_Parser_MirrorXmlAbstractParser implements SplSubject {
+class MirrorXmlPushParser extends \TYPO3\CMS\Extensionmanager\Utility\Parser\MirrorXmlAbstractParser implements SplSubject {
 
 	/**
 	 * Keeps list of attached observers.
@@ -63,11 +65,11 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 	 *
 	 * @param string $file GZIP stream resource
 	 * @return void
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager in case of XML parser errors
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException in case of XML parser errors
 	 */
 	public function parseXml($file) {
 		if (!is_resource($this->objXml)) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager('Unable to create XML parser.', 1342641009);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Unable to create XML parser.', 1342641009);
 		}
 		// keep original character case of XML document
 		xml_parser_set_option($this->objXml, XML_OPTION_CASE_FOLDING, FALSE);
@@ -76,11 +78,11 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 		xml_set_element_handler($this->objXml, 'startElement', 'endElement');
 		xml_set_character_data_handler($this->objXml, 'characterData');
 		if (!($fp = fopen($file, 'r'))) {
-			throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Unable to open file resource %s.', htmlspecialchars($file)), 1342641010);
+			throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('Unable to open file resource %s.', htmlspecialchars($file)), 1342641010);
 		}
 		while ($data = fread($fp, 4096)) {
 			if (!xml_parse($this->objXml, $data, feof($fp))) {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('XML error %s in line %u of file resource %s.', xml_error_string(xml_get_error_code($this->objXml)), xml_get_current_line_number($this->objXml), htmlspecialchars($file)), 1342641011);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('XML error %s in line %u of file resource %s.', xml_error_string(xml_get_error_code($this->objXml)), xml_get_current_line_number($this->objXml), htmlspecialchars($file)), 1342641011);
 			}
 		}
 		xml_parser_free($this->objXml);
@@ -169,7 +171,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 	 * @return void
 	 * @see $observers, detach(), notify()
 	 */
-	public function attach(SplObserver $observer) {
+	public function attach(\SplObserver $observer) {
 		$this->observers[] = $observer;
 	}
 
@@ -180,7 +182,7 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 	 * @return void
 	 * @see $observers, attach(), notify()
 	 */
-	public function detach(SplObserver $observer) {
+	public function detach(\SplObserver $observer) {
 		$key = array_search($observer, $this->observers, TRUE);
 		if (!($key === FALSE)) {
 			unset($this->observers[$key]);
@@ -201,5 +203,6 @@ class Tx_Extensionmanager_Utility_Parser_MirrorXmlPushParser extends Tx_Extensio
 	}
 
 }
+
 
 ?>

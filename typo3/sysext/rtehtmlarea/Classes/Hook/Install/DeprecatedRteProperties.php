@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Hook\Install;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Stanislas Rolland <typo3@sjbr.ca>
  */
-class tx_rtehtmlarea_deprecatedRteProperties extends Tx_Install_Updates_Base {
+class DeprecatedRteProperties extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	protected $title = 'Deprecated RTE properties in Page TSconfig';
 
@@ -241,5 +243,6 @@ class tx_rtehtmlarea_deprecatedRteProperties extends Tx_Install_Updates_Base {
 	}
 
 }
+
 
 ?>

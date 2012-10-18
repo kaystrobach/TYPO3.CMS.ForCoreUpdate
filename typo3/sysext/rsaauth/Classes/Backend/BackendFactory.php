@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_backendfactory {
+class BackendFactory {
 
 	/**
 	 * A list of all available backends. Currently this list cannot be extended.
@@ -38,8 +40,8 @@ class tx_rsaauth_backendfactory {
 	 * @var array
 	 */
 	static protected $availableBackends = array(
-		'EXT:rsaauth/sv1/backends/class.tx_rsaauth_php_backend.php:tx_rsaauth_php_backend',
-		'EXT:rsaauth/sv1/backends/class.tx_rsaauth_cmdline_backend.php:tx_rsaauth_cmdline_backend'
+		'EXT:rsaauth/sv1/backends/class.tx_rsaauth_php_backend.php:TYPO3\\CMS\\Rsaauth\\Backend\\PhpBackend',
+		'EXT:rsaauth/sv1/backends/class.tx_rsaauth_cmdline_backend.php:TYPO3\\CMS\\Rsaauth\\Backend\\CommandLineBackend'
 	);
 
 	/**
@@ -57,7 +59,7 @@ class tx_rsaauth_backendfactory {
 	 *
 	 * <!-- Please, keep the variable type! It helps IDEs to provide autocomple! -->
 	 *
-	 * @var tx_rsaauth_abstract_backend
+	 * @var \TYPO3\CMS\Rsaauth\Backend\AbstractBackend
 	 */
 	static protected $selectedBackend = NULL;
 
@@ -66,16 +68,16 @@ class tx_rsaauth_backendfactory {
 	 * is derieved from the tx_rsaauth_abstract_backend. Applications should
 	 * not use any methods that are not declared in the tx_rsaauth_abstract_backend.
 	 *
-	 * @return tx_rsaauth_abstract_backend A backend
+	 * @return \TYPO3\CMS\Rsaauth\Backend\AbstractBackend A backend
 	 */
 	static public function getBackend() {
 		if (!self::$initialized) {
 			// Backend does not exist yet. Create it.
 			foreach (self::$availableBackends as $backend) {
-				$backendObject = t3lib_div::getUserObj($backend);
+				$backendObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($backend);
 				// Check that it is derieved from the proper base class
-				if ($backendObject instanceof tx_rsaauth_abstract_backend) {
-					/** @var $backendObject tx_rsaauth_abstract_backend */
+				if ($backendObject instanceof \TYPO3\CMS\Rsaauth\Backend\AbstractBackend) {
+					/** @var $backendObject \TYPO3\CMS\Rsaauth\Backend\AbstractBackend */
 					if ($backendObject->isAvailable()) {
 						// The backend is available, save it and stop the loop
 						self::$selectedBackend = $backendObject;
@@ -91,5 +93,6 @@ class tx_rsaauth_backendfactory {
 	}
 
 }
+
 
 ?>

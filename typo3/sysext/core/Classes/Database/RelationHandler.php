@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_loadDBGroup {
+class RelationHandler {
 
 	// External, static
 	// Means that only uid and the label-field is returned
@@ -191,11 +193,11 @@ class t3lib_loadDBGroup {
 		if ($this->MM_is_foreign) {
 			$tmp = $conf['type'] === 'group' ? $conf['allowed'] : $conf['foreign_table'];
 			// Normally, $conf['allowed'] can contain a list of tables, but as we are looking at a MM relation from the foreign side, it only makes sense to allow one one table in $conf['allowed']
-			$tmp = t3lib_div::trimExplode(',', $tmp);
+			$tmp = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $tmp);
 			$this->MM_oppositeTable = $tmp[0];
 			unset($tmp);
 			// Only add the current table name if there is more than one allowed field
-			t3lib_div::loadTCA($this->MM_oppositeTable);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($this->MM_oppositeTable);
 			// We must be sure this has been done at least once before accessing the "columns" part of TCA for a table.
 			$this->MM_oppositeFieldConf = $GLOBALS['TCA'][$this->MM_oppositeTable]['columns'][$this->MM_oppositeField]['config'];
 			if ($this->MM_oppositeFieldConf['allowed']) {
@@ -211,7 +213,7 @@ class t3lib_loadDBGroup {
 			$tablelist = implode(',', array_keys($GLOBALS['TCA']));
 		}
 		// The tables are traversed and internal arrays are initialized:
-		$tempTableArray = t3lib_div::trimExplode(',', $tablelist, 1);
+		$tempTableArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $tablelist, 1);
 		foreach ($tempTableArray as $key => $val) {
 			$tName = trim($val);
 			$this->tableArray[$tName] = array();
@@ -272,7 +274,7 @@ class t3lib_loadDBGroup {
 	 */
 	public function readList($itemlist) {
 		if ((string) trim($itemlist) != '') {
-			$tempItemArray = t3lib_div::trimExplode(',', $itemlist);
+			$tempItemArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $itemlist);
 			// Changed to trimExplode 31/3 04; HMENU special type "list" didn't work if there were spaces in the list... I suppose this is better overall...
 			foreach ($tempItemArray as $key => $val) {
 				// Will be set to "1" if the entry was a real table/id:
@@ -282,7 +284,7 @@ class t3lib_loadDBGroup {
 				$parts = explode('_', $val, 2);
 				$theID = strrev($parts[0]);
 				// Check that the id IS an integer:
-				if (t3lib_utility_Math::canBeInterpretedAsInteger($theID)) {
+				if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($theID)) {
 					// Get the table name: If a part of the exploded string, use that. Otherwise if the id number is LESS than zero, use the second table, otherwise the first table
 					$theTable = trim($parts[1]) ? strrev(trim($parts[1])) : ($this->secondTable && $theID < 0 ? $this->secondTable : $this->firstTable);
 					// If the ID is not blank and the table name is among the names in the inputted tableList, then proceed:
@@ -601,7 +603,7 @@ class t3lib_loadDBGroup {
 		}
 		// Use the deleteClause (e.g. "deleted=0") on this table
 		if ($useDeleteClause) {
-			$whereClause .= t3lib_BEfunc::deleteClause($foreign_table);
+			$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($foreign_table);
 		}
 		// If it's requested to look for the parent uid AND the parent table,
 		// add an additional SQL-WHERE clause
@@ -613,9 +615,9 @@ class t3lib_loadDBGroup {
 			$whereClause .= ((' AND ' . $field) . '=') . $GLOBALS['TYPO3_DB']->fullQuoteStr($value, $foreign_table);
 		}
 		// Select children in the same workspace:
-		if (t3lib_BEfunc::isTableWorkspaceEnabled($this->currentTable) && t3lib_BEfunc::isTableWorkspaceEnabled($foreign_table)) {
-			$currentRecord = t3lib_BEfunc::getRecord($this->currentTable, $uid, 't3ver_wsid', '', $useDeleteClause);
-			$whereClause .= t3lib_BEfunc::getWorkspaceWhereClause($foreign_table, $currentRecord['t3ver_wsid']);
+		if (\TYPO3\CMS\Backend\Utility\BackendUtility::isTableWorkspaceEnabled($this->currentTable) && \TYPO3\CMS\Backend\Utility\BackendUtility::isTableWorkspaceEnabled($foreign_table)) {
+			$currentRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($this->currentTable, $uid, 't3ver_wsid', '', $useDeleteClause);
+			$whereClause .= \TYPO3\CMS\Backend\Utility\BackendUtility::getWorkspaceWhereClause($foreign_table, $currentRecord['t3ver_wsid']);
 		}
 		// Get the correct sorting field
 		// Specific manual sortby for data handled by this field
@@ -674,12 +676,12 @@ class t3lib_loadDBGroup {
 		$foreign_table_field = $conf['foreign_table_field'];
 		$foreign_match_fields = is_array($conf['foreign_match_fields']) ? $conf['foreign_match_fields'] : array();
 		// If there are table items and we have a proper $parentUid
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($parentUid) && count($this->tableArray)) {
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($parentUid) && count($this->tableArray)) {
 			// If updateToUid is not a positive integer, set it to '0', so it will be ignored
-			if (!(t3lib_utility_Math::canBeInterpretedAsInteger($updateToUid) && $updateToUid > 0)) {
+			if (!(\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($updateToUid) && $updateToUid > 0)) {
 				$updateToUid = 0;
 			}
-			$considerWorkspaces = $GLOBALS['BE_USER']->workspace !== 0 && t3lib_BEfunc::isTableWorkspaceEnabled($foreign_table);
+			$considerWorkspaces = $GLOBALS['BE_USER']->workspace !== 0 && \TYPO3\CMS\Backend\Utility\BackendUtility::isTableWorkspaceEnabled($foreign_table);
 			$fields = 'uid,' . $foreign_field;
 			// Consider the symmetric field if defined:
 			if ($symmetric_field) {
@@ -695,7 +697,7 @@ class t3lib_loadDBGroup {
 				$table = $val['table'];
 				// Fetch the current (not overwritten) relation record if we should handle symmetric relations
 				if ($symmetric_field || $considerWorkspaces) {
-					$row = t3lib_BEfunc::getRecord($table, $uid, $fields, '', FALSE);
+					$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $uid, $fields, '', FALSE);
 				}
 				if ($symmetric_field) {
 					$isOnSymmetricSide = self::isOnSymmetricSide($parentUid, $conf, $row);
@@ -797,7 +799,7 @@ class t3lib_loadDBGroup {
 				$parts = explode('_', $val, 2);
 				$theID = strrev($parts[0]);
 				$theTable = strrev($parts[1]);
-				if (t3lib_utility_Math::canBeInterpretedAsInteger($theID) && ((!$theTable || !strcmp($theTable, $fTable)) || !strcmp($theTable, $nfTable))) {
+				if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($theID) && ((!$theTable || !strcmp($theTable, $fTable)) || !strcmp($theTable, $nfTable))) {
 					$valueArray[$key] = $theTable && strcmp($theTable, $fTable) ? $theID * -1 : $theID;
 				}
 			}
@@ -863,7 +865,7 @@ class t3lib_loadDBGroup {
 		foreach ($this->itemArray as $key => $val) {
 			$theRow = $this->results[$val['table']][$val['id']];
 			if ($theRow && is_array($GLOBALS['TCA'][$val['table']])) {
-				$label = t3lib_div::fixed_lgd_cs(strip_tags(t3lib_BEfunc::getRecordTitle($val['table'], $theRow)), $titleLen);
+				$label = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(strip_tags(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($val['table'], $theRow)), $titleLen);
 				$label = $label ? $label : '[...]';
 				$output[] = str_replace(',', '', ((($val['table'] . '_') . $val['id']) . '|') . rawurlencode($label));
 			}
@@ -898,8 +900,8 @@ class t3lib_loadDBGroup {
 	 */
 	public function updateRefIndex($table, $id) {
 		if ($this->updateReferenceIndex === TRUE) {
-			/** @var $refIndexObj t3lib_refindex */
-			$refIndexObj = t3lib_div::makeInstance('t3lib_refindex');
+			/** @var $refIndexObj \TYPO3\CMS\Core\Database\ReferenceIndex */
+			$refIndexObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 			return $refIndexObj->updateRefIndexTable($table, $id);
 		}
 	}
@@ -914,9 +916,10 @@ class t3lib_loadDBGroup {
 	 * @todo Define visibility
 	 */
 	public function isOnSymmetricSide($parentUid, $parentConf, $childRec) {
-		return (t3lib_utility_Math::canBeInterpretedAsInteger($childRec['uid']) && $parentConf['symmetric_field']) && $parentUid == $childRec[$parentConf['symmetric_field']] ? TRUE : FALSE;
+		return (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($childRec['uid']) && $parentConf['symmetric_field']) && $parentUid == $childRec[$parentConf['symmetric_field']] ? TRUE : FALSE;
 	}
 
 }
+
 
 ?>

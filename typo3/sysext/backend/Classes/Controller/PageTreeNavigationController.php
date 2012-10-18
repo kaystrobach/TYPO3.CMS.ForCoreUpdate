@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Main script class for the page tree navigation frame
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_alt_db_navframe {
+class PageTreeNavigationController {
 
 	// Internal:
 	/**
@@ -22,7 +24,7 @@ class SC_alt_db_navframe {
 	/**
 	 * document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -77,13 +79,13 @@ class SC_alt_db_navframe {
 		// Setting backPath
 		$this->backPath = $GLOBALS['BACK_PATH'];
 		// Setting GPvars:
-		$this->cMR = t3lib_div::_GP('cMR');
-		$this->currentSubScript = t3lib_div::_GP('currentSubScript');
-		$this->setTempDBmount = t3lib_div::_GP('setTempDBmount');
+		$this->cMR = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cMR');
+		$this->currentSubScript = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('currentSubScript');
+		$this->setTempDBmount = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('setTempDBmount');
 		// look for User setting
 		$this->hasFilterBox = !$GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.hideFilter');
 		// Create page tree object:
-		$this->pagetree = t3lib_div::makeInstance('webPageTree');
+		$this->pagetree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\PageTreeView');
 		$this->pagetree->ext_IconMode = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.disableIconLinkToContextmenu');
 		$this->pagetree->ext_showPageId = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showPageIdWithTitle');
 		$this->pagetree->ext_showNavTitle = $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.showNavTitle');
@@ -116,7 +118,7 @@ class SC_alt_db_navframe {
 			$hlClass = $GLOBALS['BE_USER']->workspace === 0 ? 'active' : 'active active-ws wsver' . $GLOBALS['BE_USER']->workspace;
 		}
 		// Create template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/alt_db_navframe.html');
 		$this->doc->showFlashMessages = FALSE;
@@ -166,9 +168,9 @@ class SC_alt_db_navframe {
 		// Outputting Temporary DB mount notice:
 		if ($this->active_tempMountPoint) {
 			$flashText = ((((((((('
-				<a href="' . htmlspecialchars(t3lib_div::linkThisScript(array('setTempDBmount' => 0)))) . '">') . $GLOBALS['LANG']->sl('LLL:EXT:lang/locallang_core.xml:labels.temporaryDBmount', 1)) . '</a>		<br />') . $GLOBALS['LANG']->sl('LLL:EXT:lang/locallang_core.xml:labels.path', 1)) . ': <span title="') . htmlspecialchars($this->active_tempMountPoint['_thePathFull'])) . '">') . htmlspecialchars(t3lib_div::fixed_lgd_cs($this->active_tempMountPoint['_thePath'], -50))) . '</span>
+				<a href="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::linkThisScript(array('setTempDBmount' => 0)))) . '">') . $GLOBALS['LANG']->sl('LLL:EXT:lang/locallang_core.xml:labels.temporaryDBmount', 1)) . '</a>		<br />') . $GLOBALS['LANG']->sl('LLL:EXT:lang/locallang_core.xml:labels.path', 1)) . ': <span title="') . htmlspecialchars($this->active_tempMountPoint['_thePathFull'])) . '">') . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($this->active_tempMountPoint['_thePath'], -50))) . '</span>
 			';
-			$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $flashText, '', t3lib_FlashMessage::INFO);
+			$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $flashText, '', \TYPO3\CMS\Core\Messaging\FlashMessage::INFO);
 			$this->content .= $flashMessage->render();
 		}
 		// Outputting page tree:
@@ -180,7 +182,7 @@ class SC_alt_db_navframe {
 		// Setting up the buttons and markers for docheader
 		$docHeaderButtons = $this->getButtons();
 		$markers = array(
-			'IMG_RESET' => t3lib_iconWorks::getSpriteIcon('actions-document-close', array(
+			'IMG_RESET' => \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-close', array(
 				'id' => 'treeFilterReset',
 				'alt' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.resetFilter'),
 				'title' => $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.resetFilter')
@@ -223,14 +225,14 @@ class SC_alt_db_navframe {
 		);
 		// New Page
 		$onclickNewPageWizard = 'top.content.list_frame.location.href=top.TS.PATH_typo3+\'db_new.php?pagesOnly=1&amp;id=\'+Tree.pageID;';
-		$buttons['new_page'] = ((((('<a href="#" onclick="' . $onclickNewPageWizard) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:newPage', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-page-new')) . '</a>';
+		$buttons['new_page'] = ((((('<a href="#" onclick="' . $onclickNewPageWizard) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:newPage', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-page-new')) . '</a>';
 		// Refresh
-		$buttons['refresh'] = ((((('<a href="' . htmlspecialchars(t3lib_div::getIndpEnv('REQUEST_URI'))) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.refresh', TRUE)) . '">') . t3lib_iconWorks::getSpriteIcon('actions-system-refresh')) . '</a>';
+		$buttons['refresh'] = ((((('<a href="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'))) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.refresh', TRUE)) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-refresh')) . '</a>';
 		// CSH
-		$buttons['csh'] = str_replace('typo3-csh-inline', 'typo3-csh-inline show-right', t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'pagetree', $GLOBALS['BACK_PATH'], '', TRUE));
+		$buttons['csh'] = str_replace('typo3-csh-inline', 'typo3-csh-inline show-right', \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'pagetree', $GLOBALS['BACK_PATH'], '', TRUE));
 		// Filter
 		if ($this->hasFilterBox) {
-			$buttons['filter'] = ('<a href="#" id="tree-toolbar-filter-item">' . t3lib_iconWorks::getSpriteIcon('actions-system-tree-search-open', array('title' => $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:labels.filter', 1)))) . '</a>';
+			$buttons['filter'] = ('<a href="#" id="tree-toolbar-filter-item">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-tree-search-open', array('title' => $GLOBALS['LANG']->sL('LLL:EXT:cms/layout/locallang.xml:labels.filter', 1)))) . '</a>';
 		}
 		return $buttons;
 	}
@@ -241,10 +243,10 @@ class SC_alt_db_navframe {
 	 * @return string HTML containing workspace info
 	 */
 	protected function getWorkspaceInfo() {
-		if (t3lib_extMgm::isLoaded('workspaces') && ($GLOBALS['BE_USER']->workspace !== 0 || $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.onlineWorkspaceInfo'))) {
-			$wsTitle = htmlspecialchars(tx_Workspaces_Service_Workspaces::getWorkspaceTitle($GLOBALS['BE_USER']->workspace));
+		if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('workspaces') && ($GLOBALS['BE_USER']->workspace !== 0 || $GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.onlineWorkspaceInfo'))) {
+			$wsTitle = htmlspecialchars(\tx_Workspaces_Service_Workspaces::getWorkspaceTitle($GLOBALS['BE_USER']->workspace));
 			$workspaceInfo = (('
-				<div class="bgColor4 workspace-info">' . t3lib_iconWorks::getSpriteIcon('apps-toolbar-menu-workspace', array(
+				<div class="bgColor4 workspace-info">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-toolbar-menu-workspace', array(
 				'title' => $wsTitle,
 				'onclick' => 'top.goToModule(\'web_WorkspacesWorkspaces\');',
 				'style' => 'cursor:pointer;'
@@ -268,7 +270,7 @@ class SC_alt_db_navframe {
 	public function initializeTemporaryDBmount() {
 		// Set/Cancel Temporary DB Mount:
 		if (strlen($this->setTempDBmount)) {
-			$set = t3lib_utility_Math::forceIntegerInRange($this->setTempDBmount, 0);
+			$set = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->setTempDBmount, 0);
 			if ($set > 0 && $GLOBALS['BE_USER']->isInWebMount($set)) {
 				// Setting...:
 				$this->settingTemporaryMountPoint($set);
@@ -281,7 +283,7 @@ class SC_alt_db_navframe {
 		$temporaryMountPoint = intval($GLOBALS['BE_USER']->getSessionData('pageTree_temporaryMountPoint'));
 		// If mount point ID existed and is within users real mount points, then set it temporarily:
 		if ($temporaryMountPoint > 0 && $GLOBALS['BE_USER']->isInWebMount($temporaryMountPoint)) {
-			if ($this->active_tempMountPoint = t3lib_BEfunc::readPageAccess($temporaryMountPoint, $GLOBALS['BE_USER']->getPagePermsClause(1))) {
+			if ($this->active_tempMountPoint = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($temporaryMountPoint, $GLOBALS['BE_USER']->getPagePermsClause(1))) {
 				$this->pagetree->MOUNTS = array($temporaryMountPoint);
 			} else {
 				// Clear temporary mount point as we have no access to it any longer
@@ -311,7 +313,7 @@ class SC_alt_db_navframe {
 	 * Called by typo3/ajax.php
 	 *
 	 * @param array $params Additional parameters (not used here)
-	 * @param TYPO3AJAX $ajaxObj The TYPO3AJAX object of this request
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The TYPO3AJAX object of this request
 	 * @return void
 	 */
 	public function ajaxExpandCollapse($params, $ajaxObj) {
@@ -325,5 +327,6 @@ class SC_alt_db_navframe {
 	}
 
 }
+
 
 ?>

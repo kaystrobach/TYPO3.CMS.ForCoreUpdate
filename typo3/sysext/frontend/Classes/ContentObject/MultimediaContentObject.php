@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Multimedia extends tslib_content_Abstract {
+class MultimediaContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, MULTIMEDIA
@@ -44,8 +46,8 @@ class tslib_content_Multimedia extends tslib_content_Abstract {
 		$filename = isset($conf['file.']) ? $this->cObj->stdWrap($conf['file'], $conf['file.']) : $conf['file'];
 		$incFile = $GLOBALS['TSFE']->tmpl->getFileName($filename);
 		if ($incFile) {
-			$fileinfo = t3lib_div::split_fileref($incFile);
-			if (t3lib_div::inList('txt,html,htm', $fileinfo['fileext'])) {
+			$fileinfo = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($incFile);
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('txt,html,htm', $fileinfo['fileext'])) {
 				$content = $GLOBALS['TSFE']->tmpl->fileContent($incFile);
 			} else {
 				// Default params...
@@ -60,19 +62,19 @@ class tslib_content_Multimedia extends tslib_content_Abstract {
 					$height = 200;
 				}
 				$parArray['src'] = (('src="' . $GLOBALS['TSFE']->absRefPrefix) . $incFile) . '"';
-				if (t3lib_div::inList('au,wav,mp3', $fileinfo['fileext'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('au,wav,mp3', $fileinfo['fileext'])) {
 
 				}
-				if (t3lib_div::inList('avi,mov,mpg,asf,wmv', $fileinfo['fileext'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('avi,mov,mpg,asf,wmv', $fileinfo['fileext'])) {
 					$parArray['width'] = ('width="' . $width) . '"';
 					$parArray['height'] = ('height="' . $height) . '"';
 				}
-				if (t3lib_div::inList('swf,swa,dcr', $fileinfo['fileext'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('swf,swa,dcr', $fileinfo['fileext'])) {
 					$parArray['quality'] = 'quality="high"';
 					$parArray['width'] = ('width="' . $width) . '"';
 					$parArray['height'] = ('height="' . $height) . '"';
 				}
-				if (t3lib_div::inList('class', $fileinfo['fileext'])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('class', $fileinfo['fileext'])) {
 					$parArray['width'] = ('width="' . $width) . '"';
 					$parArray['height'] = ('height="' . $height) . '"';
 				}
@@ -106,5 +108,6 @@ class tslib_content_Multimedia extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

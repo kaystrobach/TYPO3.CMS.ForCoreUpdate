@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Tests\Unit;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -24,7 +26,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Testcase for class "tx_install"
  *
@@ -32,7 +33,7 @@
  * @subpackage tx_install
  * @author Christian Kuhn <lolli@schwarzbu.ch>
  */
-class tx_install_Test extends tx_phpunit_testcase {
+class InstallToolTest extends tx_phpunit_testcase {
 
 	/**
 	 * @var boolean Enable backup of global and system variables
@@ -66,18 +67,15 @@ class tx_install_Test extends tx_phpunit_testcase {
 	 */
 	public function generateConfigFormThrowsNoWarningHandlingContentOfTypo3ConfVarsExtensionAdded() {
 		$GLOBALS['TYPO3_CONF_VARS_extensionAdded'] = array();
-			// The '/r' triggers a warning if the content is not properly quoted in the regex
+		// The '/r' triggers a warning if the content is not properly quoted in the regex
 		$GLOBALS['TYPO3_CONF_VARS_extensionAdded']['key1']['key2'] = 'FILE:EXT:rtehtmlarea/res';
 		$GLOBALS['TYPO3_CONF_VARS'] = array();
 		$GLOBALS['TYPO3_CONF_VARS']['key1']['key2'] = 'foo';
-
 		set_error_handler(array($this, 'errorHandlerCallback'), E_ALL & ~(E_STRICT | E_NOTICE));
 		$this->customErrorHandlerUsed = TRUE;
-
-		require_once(PATH_site . 'typo3/sysext/install/mod/class.tx_install.php');
-
-			/** @var $instance tx_install */
-		$instance = $this->getMock('tx_install', array('otherMethod'), array('otherMethod'), '', FALSE);
+		require_once PATH_site . 'typo3/sysext/install/mod/class.tx_install.php';
+		/** @var $instance \TYPO3\CMS\Install\Installer */
+		$instance = $this->getMock('TYPO3\\CMS\\Install\\Installer', array('otherMethod'), array('otherMethod'), '', FALSE);
 		$instance->generateConfigForm('get_form');
 	}
 
@@ -89,7 +87,10 @@ class tx_install_Test extends tx_phpunit_testcase {
 	 * @throws Exception
 	 */
 	public function errorHandlerCallback($errorNumber) {
-		throw new Exception ('Error thrown');
+		throw new \Exception('Error thrown');
 	}
+
 }
+
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Authentication;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -41,7 +43,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_feUserAuth extends t3lib_userAuth {
+class FrontendUserAuthtenication extends \TYPO3\CMS\Core\Authentication\AbstractUserAuthentication {
 
 	// formfield with 0 or 1 // 1 = permanent login enabled // 0 = session is valid for a browser session only
 	/**
@@ -225,9 +227,9 @@ class tslib_feUserAuth extends t3lib_userAuth {
 		$loginData = parent::getLoginFormData();
 		if ($GLOBALS['TYPO3_CONF_VARS']['FE']['permalogin'] == 0 || $GLOBALS['TYPO3_CONF_VARS']['FE']['permalogin'] == 1) {
 			if ($this->getMethodEnabled) {
-				$isPermanent = t3lib_div::_GP($this->formfield_permanent);
+				$isPermanent = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($this->formfield_permanent);
 			} else {
-				$isPermanent = t3lib_div::_POST($this->formfield_permanent);
+				$isPermanent = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($this->formfield_permanent);
 			}
 			if (strlen($isPermanent) != 1) {
 				$isPermanent = $GLOBALS['TYPO3_CONF_VARS']['FE']['permalogin'];
@@ -269,33 +271,33 @@ class tslib_feUserAuth extends t3lib_userAuth {
 		$authInfo = $this->getAuthInfoArray();
 		if ($this->writeDevLog) {
 			if (is_array($this->user)) {
-				t3lib_div::devLog('Get usergroups for user: ' . t3lib_div::arrayToLogString($this->user, array($this->userid_column, $this->username_column)), 'tslib_feUserAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Get usergroups for user: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($this->user, array($this->userid_column, $this->username_column)), 'TYPO3\\CMS\\Frontend\\Authentication\\FrontendUserAuthtenication');
 			} else {
-				t3lib_div::devLog('Get usergroups for "anonymous" user', 'tslib_feUserAuth');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Get usergroups for "anonymous" user', 'TYPO3\\CMS\\Frontend\\Authentication\\FrontendUserAuthtenication');
 			}
 		}
 		$groupDataArr = array();
 		// Use 'auth' service to find the groups for the user
 		$serviceChain = '';
 		$subType = 'getGroups' . $this->loginType;
-		while (is_object($serviceObj = t3lib_div::makeInstanceService('auth', $subType, $serviceChain))) {
+		while (is_object($serviceObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('auth', $subType, $serviceChain))) {
 			$serviceChain .= ',' . $serviceObj->getServiceKey();
 			$serviceObj->initAuth($subType, array(), $authInfo, $this);
 			$groupData = $serviceObj->getGroups($this->user, $groupDataArr);
 			if (is_array($groupData) && count($groupData)) {
 				// Keys in $groupData should be unique ids of the groups (like "uid") so this function will override groups.
-				$groupDataArr = t3lib_div::array_merge($groupDataArr, $groupData);
+				$groupDataArr = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge($groupDataArr, $groupData);
 			}
 			unset($serviceObj);
 		}
 		if ($this->writeDevLog && $serviceChain) {
-			t3lib_div::devLog(($subType . ' auth services called: ') . $serviceChain, 'tslib_feUserAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(($subType . ' auth services called: ') . $serviceChain, 'TYPO3\\CMS\\Frontend\\Authentication\\FrontendUserAuthtenication');
 		}
 		if ($this->writeDevLog && !count($groupDataArr)) {
-			t3lib_div::devLog('No usergroups found by services', 'tslib_feUserAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('No usergroups found by services', 'TYPO3\\CMS\\Frontend\\Authentication\\FrontendUserAuthtenication');
 		}
 		if ($this->writeDevLog && count($groupDataArr)) {
-			t3lib_div::devLog(count($groupDataArr) . ' usergroup records found by services', 'tslib_feUserAuth');
+			\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(count($groupDataArr) . ' usergroup records found by services', 'TYPO3\\CMS\\Frontend\\Authentication\\FrontendUserAuthtenication');
 		}
 		// Use 'auth' service to check the usergroups if they are really valid
 		foreach ($groupDataArr as $groupData) {
@@ -303,13 +305,13 @@ class tslib_feUserAuth extends t3lib_userAuth {
 			$validGroup = TRUE;
 			$serviceChain = '';
 			$subType = 'authGroups' . $this->loginType;
-			while (is_object($serviceObj = t3lib_div::makeInstanceService('auth', $subType, $serviceChain))) {
+			while (is_object($serviceObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstanceService('auth', $subType, $serviceChain))) {
 				$serviceChain .= ',' . $serviceObj->getServiceKey();
 				$serviceObj->initAuth($subType, array(), $authInfo, $this);
 				if (!$serviceObj->authGroup($this->user, $groupData)) {
 					$validGroup = FALSE;
 					if ($this->writeDevLog) {
-						t3lib_div::devLog(($subType . ' auth service did not auth group: ') . t3lib_div::arrayToLogString($groupData, 'uid,title'), 'tslib_feUserAuth', 2);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::devLog(($subType . ' auth service did not auth group: ') . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($groupData, 'uid,title'), 'TYPO3\\CMS\\Frontend\\Authentication\\FrontendUserAuthtenication', 2);
 					}
 					break;
 				}
@@ -347,9 +349,9 @@ class tslib_feUserAuth extends t3lib_userAuth {
 	public function getUserTSconf() {
 		if (!$this->userTSUpdated) {
 			// Parsing the user TS (or getting from cache)
-			$this->TSdataArray = t3lib_TSparser::checkIncludeLines_array($this->TSdataArray);
+			$this->TSdataArray = \TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser::checkIncludeLines_array($this->TSdataArray);
 			$userTS = implode((LF . '[GLOBAL]') . LF, $this->TSdataArray);
-			$parseObj = t3lib_div::makeInstance('t3lib_TSparser');
+			$parseObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\Parser\\TypoScriptParser');
 			$parseObj->parse($userTS);
 			$this->userTS = $parseObj->setup;
 			$this->userTSUpdated = 1;
@@ -584,5 +586,6 @@ class tslib_feUserAuth extends t3lib_userAuth {
 	}
 
 }
+
 
 ?>

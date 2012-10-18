@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_User extends tslib_content_Abstract {
+class UserContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, USER
@@ -47,7 +49,7 @@ class tslib_content_User extends tslib_content_Abstract {
 		$content = '';
 		if ($this->cObj->getUserObjectType() === FALSE) {
 			// Come here only if we are not called from $TSFE->INTincScript_process()!
-			$this->cObj->setUserObjectType(tslib_cObj::OBJECTTYPE_USER);
+			$this->cObj->setUserObjectType(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::OBJECTTYPE_USER);
 		}
 		$this->cObj->includeLibs($conf);
 		$tempContent = $this->cObj->callUserFunction($conf['userFunc'], $conf, '');
@@ -65,5 +67,6 @@ class tslib_content_User extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

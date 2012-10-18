@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Collection;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_collection_Persistable
+interface PersistableCollectionInterface
 {
 	/**
 	 * Get the identifier of the collection
@@ -66,7 +68,7 @@ interface t3lib_collection_Persistable
 	 *
 	 * @param integer|string $id
 	 * @param boolean $fillItems Populates the entries directly on load, might be bad for memory on large collections
-	 * @return t3lib_collection_Collection
+	 * @return \TYPO3\CMS\Core\Collection\CollectionInterface
 	 */
 	static public function load($id, $fillItems = FALSE);
 
@@ -92,4 +94,5 @@ interface t3lib_collection_Persistable
 	public function loadContents();
 
 }
+
 ?>

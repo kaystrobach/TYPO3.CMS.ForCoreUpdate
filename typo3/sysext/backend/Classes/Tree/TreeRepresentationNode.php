@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_RepresentationNode extends t3lib_tree_Node {
+class TreeRepresentationNode extends \TYPO3\CMS\Backend\Tree\TreeNode {
 
 	/**
 	 * Node Label
@@ -181,5 +183,6 @@ class t3lib_tree_RepresentationNode extends t3lib_tree_Node {
 	}
 
 }
+
 
 ?>

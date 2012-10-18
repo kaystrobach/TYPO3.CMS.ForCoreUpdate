@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @author Ingo Renner <ingo@typo3.org>
  * @api
  */
-class t3lib_cache_backend_DbBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_TaggableBackend {
+class Typo3DatabaseBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * @var integer Timestamp of 2038-01-01)
@@ -94,11 +96,11 @@ class t3lib_cache_backend_DbBackend extends t3lib_cache_backend_AbstractBackend 
 	/**
 	 * Set cache frontend instance and calculate data and tags table name
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The frontend for this backend
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The frontend for this backend
 	 * @return void
 	 * @api
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache) {
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		parent::setCache($cache);
 		$this->cacheTable = 'cf_' . $this->cacheIdentifier;
 		$this->tagsTable = ('cf_' . $this->cacheIdentifier) . '_tags';
@@ -128,13 +130,13 @@ class t3lib_cache_backend_DbBackend extends t3lib_cache_backend_AbstractBackend 
 	 * @param array $tags Tags to associate with this cache entry
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited liftime.
 	 * @return void
-	 * @throws \t3lib_cache_Exception if no cache frontend has been set.
-	 * @throws \t3lib_cache_exception_InvalidData if the data to be stored is not a string.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if the data to be stored is not a string.
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		$this->throwExceptionIfFrontendDoesNotExist();
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1236518298);
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidDataException(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1236518298);
 		}
 		if (is_null($lifetime)) {
 			$lifetime = $this->defaultLifetime;
@@ -327,12 +329,12 @@ class t3lib_cache_backend_DbBackend extends t3lib_cache_backend_AbstractBackend 
 	/**
 	 * Check if required frontend instance exists
 	 *
-	 * @throws \t3lib_cache_Exception If there is no frontend instance in $this->cache
+	 * @throws \TYPO3\CMS\Core\Cache\Exception If there is no frontend instance in $this->cache
 	 * @return void
 	 */
 	protected function throwExceptionIfFrontendDoesNotExist() {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('No cache frontend has been set via setCache() yet.', 1236518288);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('No cache frontend has been set via setCache() yet.', 1236518288);
 		}
 	}
 
@@ -370,5 +372,6 @@ class t3lib_cache_backend_DbBackend extends t3lib_cache_backend_AbstractBackend 
 	}
 
 }
+
 
 ?>

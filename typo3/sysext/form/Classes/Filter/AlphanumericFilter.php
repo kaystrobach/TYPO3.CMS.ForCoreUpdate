@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Filter;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Filter_Alphanumeric implements tx_form_System_Filter_Interface {
+class AlphanumericFilter implements \TYPO3\CMS\Form\Filter\FilterInterface {
 
 	/**
 	 * Allow whitespace
@@ -71,5 +73,6 @@ class tx_form_System_Filter_Alphanumeric implements tx_form_System_Filter_Interf
 	}
 
 }
+
 
 ?>

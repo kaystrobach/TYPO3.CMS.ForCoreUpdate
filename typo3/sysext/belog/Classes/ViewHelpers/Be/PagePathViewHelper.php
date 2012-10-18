@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\ViewHelpers\Be;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_ViewHelpers_Be_PagePathViewHelper extends Tx_Fluid_ViewHelpers_Be_AbstractBackendViewHelper {
+class PagePathViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Be\AbstractBackendViewHelper {
 
 	/**
 	 * Resolve page id to page path string (with automatic cropping to maximum given length).
@@ -40,9 +42,10 @@ class Tx_Belog_ViewHelpers_Be_PagePathViewHelper extends Tx_Fluid_ViewHelpers_Be
 	 * @return string Page path string
 	 */
 	public function render($pid, $titleLimit = 20) {
-		return t3lib_BEfunc::getRecordPath($pid, '', $titleLimit);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordPath($pid, '', $titleLimit);
 	}
 
 }
+
 
 ?>

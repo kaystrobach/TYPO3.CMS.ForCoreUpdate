@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Configuration\TypoScript\ConditionMatching;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_matchCondition_abstract {
+abstract class AbstractConditionMatcher {
 
 	/**
 	 * Id of the current page.
@@ -204,13 +206,13 @@ abstract class t3lib_matchCondition_abstract {
 	 * @return mixed Returns TRUE or FALSE based on the evaluation
 	 */
 	protected function evaluateConditionCommon($key, $value) {
-		if (t3lib_div::inList('browser,version,system,useragent', strtolower($key))) {
-			$browserInfo = $this->getBrowserInfo(t3lib_div::getIndpEnv('HTTP_USER_AGENT'));
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('browser,version,system,useragent', strtolower($key))) {
+			$browserInfo = $this->getBrowserInfo(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_USER_AGENT'));
 		}
-		$keyParts = t3lib_div::trimExplode('|', $key);
+		$keyParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $key);
 		switch ($keyParts[0]) {
 		case 'browser':
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			// take all identified browsers into account, eg chrome deliver
 			// webkit=>532.5, chrome=>4.1, safari=>532.5
 			// so comparing string will be
@@ -226,7 +228,7 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			break;
 		case 'version':
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			foreach ($values as $test) {
 				if (strcspn($test, '=<>') == 0) {
 					switch (substr($test, 0, 1)) {
@@ -252,7 +254,7 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			break;
 		case 'system':
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			// Take all identified systems into account, e.g. mac for iOS, Linux
 			// for android and Windows NT for Windows XP
 			$allSystems .= ' ' . implode(' ', $browserInfo['all_systems']);
@@ -264,9 +266,9 @@ abstract class t3lib_matchCondition_abstract {
 			break;
 		case 'device':
 			if (!isset($this->deviceInfo)) {
-				$this->deviceInfo = $this->getDeviceType(t3lib_div::getIndpEnv('HTTP_USER_AGENT'));
+				$this->deviceInfo = $this->getDeviceType(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_USER_AGENT'));
 			}
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			foreach ($values as $test) {
 				if ($this->deviceInfo == $test) {
 					return TRUE;
@@ -280,25 +282,25 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			break;
 		case 'language':
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			foreach ($values as $test) {
 				if (preg_match('/^\\*.+\\*$/', $test)) {
-					$allLanguages = preg_split('/[,;]/', t3lib_div::getIndpEnv('HTTP_ACCEPT_LANGUAGE'));
+					$allLanguages = preg_split('/[,;]/', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_ACCEPT_LANGUAGE'));
 					if (in_array(substr($test, 1, -1), $allLanguages)) {
 						return TRUE;
 					}
-				} elseif (t3lib_div::getIndpEnv('HTTP_ACCEPT_LANGUAGE') == $test) {
+				} elseif (\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('HTTP_ACCEPT_LANGUAGE') == $test) {
 					return TRUE;
 				}
 			}
 			break;
 		case 'IP':
-			if (t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $value)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'), $value)) {
 				return TRUE;
 			}
 			break;
 		case 'hostname':
-			if (t3lib_div::cmpFQDN(t3lib_div::getIndpEnv('REMOTE_ADDR'), $value)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::cmpFQDN(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR'), $value)) {
 				return TRUE;
 			}
 			break;
@@ -342,9 +344,9 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			$theTestValue = intval($theTestValue);
 			// comp
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			foreach ($values as $test) {
-				if (t3lib_utility_Math::canBeInterpretedAsInteger($test)) {
+				if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($test)) {
 					$test = '=' . $test;
 				}
 				if ($this->compareNumber($test, $theTestValue)) {
@@ -353,11 +355,11 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			break;
 		case 'compatVersion':
-			return t3lib_div::compat_version($value);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::compat_version($value);
 			break;
 		case 'loginUser':
 			if ($this->isUserLoggedIn()) {
-				$values = t3lib_div::trimExplode(',', $value, TRUE);
+				$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 				foreach ($values as $test) {
 					if ($test == '*' || !strcmp($this->getUserId(), $test)) {
 						return TRUE;
@@ -379,7 +381,7 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			break;
 		case 'globalVar':
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			foreach ($values as $test) {
 				$point = strcspn($test, '!=<>');
 				$theVarName = substr($test, 0, $point);
@@ -391,7 +393,7 @@ abstract class t3lib_matchCondition_abstract {
 			}
 			break;
 		case 'globalString':
-			$values = t3lib_div::trimExplode(',', $value, TRUE);
+			$values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $value, TRUE);
 			foreach ($values as $test) {
 				$point = strcspn($test, '=');
 				$theVarName = substr($test, 0, $point);
@@ -405,7 +407,7 @@ abstract class t3lib_matchCondition_abstract {
 		case 'userFunc':
 			$values = preg_split('/\\(|\\)/', $value);
 			$funcName = trim($values[0]);
-			$funcValue = t3lib_div::trimExplode(',', $values[1]);
+			$funcValue = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $values[1]);
 			if (function_exists($funcName) && call_user_func($funcName, $funcValue[0])) {
 				return TRUE;
 			}
@@ -430,13 +432,13 @@ abstract class t3lib_matchCondition_abstract {
 			if ($k) {
 				switch ((string) trim($vars[0])) {
 				case 'GP':
-					$value = t3lib_div::_GP($k);
+					$value = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP($k);
 					break;
 				case 'ENV':
 					$value = getenv($k);
 					break;
 				case 'IENV':
-					$value = t3lib_div::getIndpEnv($k);
+					$value = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv($k);
 					break;
 				case 'LIT':
 					return trim($vars[1]);
@@ -479,7 +481,7 @@ abstract class t3lib_matchCondition_abstract {
 				// multiple values may be split with '|'
 				// see if none matches ("not in list")
 				$found = FALSE;
-				$rightValueParts = t3lib_div::trimExplode('|', $rightValue);
+				$rightValueParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $rightValue);
 				foreach ($rightValueParts as $rightValueSingle) {
 					if ($leftValue === doubleval($rightValueSingle)) {
 						$found = TRUE;
@@ -499,7 +501,7 @@ abstract class t3lib_matchCondition_abstract {
 				// multiple values may be split with '|'
 				// see if one matches ("in list")
 				$found = FALSE;
-				$rightValueParts = t3lib_div::trimExplode('|', $rightValue);
+				$rightValueParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $rightValue);
 				foreach ($rightValueParts as $rightValueSingle) {
 					if ($leftValue == $rightValueSingle) {
 						$found = TRUE;
@@ -544,7 +546,7 @@ abstract class t3lib_matchCondition_abstract {
 	 * @return array Contains keys "browser", "version", "system
 	 */
 	protected function getBrowserInfo($userAgent) {
-		return t3lib_utility_Client::getBrowserInfo($userAgent);
+		return \TYPO3\CMS\Core\Utility\ClientUtility::getBrowserInfo($userAgent);
 	}
 
 	/**
@@ -554,7 +556,7 @@ abstract class t3lib_matchCondition_abstract {
 	 * @return string Code for the specific device type
 	 */
 	protected function getDeviceType($userAgent) {
-		return t3lib_utility_Client::getDeviceType($userAgent);
+		return \TYPO3\CMS\Core\Utility\ClientUtility::getDeviceType($userAgent);
 	}
 
 	/**
@@ -664,5 +666,6 @@ abstract class t3lib_matchCondition_abstract {
 	abstract protected function log($message);
 
 }
+
 
 ?>

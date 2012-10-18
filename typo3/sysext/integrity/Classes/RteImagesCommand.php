@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_rte_images extends tx_lowlevel_cleaner_core {
+class RteImagesCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * @todo Define visibility
@@ -105,7 +107,7 @@ Reports problems with RTE images';
 		if (is_array($recs)) {
 			foreach ($recs as $rec) {
 				$filename = basename($rec['ref_string']);
-				if (t3lib_div::isFirstPartOfStr($filename, 'RTEmagicC_')) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($filename, 'RTEmagicC_')) {
 					$original = 'RTEmagicP_' . preg_replace('/\\.[[:alnum:]]+$/', '', substr($filename, 10));
 					$infoString = $this->infoStr($rec);
 					// Build index:
@@ -134,7 +136,7 @@ Reports problems with RTE images';
 		}
 		// Now, ask for RTEmagic files inside uploads/ folder:
 		$cleanerModules = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['lowlevel']['cleanerModules'];
-		$cleanerMode = t3lib_div::getUserObj($cleanerModules['lost_files'][0]);
+		$cleanerMode = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($cleanerModules['lost_files'][0]);
 		$resLostFiles = $cleanerMode->main(array(), FALSE, TRUE);
 		if (is_array($resLostFiles['RTEmagicFiles'])) {
 			foreach ($resLostFiles['RTEmagicFiles'] as $fileName) {
@@ -179,7 +181,7 @@ Reports problems with RTE images';
 								$dirPrefix = dirname($fileName) . '/';
 								$rteOrigName = basename($fileInfo['original']);
 								// If filename looks like an RTE file, and the directory is in "uploads/", then process as a RTE file!
-								if (($rteOrigName && t3lib_div::isFirstPartOfStr($dirPrefix, 'uploads/')) && @is_dir((PATH_site . $dirPrefix))) {
+								if (($rteOrigName && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($dirPrefix, 'uploads/')) && @is_dir((PATH_site . $dirPrefix))) {
 									// RTE:
 									// From the "original" RTE filename, produce a new "original" destination filename which is unused.
 									$fileProcObj = $this->getFileProcObj();
@@ -187,20 +189,20 @@ Reports problems with RTE images';
 									// Create copy file name:
 									$pI = pathinfo($fileName);
 									$copyDestName = (((dirname($origDestName) . '/RTEmagicC_') . substr(basename($origDestName), 10)) . '.') . $pI['extension'];
-									if (((!@is_file($copyDestName) && !@is_file($origDestName)) && $origDestName === t3lib_div::getFileAbsFileName($origDestName)) && $copyDestName === t3lib_div::getFileAbsFileName($copyDestName)) {
+									if (((!@is_file($copyDestName) && !@is_file($origDestName)) && $origDestName === \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($origDestName)) && $copyDestName === \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($copyDestName)) {
 										echo ' to ' . basename($copyDestName);
 										if ($bypass = $this->cli_noExecutionCheck($fileName)) {
 											echo $bypass;
 										} else {
 											// Making copies:
-											t3lib_div::upload_copy_move(PATH_site . $fileInfo['original'], $origDestName);
-											t3lib_div::upload_copy_move(PATH_site . $fileName, $copyDestName);
+											\TYPO3\CMS\Core\Utility\GeneralUtility::upload_copy_move(PATH_site . $fileInfo['original'], $origDestName);
+											\TYPO3\CMS\Core\Utility\GeneralUtility::upload_copy_move(PATH_site . $fileName, $copyDestName);
 											clearstatcache();
 											if (@is_file($copyDestName)) {
-												$sysRefObj = t3lib_div::makeInstance('t3lib_refindex');
+												$sysRefObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\ReferenceIndex');
 												$error = $sysRefObj->setReferenceValue($hash, substr($copyDestName, strlen(PATH_site)));
 												if ($error) {
-													echo ('	- ERROR:	t3lib_refindex::setReferenceValue(): ' . $error) . LF;
+													echo ('	- ERROR:	TYPO3\\CMS\\Core\\Database\\ReferenceIndex::setReferenceValue(): ' . $error) . LF;
 													die;
 												} else {
 													echo ' - DONE';
@@ -229,7 +231,7 @@ Reports problems with RTE images';
 			if ($limitTo === 'lostFiles') {
 				echo 'Removing lost RTEmagic files from folders inside uploads/: ' . LF;
 				foreach ($resultArray['lostFiles'] as $key => $value) {
-					$absFileName = t3lib_div::getFileAbsFileName($value);
+					$absFileName = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($value);
 					echo ('Deleting file: "' . $absFileName) . '": ';
 					if ($bypass = $this->cli_noExecutionCheck($absFileName)) {
 						echo $bypass;
@@ -257,7 +259,7 @@ Reports problems with RTE images';
 	 */
 	public function getFileProcObj() {
 		if (!is_object($this->fileProcObj)) {
-			$this->fileProcObj = t3lib_div::makeInstance('t3lib_extFileFunctions');
+			$this->fileProcObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Utility\\File\\ExtendedFileUtility');
 			$this->fileProcObj->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 			$this->fileProcObj->init_actionPerms($GLOBALS['BE_USER']->getFileoperationPermissions());
 		}
@@ -265,5 +267,6 @@ Reports problems with RTE images';
 	}
 
 }
+
 
 ?>

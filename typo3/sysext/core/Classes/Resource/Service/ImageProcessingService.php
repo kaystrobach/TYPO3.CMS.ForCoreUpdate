@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource\Service;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,32 +34,32 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Service_ImageProcessingService {
+class ImageProcessingService {
 
 	/**
 	 * Renders the actual image
 	 *
-	 * @param tslib_cObj $contentObject
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject
 	 * @param $file
 	 * @param array $fileConfiguration
 	 * @return array
 	 */
-	public function getImgResource(tslib_cObj $contentObject, $file, array $fileConfiguration) {
+	public function getImgResource(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject, $file, array $fileConfiguration) {
 		if ($fileConfiguration['import.']) {
 			$ifile = $contentObject->stdWrap('', $fileConfiguration['import.']);
 			if ($ifile) {
 				$file = $fileConfiguration['import'] . $ifile;
 			}
 		}
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($file)) {
-			$file = t3lib_div::makeInstance('t3lib_file_Factory')->getFileObject($file);
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($file)) {
+			$file = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory')->getFileObject($file);
 		}
-		if ($file instanceof t3lib_file_FileInterface) {
+		if ($file instanceof \TYPO3\CMS\Core\Resource\FileInterface) {
 			$theImage = $file->getForLocalProcessing(FALSE);
 		} else {
 			// clean ../ sections of the path and resolve to proper string.
 			// This is necessary for the t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService to work.
-			$file = t3lib_div::resolveBackPath($file);
+			$file = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($file);
 			$theImage = $GLOBALS['TSFE']->tmpl->getFileName($file);
 			if (!$theImage) {
 				return array();
@@ -75,16 +77,16 @@ class t3lib_file_Service_ImageProcessingService {
 			$maskImages['m_bottomImg_mask'] = $this->getImgResource($contentObject, $maskArray['bottomImg_mask'], $maskArray['bottomImg_mask.']);
 		}
 		// TODO use t3lib_file_FileInterface here
-		if ($file instanceof t3lib_file_FileReference) {
+		if ($file instanceof \TYPO3\CMS\Core\Resource\FileReference) {
 			$hash = $file->getOriginalFile()->calculateChecksum();
 		} else {
-			$hash = t3lib_div::shortMD5(($theImage . serialize($fileConfiguration)) . serialize($maskImages));
+			$hash = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(($theImage . serialize($fileConfiguration)) . serialize($maskImages));
 		}
 		if (isset($GLOBALS['TSFE']->tmpl->fileCache[$hash])) {
 			return $GLOBALS['TSFE']->tmpl->fileCache[$hash];
 		}
 		/** @var $gifCreator tslib_gifbuilder */
-		$gifCreator = t3lib_div::makeInstance('tslib_gifbuilder');
+		$gifCreator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tslib_gifbuilder');
 		$gifCreator->init();
 		if ($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']) {
 			$filename = basename($theImage);
@@ -92,8 +94,8 @@ class t3lib_file_Service_ImageProcessingService {
 			$filename = substr($filename, 0, strrpos($filename, '.'));
 			$tempFilePrefixLength = intval($GLOBALS['TSFE']->config['config']['meaningfulTempFilePrefix']);
 			if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['UTF8filesystem']) {
-				/** @var $t3libCsInstance t3lib_cs */
-				$t3libCsInstance = t3lib_div::makeInstance('t3lib_cs');
+				/** @var $t3libCsInstance \TYPO3\CMS\Core\Charset\CharsetConverter */
+				$t3libCsInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Charset\\CharsetConverter');
 				$filenamePrefix = $t3libCsInstance->substr('utf-8', $filename, 0, $tempFilePrefixLength);
 			} else {
 				// Strip everything non-ascii
@@ -107,7 +109,7 @@ class t3lib_file_Service_ImageProcessingService {
 			$gifCreator->scalecmd = '-sample';
 			$GLOBALS['TT']->setTSlogMessage('Sample option: Images are scaled with -sample.');
 		}
-		if ($fileConfiguration['alternativeTempPath'] && t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['FE']['allowedTempPaths'], $fileConfiguration['alternativeTempPath'])) {
+		if ($fileConfiguration['alternativeTempPath'] && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['FE']['allowedTempPaths'], $fileConfiguration['alternativeTempPath'])) {
 			$gifCreator->tempPath = $fileConfiguration['alternativeTempPath'];
 			$GLOBALS['TT']->setTSlogMessage('Set alternativeTempPath: ' . $fileConfiguration['alternativeTempPath']);
 		}
@@ -130,14 +132,14 @@ class t3lib_file_Service_ImageProcessingService {
 		if ($fileConfiguration['noScale']) {
 			$options['noScale'] = $fileConfiguration['noScale'];
 		}
-		$fileInformation = t3lib_div::split_fileref($theImage);
+		$fileInformation = \TYPO3\CMS\Core\Utility\GeneralUtility::split_fileref($theImage);
 		$imgExt = strtolower($fileInformation['fileext']) == $gifCreator->gifExtension ? $gifCreator->gifExtension : 'jpg';
 		// If no mask  is used or ImageMagick is disabled, processing is quite simple
 		if (!is_array($maskArray) || !$GLOBALS['TYPO3_CONF_VARS']['GFX']['im']) {
 			$fileConfiguration['params'] = $this->modifyImageMagickStripProfileParameters($fileConfiguration['params'], $fileConfiguration);
 			$GLOBALS['TSFE']->tmpl->fileCache[$hash] = $gifCreator->imageMagickConvert($theImage, $fileConfiguration['ext'], $fileConfiguration['width'], $fileConfiguration['height'], $fileConfiguration['params'], $fileConfiguration['frame'], $options);
 			if (($fileConfiguration['reduceColors'] || $imgExt === 'png' && !$gifCreator->png_truecolor) && is_file($GLOBALS['TSFE']->tmpl->fileCache[$hash][3])) {
-				$reduced = $gifCreator->IMreduceColors($GLOBALS['TSFE']->tmpl->fileCache[$hash][3], t3lib_utility_Math::forceIntegerInRange($fileConfiguration['reduceColors'], 256, $gifCreator->truecolorColors, 256));
+				$reduced = $gifCreator->IMreduceColors($GLOBALS['TSFE']->tmpl->fileCache[$hash][3], \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($fileConfiguration['reduceColors'], 256, $gifCreator->truecolorColors, 256));
 				if (is_file($reduced)) {
 					unlink($GLOBALS['TSFE']->tmpl->fileCache[$hash][3]);
 					rename($reduced, $GLOBALS['TSFE']->tmpl->fileCache[$hash][3]);
@@ -152,7 +154,7 @@ class t3lib_file_Service_ImageProcessingService {
 			}
 			// Finish off
 			if (($fileConfiguration['reduceColors'] || $imgExt === 'png' && !$gifCreator->png_truecolor) && is_file($fileDestination)) {
-				$reduced = $gifCreator->IMreduceColors($fileDestination, t3lib_utility_Math::forceIntegerInRange($fileConfiguration['reduceColors'], 256, $gifCreator->truecolorColors, 256));
+				$reduced = $gifCreator->IMreduceColors($fileDestination, \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($fileConfiguration['reduceColors'], 256, $gifCreator->truecolorColors, 256));
 				if (is_file($reduced)) {
 					unlink($fileDestination);
 					rename($reduced, $fileDestination);
@@ -164,7 +166,7 @@ class t3lib_file_Service_ImageProcessingService {
 		// This is needed by tslib_gifbuilder, in order for the setup-array to create a unique filename hash.
 		$GLOBALS['TSFE']->tmpl->fileCache[$hash]['origFile_mtime'] = @filemtime($theImage);
 		$GLOBALS['TSFE']->tmpl->fileCache[$hash]['fileCacheHash'] = $hash;
-		if ($file instanceof t3lib_file_FileInterface && t3lib_div::isAbsPath($GLOBALS['TSFE']->tmpl->fileCache[$hash][3])) {
+		if ($file instanceof \TYPO3\CMS\Core\Resource\FileInterface && \TYPO3\CMS\Core\Utility\GeneralUtility::isAbsPath($GLOBALS['TSFE']->tmpl->fileCache[$hash][3])) {
 			$GLOBALS['TSFE']->tmpl->fileCache[$hash][3] = $file->getPublicUrl();
 		}
 		$imageResource = $GLOBALS['TSFE']->tmpl->fileCache[$hash];
@@ -270,5 +272,6 @@ class t3lib_file_Service_ImageProcessingService {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\ContextMenu\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_AbstractDataProvider {
+class ContextMenuDataProvider extends \TYPO3\CMS\Backend\ContextMenu\AbstractContextMenuDataProvider {
 
 	/**
 	 * Old Context Menu Options (access mapping)
@@ -55,12 +57,12 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 		$tsConfig = $GLOBALS['BE_USER']->getTSConfig(('options.contextMenu.' . $this->getContextMenuType()) . '.disableItems');
 		$disableItems = array();
 		if (trim($tsConfig['value']) !== '') {
-			$disableItems = t3lib_div::trimExplode(',', $tsConfig['value']);
+			$disableItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $tsConfig['value']);
 		}
 		$tsConfig = $GLOBALS['BE_USER']->getTSConfig('options.contextMenu.pageTree.disableItems');
 		$oldDisableItems = array();
 		if (trim($tsConfig['value']) !== '') {
-			$oldDisableItems = t3lib_div::trimExplode(',', $tsConfig['value']);
+			$oldDisableItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $tsConfig['value']);
 		}
 		$additionalItems = array();
 		foreach ($oldDisableItems as $item) {
@@ -69,7 +71,7 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 				continue;
 			}
 			if (strpos($this->legacyContextMenuMapping[$item], ',')) {
-				$actions = t3lib_div::trimExplode(',', $this->legacyContextMenuMapping[$item]);
+				$actions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->legacyContextMenuMapping[$item]);
 				$additionalItems = array_merge($additionalItems, $actions);
 			} else {
 				$additionalItems[] = $item;
@@ -81,10 +83,10 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 	/**
 	 * Returns the actions for the node
 	 *
-	 * @param t3lib_tree_pagetree_Node $node
-	 * @return t3lib_contextmenu_ActionCollection
+	 * @param \TYPO3\CMS\Backend\Tree\Pagetree\PagetreeNode $node
+	 * @return \TYPO3\CMS\Backend\ContextMenu\ContextMenuActionCollection
 	 */
-	public function getActionsForNode(t3lib_tree_Node $node) {
+	public function getActionsForNode(\TYPO3\CMS\Backend\Tree\TreeNode $node) {
 		$this->disableItems = $this->getDisableActions();
 		$configuration = $this->getConfiguration();
 		$contextMenuActions = array();
@@ -95,5 +97,6 @@ class t3lib_contextmenu_pagetree_DataProvider extends t3lib_contextmenu_Abstract
 	}
 
 }
+
 
 ?>

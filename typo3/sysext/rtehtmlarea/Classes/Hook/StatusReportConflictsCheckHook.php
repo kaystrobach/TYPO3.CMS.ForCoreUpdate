@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -24,7 +26,7 @@
 /**
  * Hook into the backend module "Reports" checking whether there are extensions installed that conflicting with htmlArea RTE
  */
-class tx_rtehtmlarea_statusReport_conflictsCheck implements tx_reports_StatusProvider {
+class StatusReportConflictsCheckHook implements \TYPO3\CMS\Reports\StatusProviderInterface {
 
 	/**
 	 * Compiles a collection of system status checks as a status report.
@@ -48,7 +50,7 @@ class tx_rtehtmlarea_statusReport_conflictsCheck implements tx_reports_StatusPro
 		$conflictingExtensions = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rtehtmlarea']['conflicts'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rtehtmlarea']['conflicts'] as $extensionKey => $version) {
-				if (t3lib_extMgm::isLoaded($extensionKey)) {
+				if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded($extensionKey)) {
 					$conflictingExtensions[] = $extensionKey;
 				}
 			}
@@ -56,15 +58,16 @@ class tx_rtehtmlarea_statusReport_conflictsCheck implements tx_reports_StatusPro
 		if (count($conflictingExtensions)) {
 			$value = ($GLOBALS['LANG']->sL('LLL:EXT:rtehtmlarea/hooks/statusreport/locallang.xml:keys') . ' ') . implode(', ', $conflictingExtensions);
 			$message = $GLOBALS['LANG']->sL('LLL:EXT:rtehtmlarea/hooks/statusreport/locallang.xml:uninstall');
-			$status = tx_reports_reports_status_Status::ERROR;
+			$status = \TYPO3\CMS\Reports\Status::ERROR;
 		} else {
 			$value = $GLOBALS['LANG']->sL('LLL:EXT:rtehtmlarea/hooks/statusreport/locallang.xml:none');
 			$message = '';
-			$status = tx_reports_reports_status_Status::OK;
+			$status = \TYPO3\CMS\Reports\Status::OK;
 		}
-		return t3lib_div::makeInstance('tx_reports_reports_status_Status', $title, $value, $message, $status);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Reports\\Status', $title, $value, $message, $status);
 	}
 
 }
+
 
 ?>

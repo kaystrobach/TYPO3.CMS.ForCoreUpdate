@@ -1,34 +1,35 @@
 <?php
+namespace TYPO3\CMS\Saltedpasswords\Salt;
+
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2009-2011 Marcus Krause <marcus#exp2009@t3sec.info>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *  A copy is found in the textfile GPL.txt and important notices to the license
+ *  from the author is found in LICENSE.txt distributed with these scripts.
+ *
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * Contains class "tx_saltedpasswords_salts_blowfish"
  * that provides Blowfish salted hashing.
  */
-
 /**
  * Class that implements Blowfish salted hashing based on PHP's
  * crypt() function.
@@ -37,30 +38,26 @@
  * on every system.
  *
  * @author Marcus Krause <marcus#exp2009@t3sec.info>
- *
  * @since 2009-09-06
  * @package TYPO3
  * @subpackage tx_saltedpasswords
  */
-class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
+class BlowfishSalt extends \TYPO3\CMS\Saltedpasswords\Salt\Md5Salt {
+
 	/**
 	 * The default log2 number of iterations for password stretching.
 	 */
 	const HASH_COUNT = 7;
-
 	/**
 	 * The default maximum allowed log2 number of iterations for
 	 * password stretching.
 	 */
 	const MAX_HASH_COUNT = 17;
-
 	/**
 	 * The default minimum allowed log2 number of iterations for
 	 * password stretching.
 	 */
 	const MIN_HASH_COUNT = 4;
-
-
 	/**
 	 * Keeps log2 number
 	 * of iterations for password stretching.
@@ -99,7 +96,6 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	 */
 	static protected $settingBlowfish = '$2a$';
 
-
 	/**
 	 * Method applies settings (prefix, hash count) to a salt.
 	 *
@@ -111,16 +107,11 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	 */
 	protected function applySettingsToSalt($salt) {
 		$saltWithSettings = $salt;
-
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
-			// salt without setting
+		// salt without setting
 		if (strlen($salt) == $reqLenBase64) {
-			$saltWithSettings = $this->getSetting()
-				. sprintf('%02u', $this->getHashCount()) . '$'
-				. $salt;
+			$saltWithSettings = (($this->getSetting() . sprintf('%02u', $this->getHashCount())) . '$') . $salt;
 		}
-
 		return $saltWithSettings;
 	}
 
@@ -134,13 +125,10 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 		$countLog2 = NULL;
 		$setting = substr($setting, strlen($this->getSetting()));
 		$firstSplitPos = strpos($setting, '$');
-
-			// Hashcount existing
-		if (($firstSplitPos !== FALSE)
-			&& ($firstSplitPos <= 2) && is_numeric(substr($setting, 0, $firstSplitPos))) {
+		// Hashcount existing
+		if (($firstSplitPos !== FALSE && $firstSplitPos <= 2) && is_numeric(substr($setting, 0, $firstSplitPos))) {
 			$countLog2 = intval(substr($setting, 0, $firstSplitPos));
 		}
-
 		return $countLog2;
 	}
 
@@ -225,14 +213,13 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	 * @return boolean TRUE if salted hash needs an update, otherwise FALSE
 	 */
 	public function isHashUpdateNeeded($saltedPW) {
-			// Check whether this was an updated password.
-		if ((strncmp($saltedPW, '$2', 2)) || !$this->isValidSalt($saltedPW)) {
+		// Check whether this was an updated password.
+		if (strncmp($saltedPW, '$2', 2) || !$this->isValidSalt($saltedPW)) {
 			return TRUE;
 		}
-			// Check whether the iteration count used differs from the standard number.
+		// Check whether the iteration count used differs from the standard number.
 		$countLog2 = $this->getCountLog2($saltedPW);
-
-		return (!is_NULL($countLog2) && ($countLog2 < $this->getHashCount()));
+		return !is_NULL($countLog2) && $countLog2 < $this->getHashCount();
 	}
 
 	/**
@@ -245,12 +232,10 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	 * @return boolean TRUE if it's valid salt, otherwise FALSE
 	 */
 	public function isValidSalt($salt) {
-		$isValid = $skip = FALSE;
-
+		$isValid = ($skip = FALSE);
 		$reqLenBase64 = $this->getLengthBase64FromBytes($this->getSaltLength());
-
 		if (strlen($salt) >= $reqLenBase64) {
-				// Salt with prefixed setting
+			// Salt with prefixed setting
 			if (!strncmp('$', $salt, 1)) {
 				if (!strncmp($this->getSetting(), $salt, strlen($this->getSetting()))) {
 					$isValid = TRUE;
@@ -259,15 +244,13 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 					$skip = TRUE;
 				}
 			}
-
-				// Checking base64 characters
-			if (!$skip && (strlen($salt) >= $reqLenBase64)) {
-				if (preg_match('/^[' . preg_quote($this->getItoa64(), '/') . ']{' . $reqLenBase64 . ',' . $reqLenBase64 . '}$/', substr($salt, 0, $reqLenBase64))) {
+			// Checking base64 characters
+			if (!$skip && strlen($salt) >= $reqLenBase64) {
+				if (preg_match(((((('/^[' . preg_quote($this->getItoa64(), '/')) . ']{') . $reqLenBase64) . ',') . $reqLenBase64) . '}$/', substr($salt, 0, $reqLenBase64))) {
 					$isValid = TRUE;
 				}
 			}
 		}
-
 		return $isValid;
 	}
 
@@ -279,13 +262,10 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	 */
 	public function isValidSaltedPW($saltedPW) {
 		$isValid = FALSE;
-
-		$isValid = (!strncmp($this->getSetting(), $saltedPW, strlen($this->getSetting()))) ? TRUE : FALSE;
-
+		$isValid = !strncmp($this->getSetting(), $saltedPW, strlen($this->getSetting())) ? TRUE : FALSE;
 		if ($isValid) {
 			$isValid = $this->isValidSalt($saltedPW);
 		}
-
 		return $isValid;
 	}
 
@@ -298,7 +278,7 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	 * @see getHashCount()
 	 */
 	public function setHashCount($hashCount = NULL) {
-		self::$hashCount = !is_NULL($hashCount) && is_int($hashCount) && $hashCount >= $this->getMinHashCount() && $hashCount <= $this->getMaxHashCount() ? $hashCount : self::HASH_COUNT;
+		self::$hashCount = ((!is_NULL($hashCount) && is_int($hashCount)) && $hashCount >= $this->getMinHashCount()) && $hashCount <= $this->getMaxHashCount() ? $hashCount : self::HASH_COUNT;
 	}
 
 	/**
@@ -324,5 +304,8 @@ class tx_saltedpasswords_salts_blowfish extends tx_saltedpasswords_salts_md5 {
 	public function setMinHashCount($minHashCount = NULL) {
 		self::$minHashCount = !is_NULL($minHashCount) && is_int($minHashCount) ? $minHashCount : self::MIN_HASH_COUNT;
 	}
+
 }
+
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Mail;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,12 +30,12 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Mail {
+class MailView {
 
 	/**
 	 * The mail message
 	 *
-	 * @var t3lib_mail_Message
+	 * @var \TYPO3\CMS\Core\Mail\MailMessage
 	 */
 	protected $mailMessage;
 
@@ -47,14 +49,14 @@ class tx_form_View_Mail {
 	/**
 	 * The localization handler
 	 *
-	 * @var tx_form_System_Localization
+	 * @var \TYPO3\CMS\Form\Localization
 	 */
 	protected $localizationHandler;
 
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
@@ -63,9 +65,9 @@ class tx_form_View_Mail {
 	 *
 	 * @return void
 	 */
-	public function __construct(t3lib_mail_Message $mailMessage, array $typoScript) {
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
-		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
+	public function __construct(\TYPO3\CMS\Core\Mail\MailMessage $mailMessage, array $typoScript) {
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
 		$this->mailMessage = $mailMessage;
 		$this->typoScript = $typoScript;
 	}
@@ -129,5 +131,6 @@ class tx_form_View_Mail {
 	}
 
 }
+
 
 ?>

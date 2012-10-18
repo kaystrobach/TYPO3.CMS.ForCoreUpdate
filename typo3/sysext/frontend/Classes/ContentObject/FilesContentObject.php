@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Ingmar Schlecht <ingmar@typo3.org>
  */
-class tslib_content_Files extends tslib_content_Abstract {
+class FilesContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject FILES
@@ -38,8 +40,8 @@ class tslib_content_Files extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-		/** @var t3lib_file_Repository_FileRepository $fileRepository */
-		$fileRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileRepository');
+		/** @var \TYPO3\CMS\Core\Resource\FileRepository $fileRepository */
+		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$fileObjects = array();
 		// Getting the files
 		if ($conf['references'] || $conf['references.']) {
@@ -71,31 +73,31 @@ class tslib_content_Files extends tslib_content_Abstract {
 			files = 12,14,15# using stdWrap:
 			files.field = some_field
 			 */
-			$fileUids = t3lib_div::trimExplode(',', $this->stdWrapValue('files', $conf), TRUE);
+			$fileUids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->stdWrapValue('files', $conf), TRUE);
 			foreach ($fileUids as $fileUid) {
 				$this->addToArray($fileRepository->findByUid($fileUid), $fileObjects);
 			}
 		}
 		if ($conf['collections'] || $conf['collections.']) {
-			$collectionUids = t3lib_div::trimExplode(',', $this->stdWrapValue('collections', $conf), TRUE);
-			/** @var t3lib_file_Repository_FileCollectionRepository $collectionRepository */
-			$collectionRepository = t3lib_div::makeInstance('t3lib_file_Repository_FileCollectionRepository');
+			$collectionUids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->stdWrapValue('collections', $conf), TRUE);
+			/** @var \TYPO3\CMS\Core\Resource\FileCollectionRepository $collectionRepository */
+			$collectionRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileCollectionRepository');
 			foreach ($collectionUids as $collectionUid) {
 				$fileCollection = $collectionRepository->findByUid($collectionUid);
-				if ($fileCollection instanceof t3lib_file_Collection_AbstractFileCollection) {
+				if ($fileCollection instanceof \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection) {
 					$fileCollection->loadContents();
 					$this->addToArray($fileCollection->getItems(), $fileObjects);
 				}
 			}
 		}
 		if ($conf['folders'] || $conf['folders.']) {
-			$folderIdentifiers = t3lib_div::trimExplode(',', $this->stdWrapValue('folders', $conf));
-			/** @var t3lib_file_Factory $fileFactory */
-			$fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
+			$folderIdentifiers = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->stdWrapValue('folders', $conf));
+			/** @var \TYPO3\CMS\Core\Resource\ResourceFactory $fileFactory */
+			$fileFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 			foreach ($folderIdentifiers as $folderIdentifier) {
 				if ($folderIdentifier) {
 					$folder = $fileFactory->getFolderObjectFromCombinedIdentifier($folderIdentifier);
-					if ($folder instanceof t3lib_file_Folder) {
+					if ($folder instanceof \TYPO3\CMS\Core\Resource\Folder) {
 						$this->addToArray($folder->getFiles(), $fileObjects);
 					}
 				}
@@ -140,5 +142,6 @@ class tslib_content_Files extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

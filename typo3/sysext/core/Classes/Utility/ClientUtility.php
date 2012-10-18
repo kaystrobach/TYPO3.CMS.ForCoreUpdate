@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Oliver Hader <oliver@typo3.org>
  */
-final class t3lib_utility_Client {
+final class ClientUtility {
 
 	/**
 	 * Generates an array with abstracted browser information
@@ -50,7 +52,7 @@ final class t3lib_utility_Client {
 				// need reference for third parameter in t3lib_div::callUserFunction,
 				// so create a reference to NULL
 				$null = NULL;
-				$hookResult = t3lib_div::callUserFunction($hookFunction, $hookParameters, $null);
+				$hookResult = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hookFunction, $hookParameters, $null);
 				if (($returnResult && is_array($hookResult)) && count($hookResult)) {
 					return $hookResult;
 				}
@@ -193,7 +195,7 @@ final class t3lib_utility_Client {
 				// need reference for third parameter in t3lib_div::callUserFunction,
 				// so create a reference to NULL
 				$null = NULL;
-				$hookResult = t3lib_div::callUserFunction($hookFunction, $hookParameters, $null);
+				$hookResult = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hookFunction, $hookParameters, $null);
 				if (($returnResult && is_string($hookResult)) && !empty($hookResult)) {
 					return $hookResult;
 				}
@@ -223,5 +225,6 @@ final class t3lib_utility_Client {
 	}
 
 }
+
 
 ?>

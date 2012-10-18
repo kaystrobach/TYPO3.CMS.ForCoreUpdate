@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Example;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -38,7 +40,7 @@
  * @subpackage tx_indexedsearch
  * @author 	Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-class tx_indexedsearch_pihook {
+class PluginHook {
 
 	/**
 	 * @todo Define visibility
@@ -88,5 +90,6 @@ class tx_indexedsearch_pihook {
 	}
 
 }
+
 
 ?>

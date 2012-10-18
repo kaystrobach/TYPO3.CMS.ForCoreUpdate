@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Messaging;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_FlashMessageQueue {
+class FlashMessageQueue {
 
 	static $messages = array();
 
@@ -49,7 +51,7 @@ class t3lib_FlashMessageQueue {
 	 * @param object $message Instance of t3lib_FlashMessage, representing a message
 	 * @return void
 	 */
-	static public function addMessage(t3lib_FlashMessage $message) {
+	static public function addMessage(\TYPO3\CMS\Core\Messaging\FlashMessage $message) {
 		if ($message->isSessionMessage()) {
 			$queuedFlashMessages = self::getFlashMessagesFromSession();
 			$queuedFlashMessages[] = $message;
@@ -143,5 +145,6 @@ class t3lib_FlashMessageQueue {
 	}
 
 }
+
 
 ?>

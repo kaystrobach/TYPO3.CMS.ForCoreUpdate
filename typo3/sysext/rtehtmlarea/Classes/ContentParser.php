@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author 	Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_parse_html {
+class ContentParser {
 
 	/**
 	 * @todo Define visibility
@@ -44,7 +46,7 @@ class tx_rtehtmlarea_parse_html {
 	/**
 	 * document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -64,12 +66,12 @@ class tx_rtehtmlarea_parse_html {
 	 * @todo Define visibility
 	 */
 	public function init() {
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->JScode = '';
 		$this->modData = $GLOBALS['BE_USER']->getModuleData($GLOBALS['MCONF']['name'], 'ses');
-		if (t3lib_div::_GP('OC_key')) {
-			$parts = explode('|', t3lib_div::_GP('OC_key'));
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('OC_key')) {
+			$parts = explode('|', \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('OC_key'));
 			$this->modData['openKeys'][$parts[1]] = $parts[0] == 'O' ? 1 : 0;
 			$GLOBALS['BE_USER']->pushModuleData($GLOBALS['MCONF']['name'], $this->modData);
 		}
@@ -105,12 +107,12 @@ class tx_rtehtmlarea_parse_html {
 	 */
 	public function main_parse_html($openKeys) {
 		global $TYPO3_CONF_VARS;
-		$editorNo = t3lib_div::_GP('editorNo');
-		$html = t3lib_div::_GP('content');
-		$RTEtsConfigParts = explode(':', t3lib_div::_GP('RTEtsConfigParams'));
-		$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE', t3lib_BEfunc::getPagesTSconfig($RTEtsConfigParts[5]));
-		$thisConfig = t3lib_BEfunc::RTEsetup($RTEsetup['properties'], $RTEtsConfigParts[0], $RTEtsConfigParts[2], $RTEtsConfigParts[4]);
-		$HTMLParser = t3lib_div::makeInstance('t3lib_parsehtml');
+		$editorNo = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('editorNo');
+		$html = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('content');
+		$RTEtsConfigParts = explode(':', \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('RTEtsConfigParams'));
+		$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE', \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($RTEtsConfigParts[5]));
+		$thisConfig = \TYPO3\CMS\Backend\Utility\BackendUtility::RTEsetup($RTEsetup['properties'], $RTEtsConfigParts[0], $RTEtsConfigParts[2], $RTEtsConfigParts[4]);
+		$HTMLParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Html\\HtmlParser');
 		if (is_array($thisConfig['enableWordClean.'])) {
 			$HTMLparserConfig = $thisConfig['enableWordClean.']['HTMLparser.'];
 			if (is_array($HTMLparserConfig)) {
@@ -123,7 +125,7 @@ class tx_rtehtmlarea_parse_html {
 		}
 		if (is_array($TYPO3_CONF_VARS['EXTCONF'][$this->extKey][$this->prefixId]['cleanPastedContent'])) {
 			foreach ($TYPO3_CONF_VARS['EXTCONF'][$this->extKey][$this->prefixId]['cleanPastedContent'] as $classRef) {
-				$hookObj = t3lib_div::getUserObj($classRef);
+				$hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
 				if (method_exists($hookObj, 'cleanPastedContent_afterCleanWord')) {
 					$html = $hookObj->cleanPastedContent_afterCleanWord($html, $thisConfig);
 				}
@@ -142,19 +144,19 @@ class tx_rtehtmlarea_parse_html {
 	protected function keepSpanTagsWithId(&$HTMLparserConfig) {
 		// Allow span tag
 		if (isset($HTMLparserConfig['allowTags'])) {
-			if (!t3lib_div::inList($HTMLparserConfig['allowTags'], 'span')) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($HTMLparserConfig['allowTags'], 'span')) {
 				$HTMLparserConfig['allowTags'] .= ',span';
 			}
 		} else {
 			$HTMLparserConfig['allowTags'] = 'span';
 		}
 		// Allow attributes on span tags
-		if (isset($HTMLparserConfig['noAttrib']) && t3lib_div::inList($HTMLparserConfig['noAttrib'], 'span')) {
-			$HTMLparserConfig['noAttrib'] = t3lib_div::rmFromList('span', $HTMLparserConfig['noAttrib']);
+		if (isset($HTMLparserConfig['noAttrib']) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($HTMLparserConfig['noAttrib'], 'span')) {
+			$HTMLparserConfig['noAttrib'] = \TYPO3\CMS\Core\Utility\GeneralUtility::rmFromList('span', $HTMLparserConfig['noAttrib']);
 		}
 		// Do not remove span tags
-		if (isset($HTMLparserConfig['removeTags']) && t3lib_div::inList($HTMLparserConfig['removeTags'], 'span')) {
-			$HTMLparserConfig['removeTags'] = t3lib_div::rmFromList('span', $HTMLparserConfig['removeTags']);
+		if (isset($HTMLparserConfig['removeTags']) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($HTMLparserConfig['removeTags'], 'span')) {
+			$HTMLparserConfig['removeTags'] = \TYPO3\CMS\Core\Utility\GeneralUtility::rmFromList('span', $HTMLparserConfig['removeTags']);
 		}
 		// Review the tags array
 		if (is_array($HTMLparserConfig['tags.'])) {
@@ -166,7 +168,7 @@ class tx_rtehtmlarea_parse_html {
 				if (isset($HTMLparserConfig['tags.']['span.']['allowedAttribs'])) {
 					if (!$HTMLparserConfig['tags.']['span.']['allowedAttribs']) {
 						$HTMLparserConfig['tags.']['span.']['allowedAttribs'] = 'id';
-					} elseif (!t3lib_div::inList($HTMLparserConfig['tags.']['span.']['allowedAttribs'], 'id')) {
+					} elseif (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($HTMLparserConfig['tags.']['span.']['allowedAttribs'], 'id')) {
 						$HTMLparserConfig['tags.']['span.']['allowedAttribs'] .= ',id';
 					}
 				}
@@ -178,5 +180,6 @@ class tx_rtehtmlarea_parse_html {
 	}
 
 }
+
 
 ?>

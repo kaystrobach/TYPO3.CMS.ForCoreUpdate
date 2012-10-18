@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,7 +39,7 @@
  * @package TYPO3
  * @subpackage tx_lowlevel
  */
-class tx_lowlevel_deleted extends tx_lowlevel_cleaner_core {
+class DeletedRecordsCommand extends \TYPO3\CMS\Integrity\CleanerCommand {
 
 	/**
 	 * Constructor
@@ -77,8 +79,8 @@ Although deleted records are not errors to be repaired, this tool allows you to 
 			),
 			'deleted' => array()
 		);
-		$startingPoint = $this->cli_isArg('--pid') ? t3lib_utility_Math::forceIntegerInRange($this->cli_argValue('--pid'), 0) : 0;
-		$depth = $this->cli_isArg('--depth') ? t3lib_utility_Math::forceIntegerInRange($this->cli_argValue('--depth'), 0) : 1000;
+		$startingPoint = $this->cli_isArg('--pid') ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->cli_argValue('--pid'), 0) : 0;
+		$depth = $this->cli_isArg('--depth') ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->cli_argValue('--depth'), 0) : 1000;
 		$this->genTree($startingPoint, $depth, (int) $this->cli_argValue('--echotree'));
 		$resultArray['deleted'] = $this->recStats['deleted'];
 		return $resultArray;
@@ -115,7 +117,7 @@ Although deleted records are not errors to be repaired, this tool allows you to 
 					echo $bypass;
 				} else {
 					// Execute CMD array:
-					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+					$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 					$tce->stripslashes_values = FALSE;
 					$tce->start(array(), array());
 					// Notice, we are deleting pages with no regard to subpages/subrecords - we do this since they
@@ -135,5 +137,6 @@ Although deleted records are not errors to be repaired, this tool allows you to 
 	}
 
 }
+
 
 ?>

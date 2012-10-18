@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Domain\Model;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package Extension Manager
  * @subpackage Model
  */
-class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_AbstractEntity {
+class Mirrors extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * Keeps mirrors.
@@ -130,5 +132,6 @@ class Tx_Extensionmanager_Domain_Model_Mirrors extends Tx_Extbase_DomainObject_A
 	}
 
 }
+
 
 ?>

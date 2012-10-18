@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage tx_indexedsearch
  */
-final class tx_indexedsearch_util {
+final class IndexedSearchUtility {
 
 	/**
 	 * Check if the tables provided are configured for usage. This becomes
@@ -46,7 +48,7 @@ final class tx_indexedsearch_util {
 	 */
 	static function isTableUsed($tableName) {
 		$tableList = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['use_tables'];
-		return t3lib_div::inList($tableList, $tableName);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::inList($tableList, $tableName);
 	}
 
 	/**
@@ -61,5 +63,6 @@ final class tx_indexedsearch_util {
 	}
 
 }
+
 
 ?>

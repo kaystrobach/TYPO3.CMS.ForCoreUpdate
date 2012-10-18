@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler\Example;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_scheduler
  */
-class tx_scheduler_SleepTask extends tx_scheduler_Task {
+class SleepTask extends \TYPO3\CMS\Scheduler\Task {
 
 	/**
 	 * Number of seconds the task should be sleeping for
@@ -63,5 +65,6 @@ class tx_scheduler_SleepTask extends tx_scheduler_Task {
 	}
 
 }
+
 
 ?>

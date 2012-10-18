@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recordlist\Controller;
+
 /**
  * Script Class, putting the frameset together.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_browser {
+class ElementBrowserFramesetController {
 
 	// Internal, dynamic
 	/**
@@ -23,8 +25,8 @@ class SC_browser {
 	 */
 	public function main() {
 		// Setting GPvars:
-		$mode = t3lib_div::_GP('mode');
-		$bparams = t3lib_div::_GP('bparams');
+		$mode = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('mode');
+		$bparams = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('bparams');
 		// Set doktype:
 		$GLOBALS['TBE_TEMPLATE']->docType = 'xhtml_frames';
 		$GLOBALS['TBE_TEMPLATE']->JScode = $GLOBALS['TBE_TEMPLATE']->wrapScriptTags('
@@ -65,5 +67,6 @@ class SC_browser {
 	}
 
 }
+
 
 ?>

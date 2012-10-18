@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Processor;
+
 /***************************************************************
  * Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_log_processor_AbstractMemory extends t3lib_log_processor_Abstract {
+abstract class AbstractMemoryProcessor extends \TYPO3\CMS\Core\Log\Processor\AbstractProcessor {
 
 	/**
 	 * Allocated memory usage type to use
@@ -90,5 +92,6 @@ abstract class t3lib_log_processor_AbstractMemory extends t3lib_log_processor_Ab
 	}
 
 }
+
 
 ?>

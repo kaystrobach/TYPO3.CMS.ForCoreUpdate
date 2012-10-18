@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Tests\Unit\Utility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -27,10 +29,10 @@
  * @package Extension Manager
  * @subpackage Tests
  */
-class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class ListUtilityTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Extensionmanager_Utility_List
+	 * @var \TYPO3\CMS\Extensionmanager\Utility\ListUtility
 	 */
 	private $fixture;
 
@@ -40,7 +42,7 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 	 * @return void
 	 */
 	public function setUp() {
-		$this->fixture = new Tx_Extensionmanager_Utility_List();
+		$this->fixture = new \TYPO3\CMS\Extensionmanager\Utility\ListUtility();
 		$this->loadedExtensions = $GLOBALS['TYPO3_LOADED_EXT'];
 		$GLOBALS['TYPO3_LOADED_EXT'] = array(
 			'cms' => 'cms',
@@ -184,12 +186,13 @@ class Tx_Extensionmanager_Utility_ListTest extends Tx_Extbase_Tests_Unit_BaseTes
 	 * @return void
 	 */
 	public function enrichExtensionsWithEmConfInformation($extensions, $emConf, $expectedResult) {
-		$this->fixture->extensionRepository = $this->getAccessibleMock('Tx_Extensionmanager_Domain_Repository_ExtensionRepository', array('findOneByExtensionKeyAndVersion'));
-		$this->fixture->emConfUtility = $this->getMock('Tx_Extensionmanager_Utility_EmConf');
+		$this->fixture->extensionRepository = $this->getAccessibleMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ExtensionRepository', array('findOneByExtensionKeyAndVersion'));
+		$this->fixture->emConfUtility = $this->getMock('TYPO3\\CMS\\Extensionmanager\\Utility\\EmConfUtility');
 		$this->fixture->emConfUtility->expects($this->any())->method('includeEmConf')->will($this->returnValue($emConf));
 		$this->assertEquals($expectedResult, $this->fixture->enrichExtensionsWithEmConfAndTerInformation($extensions));
 	}
 
 }
+
 
 ?>

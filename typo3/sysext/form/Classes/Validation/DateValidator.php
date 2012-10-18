@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
+class DateValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * strftime format for date
@@ -125,5 +127,6 @@ class tx_form_System_Validate_Date extends tx_form_System_Validate_Abstract {
 	}
 
 }
+
 
 ?>

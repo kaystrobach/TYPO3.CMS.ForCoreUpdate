@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Frontend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,15 +33,15 @@
  * @author Robert Lemke <robert@typo3.org>
  * @api
  */
-class t3lib_cache_frontend_PhpFrontend extends t3lib_cache_frontend_StringFrontend {
+class PhpFrontend extends \TYPO3\CMS\Core\Cache\Frontend\StringFrontend {
 
 	/**
 	 * Constructs the cache
 	 *
 	 * @param string $identifier A identifier which describes this cache
-	 * @param t3lib_cache_backend_PhpCapableBackend $backend Backend to be used for this cache
+	 * @param \TYPO3\CMS\Core\Cache\Backend\PhpCapableBackendInterface $backend Backend to be used for this cache
 	 */
-	public function __construct($identifier, t3lib_cache_backend_PhpCapableBackend $backend) {
+	public function __construct($identifier, \TYPO3\CMS\Core\Cache\Backend\PhpCapableBackendInterface $backend) {
 		parent::__construct($identifier, $backend);
 	}
 
@@ -52,7 +54,7 @@ class t3lib_cache_frontend_PhpFrontend extends t3lib_cache_frontend_StringFronte
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited liftime.
 	 * @return void
 	 * @throws \InvalidArgumentException If $entryIdentifier or $tags is invalid
-	 * @throws \t3lib_cache_exception_InvalidData If $sourceCode is not a string
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException If $sourceCode is not a string
 	 * @api
 	 */
 	public function set($entryIdentifier, $sourceCode, array $tags = array(), $lifetime = NULL) {
@@ -60,7 +62,7 @@ class t3lib_cache_frontend_PhpFrontend extends t3lib_cache_frontend_StringFronte
 			throw new \InvalidArgumentException(('"' . $entryIdentifier) . '" is not a valid cache entry identifier.', 1264023823);
 		}
 		if (!is_string($sourceCode)) {
-			throw new \t3lib_cache_exception_InvalidData('The given source code is not a valid string.', 1264023824);
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidDataException('The given source code is not a valid string.', 1264023824);
 		}
 		foreach ($tags as $tag) {
 			if (!$this->isValidTag($tag)) {
@@ -83,5 +85,6 @@ class t3lib_cache_frontend_PhpFrontend extends t3lib_cache_frontend_StringFronte
 	}
 
 }
+
 
 ?>

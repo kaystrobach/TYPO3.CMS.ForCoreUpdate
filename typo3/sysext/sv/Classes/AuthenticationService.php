@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Sv;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +38,7 @@
  * @package TYPO3
  * @subpackage tx_sv
  */
-class tx_sv_auth extends tx_sv_authbase {
+class AuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 
 	/**
 	 * Process the submitted credentials.
@@ -107,16 +109,16 @@ class tx_sv_auth extends tx_sv_authbase {
 					// Failed login attempt (no username found)
 					$this->writelog(255, 3, 3, 2, 'Login-attempt from %s (%s), username \'%s\' not found!!', array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
 					// Logout written to log
-					t3lib_div::sysLog(sprintf('Login-attempt from %s (%s), username \'%s\' not found!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf('Login-attempt from %s (%s), username \'%s\' not found!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 				} else {
 					if ($this->writeDevLog) {
-						t3lib_div::devLog('User found: ' . t3lib_div::arrayToLogString($user, array($this->db_user['userid_column'], $this->db_user['username_column'])), 'tx_sv_auth');
+						\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User found: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($user, array($this->db_user['userid_column'], $this->db_user['username_column'])), 'TYPO3\\CMS\\Sv\\AuthenticationService');
 					}
 				}
 			} else {
 				// Failed Login attempt (no password given)
 				$this->writelog(255, 3, 3, 2, 'Login-attempt from %s (%s) for username \'%s\' with an empty password!', array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
-				t3lib_div::sysLog(sprintf('Login-attempt from %s (%s), for username \'%s\' with an empty password!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf('Login-attempt from %s (%s), for username \'%s\' with an empty password!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			}
 		}
 		return $user;
@@ -137,10 +139,10 @@ class tx_sv_auth extends tx_sv_authbase {
 				// Failed login attempt (wrong password) - write that to the log!
 				if ($this->writeAttemptLog) {
 					$this->writelog(255, 3, 3, 1, 'Login-attempt from %s (%s), username \'%s\', password not accepted!', array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
-					t3lib_div::sysLog(sprintf('Login-attempt from %s (%s), username \'%s\', password not accepted!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf('Login-attempt from %s (%s), username \'%s\', password not accepted!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 				}
 				if ($this->writeDevLog) {
-					t3lib_div::devLog('Password not accepted: ' . $this->login['uident'], 'tx_sv_auth', 2);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Password not accepted: ' . $this->login['uident'], 'TYPO3\\CMS\\Sv\\AuthenticationService', 2);
 				}
 			}
 			// Checking the domain (lockToDomain)
@@ -148,7 +150,7 @@ class tx_sv_auth extends tx_sv_authbase {
 				// Lock domain didn't match, so error:
 				if ($this->writeAttemptLog) {
 					$this->writelog(255, 3, 3, 1, 'Login-attempt from %s (%s), username \'%s\', locked domain \'%s\' did not match \'%s\'!', array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->db_user['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']));
-					t3lib_div::sysLog(sprintf('Login-attempt from %s (%s), username \'%s\', locked domain \'%s\' did not match \'%s\'!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->db_user['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']), 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf('Login-attempt from %s (%s), username \'%s\', locked domain \'%s\' did not match \'%s\'!', $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->db_user['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 				}
 				$OK = FALSE;
 			}
@@ -177,7 +179,7 @@ class tx_sv_auth extends tx_sv_authbase {
 			// ADD group-numbers if the IPmask matches.
 			if (is_array($TYPO3_CONF_VARS['FE']['IPmaskMountGroups'])) {
 				foreach ($TYPO3_CONF_VARS['FE']['IPmaskMountGroups'] as $IPel) {
-					if (($this->authInfo['REMOTE_ADDR'] && $IPel[0]) && t3lib_div::cmpIP($this->authInfo['REMOTE_ADDR'], $IPel[0])) {
+					if (($this->authInfo['REMOTE_ADDR'] && $IPel[0]) && \TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP($this->authInfo['REMOTE_ADDR'], $IPel[0])) {
 						$groups[] = intval($IPel[1]);
 					}
 				}
@@ -186,7 +188,7 @@ class tx_sv_auth extends tx_sv_authbase {
 			if (count($groups)) {
 				$list = implode(',', $groups);
 				if ($this->writeDevLog) {
-					t3lib_div::devLog('Get usergroups with id: ' . $list, 'tx_sv_auth');
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('Get usergroups with id: ' . $list, 'TYPO3\\CMS\\Sv\\AuthenticationService');
 				}
 				$lockToDomain_SQL = (' AND (lockToDomain=\'\' OR lockToDomain IS NULL OR lockToDomain=\'' . $this->authInfo['HTTP_HOST']) . '\')';
 				if (!$this->authInfo['showHiddenRecords']) {
@@ -201,7 +203,7 @@ class tx_sv_auth extends tx_sv_authbase {
 				}
 			} else {
 				if ($this->writeDevLog) {
-					t3lib_div::devLog('No usergroups found.', 'tx_sv_auth', 2);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::devLog('No usergroups found.', 'TYPO3\\CMS\\Sv\\AuthenticationService', 2);
 				}
 			}
 		} elseif ($this->mode == 'getGroupsBE') {
@@ -238,17 +240,17 @@ class tx_sv_auth extends tx_sv_authbase {
 			$groupRows[$row['uid']] = $row;
 		}
 		// Traversing records in the correct order
-		$include_staticArr = t3lib_div::intExplode(',', $grList);
+		$include_staticArr = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $grList);
 		// traversing list
 		foreach ($include_staticArr as $uid) {
 			// Get row:
 			$row = $groupRows[$uid];
 			// Must be an array and $uid should not be in the idList, because then it is somewhere previously in the grouplist
-			if (is_array($row) && !t3lib_div::inList($idList, $uid)) {
+			if (is_array($row) && !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($idList, $uid)) {
 				// Include sub groups
 				if (trim($row['subgroup'])) {
 					// Make integer list
-					$theList = implode(',', t3lib_div::intExplode(',', $row['subgroup']));
+					$theList = implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $row['subgroup']));
 					// Call recursively, pass along list of already processed groups so they are not recursed again.
 					$this->getSubGroups($theList, ($idList . ',') . $uid, $groups);
 				}
@@ -257,5 +259,6 @@ class tx_sv_auth extends tx_sv_authbase {
 	}
 
 }
+
 
 ?>

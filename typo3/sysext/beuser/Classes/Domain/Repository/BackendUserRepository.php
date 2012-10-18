@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_Domain_Repository_BackendUserRepository extends Tx_Extbase_Domain_Repository_BackendUserRepository {
+class BackendUserRepository extends \TYPO3\CMS\Extbase\Domain\Repository\BackendUserGroupRepository {
 
 	/**
 	 * Finds Backend Users on a given list of uids
@@ -46,41 +48,41 @@ class Tx_Beuser_Domain_Repository_BackendUserRepository extends Tx_Extbase_Domai
 	/**
 	 * Find Backend Users matching to Demand object properties
 	 *
-	 * @param Tx_Beuser_Domain_Model_Demand $demand
+	 * @param \TYPO3\CMS\Beuser\Domain\Model\Demand $demand
 	 * @return Tx_Extbase_Persistence_QueryResult<Tx_Beuser_Domain_Model_BackendUser>
 	 */
-	public function findDemanded(Tx_Beuser_Domain_Model_Demand $demand) {
+	public function findDemanded(\TYPO3\CMS\Beuser\Domain\Model\Demand $demand) {
 		$constraints = array();
 		$query = $this->createQuery();
 		// Find invisible as well, but not deleted
 		$constraints[] = $query->equals('deleted', 0);
-		$query->setOrderings(array('userName' => Tx_Extbase_Persistence_QueryInterface::ORDER_ASCENDING));
+		$query->setOrderings(array('userName' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
 		// Username
 		if ($demand->getUserName() !== '') {
 			$constraints[] = $query->like('userName', ('%' . $demand->getUserName()) . '%');
 		}
 		// Only display admin users
-		if ($demand->getUserType() == Tx_Beuser_Domain_Model_Demand::USERTYPE_ADMINONLY) {
+		if ($demand->getUserType() == \TYPO3\CMS\Beuser\Domain\Model\Demand::USERTYPE_ADMINONLY) {
 			$constraints[] = $query->equals('admin', 1);
 		}
 		// Only display non-admin users
-		if ($demand->getUserType() == Tx_Beuser_Domain_Model_Demand::USERTYPE_USERONLY) {
+		if ($demand->getUserType() == \TYPO3\CMS\Beuser\Domain\Model\Demand::USERTYPE_USERONLY) {
 			$constraints[] = $query->equals('admin', 0);
 		}
 		// Only display active users
-		if ($demand->getStatus() == Tx_Beuser_Domain_Model_Demand::STATUS_ACTIVE) {
+		if ($demand->getStatus() == \TYPO3\CMS\Beuser\Domain\Model\Demand::STATUS_ACTIVE) {
 			$constraints[] = $query->equals('disable', 0);
 		}
 		// Only display in-active users
-		if ($demand->getStatus() == Tx_Beuser_Domain_Model_Demand::STATUS_INACTIVE) {
+		if ($demand->getStatus() == \TYPO3\CMS\Beuser\Domain\Model\Demand::STATUS_INACTIVE) {
 			$constraints[] = $query->logicalOr($query->equals('disable', 1));
 		}
 		// Not logged in before
-		if ($demand->getLogins() == Tx_Beuser_Domain_Model_Demand::LOGIN_NONE) {
+		if ($demand->getLogins() == \TYPO3\CMS\Beuser\Domain\Model\Demand::LOGIN_NONE) {
 			$constraints[] = $query->equals('lastlogin', 0);
 		}
 		// At least one login
-		if ($demand->getLogins() == Tx_Beuser_Domain_Model_Demand::LOGIN_SOME) {
+		if ($demand->getLogins() == \TYPO3\CMS\Beuser\Domain\Model\Demand::LOGIN_SOME) {
 			$constraints[] = $query->logicalNot($query->equals('lastlogin', 0));
 		}
 		// In backend user group
@@ -112,7 +114,7 @@ class Tx_Beuser_Domain_Repository_BackendUserRepository extends Tx_Extbase_Domai
 	/**
 	 * Overwrite createQuery to don't respect enable fields
 	 *
-	 * @return Tx_Extbase_Persistence_QueryInterface
+	 * @return \TYPO3\CMS\Extbase\Persistence\QueryInterface
 	 */
 	public function createQuery() {
 		$query = parent::createQuery();
@@ -121,5 +123,6 @@ class Tx_Beuser_Domain_Repository_BackendUserRepository extends Tx_Extbase_Domai
 	}
 
 }
+
 
 ?>

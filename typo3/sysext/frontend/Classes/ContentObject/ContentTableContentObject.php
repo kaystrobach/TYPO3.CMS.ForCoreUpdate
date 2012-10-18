@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_ContentTable extends tslib_content_Abstract {
+class ContentTableContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, CTABLE
@@ -40,7 +42,7 @@ class tslib_content_ContentTable extends tslib_content_Abstract {
 	 * @return string Output
 	 */
 	public function render($conf = array()) {
-		$controlTable = t3lib_div::makeInstance('tslib_controlTable');
+		$controlTable = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\TableRenderer');
 		$tableParams = isset($conf['tableParams.']) ? $this->cObj->stdWrap($conf['tableParams'], $conf['tableParams.']) : $conf['tableParams'];
 		if ($tableParams) {
 			$controlTable->tableParams = $tableParams;
@@ -84,5 +86,6 @@ class tslib_content_ContentTable extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

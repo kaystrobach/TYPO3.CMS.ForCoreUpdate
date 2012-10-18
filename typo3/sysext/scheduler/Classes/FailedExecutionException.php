@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Scheduler;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,9 +30,10 @@
  * @package TYPO3
  * @subpackage scheduler
  */
-class tx_scheduler_FailedExecutionException extends RuntimeException {
+class FailedExecutionException extends RuntimeException {
 
 
 }
+
 
 ?>

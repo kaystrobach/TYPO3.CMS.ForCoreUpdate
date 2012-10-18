@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Search\Livesearch;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +27,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Class for handling backend live search.
  *
@@ -34,28 +35,24 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_search_livesearch {
+class Livesearch {
 
 	/**
 	 * @var string
 	 */
 	const PAGE_JUMP_TABLE = 'pages';
-
 	/**
 	 * @var integer
 	 */
 	const RECURSIVE_PAGE_LEVEL = 99;
-
 	/**
 	 * @var integer
 	 */
 	const GROUP_TITLE_MAX_LENGTH = 15;
-
 	/**
 	 * @var integer
 	 */
 	const RECORD_TITLE_MAX_LENGTH = 28;
-
 	/**
 	 * @var string
 	 */
@@ -77,7 +74,7 @@ class t3lib_search_livesearch {
 	protected $userPermissions = '';
 
 	/**
-	 * @var t3lib_search_livesearch_queryParser
+	 * @var \TYPO3\CMS\Backend\Search\Livesearch\QueryParser
 	 */
 	protected $queryParser = NULL;
 
@@ -88,7 +85,7 @@ class t3lib_search_livesearch {
 	 */
 	public function __construct() {
 		$this->userPermissions = $GLOBALS['BE_USER']->getPagePermsClause(1);
-		$this->queryParser = t3lib_div::makeInstance('t3lib_search_livesearch_queryParser');
+		$this->queryParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Search\\Livesearch\\QueryParser');
 	}
 
 	/**
@@ -101,11 +98,9 @@ class t3lib_search_livesearch {
 		$link = '';
 		$pageId = $this->queryParser->getId($searchQuery);
 		$pageRecord = $this->findPageById($pageId);
-
 		if (!empty($pageRecord)) {
 			$link = $this->getEditLink(self::PAGE_JUMP_TABLE, $this->findPageById($pageId));
 		}
-
 		return $link;
 	}
 
@@ -124,8 +119,7 @@ class t3lib_search_livesearch {
 		}
 		$pageIdList = implode(',', array_unique(explode(',', implode(',', $pageList))));
 		unset($pageList);
-		$limit = $this->startCount . ',' . $this->limitCount;
-
+		$limit = ($this->startCount . ',') . $this->limitCount;
 		if ($this->queryParser->isValidCommand($searchQuery)) {
 			$this->setQueryString($this->queryParser->getSearchQueryValue($searchQuery));
 			$tableName = $this->queryParser->getTableNameFromCommand($searchQuery);
@@ -136,7 +130,6 @@ class t3lib_search_livesearch {
 			$this->setQueryString($searchQuery);
 			$recordArray = $this->findByGlobalTableList($pageIdList);
 		}
-
 		return $recordArray;
 	}
 
@@ -148,12 +141,10 @@ class t3lib_search_livesearch {
 	 */
 	protected function findPageById($id) {
 		$pageRecord = array();
-		$row = t3lib_BEfunc::getRecord(self::PAGE_JUMP_TABLE, $id);
-
+		$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord(self::PAGE_JUMP_TABLE, $id);
 		if (is_array($row)) {
 			$pageRecord = $row;
 		}
-
 		return $pageRecord;
 	}
 
@@ -172,13 +163,11 @@ class t3lib_search_livesearch {
 			if ($recordCount) {
 				$limit = $limit - $recordCount;
 				$getRecordArray[] = $recordArray;
-
 				if ($limit <= 0) {
 					break;
 				}
 			}
 		}
-
 		return $getRecordArray;
 	}
 
@@ -189,7 +178,6 @@ class t3lib_search_livesearch {
 	 * @param string $pageIdList Comma separated list of page IDs
 	 * @param string $limit MySql Limit notation
 	 * @return array Records found in the database matching the searchQuery
-	 *
 	 * @see getRecordArray()
 	 * @see makeOrderByTable()
 	 * @see makeQuerySearchByTable()
@@ -197,20 +185,13 @@ class t3lib_search_livesearch {
 	 */
 	protected function findByTable($tableName, $pageIdList, $limit) {
 		$fieldsToSearchWithin = $this->extractSearchableFieldsFromTable($tableName);
-
 		$getRecordArray = array();
 		if (count($fieldsToSearchWithin) > 0) {
-			$pageBasedPermission = ($tableName == 'pages' && $this->userPermissions) ? $this->userPermissions : '1=1 ';
-			$where = 'pid IN (' . $pageIdList . ') AND ' . $pageBasedPermission . $this->makeQuerySearchByTable($tableName, $fieldsToSearchWithin);
+			$pageBasedPermission = $tableName == 'pages' && $this->userPermissions ? $this->userPermissions : '1=1 ';
+			$where = ((('pid IN (' . $pageIdList) . ') AND ') . $pageBasedPermission) . $this->makeQuerySearchByTable($tableName, $fieldsToSearchWithin);
 			$orderBy = $this->makeOrderByTable($tableName);
-			$getRecordArray = $this->getRecordArray(
-				$tableName,
-				$where,
-				$this->makeOrderByTable($tableName),
-				$limit
-			);
+			$getRecordArray = $this->getRecordArray($tableName, $where, $this->makeOrderByTable($tableName), $limit);
 		}
-
 		return $getRecordArray;
 	}
 
@@ -222,7 +203,6 @@ class t3lib_search_livesearch {
 	 * @param string $orderBy
 	 * @param string $limit MySql Limit notation
 	 * @return array
-	 *
 	 * @see t3lib_db::exec_SELECT_queryArray()
 	 * @see t3lib_db::sql_num_rows()
 	 * @see t3lib_db::sql_fetch_assoc()
@@ -242,21 +222,18 @@ class t3lib_search_livesearch {
 		);
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
 		$dbCount = $GLOBALS['TYPO3_DB']->sql_num_rows($result);
-
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
 			$collect[] = array(
-				'id' => $tableName . ':' . $row['uid'],
-				'pageId' => ($tableName === 'pages' ? $row['uid'] : $row['pid']),
-				'recordTitle' => ($isFirst) ? $this->getRecordTitlePrep($this->getTitleOfCurrentRecordType($tableName), self::GROUP_TITLE_MAX_LENGTH) : '',
-				'iconHTML' => t3lib_iconWorks::getSpriteIconForRecord($tableName, $row),
+				'id' => ($tableName . ':') . $row['uid'],
+				'pageId' => $tableName === 'pages' ? $row['uid'] : $row['pid'],
+				'recordTitle' => $isFirst ? $this->getRecordTitlePrep($this->getTitleOfCurrentRecordType($tableName), self::GROUP_TITLE_MAX_LENGTH) : '',
+				'iconHTML' => \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord($tableName, $row),
 				'title' => $this->getRecordTitlePrep($this->getTitleFromCurrentRow($tableName, $row), self::RECORD_TITLE_MAX_LENGTH),
-				'editLink' => $this->getEditLink($tableName, $row),
+				'editLink' => $this->getEditLink($tableName, $row)
 			);
 			$isFirst = FALSE;
 		}
-
 		$GLOBALS['TYPO3_DB']->sql_free_result($result);
-
 		return $collect;
 	}
 
@@ -266,27 +243,23 @@ class t3lib_search_livesearch {
 	 * @param string $tableName Record table name
 	 * @param array $row Current record row from database.
 	 * @return string Link to open an edit window for record.
-	 *
 	 * @see t3lib_BEfunc::readPageAccess()
 	 */
 	protected function getEditLink($tableName, $row) {
-		$pageInfo = t3lib_BEfunc::readPageAccess($row['pid'], $this->userPermissions);
+		$pageInfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($row['pid'], $this->userPermissions);
 		$calcPerms = $GLOBALS['BE_USER']->calcPerms($pageInfo);
 		$editLink = '';
-
 		if ($tableName == 'pages') {
-			$localCalcPerms = $GLOBALS['BE_USER']->calcPerms(t3lib_BEfunc::getRecord('pages', $row['uid']));
+			$localCalcPerms = $GLOBALS['BE_USER']->calcPerms(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $row['uid']));
 			$permsEdit = $localCalcPerms & 2;
 		} else {
 			$permsEdit = $calcPerms & 16;
 		}
-
-			// "Edit" link: ( Only if permissions to edit the page-record of the content of the parent page ($this->id)
-			// @todo Is there an existing function to generate this link?
+		// "Edit" link: ( Only if permissions to edit the page-record of the content of the parent page ($this->id)
+		// @todo Is there an existing function to generate this link?
 		if ($permsEdit) {
-			$editLink = 'alt_doc.php?' . '&edit[' . $tableName . '][' . $row['uid'] . ']=edit';
+			$editLink = (((('alt_doc.php?' . '&edit[') . $tableName) . '][') . $row['uid']) . ']=edit';
 		}
-
 		return $editLink;
 	}
 
@@ -310,12 +283,11 @@ class t3lib_search_livesearch {
 	 * @return string The processed title string, wrapped in <span title="...">|</span> if cropped
 	 */
 	public function getRecordTitlePrep($title, $titleLength = 0) {
-			// If $titleLength is not a valid positive integer, use BE_USER->uc['titleLen']:
-		if (!$titleLength || !t3lib_utility_Math::canBeInterpretedAsInteger($titleLength) || $titleLength < 0) {
+		// If $titleLength is not a valid positive integer, use BE_USER->uc['titleLen']:
+		if ((!$titleLength || !\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($titleLength)) || $titleLength < 0) {
 			$titleLength = $GLOBALS['BE_USER']->uc['titleLen'];
 		}
-
-		return htmlspecialchars(t3lib_div::fixed_lgd_cs($title, $titleLength));
+		return htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($title, $titleLength));
 	}
 
 	/**
@@ -324,7 +296,6 @@ class t3lib_search_livesearch {
 	 * @param string $tableName Record table name
 	 * @param array $row Current record row from database.
 	 * @return string
-	 *
 	 * @todo Use the backend function to get the calculated label instead.
 	 */
 	protected function getTitleFromCurrentRow($tableName, $row) {
@@ -342,63 +313,51 @@ class t3lib_search_livesearch {
 	protected function makeQuerySearchByTable($tableName, array $fieldsToSearchWithin) {
 		$queryPart = '';
 		$whereParts = array();
-			// Load the full TCA for the table, as we need to access column configuration
-		t3lib_div::loadTCA($tableName);
-
-			// If the search string is a simple integer, assemble an equality comparison
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($this->queryString)) {
+		// Load the full TCA for the table, as we need to access column configuration
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($tableName);
+		// If the search string is a simple integer, assemble an equality comparison
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->queryString)) {
 			foreach ($fieldsToSearchWithin as $fieldName) {
 				if (($fieldName == 'uid' || $fieldName == 'pid') || isset($GLOBALS['TCA'][$tableName]['columns'][$fieldName])) {
-					$fieldConfig = &$GLOBALS['TCA'][$tableName]['columns'][$fieldName]['config'];
-						// Assemble the search condition only if the field is an integer, or is uid or pid
-					if (($fieldName == 'uid' || $fieldName == 'pid') ||
-						($fieldConfig['type'] == 'input' && $fieldConfig['eval'] && t3lib_div::inList($fieldConfig['eval'], 'int'))) {
-						$whereParts[] = $fieldName . '=' . $this->queryString;
+					$fieldConfig =& $GLOBALS['TCA'][$tableName]['columns'][$fieldName]['config'];
+					// Assemble the search condition only if the field is an integer, or is uid or pid
+					if (($fieldName == 'uid' || $fieldName == 'pid') || ($fieldConfig['type'] == 'input' && $fieldConfig['eval']) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($fieldConfig['eval'], 'int')) {
+						$whereParts[] = ($fieldName . '=') . $this->queryString;
 					}
 				}
 			}
-
-			// If the search string is not an integer, assemble a LIKE query
 		} else {
-			$like = '\'%' .
-				$GLOBALS['TYPO3_DB']->escapeStrForLike($GLOBALS['TYPO3_DB']->quoteStr($this->queryString, $tableName), $tableName) .
-				'%\'';
+			$like = ('\'%' . $GLOBALS['TYPO3_DB']->escapeStrForLike($GLOBALS['TYPO3_DB']->quoteStr($this->queryString, $tableName), $tableName)) . '%\'';
 			foreach ($fieldsToSearchWithin as $fieldName) {
 				if (isset($GLOBALS['TCA'][$tableName]['columns'][$fieldName])) {
-					$fieldConfig = &$GLOBALS['TCA'][$tableName]['columns'][$fieldName]['config'];
-						// Check whether search should be case-sensitive or not
+					$fieldConfig =& $GLOBALS['TCA'][$tableName]['columns'][$fieldName]['config'];
+					// Check whether search should be case-sensitive or not
 					$format = 'LCASE(%s) LIKE LCASE(%s)';
 					if (is_array($fieldConfig['search'])) {
 						if (in_array('case', $fieldConfig['search'])) {
 							$format = '%s LIKE %s';
 						}
-							// Apply additional condition, if any
+						// Apply additional condition, if any
 						if ($fieldConfig['search']['andWhere']) {
-							$format = '((' . $fieldConfig['search']['andWhere'] . ') AND (' . $format . '))';
+							$format = ((('((' . $fieldConfig['search']['andWhere']) . ') AND (') . $format) . '))';
 						}
 					}
-						// Assemble the search condition only if the field makes sense to be searched
-					if ($fieldConfig['type'] == 'text' ||
-							$fieldConfig['type'] == 'flex' ||
-							($fieldConfig['type'] == 'input' && (!$fieldConfig['eval'] || !preg_match('/date|time|int/', $fieldConfig['eval'])))) {
+					// Assemble the search condition only if the field makes sense to be searched
+					if (($fieldConfig['type'] == 'text' || $fieldConfig['type'] == 'flex') || $fieldConfig['type'] == 'input' && (!$fieldConfig['eval'] || !preg_match('/date|time|int/', $fieldConfig['eval']))) {
 						$whereParts[] = sprintf($format, $fieldName, $like);
 					}
 				}
 			}
 		}
-
-			// If at least one condition was defined, create the search query
+		// If at least one condition was defined, create the search query
 		if (count($whereParts) > 0) {
-			$queryPart = ' AND (' . implode(' OR ', $whereParts) . ')';
-				// And the relevant conditions for deleted and versioned records
-			$queryPart .= t3lib_BEfunc::deleteClause($tableName);
-			$queryPart .= t3lib_BEfunc::versioningPlaceholderClause($tableName);
-
-			// If there were no conditions, make sure that the query will fail for the given table
+			$queryPart = (' AND (' . implode(' OR ', $whereParts)) . ')';
+			// And the relevant conditions for deleted and versioned records
+			$queryPart .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($tableName);
+			$queryPart .= \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($tableName);
 		} else {
 			$queryPart = ' AND 0 = 1';
 		}
-
 		return $queryPart;
 	}
 
@@ -411,13 +370,11 @@ class t3lib_search_livesearch {
 	 */
 	protected function makeOrderByTable($tableName) {
 		$orderBy = '';
-
 		if (is_array($GLOBALS['TCA'][$tableName]['ctrl']) && array_key_exists('sortby', $GLOBALS['TCA'][$tableName]['ctrl'])) {
 			$orderBy = 'ORDER BY ' . $GLOBALS['TCA'][$tableName]['ctrl']['sortby'];
 		} else {
 			$orderBy = $GLOBALS['TCA'][$tableName]['ctrl']['default_sortby'];
 		}
-
 		return $GLOBALS['TYPO3_DB']->stripOrderBy($orderBy);
 	}
 
@@ -428,20 +385,17 @@ class t3lib_search_livesearch {
 	 * @return array
 	 */
 	protected function extractSearchableFieldsFromTable($tableName) {
-
-			// Get the list of fields to search in from the TCA, if any
+		// Get the list of fields to search in from the TCA, if any
 		if (isset($GLOBALS['TCA'][$tableName]['ctrl']['searchFields'])) {
-			$fieldListArray = t3lib_div::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['searchFields'], TRUE);
+			$fieldListArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['searchFields'], TRUE);
 		} else {
 			$fieldListArray = array();
 		}
-
-			// Add special fields
+		// Add special fields
 		if ($GLOBALS['BE_USER']->isAdmin()) {
 			$fieldListArray[] = 'uid';
 			$fieldListArray[] = 'pid';
 		}
-
 		return $fieldListArray;
 	}
 
@@ -463,7 +417,7 @@ class t3lib_search_livesearch {
 	 * @return void
 	 */
 	public function setLimitCount($limitCount) {
-		$limit = t3lib_utility_Math::convertToPositiveInteger($limitCount);
+		$limit = \TYPO3\CMS\Core\Utility\MathUtility::convertToPositiveInteger($limitCount);
 		if ($limit > 0) {
 			$this->limitCount = $limit;
 		}
@@ -476,7 +430,7 @@ class t3lib_search_livesearch {
 	 * @return void
 	 */
 	public function setStartCount($startCount) {
-		$this->startCount = t3lib_utility_Math::convertToPositiveInteger($startCount);
+		$this->startCount = \TYPO3\CMS\Core\Utility\MathUtility::convertToPositiveInteger($startCount);
 	}
 
 	/**
@@ -487,7 +441,7 @@ class t3lib_search_livesearch {
 	 * @see t3lib_div::removeXSS()
 	 */
 	public function setQueryString($queryString) {
-		$this->queryString = t3lib_div::removeXSS($queryString);
+		$this->queryString = \TYPO3\CMS\Core\Utility\GeneralUtility::removeXSS($queryString);
 	}
 
 	/**
@@ -500,7 +454,7 @@ class t3lib_search_livesearch {
 	 */
 	protected function getAvailablePageIds($id, $depth) {
 		$idList = '';
-		$tree = t3lib_div::makeInstance('t3lib_pageTree');
+		$tree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\View\\PageTreeView');
 		$tree->init('AND ' . $this->userPermissions);
 		$tree->makeHTML = 0;
 		$tree->fieldArray = array('uid', 'php_tree_stop');
@@ -511,6 +465,8 @@ class t3lib_search_livesearch {
 		$idList = implode(',', $tree->ids);
 		return $idList;
 	}
+
 }
+
 
 ?>

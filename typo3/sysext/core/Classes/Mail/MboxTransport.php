@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Mail;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_mail_MboxTransport implements Swift_Transport {
+class MboxTransport implements Swift_Transport {
 
 	/**
 	 * @var string The file to write our mails into
@@ -79,7 +81,7 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 	 * @return int
 	 * @throws RuntimeException
 	 */
-	public function send(Swift_Mime_Message $message, &$failedRecipients = NULL) {
+	public function send(\Swift_Mime_Message $message, &$failedRecipients = NULL) {
 		$message->generateId();
 		// Create a mbox-like header
 		$mboxFrom = $this->getReversePath($message);
@@ -88,18 +90,18 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 		// Add the complete mail inclusive headers
 		$messageStr .= $message->toString();
 		$messageStr .= LF . LF;
-		$lockObject = t3lib_div::makeInstance('t3lib_lock', $this->debugFile, $GLOBALS['TYPO3_CONF_VARS']['SYS']['lockingMode']);
-		/** @var t3lib_lock $lockObject */
+		$lockObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Locking\\Locker', $this->debugFile, $GLOBALS['TYPO3_CONF_VARS']['SYS']['lockingMode']);
+		/** @var \TYPO3\CMS\Core\Locking\Locker $lockObject */
 		$lockObject->acquire();
 		// Write the mbox file
 		$file = @fopen($this->debugFile, 'a');
 		if (!$file) {
 			$lockObject->release();
-			throw new RuntimeException(sprintf('Could not write to file "%s" when sending an email to debug transport', $this->debugFile), 1291064151);
+			throw new \RuntimeException(sprintf('Could not write to file "%s" when sending an email to debug transport', $this->debugFile), 1291064151);
 		}
 		@fwrite($file, $messageStr);
 		@fclose($file);
-		t3lib_div::fixPermissions($this->debugFile);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::fixPermissions($this->debugFile);
 		$lockObject->release();
 		// Return every receipient as "delivered"
 		$count = (count((array) $message->getTo()) + count((array) $message->getCc())) + count((array) $message->getBcc());
@@ -112,7 +114,7 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 	 * @param Swift_Mime_Message $message
 	 * @return mixed|NULL
 	 */
-	private function getReversePath(Swift_Mime_Message $message) {
+	private function getReversePath(\Swift_Mime_Message $message) {
 		$return = $message->getReturnPath();
 		$sender = $message->getSender();
 		$from = $message->getFrom();
@@ -134,10 +136,11 @@ class t3lib_mail_MboxTransport implements Swift_Transport {
 	 *
 	 * @param Swift_Events_EventListener $plugin
 	 */
-	public function registerPlugin(Swift_Events_EventListener $plugin) {
+	public function registerPlugin(\Swift_Events_EventListener $plugin) {
 		return TRUE;
 	}
 
 }
+
 
 ?>

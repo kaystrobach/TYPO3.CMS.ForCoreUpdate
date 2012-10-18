@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_Domain_Model_Element_Abstract {
+abstract class AbstractElement {
 
 	const ELEMENT_TYPE_FORM = 'FORM';
 	const ELEMENT_TYPE_PLAIN = 'PLAIN';
@@ -63,14 +65,14 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	/**
 	 * Attribute object
 	 *
-	 * @var tx_form_Domain_Model_Attributes_Attributes
+	 * @var \TYPO3\CMS\Form\Domain\Model\Attribute\AttributesAttribute
 	 */
 	protected $attributes;
 
 	/**
 	 * Additional object
 	 *
-	 * @var tx_form_Domain_Model_Additional_Additional
+	 * @var \TYPO3\CMS\Form\Domain\Model\Additional\AdditionalAdditionalElement
 	 */
 	protected $additional;
 
@@ -121,27 +123,27 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
 	/**
-	 * @var tx_form_System_Request
+	 * @var \TYPO3\CMS\Form\Request
 	 */
 	protected $requestHandler;
 
 	/**
-	 * @var tx_form_System_Elementcounter
+	 * @var \TYPO3\CMS\Form\ElementCounter
 	 */
 	protected $elementCounter;
 
 	/**
-	 * @var tx_form_System_Validate
+	 * @var \TYPO3\CMS\Form\Utility\ValidatorUtility
 	 */
 	protected $validateClass;
 
 	/**
-	 * @var tx_form_System_Filter
+	 * @var \TYPO3\CMS\Form\Utility\FilterUtility
 	 */
 	protected $filter;
 
@@ -153,10 +155,10 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
-		$this->requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
-		$this->validateClass = t3lib_div::makeInstance('tx_form_System_Validate');
-		$this->elementCounter = t3lib_div::makeInstance('tx_form_System_Elementcounter');
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->requestHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Request');
+		$this->validateClass = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Utility\\ValidatorUtility');
+		$this->elementCounter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\ElementCounter');
 		$this->setElementId();
 		$this->createAttributes();
 		$this->createAdditional();
@@ -232,7 +234,7 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 *
 	 * @param string $attribute Name of the attribute
 	 * @param mixed $value Value of the attribute
-	 * @return tx_form_Domain_Model_Element_Abstract
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement
 	 */
 	public function setAttribute($attribute, $value) {
 		if (array_key_exists($attribute, $this->allowedAttributes)) {
@@ -350,8 +352,8 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * @return void
 	 */
 	protected function createAttributes() {
-		$className = 'tx_form_Domain_Model_Attributes_Attributes';
-		$this->attributes = t3lib_div::makeInstance($className, $this->elementId);
+		$className = 'TYPO3\\CMS\\Form\\Domain\\Model\\Attribute\\AttributesAttribute';
+		$this->attributes = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $this->elementId);
 	}
 
 	/**
@@ -431,7 +433,7 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 *
 	 * @param string $additional Name of the additional
 	 * @param mixed $value Value of the additional
-	 * @return tx_form_Domain_Model_Element_Abstract
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement
 	 */
 	public function setAdditional($additional, $type, $value) {
 		$this->additional->addAdditional($additional, $type, $value);
@@ -454,8 +456,8 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * @return void
 	 */
 	protected function createAdditional() {
-		$className = 'tx_form_Domain_Model_Additional_Additional';
-		$this->additional = t3lib_div::makeInstance($className);
+		$className = 'TYPO3\\CMS\\Form\\Domain\\Model\\Additional\\AdditionalAdditionalElement';
+		$this->additional = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
 	}
 
 	/**
@@ -475,7 +477,7 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * @return void
 	 */
 	protected function createFilter() {
-		$this->filter = t3lib_div::makeInstance('tx_form_System_Filter');
+		$this->filter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Utility\\FilterUtility');
 	}
 
 	/**
@@ -506,12 +508,13 @@ abstract class tx_form_Domain_Model_Element_Abstract {
 	 * Dummy function to check the request handler on input
 	 * and set submitted data right for elements
 	 *
-	 * @return tx_form_Domain_Model_Element_Abstract
+	 * @return \TYPO3\CMS\Form\Domain\Model\Element\AbstractElement
 	 */
 	public function checkFilterAndSetIncomingDataFromRequest() {
 		return $this;
 	}
 
 }
+
 
 ?>

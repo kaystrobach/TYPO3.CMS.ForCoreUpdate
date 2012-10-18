@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-abstract class tx_form_Domain_Model_Additional_Abstract {
+abstract class AbstractAdditionalElement {
 
 	/**
 	 * Additional value
@@ -54,7 +56,7 @@ abstract class tx_form_Domain_Model_Additional_Abstract {
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
@@ -65,7 +67,7 @@ abstract class tx_form_Domain_Model_Additional_Abstract {
 	 * @param mixed $value Value of the object
 	 */
 	public function __construct($type, $value) {
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$this->value = $value;
 		$this->type = $type;
 	}
@@ -97,5 +99,6 @@ abstract class tx_form_Domain_Model_Additional_Abstract {
 	abstract public function getValue();
 
 }
+
 
 ?>

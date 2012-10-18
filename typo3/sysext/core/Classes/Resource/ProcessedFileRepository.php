@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @package 	TYPO3
  * @subpackage 	t3lib
  */
-class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repository_AbstractRepository {
+class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\AbstractRepository {
 
 	/**
 	 * The main object type of this class. In some cases (fileReference) this
@@ -42,7 +44,7 @@ class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repositor
 	 *
 	 * @var string
 	 */
-	protected $objectType = 't3lib_file_ProcessedFile';
+	protected $objectType = 'TYPO3\\CMS\\Core\\Resource\\ProcessedFile';
 
 	/**
 	 * Main File object storage table. Note that this repository also works on
@@ -56,7 +58,7 @@ class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repositor
 	 * Creates an object managed by this repository.
 	 *
 	 * @param array $databaseRow
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	protected function createDomainObject(array $databaseRow) {
 		return $this->factory->getFileObject($databaseRow['uid'], $databaseRow);
@@ -65,11 +67,11 @@ class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repositor
 	/**
 	 * Loads index-data into processedFileObject
 	 *
-	 * @param t3lib_file_ProcessedFile $processedFileObject
+	 * @param \TYPO3\CMS\Core\Resource\ProcessedFile $processedFileObject
 	 * @return boolean
 	 */
-	public function populateDataOfProcessedFileObject(t3lib_file_ProcessedFile $processedFileObject) {
-		/** @var $GLOBALS['TYPO3_DB'] t3lib_DB */
+	public function populateDataOfProcessedFileObject(\TYPO3\CMS\Core\Resource\ProcessedFile $processedFileObject) {
+		/** @var $GLOBALS['TYPO3_DB'] \TYPO3\CMS\Core\Database\DatabaseConnection */
 		$recordData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, ((('original=' . intval($processedFileObject->getOriginalFile()->getUid())) . ' AND checksum=') . $GLOBALS['TYPO3_DB']->fullQuoteStr($processedFileObject->calculateChecksum(), $this->table)) . ' AND deleted=0');
 		// Update the properties if the data was found
 		if (is_array($recordData)) {
@@ -83,7 +85,7 @@ class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repositor
 	/**
 	 * Adds a processedfile object in the database
 	 *
-	 * @param t3lib_file_ProcessedFile $processedFile
+	 * @param \TYPO3\CMS\Core\Resource\ProcessedFile $processedFile
 	 * @return void
 	 */
 	public function add($processedFile) {
@@ -97,7 +99,7 @@ class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repositor
 	/**
 	 * Updates an existing file object in the database
 	 *
-	 * @param t3lib_file_ProcessedFile $processedFile
+	 * @param \TYPO3\CMS\Core\Resource\ProcessedFile $processedFile
 	 * @return void
 	 */
 	public function update($processedFile) {
@@ -112,5 +114,6 @@ class t3lib_file_Repository_ProcessedFileRepository extends t3lib_file_Repositor
 	}
 
 }
+
 
 ?>

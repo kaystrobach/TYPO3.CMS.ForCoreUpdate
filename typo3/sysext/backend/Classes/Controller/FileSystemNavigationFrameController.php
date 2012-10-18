@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller;
+
 /**
  * Main script class for rendering of the folder tree
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_alt_file_navframe {
+class FileSystemNavigationFrameController {
 
 	// Internal, dynamic:
 	// Content accumulates in this variable.
@@ -16,7 +18,7 @@ class SC_alt_file_navframe {
 	public $content;
 
 	/**
-	 * @var filelistFolderTree $foldertree the folder tree object
+	 * @var \TYPO3\CMS\Filelist\FileListFolderTree $foldertree the folder tree object
 	 * @todo Define visibility
 	 */
 	public $foldertree;
@@ -24,7 +26,7 @@ class SC_alt_file_navframe {
 	/**
 	 * document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -55,11 +57,11 @@ class SC_alt_file_navframe {
 		// Setting backPath
 		$this->backPath = $GLOBALS['BACK_PATH'];
 		// Setting GPvars:
-		$this->currentSubScript = t3lib_div::_GP('currentSubScript');
-		$this->cMR = t3lib_div::_GP('cMR');
+		$this->currentSubScript = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('currentSubScript');
+		$this->cMR = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cMR');
 		// Create folder tree object:
-		/** @var $foldertree filelistFolderTree */
-		$this->foldertree = t3lib_div::makeInstance('filelistFolderTree');
+		/** @var $foldertree \TYPO3\CMS\Filelist\FileListFolderTree */
+		$this->foldertree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Filelist\\FileListFolderTree');
 		$this->foldertree->ext_IconMode = $GLOBALS['BE_USER']->getTSConfigVal('options.folderTree.disableIconLinkToContextmenu');
 		$this->foldertree->thisScript = 'alt_file_navframe.php';
 	}
@@ -74,7 +76,7 @@ class SC_alt_file_navframe {
 		// Setting highlight mode:
 		$this->doHighlight = !$GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.disableTitleHighlight');
 		// Create template object:
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->setModuleTemplate('templates/alt_file_navframe.html');
 		$this->doc->showFlashMessages = FALSE;
@@ -88,7 +90,7 @@ class SC_alt_file_navframe {
 			path = decodeURIComponent(path);
 			var flashUploadOptions = {
 				uploadURL: top.TS.PATH_typo3 + "ajax.php",
-				uploadFileSizeLimit: "') . t3lib_div::getMaxUploadFileSize()) . '",
+				uploadFileSizeLimit: "') . \TYPO3\CMS\Core\Utility\GeneralUtility::getMaxUploadFileSize()) . '",
 				uploadFileTypes: {
 					allow:  "') . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']['webspace']['allow']) . '",
 					deny: "') . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']['webspace']['deny']) . '"
@@ -98,7 +100,7 @@ class SC_alt_file_navframe {
 					"file[upload][1][target]": path,
 					"file[upload][1][data]": 1,
 					"file[upload][1][charset]": "utf-8",
-					"ajaxID": "TYPO3_tcefile::process"
+					"ajaxID": "TYPO3\\CMS\\Backend\\Controller\\File\\FileController::process"
 				}
 			};
 
@@ -133,7 +135,7 @@ class SC_alt_file_navframe {
 
 
 		// setting prefs for foldertree
-		Tree.ajaxID = "SC_alt_file_navframe::expandCollapse";
+		Tree.ajaxID = "TYPO3\\CMS\\Backend\\Controller\\FileSystemNavigationFrameController::expandCollapse";
 
 		// Function, loading the list frame from navigation tree:
 		function jumpTo(id, linkObj, highlightID, bank) {
@@ -171,7 +173,7 @@ class SC_alt_file_navframe {
 		// Setting up the buttons and markers for docheader
 		$docHeaderButtons = $this->getButtons();
 		$markers = array(
-			'IMG_RESET' => (((((('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/close_gray.gif', ' width="16" height="16"')) . ' id="treeFilterReset" alt="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.resetFilter')) . '" ') . 'title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.resetFilter')) . '" />',
+			'IMG_RESET' => (((((('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/close_gray.gif', ' width="16" height="16"')) . ' id="treeFilterReset" alt="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.resetFilter')) . '" ') . 'title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.resetFilter')) . '" />',
 			'CONTENT' => $this->content
 		);
 		$subparts = array();
@@ -205,9 +207,9 @@ class SC_alt_file_navframe {
 			'refresh' => ''
 		);
 		// Refresh
-		$buttons['refresh'] = ((('<a href="' . htmlspecialchars(t3lib_div::getIndpEnv('REQUEST_URI'))) . '">') . t3lib_iconWorks::getSpriteIcon('actions-system-refresh')) . '</a>';
+		$buttons['refresh'] = ((('<a href="' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REQUEST_URI'))) . '">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-system-refresh')) . '</a>';
 		// CSH
-		$buttons['csh'] = str_replace('typo3-csh-inline', 'typo3-csh-inline show-right', t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'filetree', $GLOBALS['BACK_PATH']));
+		$buttons['csh'] = str_replace('typo3-csh-inline', 'typo3-csh-inline show-right', \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'filetree', $GLOBALS['BACK_PATH']));
 		return $buttons;
 	}
 
@@ -221,7 +223,7 @@ class SC_alt_file_navframe {
 	 * Called by typo3/ajax.php
 	 *
 	 * @param array $params Additional parameters (not used here)
-	 * @param TYPO3AJAX $ajaxObj The TYPO3AJAX object of this request
+	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj The TYPO3AJAX object of this request
 	 * @return void
 	 */
 	public function ajaxExpandCollapse($params, $ajaxObj) {
@@ -235,5 +237,6 @@ class SC_alt_file_navframe {
 	}
 
 }
+
 
 ?>

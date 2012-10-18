@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recordlist\RecordList;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  * @subpackage core
  * @see localRecordList
  */
-class recordList extends t3lib_recordList {
+class AbstractDatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\AbstractRecordList {
 
 	// External, static:
 	// Specify a list of tables which are the only ones allowed to be displayed.
@@ -309,15 +311,15 @@ class recordList extends t3lib_recordList {
 		$this->firstElementNumber = $pointer;
 		$this->searchString = trim($search);
 		$this->searchLevels = trim($levels);
-		$this->showLimit = t3lib_utility_Math::forceIntegerInRange($showLimit, 0, 10000);
+		$this->showLimit = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($showLimit, 0, 10000);
 		// Setting GPvars:
-		$this->csvOutput = t3lib_div::_GP('csv') ? TRUE : FALSE;
-		$this->sortField = t3lib_div::_GP('sortField');
-		$this->sortRev = t3lib_div::_GP('sortRev');
-		$this->displayFields = t3lib_div::_GP('displayFields');
-		$this->duplicateField = t3lib_div::_GP('duplicateField');
-		if (t3lib_div::_GP('justLocalized')) {
-			$this->localizationRedirect(t3lib_div::_GP('justLocalized'));
+		$this->csvOutput = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('csv') ? TRUE : FALSE;
+		$this->sortField = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('sortField');
+		$this->sortRev = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('sortRev');
+		$this->displayFields = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('displayFields');
+		$this->duplicateField = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('duplicateField');
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('justLocalized')) {
+			$this->localizationRedirect(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('justLocalized'));
 		}
 		// Init dynamic vars:
 		$this->counter = 0;
@@ -325,10 +327,10 @@ class recordList extends t3lib_recordList {
 		$this->HTMLcode = '';
 		// Limits
 		if (isset($this->modTSconfig['properties']['itemsLimitPerTable'])) {
-			$this->itemsLimitPerTable = t3lib_utility_Math::forceIntegerInRange(intval($this->modTSconfig['properties']['itemsLimitPerTable']), 1, 10000);
+			$this->itemsLimitPerTable = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(intval($this->modTSconfig['properties']['itemsLimitPerTable']), 1, 10000);
 		}
 		if (isset($this->modTSconfig['properties']['itemsLimitSingleTable'])) {
-			$this->itemsLimitSingleTable = t3lib_utility_Math::forceIntegerInRange(intval($this->modTSconfig['properties']['itemsLimitSingleTable']), 1, 10000);
+			$this->itemsLimitSingleTable = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange(intval($this->modTSconfig['properties']['itemsLimitSingleTable']), 1, 10000);
 		}
 		// Set search levels:
 		$searchLevels = intval($this->searchLevels);
@@ -341,7 +343,7 @@ class recordList extends t3lib_recordList {
 		}
 		// Get configuration of collapsed tables from user uc and merge with sanitized GP vars
 		$this->tablesCollapsed = is_array($GLOBALS['BE_USER']->uc['moduleData']['list']) ? $GLOBALS['BE_USER']->uc['moduleData']['list'] : array();
-		$collapseOverride = t3lib_div::_GP('collapse');
+		$collapseOverride = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('collapse');
 		if (is_array($collapseOverride)) {
 			foreach ($collapseOverride as $collapseTable => $collapseValue) {
 				if (is_array($GLOBALS['TCA'][$collapseTable]) && ($collapseValue == 0 || $collapseValue == 1)) {
@@ -351,9 +353,9 @@ class recordList extends t3lib_recordList {
 			// Save modified user uc
 			$GLOBALS['BE_USER']->uc['moduleData']['list'] = $this->tablesCollapsed;
 			$GLOBALS['BE_USER']->writeUC($GLOBALS['BE_USER']->uc);
-			$returnUrl = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
+			$returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
 			if ($returnUrl !== '') {
-				t3lib_utility_Http::redirect($returnUrl);
+				\TYPO3\CMS\Core\Utility\HttpUtility::redirect($returnUrl);
 			}
 		}
 		if ($searchLevels > 0) {
@@ -382,18 +384,18 @@ class recordList extends t3lib_recordList {
 	 */
 	public function generateList() {
 		// Set page record in header
-		$this->pageRecord = t3lib_BEfunc::getRecordWSOL('pages', $this->id);
+		$this->pageRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL('pages', $this->id);
 		// Traverse the TCA table array:
 		foreach ($GLOBALS['TCA'] as $tableName => $value) {
 			// Checking if the table should be rendered:
 			// Checks that we see only permitted/requested tables:
-			if (((!$this->table || $tableName == $this->table) && (!$this->tableList || t3lib_div::inList($this->tableList, $tableName))) && $GLOBALS['BE_USER']->check('tables_select', $tableName)) {
+			if (((!$this->table || $tableName == $this->table) && (!$this->tableList || \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->tableList, $tableName))) && $GLOBALS['BE_USER']->check('tables_select', $tableName)) {
 				// Load full table definitions:
-				t3lib_div::loadTCA($tableName);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($tableName);
 				// Don't show table if hidden by TCA ctrl section
 				$hideTable = $GLOBALS['TCA'][$tableName]['ctrl']['hideTable'] ? TRUE : FALSE;
 				// Don't show table if hidden by pageTSconfig mod.web_list.hideTables
-				if (in_array($tableName, t3lib_div::trimExplode(',', $this->hideTables))) {
+				if (in_array($tableName, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->hideTables))) {
 					$hideTable = TRUE;
 				}
 				// Override previous selection if table is enabled or hidden by TSconfig TCA override mod.web_list.table
@@ -489,7 +491,7 @@ class recordList extends t3lib_recordList {
 	 * @todo Define visibility
 	 */
 	public function showSysNotesForPage() {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		return '';
 	}
 
@@ -529,7 +531,7 @@ class recordList extends t3lib_recordList {
 	 * @todo Define visibility
 	 */
 	public function thumbCode($row, $table, $field) {
-		return t3lib_BEfunc::thumbCode($row, $table, $field, $this->backPath);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::thumbCode($row, $table, $field, $this->backPath);
 	}
 
 	/**
@@ -546,7 +548,7 @@ class recordList extends t3lib_recordList {
 		$hookObjectsArr = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list.inc']['makeQueryArray'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list.inc']['makeQueryArray'] as $classRef) {
-				$hookObjectsArr[] = t3lib_div::getUserObj($classRef);
+				$hookObjectsArr[] = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
 			}
 		}
 		// Set ORDER BY:
@@ -569,13 +571,13 @@ class recordList extends t3lib_recordList {
 		$queryParts = array(
 			'SELECT' => $fieldList,
 			'FROM' => $table,
-			'WHERE' => ((((((($this->pidSelect . ' ') . $pC) . t3lib_BEfunc::deleteClause($table)) . t3lib_BEfunc::versioningPlaceholderClause($table)) . ' ') . $addWhere) . ' ') . $search,
+			'WHERE' => ((((((($this->pidSelect . ' ') . $pC) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table)) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($table)) . ' ') . $addWhere) . ' ') . $search,
 			'GROUPBY' => '',
 			'ORDERBY' => $GLOBALS['TYPO3_DB']->stripOrderBy($orderBy),
 			'LIMIT' => $limit
 		);
 		// Filter out records that are translated, if TSconfig mod.web_list.hideTranslations is set
-		if (((in_array($table, t3lib_div::trimExplode(',', $this->hideTranslations)) || $this->hideTranslations === '*') && !empty($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'])) && strcmp($table, 'pages_language_overlay')) {
+		if (((in_array($table, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->hideTranslations)) || $this->hideTranslations === '*') && !empty($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'])) && strcmp($table, 'pages_language_overlay')) {
 			$queryParts['WHERE'] .= (' AND ' . $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) . '=0 ';
 		}
 		// Apply hook as requested in http://bugs.typo3.org/view.php?id=4361
@@ -625,15 +627,15 @@ class recordList extends t3lib_recordList {
 			$searchableFields = $this->getSearchFields($table);
 			if (count($searchableFields) > 0) {
 				// Loading full table description - we need to traverse fields:
-				t3lib_div::loadTCA($table);
-				if (t3lib_utility_Math::canBeInterpretedAsInteger($this->searchString)) {
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
+				if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->searchString)) {
 					$whereParts = array(
 						'uid=' . $this->searchString
 					);
 					foreach ($searchableFields as $fieldName) {
 						if (isset($GLOBALS['TCA'][$table]['columns'][$fieldName])) {
 							$fieldConfig =& $GLOBALS['TCA'][$table]['columns'][$fieldName]['config'];
-							if (($fieldConfig['type'] == 'input' && $fieldConfig['eval']) && t3lib_div::inList($fieldConfig['eval'], 'int')) {
+							if (($fieldConfig['type'] == 'input' && $fieldConfig['eval']) && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($fieldConfig['eval'], 'int')) {
 								$condition = ($fieldName . '=') . $this->searchString;
 								if ((is_array($fieldConfig['search']) && in_array('pidonly', $fieldConfig['search'])) && $currentPid > 0) {
 									$condition = ((((('(' . $condition) . ' AND ') . $tablePidField) . '=') . $currentPid) . ')';
@@ -686,7 +688,7 @@ class recordList extends t3lib_recordList {
 		$fieldListWasSet = FALSE;
 		// Get fields from ctrl section of TCA first
 		if (isset($GLOBALS['TCA'][$tableName]['ctrl']['searchFields'])) {
-			$fieldArray = t3lib_div::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['searchFields'], TRUE);
+			$fieldArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['searchFields'], TRUE);
 			$fieldListWasSet = TRUE;
 		}
 		// Call hook to add or change the list
@@ -698,7 +700,7 @@ class recordList extends t3lib_recordList {
 				'searchString' => $this->searchString
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['mod_list']['getSearchFieldList'] as $hookFunction) {
-				t3lib_div::callUserFunction($hookFunction, $hookParameters, $this);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($hookFunction, $hookParameters, $this);
 			}
 		}
 		return $fieldArray;
@@ -735,9 +737,9 @@ class recordList extends t3lib_recordList {
 		$origCode = $code;
 		// If the title is blank, make a "no title" label:
 		if (!strcmp($code, '')) {
-			$code = (('<i>[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.no_title', 1)) . ']</i> - ') . htmlspecialchars(t3lib_div::fixed_lgd_cs(t3lib_BEfunc::getRecordTitle($table, $row), $GLOBALS['BE_USER']->uc['titleLen']));
+			$code = (('<i>[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.no_title', 1)) . ']</i> - ') . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($table, $row), $GLOBALS['BE_USER']->uc['titleLen']));
 		} else {
-			$code = htmlspecialchars(t3lib_div::fixed_lgd_cs($code, $this->fixedL));
+			$code = htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($code, $this->fixedL));
 			if ($code != htmlspecialchars($origCode)) {
 				$code = ((('<span title="' . htmlspecialchars($origCode)) . '">') . $code) . '</span>';
 			}
@@ -746,7 +748,7 @@ class recordList extends t3lib_recordList {
 		case 'edit':
 			// If the listed table is 'pages' we have to request the permission settings for each page:
 			if ($table == 'pages') {
-				$localCalcPerms = $GLOBALS['BE_USER']->calcPerms(t3lib_BEfunc::getRecord('pages', $row['uid']));
+				$localCalcPerms = $GLOBALS['BE_USER']->calcPerms(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('pages', $row['uid']));
 				$permsEdit = $localCalcPerms & 2;
 			} else {
 				$permsEdit = $this->calcPerms & 16;
@@ -754,13 +756,13 @@ class recordList extends t3lib_recordList {
 			// "Edit" link: ( Only if permissions to edit the page-record of the content of the parent page ($this->id)
 			if ($permsEdit) {
 				$params = ((('&edit[' . $table) . '][') . $row['uid']) . ']=edit';
-				$code = ((((('<a href="#" onclick="' . htmlspecialchars(t3lib_BEfunc::editOnClick($params, $this->backPath, -1))) . '" title="') . $GLOBALS['LANG']->getLL('edit', 1)) . '">') . $code) . '</a>';
+				$code = ((((('<a href="#" onclick="' . htmlspecialchars(\TYPO3\CMS\Backend\Utility\BackendUtility::editOnClick($params, $this->backPath, -1))) . '" title="') . $GLOBALS['LANG']->getLL('edit', 1)) . '">') . $code) . '</a>';
 			}
 			break;
 		case 'show':
 			// "Show" link (only pages and tt_content elements)
 			if ($table == 'pages' || $table == 'tt_content') {
-				$code = ((((('<a href="#" onclick="' . htmlspecialchars(t3lib_BEfunc::viewOnClick(($table == 'tt_content' ? ($this->id . '#') . $row['uid'] : $row['uid'])))) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showPage', 1)) . '">') . $code) . '</a>';
+				$code = ((((('<a href="#" onclick="' . htmlspecialchars(\TYPO3\CMS\Backend\Utility\BackendUtility::viewOnClick(($table == 'tt_content' ? ($this->id . '#') . $row['uid'] : $row['uid'])))) . '" title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.showPage', 1)) . '">') . $code) . '</a>';
 			}
 			break;
 		case 'info':
@@ -790,11 +792,11 @@ class recordList extends t3lib_recordList {
 	public function linkUrlMail($code, $testString) {
 		// Check for URL:
 		$schema = parse_url($testString);
-		if ($schema['scheme'] && t3lib_div::inList('http,https,ftp', $schema['scheme'])) {
+		if ($schema['scheme'] && \TYPO3\CMS\Core\Utility\GeneralUtility::inList('http,https,ftp', $schema['scheme'])) {
 			return ((('<a href="' . htmlspecialchars($testString)) . '" target="_blank">') . $code) . '</a>';
 		}
 		// Check for email:
-		if (t3lib_div::validEmail($testString)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($testString)) {
 			return ((('<a href="mailto:' . htmlspecialchars($testString)) . '" target="_blank">') . $code) . '</a>';
 		}
 		// Return if nothing else...
@@ -839,16 +841,16 @@ class recordList extends t3lib_recordList {
 		if ($this->showLimit) {
 			$urlParameters['showLimit'] = $this->showLimit;
 		}
-		if ((!$exclList || !t3lib_div::inList($exclList, 'firstElementNumber')) && $this->firstElementNumber) {
+		if ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'firstElementNumber')) && $this->firstElementNumber) {
 			$urlParameters['pointer'] = $this->firstElementNumber;
 		}
-		if ((!$exclList || !t3lib_div::inList($exclList, 'sortField')) && $this->sortField) {
+		if ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'sortField')) && $this->sortField) {
 			$urlParameters['sortField'] = $this->sortField;
 		}
-		if ((!$exclList || !t3lib_div::inList($exclList, 'sortRev')) && $this->sortRev) {
+		if ((!$exclList || !\TYPO3\CMS\Core\Utility\GeneralUtility::inList($exclList, 'sortRev')) && $this->sortRev) {
 			$urlParameters['sortRev'] = $this->sortRev;
 		}
-		return t3lib_BEfunc::getModuleUrl('web_list', $urlParameters);
+		return \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_list', $urlParameters);
 	}
 
 	/**
@@ -875,7 +877,7 @@ class recordList extends t3lib_recordList {
 		$fieldListArr = array();
 		// Check table:
 		if ((is_array($GLOBALS['TCA'][$table]) && isset($GLOBALS['TCA'][$table]['columns'])) && is_array($GLOBALS['TCA'][$table]['columns'])) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			if (isset($GLOBALS['TCA'][$table]['columns']) && is_array($GLOBALS['TCA'][$table]['columns'])) {
 				// Traverse configured columns and add them to field array, if available for user.
 				foreach ($GLOBALS['TCA'][$table]['columns'] as $fN => $fieldValue) {
@@ -912,7 +914,7 @@ class recordList extends t3lib_recordList {
 					}
 				}
 			} else {
-				t3lib_div::sysLog(sprintf('$TCA is broken for the table "%s": no required "columns" entry in $TCA.', $table), 'core', t3lib_div::SYSLOG_SEVERITY_ERROR);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf('$TCA is broken for the table "%s": no required "columns" entry in $TCA.', $table), 'core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
 			}
 		}
 		return $fieldListArr;
@@ -928,7 +930,7 @@ class recordList extends t3lib_recordList {
 	 * @todo Define visibility
 	 */
 	public function getTreeObject($id, $depth, $perms_clause) {
-		$tree = t3lib_div::makeInstance('t3lib_pageTree');
+		$tree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Tree\\View\\PageTreeView');
 		$tree->init('AND ' . $perms_clause);
 		$tree->makeHTML = 0;
 		$tree->fieldArray = array('uid', 'php_tree_stop');
@@ -949,18 +951,19 @@ class recordList extends t3lib_recordList {
 	public function localizationRedirect($justLocalized) {
 		list($table, $orig_uid, $language) = explode(':', $justLocalized);
 		if (($GLOBALS['TCA'][$table] && $GLOBALS['TCA'][$table]['ctrl']['languageField']) && $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) {
-			$localizedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', $table, ((((((($GLOBALS['TCA'][$table]['ctrl']['languageField'] . '=') . intval($language)) . ' AND ') . $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) . '=') . intval($orig_uid)) . t3lib_BEfunc::deleteClause($table)) . t3lib_BEfunc::versioningPlaceholderClause($table));
+			$localizedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', $table, ((((((($GLOBALS['TCA'][$table]['ctrl']['languageField'] . '=') . intval($language)) . ' AND ') . $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']) . '=') . intval($orig_uid)) . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table)) . \TYPO3\CMS\Backend\Utility\BackendUtility::versioningPlaceholderClause($table));
 			if (is_array($localizedRecord)) {
 				// Create parameters and finally run the classic page module for creating a new page translation
 				$url = substr($this->listURL(), strlen($this->backPath));
 				$params = ((('&edit[' . $table) . '][') . $localizedRecord['uid']) . ']=edit';
 				$returnUrl = '&returnUrl=' . rawurlencode($url);
 				$location = (($GLOBALS['BACK_PATH'] . 'alt_doc.php?') . $params) . $returnUrl;
-				t3lib_utility_Http::redirect($location);
+				\TYPO3\CMS\Core\Utility\HttpUtility::redirect($location);
 			}
 		}
 	}
 
 }
+
 
 ?>

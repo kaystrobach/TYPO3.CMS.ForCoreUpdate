@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_Content extends tslib_content_Abstract {
+class ContentContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, CONTENT
@@ -48,8 +50,8 @@ class tslib_content_Content extends tslib_content_Abstract {
 			$GLOBALS['TSFE']->recordRegister[$originalRec]++;
 		}
 		$conf['table'] = isset($conf['table.']) ? trim($this->cObj->stdWrap($conf['table'], $conf['table.'])) : trim($conf['table']);
-		$tablePrefix = t3lib_div::trimExplode('_', $conf['table'], TRUE);
-		if (t3lib_div::inList('pages,tt,fe,tx,ttx,user,static', $tablePrefix[0])) {
+		$tablePrefix = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('_', $conf['table'], TRUE);
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList('pages,tt,fe,tx,ttx,user,static', $tablePrefix[0])) {
 			$renderObjName = $conf['renderObj'] ? $conf['renderObj'] : '<' . $conf['table'];
 			$renderObjKey = $conf['renderObj'] ? 'renderObj' : '';
 			$renderObjConf = $conf['renderObj.'];
@@ -80,8 +82,8 @@ class tslib_content_Content extends tslib_content_Abstract {
 				} else {
 					$this->cObj->currentRecordTotal = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
 					$GLOBALS['TT']->setTSlogMessage('NUMROWS: ' . $GLOBALS['TYPO3_DB']->sql_num_rows($res));
-					/** @var $cObj tslib_cObj */
-					$cObj = t3lib_div::makeInstance('tslib_cObj');
+					/** @var $cObj \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer */
+					$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 					$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 					$this->cObj->currentRecordNumber = 0;
 					$cobjValue = '';
@@ -101,11 +103,11 @@ class tslib_content_Content extends tslib_content_Abstract {
 							// Call hook for possible manipulation of database row for cObj->data
 							if (is_array($this->TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_content_content.php']['modifyDBRow'])) {
 								foreach ($this->TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_content_content.php']['modifyDBRow'] as $_classRef) {
-									$_procObj = t3lib_div::getUserObj($_classRef);
+									$_procObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
 									$_procObj->modifyDBRow($row, $conf['table']);
 								}
 							}
-							t3lib_file_Service_BackwardsCompatibility_TslibContentAdapterService::modifyDBRow($row, $conf['table']);
+							\TYPO3\CMS\Core\Resource\Service\FrontendContentAdapterService::modifyDBRow($row, $conf['table']);
 							if (!$GLOBALS['TSFE']->recordRegister[(($conf['table'] . ':') . $row['uid'])]) {
 								$this->cObj->currentRecordNumber++;
 								$cObj->parentRecordNumber = $this->cObj->currentRecordNumber;
@@ -152,5 +154,6 @@ class tslib_content_Content extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

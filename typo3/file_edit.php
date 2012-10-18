@@ -39,9 +39,9 @@ require 'init.php';
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/File/EditFileController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/File/EditFileController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/File/EditFileController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_file_edit');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\File\\EditFileController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

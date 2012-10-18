@@ -4,10 +4,10 @@
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/saltedpasswords/Classes/Autoloader.php
  */
-require_once t3lib_extMgm::extPath('saltedpasswords') . 'Classes/Autoloader.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('saltedpasswords') . 'Classes/Autoloader.php';
 /**
- * @var $SOBE tx_saltedpasswords_autoloader
+ * @var $SOBE \TYPO3\CMS\Saltedpasswords\Autoloader
  */
-$SOBE = t3lib_div::makeInstance('tx_saltedpasswords_autoloader');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Saltedpasswords\\Autoloader');
 $SOBE->execute($this);
 ?>

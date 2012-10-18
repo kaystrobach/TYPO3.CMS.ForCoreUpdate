@@ -3,6 +3,6 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 if (TYPO3_MODE == 'BE') {
-	t3lib_extMgm::addModule('help', 'cshmanual', 'top', t3lib_extMgm::extPath($_EXTKEY) . 'mod/');
+	\TYPO3\CMS\Core\Extension\ExtensionManager::addModule('help', 'cshmanual', 'top', \TYPO3\CMS\Core\Extension\ExtensionManager::extPath($_EXTKEY) . 'mod/');
 }
 ?>

@@ -46,9 +46,9 @@ $LANG->includeLLFile('EXT:rtehtmlarea/htmlarea/locallang_dialogs.xml');
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/rtehtmlarea/Classes/Controller/BrowseLinksController.php
  */
-require_once t3lib_extMgm::extPath('rtehtmlarea') . 'Classes/Controller/BrowseLinksController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('rtehtmlarea') . 'Classes/Controller/BrowseLinksController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_rtehtmlarea_SC_browse_links');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_rtehtmlarea_SC_TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser');
 $SOBE->main();
 $SOBE->printContent();
 ?>

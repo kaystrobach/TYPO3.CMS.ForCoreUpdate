@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Attributes_Attributes {
+class AttributesAttribute {
 
 	/**
 	 * The attributes of the element
@@ -47,7 +49,7 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	/**
 	 * The content object
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $localCobj;
 
@@ -59,9 +61,9 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	 */
 	public function __construct($elementId) {
 		$this->elementId = (int) $elementId;
-		$this->localCobj = t3lib_div::makeInstance('tslib_cObj');
-		$this->localizationHandler = t3lib_div::makeInstance('tx_form_System_Localization');
-		$this->requestHandler = t3lib_div::makeInstance('tx_form_System_Request');
+		$this->localCobj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->localizationHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Localization');
+		$this->requestHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Request');
 	}
 
 	/**
@@ -74,7 +76,7 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	public function addAttribute($class, $value) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_Domain_Model_Attributes_' . ucfirst($class);
-		$this->attributes[$class] = t3lib_div::makeInstance($className, $value, $this->elementId);
+		$this->attributes[$class] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $value, $this->elementId);
 		return $this;
 	}
 
@@ -102,7 +104,7 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	 * Get a specific attribute object by using the key
 	 *
 	 * @param string $key Key of the attribute
-	 * @return tx_form_Domain_Model_Attributes_Abstract The attribute object
+	 * @return \TYPO3\CMS\Form\Domain\Model\Attribute\AbstractAttribute The attribute object
 	 */
 	public function getAttributeObjectByKey($key) {
 		return $this->attributes[$key];
@@ -151,5 +153,6 @@ class tx_form_Domain_Model_Attributes_Attributes {
 	}
 
 }
+
 
 ?>

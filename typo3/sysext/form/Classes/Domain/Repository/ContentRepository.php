@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @subpackage form
  * @author Patrick Broens <patrick@patrickbroens.nl>
  */
-class tx_form_Domain_Repository_Content {
+class ContentRepository {
 
 	/**
 	 * Get the referenced record from the database
@@ -41,16 +43,16 @@ class tx_form_Domain_Repository_Content {
 	 */
 	public function getRecord() {
 		$record = FALSE;
-		$getPostVariables = t3lib_div::_GP('P');
+		$getPostVariables = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
 		$table = (string) $getPostVariables['table'];
 		$recordId = (int) $getPostVariables['uid'];
-		$row = t3lib_BEfunc::getRecord($table, $recordId);
+		$row = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($table, $recordId);
 		if (is_array($row)) {
 			/** @var $typoScriptParser t3lib_tsparser */
-			$typoScriptParser = t3lib_div::makeInstance('t3lib_tsparser');
+			$typoScriptParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_tsparser');
 			$typoScriptParser->parse($row['bodytext']);
-			/** @var $record tx_form_Domain_Model_Content */
-			$record = t3lib_div::makeInstance('tx_form_Domain_Model_Content');
+			/** @var $record \TYPO3\CMS\Form\Domain\Model\Content */
+			$record = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Domain\\Model\\Content');
 			$record->setUid($row['uid']);
 			$record->setPageId($row['pid']);
 			$record->setTyposcript($typoScriptParser->setup);
@@ -73,16 +75,16 @@ class tx_form_Domain_Repository_Content {
 	 * @return boolean TRUE if succeeded, FALSE if not
 	 */
 	public function save() {
-		$json = t3lib_div::_GP('configuration');
-		$parameters = t3lib_div::_GP('P');
+		$json = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('configuration');
+		$parameters = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('P');
 		$success = FALSE;
-		/** @var $converter tx_form_Domain_Factory_JsonToTyposcript */
-		$converter = t3lib_div::makeInstance('tx_form_Domain_Factory_JsonToTyposcript');
+		/** @var $converter \TYPO3\CMS\Form\Domain\Factory\JsonToTypoScript */
+		$converter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Domain\\Factory\\JsonToTypoScript');
 		$typoscript = $converter->convert($json);
 		if ($typoscript) {
 			// Make TCEmain object:
-			/** @var $tce t3lib_TCEmain */
-			$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+			/** @var $tce \TYPO3\CMS\Core\DataHandler\DataHandler */
+			$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 			$tce->stripslashes_values = 0;
 			// Put content into the data array:
 			$data = array();
@@ -105,13 +107,14 @@ class tx_form_Domain_Repository_Content {
 		$record = $this->getRecord();
 		if ($record) {
 			$typoscript = $record->getTyposcript();
-			/** @var $converter tx_form_Domain_Factory_TyposcriptToJson */
-			$converter = t3lib_div::makeInstance('tx_form_Domain_Factory_TyposcriptToJson');
+			/** @var $converter \TYPO3\CMS\Form\Utility\TypoScriptToJsonConverter */
+			$converter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Form\\Domain\\Factory\\TypoScriptFactoryToJson');
 			$json = $converter->convert($typoscript);
 		}
 		return $json;
 	}
 
 }
+
 
 ?>

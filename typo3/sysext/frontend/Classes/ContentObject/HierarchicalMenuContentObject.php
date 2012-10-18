@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_HierarchicalMenu extends tslib_content_Abstract {
+class HierarchicalMenuContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, HMENU
@@ -43,7 +45,7 @@ class tslib_content_HierarchicalMenu extends tslib_content_Abstract {
 		$theValue = '';
 		if ($this->cObj->checkIf($conf['if.'])) {
 			$cls = strtolower($conf[1]);
-			if (t3lib_div::inList($GLOBALS['TSFE']->tmpl->menuclasses, $cls)) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TSFE']->tmpl->menuclasses, $cls)) {
 				if (isset($conf['excludeUidList.'])) {
 					$conf['excludeUidList'] = $this->cObj->stdWrap($conf['excludeUidList'], $conf['excludeUidList.']);
 				}
@@ -55,7 +57,7 @@ class tslib_content_HierarchicalMenu extends tslib_content_Abstract {
 				$GLOBALS['TSFE']->register['count_MENUOBJ'] = 0;
 				$GLOBALS['TSFE']->applicationData['GMENU_LAYERS']['WMid'] = array();
 				$GLOBALS['TSFE']->applicationData['GMENU_LAYERS']['WMparentId'] = array();
-				$menu = t3lib_div::makeInstance('tslib_' . $cls);
+				$menu = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tslib_' . $cls);
 				$menu->parent_cObj = $this->cObj;
 				$menu->start($GLOBALS['TSFE']->tmpl, $GLOBALS['TSFE']->sys_page, '', $conf, 1);
 				$menu->makeMenu();
@@ -73,5 +75,6 @@ class tslib_content_HierarchicalMenu extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

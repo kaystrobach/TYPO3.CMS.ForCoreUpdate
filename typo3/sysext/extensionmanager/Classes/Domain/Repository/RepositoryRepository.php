@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package Extension Manager
  * @subpackage Repository
  */
-class Tx_Extensionmanager_Domain_Repository_RepositoryRepository extends Tx_Extbase_Persistence_Repository {
+class RepositoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
 	 * Updates ExtCount and lastUpdated in Repository eg after import
@@ -45,5 +47,6 @@ class Tx_Extensionmanager_Domain_Repository_RepositoryRepository extends Tx_Extb
 	}
 
 }
+
 
 ?>

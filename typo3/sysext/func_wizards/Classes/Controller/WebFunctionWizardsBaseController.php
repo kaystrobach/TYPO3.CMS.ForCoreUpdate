@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\FuncWizards\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -40,7 +42,7 @@
  * @package TYPO3
  * @subpackage tx_funcwizardswebfunc
  */
-class tx_funcwizards_webfunc extends t3lib_extobjbase {
+class WebFunctionWizardsBaseController extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 
 	/**
 	 * @todo Define visibility
@@ -77,7 +79,7 @@ class tx_funcwizards_webfunc extends t3lib_extobjbase {
 			$this->function_key => array()
 		);
 		$modMenuAdd[$this->function_key] = $this->pObj->mergeExternalItems($this->pObj->MCONF['name'], $this->function_key, $modMenuAdd[$this->function_key]);
-		$modMenuAdd[$this->function_key] = t3lib_BEfunc::unsetMenuItems($this->pObj->modTSconfig['properties'], $modMenuAdd[$this->function_key], 'menu.' . $this->function_key);
+		$modMenuAdd[$this->function_key] = \TYPO3\CMS\Backend\Utility\BackendUtility::unsetMenuItems($this->pObj->modTSconfig['properties'], $modMenuAdd[$this->function_key], 'menu.' . $this->function_key);
 		return $modMenuAdd;
 	}
 
@@ -90,7 +92,7 @@ class tx_funcwizards_webfunc extends t3lib_extobjbase {
 	 */
 	public function main() {
 		global $SOBE, $LANG;
-		$menu = ($LANG->getLL('wiz_lWizards', 1) . ': ') . t3lib_BEfunc::getFuncMenu($this->pObj->id, 'SET[wiz]', $this->pObj->MOD_SETTINGS['wiz'], $this->pObj->MOD_MENU['wiz']);
+		$menu = ($LANG->getLL('wiz_lWizards', 1) . ': ') . \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, 'SET[wiz]', $this->pObj->MOD_SETTINGS['wiz'], $this->pObj->MOD_MENU['wiz']);
 		$theOutput .= $this->pObj->doc->section('', ('<span class="nobr">' . $menu) . '</span>');
 		$content = '';
 		$content .= $theOutput;
@@ -100,5 +102,6 @@ class tx_funcwizards_webfunc extends t3lib_extobjbase {
 	}
 
 }
+
 
 ?>

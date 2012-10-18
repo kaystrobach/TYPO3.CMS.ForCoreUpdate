@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Fileminimumsize extends tx_form_System_Validate_Abstract implements tx_form_System_Validate_Interface {
+class FileMinimumSizeValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator implements \TYPO3\CMS\Form\Validation\InterfaceValidator {
 
 	/**
 	 * Minimum value
@@ -85,10 +87,11 @@ class tx_form_System_Validate_Fileminimumsize extends tx_form_System_Validate_Ab
 	 * @return string Message text with substituted markers
 	 */
 	protected function substituteValues($message) {
-		$message = str_replace('%minimum', t3lib_div::formatSize($this->minimum), $message);
+		$message = str_replace('%minimum', \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($this->minimum), $message);
 		return $message;
 	}
 
 }
+
 
 ?>

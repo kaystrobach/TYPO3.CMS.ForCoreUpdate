@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -54,7 +56,7 @@
  * @author Dmitry Dulepov <dmitry@typo3.org>
  * @api
  */
-class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_TaggableBackend {
+class MemcachedBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * Max bucket size, (1024*1024)-42 bytes
@@ -96,11 +98,11 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 *
 	 * @param string $context FLOW3's application context
 	 * @param array $options Configuration options - depends on the actual backend
-	 * @throws t3lib_cache_Exception if memcache is not installed
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if memcache is not installed
 	 */
 	public function __construct($context, array $options = array()) {
 		if (!extension_loaded('memcache')) {
-			throw new t3lib_cache_Exception('The PHP extension "memcache" must be installed and loaded in ' . 'order to use the Memcached backend.', 1213987706);
+			throw new \TYPO3\CMS\Core\Cache\Exception('The PHP extension "memcache" must be installed and loaded in ' . 'order to use the Memcached backend.', 1213987706);
 		}
 		parent::__construct($context, $options);
 	}
@@ -136,11 +138,11 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * Initializes the identifier prefix
 	 *
 	 * @return void
-	 * @throws \t3lib_cache_Exception
+	 * @throws \TYPO3\CMS\Core\Cache\Exception
 	 */
 	public function initializeObject() {
 		if (!count($this->servers)) {
-			throw new \t3lib_cache_Exception('No servers were given to Memcache', 1213115903);
+			throw new \TYPO3\CMS\Core\Cache\Exception('No servers were given to Memcache', 1213115903);
 		}
 		$this->memcache = new \Memcache();
 		$defaultPort = ini_get('memcache.default_port');
@@ -166,10 +168,10 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	/**
 	 * Initializes the identifier prefix when setting the cache.
 	 *
-	 * @param t3lib_cache_frontend_Frontend $cache The frontend for this backend
+	 * @param \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache The frontend for this backend
 	 * @return void
 	 */
-	public function setCache(t3lib_cache_frontend_Frontend $cache) {
+	public function setCache(\TYPO3\CMS\Core\Cache\Frontend\FrontendInterface $cache) {
 		parent::setCache($cache);
 		$this->identifierPrefix = ('TYPO3_' . md5(PATH_site)) . '_';
 	}
@@ -182,17 +184,17 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * @param array $tags Tags to associate with this cache entry
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited lifetime.
 	 * @return void
-	 * @throws \t3lib_cache_Exception if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if no cache frontend has been set.
 	 * @throws \InvalidArgumentException if the identifier is not valid or the final memcached key is longer than 250 characters
-	 * @throws \t3lib_cache_exception_InvalidData if $data is not a string
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if $data is not a string
 	 * @api
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
 		if (strlen($this->identifierPrefix . $entryIdentifier) > 250) {
 			throw new \InvalidArgumentException((('Could not set value. Key more than 250 characters (' . $this->identifierPrefix) . $entryIdentifier) . ').', 1232969508);
 		}
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1207149215);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('No cache frontend has been set yet via setCache().', 1207149215);
 		}
 		if (!is_string($data)) {
 			throw new \t3lib_cache_Exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1207149231);
@@ -221,10 +223,10 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 				$this->removeIdentifierFromAllTags($entryIdentifier);
 				$this->addIdentifierToTags($entryIdentifier, $tags);
 			} else {
-				throw new \t3lib_cache_Exception('Could not set data to memcache server.', 1275830266);
+				throw new \TYPO3\CMS\Core\Cache\Exception('Could not set data to memcache server.', 1275830266);
 			}
-		} catch (Exception $exception) {
-			t3lib_div::sysLog('Memcache: could not set value. Reason: ' . $exception->getMessage(), 'Core', t3lib_div::SYSLOG_SEVERITY_WARNING);
+		} catch (\Exception $exception) {
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Memcache: could not set value. Reason: ' . $exception->getMessage(), 'Core', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 		}
 	}
 
@@ -293,12 +295,12 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	 * Removes all cache entries of this cache.
 	 *
 	 * @return void
-	 * @throws \t3lib_cache_Exception
+	 * @throws \TYPO3\CMS\Core\Cache\Exception
 	 * @api
 	 */
 	public function flush() {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('No cache frontend has been set via setCache() yet.', 1204111376);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('No cache frontend has been set via setCache() yet.', 1204111376);
 		}
 		$this->flushByTag('%MEMCACHEBE%' . $this->cacheIdentifier);
 	}
@@ -395,5 +397,6 @@ class t3lib_cache_backend_MemcachedBackend extends t3lib_cache_backend_AbstractB
 	}
 
 }
+
 
 ?>

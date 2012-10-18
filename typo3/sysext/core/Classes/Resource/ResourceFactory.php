@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -34,15 +36,15 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_file_Factory implements t3lib_Singleton {
+class ResourceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Gets a singleton instance of this class.
 	 *
-	 * @return t3lib_file_Factory
+	 * @return \TYPO3\CMS\Core\Resource\ResourceFactory
 	 */
 	static public function getInstance() {
-		return t3lib_div::makeInstance('t3lib_file_Factory');
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 	}
 
 	/**
@@ -70,14 +72,14 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @param string $driverIdentificationString The driver class (or identifier) to use.
 	 * @param array $driverConfiguration The configuration of the storage
-	 * @return t3lib_file_Driver_AbstractDriver
+	 * @return \TYPO3\CMS\Core\Resource\Driver\AbstractDriver
 	 * @throws InvalidArgumentException
 	 */
 	public function getDriverObject($driverIdentificationString, array $driverConfiguration) {
-		/** @var $driverRegistry t3lib_file_Driver_DriverRegistry */
-		$driverRegistry = t3lib_div::makeInstance('t3lib_file_Driver_DriverRegistry');
+		/** @var $driverRegistry \TYPO3\CMS\Core\Resource\Driver\DriverRegistry */
+		$driverRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\Driver\\DriverRegistry');
 		$driverClass = $driverRegistry->getDriverClass($driverIdentificationString);
-		$driverObject = t3lib_div::makeInstance($driverClass, $driverConfiguration);
+		$driverObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($driverClass, $driverConfiguration);
 		return $driverObject;
 	}
 
@@ -87,11 +89,11 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @param integer $uid The uid of the storage to instantiate.
 	 * @param array $recordData The record row from database.
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	public function getStorageObject($uid, array $recordData = array()) {
 		if (!is_numeric($uid)) {
-			throw new InvalidArgumentException('uid of Storage has to be numeric.', 1314085991);
+			throw new \InvalidArgumentException('uid of Storage has to be numeric.', 1314085991);
 		}
 		if (!$this->storageInstances[$uid]) {
 			$storageConfiguration = NULL;
@@ -117,12 +119,12 @@ class t3lib_file_Factory implements t3lib_Singleton {
 					'pathType' => 'relative'
 				);
 			} elseif (count($recordData) === 0 || $recordData['uid'] !== $uid) {
-				/** @var $storageRepository t3lib_file_Repository_StorageRepository */
-				$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
-				/** @var $storage t3lib_file_Storage */
+				/** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
+				$storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
+				/** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
 				$storageObject = $storageRepository->findByUid($uid);
 			}
-			if (!$storageObject instanceof t3lib_file_Storage) {
+			if (!$storageObject instanceof \TYPO3\CMS\Core\Resource\ResourceStorage) {
 				$storageObject = $this->createStorageObject($recordData, $storageConfiguration);
 			}
 			$this->storageInstances[$uid] = $storageObject;
@@ -139,7 +141,7 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	public function convertFlexFormDataToConfigurationArray($flexFormData) {
 		$configuration = array();
 		if ($flexFormData) {
-			$flexFormContents = t3lib_div::xml2array($flexFormData);
+			$flexFormContents = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($flexFormData);
 			if (!empty($flexFormContents['data']['sDEF']['lDEF']) && is_array($flexFormContents['data']['sDEF']['lDEF'])) {
 				foreach ($flexFormContents['data']['sDEF']['lDEF'] as $key => $value) {
 					if (isset($value['vDEF'])) {
@@ -156,19 +158,19 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @param integer $uid The uid of the collection to instantiate.
 	 * @param array $recordData The record row from database.
-	 * @return t3lib_file_Collection_AbstractFileCollection
+	 * @return \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection
 	 */
 	public function getCollectionObject($uid, array $recordData = array()) {
 		if (!is_numeric($uid)) {
-			throw new InvalidArgumentException('uid of collection has to be numeric.', 1314085999);
+			throw new \InvalidArgumentException('uid of collection has to be numeric.', 1314085999);
 		}
 		if (!$this->collectionInstances[$uid]) {
 			// Get mount data if not already supplied as argument to this function
 			if (count($recordData) === 0 || $recordData['uid'] !== $uid) {
-				/** @var $GLOBALS['TYPO3_DB'] t3lib_DB */
+				/** @var $GLOBALS['TYPO3_DB'] \TYPO3\CMS\Core\Database\DatabaseConnection */
 				$recordData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_file_collection', ('uid=' . intval($uid)) . ' AND deleted=0');
 				if (!is_array($recordData)) {
-					throw new InvalidArgumentException('No collection found for given UID.', 1314085992);
+					throw new \InvalidArgumentException('No collection found for given UID.', 1314085992);
 				}
 			}
 			$collectionObject = $this->createCollectionObject($recordData);
@@ -181,15 +183,15 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 * Creates a collection object.
 	 *
 	 * @param array $collectionData The database row of the sys_file_collection record.
-	 * @return t3lib_file_Collection_AbstractFileCollection
+	 * @return \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection
 	 */
 	public function createCollectionObject(array $collectionData) {
 		switch ($collectionData['type']) {
 		case 'static':
-			$collection = t3lib_file_Collection_StaticFileCollection::create($collectionData);
+			$collection = \TYPO3\CMS\Core\Resource\Collection\StaticFileCollection::create($collectionData);
 			break;
 		case 'folder':
-			$collection = t3lib_file_Collection_FolderBasedFileCollection::create($collectionData);
+			$collection = \TYPO3\CMS\Core\Resource\Collection\FolderBasedFileCollection::create($collectionData);
 			break;
 		default:
 			$collection = NULL;
@@ -202,17 +204,17 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @param array $storageRecord
 	 * @param array $storageConfiguration Storage configuration (if given, this won't be extracted from the FlexForm value but the supplied array used instead)
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	public function createStorageObject(array $storageRecord, array $storageConfiguration = NULL) {
-		$className = 't3lib_file_Storage';
+		$className = 'TYPO3\\CMS\\Core\\Resource\\ResourceStorage';
 		if (!$storageConfiguration) {
 			$storageConfiguration = $this->convertFlexFormDataToConfigurationArray($storageRecord['configuration']);
 		}
 		$driverType = $storageRecord['driver'];
 		$driverObject = $this->getDriverObject($driverType, $storageConfiguration);
-		/** @var $storage t3lib_file_Storage */
-		$storage = t3lib_div::makeInstance($className, $driverObject, $storageRecord);
+		/** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
+		$storage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className, $driverObject, $storageRecord);
 		// TODO handle publisher
 		return $storage;
 	}
@@ -220,18 +222,18 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	/**
 	 * Creates a folder to directly access (a part of) a storage.
 	 *
-	 * @param t3lib_file_Storage $storage The storage the folder belongs to
+	 * @param \TYPO3\CMS\Core\Resource\ResourceStorage $storage The storage the folder belongs to
 	 * @param string $identifier The path to the folder. Might also be a simple unique string, depending on the storage driver.
 	 * @param string $name The name of the folder (e.g. the folder name)
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
-	public function createFolderObject(t3lib_file_Storage $storage, $identifier, $name) {
-		return t3lib_div::makeInstance('t3lib_file_Folder', $storage, $identifier, $name);
+	public function createFolderObject(\TYPO3\CMS\Core\Resource\ResourceStorage $storage, $identifier, $name) {
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\Folder', $storage, $identifier, $name);
 	}
 
 	protected function createPublisherFromConfiguration(array $configuration) {
 		$publishingTarget = $this->getStorageObject($configuration['publisherConfiguration']['publishingTarget']);
-		$publisher = t3lib_div::makeInstance($configuration['publisher'], $publishingTarget, $configuration['publisherConfiguration']);
+		$publisher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($configuration['publisher'], $publishingTarget, $configuration['publisherConfiguration']);
 		return $publisher;
 	}
 
@@ -241,19 +243,19 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @param integer $uid The uid of the file to instantiate.
 	 * @param array $fileData The record row from database.
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function getFileObject($uid, array $fileData = array()) {
 		if (!is_numeric($uid)) {
-			throw new InvalidArgumentException('uid of file has to be numeric.', 1300096564);
+			throw new \InvalidArgumentException('uid of file has to be numeric.', 1300096564);
 		}
 		if (!$this->fileInstances[$uid]) {
 			// Fetches data in case $fileData is empty
 			if (empty($fileData)) {
-				/** @var $GLOBALS['TYPO3_DB'] t3lib_DB */
+				/** @var $GLOBALS['TYPO3_DB'] \TYPO3\CMS\Core\Database\DatabaseConnection */
 				$fileData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_file', ('uid=' . intval($uid)) . ' AND deleted=0');
 				if (!is_array($fileData)) {
-					throw new InvalidArgumentException('No file found for given UID.', 1317178604);
+					throw new \InvalidArgumentException('No file found for given UID.', 1317178604);
 				}
 			}
 			$this->fileInstances[$uid] = $this->createFileObject($fileData);
@@ -265,10 +267,10 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 * Gets an file object from an identifier [storage]:[fileId]
 	 *
 	 * @param string $identifier
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function getFileObjectFromCombinedIdentifier($identifier) {
-		$parts = t3lib_div::trimExplode(':', $identifier);
+		$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $identifier);
 		if (count($parts) === 2) {
 			$storageUid = $parts[0];
 			$fileIdentifier = $parts[1];
@@ -304,19 +306,19 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	public function retrieveFileOrFolderObject($input) {
 		// Easy function to deal with that, could be dropped in the future
 		// if we know where to use this function
-		if (t3lib_div::isFirstPartOfStr($input, 'file:')) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($input, 'file:')) {
 			$input = substr($input, 5);
 			return $this->retrieveFileOrFolderObject($input);
-		} elseif (t3lib_utility_Math::canBeInterpretedAsInteger($input)) {
+		} elseif (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($input)) {
 			return $this->getFileObject($input);
 		} elseif (strpos($input, ':') > 0) {
 			list($prefix, $folderIdentifier) = explode(':', $input);
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($prefix)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($prefix)) {
 				// path or folder in a valid storageUID
 				return $this->getObjectFromCombinedIdentifier($input);
 			} elseif ($prefix == 'EXT') {
-				$input = t3lib_div::getFileAbsFileName($input);
-				$input = t3lib_Utility_Path::getRelativePath(PATH_site, dirname($input)) . basename($input);
+				$input = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($input);
+				$input = \t3lib_Utility_Path::getRelativePath(PATH_site, dirname($input)) . basename($input);
 				return $this->getFileObjectFromCombinedIdentifier($input);
 			}
 		} else {
@@ -330,10 +332,10 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @TODO check naming, inserted by SteffenR while working on filelist
 	 * @param string $identifier
-	 * @return t3lib_file_Folder
+	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getFolderObjectFromCombinedIdentifier($identifier) {
-		$parts = t3lib_div::trimExplode(':', $identifier);
+		$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $identifier);
 		if (count($parts) === 2) {
 			$storageUid = $parts[0];
 			$folderIdentifier = $parts[1];
@@ -353,14 +355,14 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 * @return t3lib_file_FileInterface|t3lib_file_Folder
 	 */
 	public function getObjectFromCombinedIdentifier($identifier) {
-		list($storageId, $objectIdentifier) = t3lib_div::trimExplode(':', $identifier);
+		list($storageId, $objectIdentifier) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(':', $identifier);
 		$storage = $this->getStorageObject($storageId);
 		if ($storage->hasFile($objectIdentifier)) {
 			return $storage->getFile($objectIdentifier);
 		} elseif ($storage->hasFolder($objectIdentifier)) {
 			return $storage->getFolder($objectIdentifier);
 		} else {
-			throw new RuntimeException(('Object with identifier "' . $identifier) . '" does not exist in storage', 1329647780);
+			throw new \RuntimeException(('Object with identifier "' . $identifier) . '" does not exist in storage', 1329647780);
 		}
 	}
 
@@ -369,11 +371,11 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 * row to be fetched.
 	 *
 	 * @param array $fileData
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function createFileObject(array $fileData) {
-		/** @var t3lib_file_File $fileObject */
-		$fileObject = t3lib_div::makeInstance('t3lib_file_File', $fileData);
+		/** @var \TYPO3\CMS\Core\Resource\File $fileObject */
+		$fileObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\File', $fileData);
 		if (is_numeric($fileData['storage'])) {
 			$storageObject = $this->getStorageObject($fileData['storage']);
 			$fileObject->setStorage($storageObject);
@@ -387,26 +389,26 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 *
 	 * @param integer $uid The uid of the file usage (sys_file_reference) to instantiate.
 	 * @param array $fileReferenceData The record row from database.
-	 * @return t3lib_file_FileReference
+	 * @return \TYPO3\CMS\Core\Resource\FileReference
 	 */
 	public function getFileReferenceObject($uid, array $fileReferenceData = array()) {
 		if (!is_numeric($uid)) {
-			throw new InvalidArgumentException('uid of fileusage (sys_file_reference) has to be numeric.', 1300086584);
+			throw new \InvalidArgumentException('uid of fileusage (sys_file_reference) has to be numeric.', 1300086584);
 		}
 		if (!$this->fileReferenceInstances[$uid]) {
 			// Fetches data in case $fileData is empty
 			if (empty($fileReferenceData)) {
 				// fetch the reference record of the current workspace
 				if (TYPO3_MODE === 'BE') {
-					$fileReferenceData = t3lib_BEfunc::getRecordWSOL('sys_file_reference', $uid);
+					$fileReferenceData = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL('sys_file_reference', $uid);
 				} elseif (is_object($GLOBALS['TSFE'])) {
 					$fileReferenceData = $GLOBALS['TSFE']->sys_page->checkRecord('sys_file_reference', $uid);
 				} else {
-					/** @var $GLOBALS['TYPO3_DB'] t3lib_DB */
+					/** @var $GLOBALS['TYPO3_DB'] \TYPO3\CMS\Core\Database\DatabaseConnection */
 					$fileReferenceData = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_file_reference', ('uid=' . intval($uid)) . ' AND deleted=0');
 				}
 				if (!is_array($fileReferenceData)) {
-					throw new InvalidArgumentException('No fileusage (sys_file_reference) found for given UID.', 1317178794);
+					throw new \InvalidArgumentException('No fileusage (sys_file_reference) found for given UID.', 1317178794);
 				}
 			}
 			$this->fileReferenceInstances[$uid] = $this->createFileReferenceObject($fileReferenceData);
@@ -420,11 +422,11 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 * Requires a database row to be already fetched and present.
 	 *
 	 * @param array $fileReferenceData
-	 * @return t3lib_file_FileReference
+	 * @return \TYPO3\CMS\Core\Resource\FileReference
 	 */
 	public function createFileReferenceObject(array $fileReferenceData) {
-		/** @var t3lib_file_FileReference $fileReferenceObject */
-		$fileReferenceObject = t3lib_div::makeInstance('t3lib_file_FileReference', $fileReferenceData);
+		/** @var \TYPO3\CMS\Core\Resource\FileReference $fileReferenceObject */
+		$fileReferenceObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileReference', $fileReferenceData);
 		return $fileReferenceObject;
 	}
 
@@ -432,21 +434,22 @@ class t3lib_file_Factory implements t3lib_Singleton {
 	 * Generates a new object of the type t3lib_file_ProcessedFile
 	 * additionally checks if this processed file already exists in the DB
 	 *
-	 * @param t3lib_file_FileInterface $originalFileObject
+	 * @param \TYPO3\CMS\Core\Resource\FileInterface $originalFileObject
 	 * @param string $context The context the file is processed in
 	 * @param array $configuration The processing configuration
-	 * @return t3lib_file_ProcessedFile
+	 * @return \TYPO3\CMS\Core\Resource\ProcessedFile
 	 */
-	public function getProcessedFileObject(t3lib_file_FileInterface $originalFileObject, $context, array $configuration) {
-		/** @var t3lib_file_ProcessedFile $processedFileObject */
-		$processedFileObject = t3lib_div::makeInstance('t3lib_file_ProcessedFile', $originalFileObject, $context, $configuration);
+	public function getProcessedFileObject(\TYPO3\CMS\Core\Resource\FileInterface $originalFileObject, $context, array $configuration) {
+		/** @var \TYPO3\CMS\Core\Resource\ProcessedFile $processedFileObject */
+		$processedFileObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFile', $originalFileObject, $context, $configuration);
 		/* @var t3lib_file_Repository_ProcessedFileRepository $repository */
-		$repository = t3lib_div::makeInstance('t3lib_file_Repository_ProcessedFileRepository');
+		$repository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository');
 		// Check if this file already exists in the DB
 		$repository->populateDataOfProcessedFileObject($processedFileObject);
 		return $processedFileObject;
 	}
 
 }
+
 
 ?>

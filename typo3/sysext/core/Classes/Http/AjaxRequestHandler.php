@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Http;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class TYPO3AJAX {
+class AjaxRequestHandler {
 
 	protected $ajaxId = NULL;
 
@@ -143,7 +145,7 @@ class TYPO3AJAX {
 	 * @return void
 	 */
 	public function setContentFormat($format) {
-		if (t3lib_div::inArray(array('plain', 'xml', 'json', 'jsonhead', 'jsonbody', 'javascript'), $format)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::inArray(array('plain', 'xml', 'json', 'jsonhead', 'jsonbody', 'javascript'), $format)) {
 			$this->contentFormat = $format;
 		}
 	}
@@ -217,7 +219,7 @@ class TYPO3AJAX {
 	 * @return void
 	 */
 	protected function renderAsError() {
-		header(t3lib_utility_Http::HTTP_STATUS_500 . ' (AJAX)');
+		header(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_500 . ' (AJAX)');
 		header('Content-type: text/xml; charset=' . $this->charset);
 		header('X-JSON: false');
 		die(('<t3err>' . htmlspecialchars($this->errorMessage)) . '</t3err>');
@@ -292,5 +294,6 @@ class TYPO3AJAX {
 	}
 
 }
+
 
 ?>

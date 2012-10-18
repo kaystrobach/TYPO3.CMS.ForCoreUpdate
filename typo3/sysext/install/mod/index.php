@@ -28,11 +28,11 @@ $BE_USER->modAccess($MCONF, TRUE);
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/install/Classes/Controller/InstallToolModuleController.php
  */
-require_once t3lib_extMgm::extPath('install') . 'Classes/Controller/InstallToolModuleController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('install') . 'Classes/Controller/InstallToolModuleController.php';
 /**
- * @var $SOBE tx_install_mod1
+ * @var $SOBE \TYPO3\CMS\Install\Controller\InstallToolModuleController
  */
-$SOBE = t3lib_div::makeInstance('tx_install_mod1');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Controller\\InstallToolModuleController');
 $SOBE->init();
 $SOBE->main();
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_queryGenerator {
+class QueryGenerator {
 
 	/**
 	 * @todo Define visibility
@@ -242,7 +244,7 @@ class t3lib_queryGenerator {
 	public function makeFieldList() {
 		$fieldListArr = array();
 		if (is_array($GLOBALS['TCA'][$this->table])) {
-			t3lib_div::loadTCA($this->table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($this->table);
 			foreach ($GLOBALS['TCA'][$this->table]['columns'] as $fN => $value) {
 				$fieldListArr[] = $fN;
 			}
@@ -277,11 +279,11 @@ class t3lib_queryGenerator {
 	public function init($name, $table, $fieldList = '') {
 		// Analysing the fields in the table.
 		if (is_array($GLOBALS['TCA'][$table])) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			$this->name = $name;
 			$this->table = $table;
 			$this->fieldList = $fieldList ? $fieldList : $this->makeFieldList();
-			$fieldArr = t3lib_div::trimExplode(',', $this->fieldList, 1);
+			$fieldArr = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->fieldList, 1);
 			foreach ($fieldArr as $fN) {
 				$fC = $GLOBALS['TCA'][$this->table]['columns'][$fN];
 				$this->fields[$fN] = $fC['config'];
@@ -413,7 +415,7 @@ class t3lib_queryGenerator {
 	 * @todo Define visibility
 	 */
 	public function setAndCleanUpExternalLists($name, $list, $force = '') {
-		$fields = array_unique(t3lib_div::trimExplode(',', ($list . ',') . $force, 1));
+		$fields = array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', ($list . ',') . $force, 1));
 		$reList = array();
 		foreach ($fields as $fN) {
 			if ($this->fields[$fN]) {
@@ -432,7 +434,7 @@ class t3lib_queryGenerator {
 	 */
 	public function procesData($qC = '') {
 		$this->queryConfig = $qC;
-		$POST = t3lib_div::_POST();
+		$POST = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST();
 		// If delete...
 		if ($POST['qG_del']) {
 			// Initialize array to work on, save special parameters
@@ -716,17 +718,17 @@ class t3lib_queryGenerator {
 			if ($fType != 'ignore') {
 				$lineHTML .= $this->updateIcon();
 				if ($loopcount) {
-					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="11" height="12"')) . 'title="Remove condition" name="qG_del') . $subscript) . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="11" height="12"')) . 'title="Remove condition" name="qG_del') . $subscript) . '">';
 				}
-				$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/add.gif', 'width="12" height="12"')) . ' title="Add condition" name="qG_ins') . $subscript) . '">';
+				$lineHTML .= ((('<input type="image" border="0" ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/add.gif', 'width="12" height="12"')) . ' title="Add condition" name="qG_ins') . $subscript) . '">';
 				if ($c != 0) {
-					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2up.gif', 'width="12" height="7"')) . ' title="Move up" name="qG_up') . $subscript) . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2up.gif', 'width="12" height="7"')) . ' title="Move up" name="qG_up') . $subscript) . '">';
 				}
 				if ($c != 0 && $fType != 'newlevel') {
-					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2right.gif', 'height="12" width="7"')) . ' title="New level" name="qG_nl') . $subscript) . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2right.gif', 'height="12" width="7"')) . ' title="New level" name="qG_nl') . $subscript) . '">';
 				}
 				if ($fType == 'newlevel') {
-					$lineHTML .= ((('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2left.gif', 'height="12" width="7"')) . ' title="Collapse new level" name="qG_remnl') . $subscript) . '">';
+					$lineHTML .= ((('<input type="image" border="0" ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/pil2left.gif', 'height="12" width="7"')) . ' title="Collapse new level" name="qG_remnl') . $subscript) . '">';
 				}
 				$codeArr[$arrCount]['html'] = $lineHTML;
 				$codeArr[$arrCount]['query'] = $this->getQuerySingle($conf, $c > 0 ? 0 : 1);
@@ -756,7 +758,7 @@ class t3lib_queryGenerator {
 				$fileExtArray = explode(',', $fieldSetup['allowed']);
 				natcasesort($fileExtArray);
 				foreach ($fileExtArray as $fileExt) {
-					if (t3lib_div::inList($conf['inputValue'], $fileExt)) {
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($conf['inputValue'], $fileExt)) {
 						$out .= ((('<option value="' . $fileExt) . '" selected>.') . $fileExt) . '</option>';
 					} else {
 						$out .= ((('<option value="' . $fileExt) . '">.') . $fileExt) . '</option>';
@@ -773,7 +775,7 @@ class t3lib_queryGenerator {
 			$d->close();
 			natcasesort($fileArray);
 			foreach ($fileArray as $fileName) {
-				if (t3lib_div::inList($conf['inputValue'], $fileName)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($conf['inputValue'], $fileName)) {
 					$out .= ((('<option value="' . $fileName) . '" selected>') . $fileName) . '</option>';
 				} else {
 					$out .= ((('<option value="' . $fileName) . '">') . $fileName) . '</option>';
@@ -787,7 +789,7 @@ class t3lib_queryGenerator {
 				} else {
 					$value = $val[0];
 				}
-				if (t3lib_div::inList($conf['inputValue'], $val[1])) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($conf['inputValue'], $val[1])) {
 					$out .= ((('<option value="' . $val[1]) . '" selected>') . $value) . '</option>';
 				} else {
 					$out .= ((('<option value="' . $val[1]) . '">') . $value) . '</option>';
@@ -801,7 +803,7 @@ class t3lib_queryGenerator {
 				} else {
 					$value = $val[0];
 				}
-				if (t3lib_div::inList($conf['inputValue'], pow(2, $key))) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($conf['inputValue'], pow(2, $key))) {
 					$out .= ((('<option value="' . pow(2, $key)) . '" selected>') . $value) . '</option>';
 				} else {
 					$out .= ((('<option value="' . pow(2, $key)) . '">') . $value) . '</option>';
@@ -816,7 +818,7 @@ class t3lib_queryGenerator {
 					} else {
 						$value = $val[0];
 					}
-					if (t3lib_div::inList($conf['inputValue'], $val[1])) {
+					if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($conf['inputValue'], $val[1])) {
 						$out .= ((('<option value="' . $val[1]) . '" selected>') . $value) . '</option>';
 					} else {
 						$out .= ((('<option value="' . $val[1]) . '">') . $value) . '</option>';
@@ -827,7 +829,7 @@ class t3lib_queryGenerator {
 				$from_table_Arr = explode(',', $fieldSetup['allowed']);
 				$useTablePrefix = 1;
 				if (!$fieldSetup['prepend_tname']) {
-					$checkres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fN, $table, t3lib_BEfunc::deleteClause($table), ($groupBy = ''), ($orderBy = ''), ($limit = ''));
+					$checkres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fN, $table, \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table), ($groupBy = ''), ($orderBy = ''), ($limit = ''));
 					if ($checkres) {
 						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($checkres)) {
 							if (stristr($row[$fN], ',')) {
@@ -864,7 +866,7 @@ class t3lib_queryGenerator {
 				}
 				$counter = 1;
 				if (is_array($GLOBALS['TCA'][$from_table])) {
-					t3lib_div::loadTCA($from_table);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($from_table);
 					$labelField = $GLOBALS['TCA'][$from_table]['ctrl']['label'];
 					$altLabelField = $GLOBALS['TCA'][$from_table]['ctrl']['label_alt'];
 					if ($GLOBALS['TCA'][$from_table]['columns'][$labelField]['config']['items']) {
@@ -901,18 +903,18 @@ class t3lib_queryGenerator {
 						if ($from_table == 'pages') {
 							$where_clause = ('uid IN (' . $webMountPageTree) . ') ';
 							if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
-								$where_clause .= (t3lib_BEfunc::deleteClause($from_table) . ' AND') . $perms_clause;
+								$where_clause .= (\TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($from_table) . ' AND') . $perms_clause;
 							}
 						} else {
 							$where_clause = ('pid IN (' . $webMountPageTree) . ') ';
 							if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
-								$where_clause .= t3lib_BEfunc::deleteClause($from_table);
+								$where_clause .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($from_table);
 							}
 						}
 					} else {
 						$where_clause = 'uid';
 						if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
-							$where_clause .= t3lib_BEfunc::deleteClause($from_table);
+							$where_clause .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($from_table);
 						}
 					}
 					$orderBy = 'uid';
@@ -942,7 +944,7 @@ class t3lib_queryGenerator {
 				}
 			}
 			foreach ($outArray as $key2 => $val2) {
-				if (t3lib_div::inList($conf['inputValue'], $key2)) {
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($conf['inputValue'], $key2)) {
 					$out .= ((((('<option value="' . $key2) . '" selected>[') . $key2) . '] ') . $val2) . '</option>';
 				} else {
 					$out .= ((((('<option value="' . $key2) . '">[') . $key2) . '] ') . $val2) . '</option>';
@@ -966,7 +968,7 @@ class t3lib_queryGenerator {
 			$indent = '<td style="vertical-align:top;"><img height="1" width="50"></td>';
 		}
 		$lf = $l * 30;
-		$bgColor = t3lib_div::modifyHTMLColor($GLOBALS['TBE_TEMPLATE']->bgColor2, $lf, $lf, $lf);
+		$bgColor = \TYPO3\CMS\Core\Utility\GeneralUtility::modifyHTMLColor($GLOBALS['TBE_TEMPLATE']->bgColor2, $lf, $lf, $lf);
 		foreach ($codeArr as $k => $v) {
 			$line .= ((((((('<tr>' . $indent) . '<td bgcolor="') . $bgColor) . '"') . $this->noWrap) . '>') . $v['html']) . '</td></tr>';
 			if ($this->enableQueryParts) {
@@ -1090,7 +1092,7 @@ class t3lib_queryGenerator {
 	 */
 	public function mkFieldToInputSelect($name, $fieldName) {
 		$out = (((((('<input type="Text" value="' . htmlspecialchars($fieldName)) . '" name="') . $name) . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth()) . '>') . $this->updateIcon();
-		$out .= ((('<a href="#" onClick="document.forms[0][\'' . $name) . '\'].value=\'\';return false;">') . t3lib_iconWorks::getSpriteIcon('actions-edit-delete', array('title' => 'Clear list'))) . '</a>';
+		$out .= ((('<a href="#" onClick="document.forms[0][\'' . $name) . '\'].value=\'\';return false;">') . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-delete', array('title' => 'Clear list'))) . '</a>';
 		$out .= ('<BR><select name="_fieldListDummy" size="5" onChange="document.forms[0][\'' . $name) . '\'].value+=\',\'+this.value">';
 		foreach ($this->fields as $key => $value) {
 			if (!$value['exclude'] || $GLOBALS['BE_USER']->check('non_exclude_fields', ($this->table . ':') . $key)) {
@@ -1278,7 +1280,7 @@ class t3lib_queryGenerator {
 			$inputVal = $conf['inputValue' . $suffix];
 		} elseif ($conf['comparison'] == 39 || $conf['comparison'] == 38) {
 			// in list:
-			$inputVal = implode(',', t3lib_div::intExplode(',', $conf['inputValue' . $suffix]));
+			$inputVal = implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $conf['inputValue' . $suffix]));
 		} elseif ((($conf['comparison'] == 68 || $conf['comparison'] == 69) || $conf['comparison'] == 162) || $conf['comparison'] == 163) {
 			// in list:
 			if (is_array($conf['inputValue' . $suffix])) {
@@ -1312,7 +1314,7 @@ class t3lib_queryGenerator {
 	 * @todo Define visibility
 	 */
 	public function updateIcon() {
-		return ('<input type="image" border="0" ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="14" height="14"')) . ' title="Update" name="just_update">';
+		return ('<input type="image" border="0" ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif', 'width="14" height="14"')) . ' title="Update" name="just_update">';
 	}
 
 	/**
@@ -1354,7 +1356,7 @@ class t3lib_queryGenerator {
 			if (!$this->extFieldLists['queryLimit']) {
 				$this->extFieldLists['queryLimit'] = 100;
 			}
-			$parts = t3lib_div::intExplode(',', $this->extFieldLists['queryLimit']);
+			$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->extFieldLists['queryLimit']);
 			if ($parts[1]) {
 				$this->limitBegin = $parts[0];
 				$this->limitLength = $parts[1];
@@ -1403,9 +1405,9 @@ class t3lib_queryGenerator {
 			if (in_array('order', $enableArr) && !$GLOBALS['BE_USER']->userTS['mod.']['dbint.']['disableOrderBy']) {
 				$orderByArr = explode(',', $this->extFieldLists['queryOrder']);
 				$orderBy = '';
-				$orderBy .= (($this->mkTypeSelect('SET[queryOrder]', $orderByArr[0], '') . '&nbsp;') . t3lib_BEfunc::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrderDesc]', $modSettings['queryOrderDesc'], '', '', 'id="checkQueryOrderDesc"')) . '&nbsp;<label for="checkQueryOrderDesc">Descending</label>';
+				$orderBy .= (($this->mkTypeSelect('SET[queryOrder]', $orderByArr[0], '') . '&nbsp;') . \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrderDesc]', $modSettings['queryOrderDesc'], '', '', 'id="checkQueryOrderDesc"')) . '&nbsp;<label for="checkQueryOrderDesc">Descending</label>';
 				if ($orderByArr[0]) {
-					$orderBy .= ((('<BR>' . $this->mkTypeSelect('SET[queryOrder2]', $orderByArr[1], '')) . '&nbsp;') . t3lib_BEfunc::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrder2Desc]', $modSettings['queryOrder2Desc'], '', '', 'id="checkQueryOrder2Desc"')) . '&nbsp;<label for="checkQueryOrder2Desc">Descending</label>';
+					$orderBy .= ((('<BR>' . $this->mkTypeSelect('SET[queryOrder2]', $orderByArr[1], '')) . '&nbsp;') . \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($GLOBALS['SOBE']->id, 'SET[queryOrder2Desc]', $modSettings['queryOrder2Desc'], '', '', 'id="checkQueryOrder2Desc"')) . '&nbsp;<label for="checkQueryOrder2Desc">Descending</label>';
 				}
 				$out .= ((((('<tr>
 					<td' . $TDparams) . '><strong>Order By:</strong></td>
@@ -1464,7 +1466,7 @@ class t3lib_queryGenerator {
 			$theList = '';
 		}
 		if ($id && $depth > 0) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', (((('pid=' . $id) . ' ') . t3lib_BEfunc::deleteClause('pages')) . ' AND ') . $perms_clause);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'pages', (((('pid=' . $id) . ' ') . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause('pages')) . ' AND ') . $perms_clause);
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				if ($begin <= 0) {
 					$theList .= ',' . $row['uid'];
@@ -1509,7 +1511,7 @@ class t3lib_queryGenerator {
 		}
 		$fieldlist = ($this->extFieldLists['queryFields'] . ',pid') . ($GLOBALS['TCA'][$this->table]['ctrl']['delete'] ? ',' . $GLOBALS['TCA'][$this->table]['ctrl']['delete'] : '');
 		if (!$GLOBALS['SOBE']->MOD_SETTINGS['show_deleted']) {
-			$qString .= t3lib_BEfunc::deleteClause($this->table);
+			$qString .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($this->table);
 		}
 		$query = $GLOBALS['TYPO3_DB']->SELECTquery($fieldlist, $this->table, $qString, trim($this->extFieldLists['queryGroup']), $this->extFieldLists['queryOrder'] ? trim($this->extFieldLists['queryOrder_SQL']) : '', $this->extFieldLists['queryLimit']);
 		return $query;
@@ -1549,5 +1551,6 @@ class t3lib_queryGenerator {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  * Copyright notice
  *
@@ -32,7 +34,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class tslib_tableOffset {
+class OffsetTableContentObject {
 
 	/**
 	 * @todo Define visibility
@@ -58,7 +60,7 @@ class tslib_tableOffset {
 	 * @todo Define visibility
 	 */
 	public function start($content, $offset) {
-		$valPairs = t3lib_div::intExplode(',', $offset . ',,,,,');
+		$valPairs = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $offset . ',,,,,');
 		if ((((($valPairs[0] || $valPairs[1]) || $valPairs[2]) || $valPairs[3]) || $valPairs[4]) || $valPairs[5]) {
 			// If width is defined AND there has been no change to the default table params,
 			// then extend them to a tablewidth of 1
@@ -128,5 +130,6 @@ class tslib_tableOffset {
 	}
 
 }
+
 
 ?>

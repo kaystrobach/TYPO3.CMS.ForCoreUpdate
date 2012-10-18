@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package 		TYPO3
  * @subpackage 	tx_indexedsearch
  */
-class tx_indexedsearch_tslib_fe_hook {
+class TypoScriptFrontendHook {
 
 	/**
 	 * Frontend hook: If the page is not being re-generated this is our chance to force it to be (because re-generation of the page is required in order to have the indexer called!)
@@ -39,7 +41,7 @@ class tx_indexedsearch_tslib_fe_hook {
 	 */
 	public function headerNoCache(array &$params, $ref) {
 		// Requirements are that the crawler is loaded, a crawler session is running and re-indexing requested as processing instruction:
-		if ((t3lib_extMgm::isLoaded('crawler') && $params['pObj']->applicationData['tx_crawler']['running']) && in_array('tx_indexedsearch_reindex', $params['pObj']->applicationData['tx_crawler']['parameters']['procInstructions'])) {
+		if ((\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('crawler') && $params['pObj']->applicationData['tx_crawler']['running']) && in_array('tx_indexedsearch_reindex', $params['pObj']->applicationData['tx_crawler']['parameters']['procInstructions'])) {
 			// Setting simple log entry:
 			$params['pObj']->applicationData['tx_crawler']['log'][] = 'RE_CACHE (indexed), old status: ' . $params['disableAcquireCacheData'];
 			// Disables a look-up for cached page data - thus resulting in re-generation of the page even if cached.
@@ -48,5 +50,6 @@ class tx_indexedsearch_tslib_fe_hook {
 	}
 
 }
+
 
 ?>

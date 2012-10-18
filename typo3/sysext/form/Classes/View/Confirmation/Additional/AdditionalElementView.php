@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\View\Confirmation\Additional;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_View_Confirmation_Additional extends tx_form_View_Confirmation_Element_Abstract {
+class AdditionalElementView extends \TYPO3\CMS\Form\View\Confirmation\Element\AbstractElementView {
 
 	/**
 	 * The model for the current object
@@ -53,9 +55,10 @@ class tx_form_View_Confirmation_Additional extends tx_form_View_Confirmation_Ele
 	 * @return string The value of the additional
 	 */
 	public function getAdditionalValue() {
-		return htmlspecialchars($this->model->getAdditionalValue(tx_form_Common::getInstance()->getLastPartOfClassName($this, TRUE)));
+		return htmlspecialchars($this->model->getAdditionalValue(\TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getLastPartOfClassName($this, TRUE)));
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rsaauth\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,32 +31,32 @@
  * @package TYPO3
  * @subpackage tx_rsaauth
  */
-class tx_rsaauth_loginformhook {
+class LoginFormHook {
 
 	/**
 	 * Adds RSA-specific JavaScript and returns a form tag
 	 *
 	 * @return string Form tag
 	 */
-	public function getLoginFormTag(array $params, SC_index &$pObj) {
+	public function getLoginFormTag(array $params, \TYPO3\CMS\Backend\Controller\LoginController &$pObj) {
 		$form = NULL;
 		if ($pObj->loginSecurityLevel == 'rsa') {
 			// If we can get the backend, we can proceed
-			$backend = tx_rsaauth_backendfactory::getBackend();
+			$backend = \TYPO3\CMS\Rsaauth\Backend\BackendFactory::getBackend();
 			if (!is_null($backend)) {
 				// Add form tag
 				$form = '<form action="index.php" method="post" name="loginform" onsubmit="tx_rsaauth_encrypt();">';
 				// Generate a new key pair
 				$keyPair = $backend->createNewKeyPair();
 				// Save private key
-				$storage = tx_rsaauth_storagefactory::getStorage();
-				/** @var $storage tx_rsaauth_abstract_storage */
+				$storage = \TYPO3\CMS\Rsaauth\Storage\StorageFactory::getStorage();
+				/** @var $storage \TYPO3\CMS\Rsaauth\Storage\AbstractStorage */
 				$storage->put($keyPair->getPrivateKey());
 				// Add RSA hidden fields
 				$form .= ('<input type="hidden" id="rsa_n" name="n" value="' . htmlspecialchars($keyPair->getPublicKeyModulus())) . '" />';
 				$form .= ('<input type="hidden" id="rsa_e" name="e" value="' . sprintf('%x', $keyPair->getExponent())) . '" />';
 			} else {
-				throw new t3lib_error_Exception('No OpenSSL backend could be obtained for rsaauth.', 1318283565);
+				throw new \TYPO3\CMS\Core\Error\Exception('No OpenSSL backend could be obtained for rsaauth.', 1318283565);
 			}
 		}
 		return $form;
@@ -64,13 +66,13 @@ class tx_rsaauth_loginformhook {
 	 * Provides form code for the superchallenged authentication.
 	 *
 	 * @param array $params Parameters to the script
-	 * @param SC_index $pObj Calling object
+	 * @param \TYPO3\CMS\Backend\Controller\LoginController $pObj Calling object
 	 * @return string The code for the login form
 	 */
-	public function getLoginScripts(array $params, SC_index &$pObj) {
+	public function getLoginScripts(array $params, \TYPO3\CMS\Backend\Controller\LoginController &$pObj) {
 		$content = '';
 		if ($pObj->loginSecurityLevel == 'rsa') {
-			$javascriptPath = t3lib_extMgm::siteRelPath('rsaauth') . 'resources/';
+			$javascriptPath = \TYPO3\CMS\Core\Extension\ExtensionManager::siteRelPath('rsaauth') . 'resources/';
 			$files = array(
 				'jsbn/jsbn.js',
 				'jsbn/prng4.js',
@@ -81,12 +83,13 @@ class tx_rsaauth_loginformhook {
 			);
 			$content = '';
 			foreach ($files as $file) {
-				$content .= ((('<script type="text/javascript" src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL')) . $javascriptPath) . $file) . '"></script>';
+				$content .= ((('<script type="text/javascript" src="' . \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL')) . $javascriptPath) . $file) . '"></script>';
 			}
 		}
 		return $content;
 	}
 
 }
+
 
 ?>

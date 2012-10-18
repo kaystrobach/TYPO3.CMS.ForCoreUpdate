@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Form\Element;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,13 +32,13 @@
  *
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class t3lib_TCEforms_ValueSlider {
+class ValueSlider {
 
 	/**
 	 * Renders the slider value wizard
 	 *
 	 * @param array $params
-	 * @param t3lib_TCEforms $pObj
+	 * @param \TYPO3\CMS\Backend\Form\FormEngine $pObj
 	 * @return string
 	 * @todo Define visibility
 	 */
@@ -47,8 +49,8 @@ class t3lib_TCEforms_ValueSlider {
 		$value = $params['row'][$field];
 		// If Slider is used in a flexform
 		if (!empty($params['flexFormPath'])) {
-			$flexFormTools = t3lib_div::makeInstance('t3lib_flexformtools');
-			$flexFormValue = $flexFormTools->getArrayValueByPath($params['flexFormPath'], t3lib_div::xml2array($value));
+			$flexFormTools = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
+			$flexFormValue = $flexFormTools->getArrayValueByPath($params['flexFormPath'], \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($value));
 			if ($flexFormValue !== NULL) {
 				$value = $flexFormValue;
 			}
@@ -67,7 +69,7 @@ class t3lib_TCEforms_ValueSlider {
 		$width = intval($params['wConf']['width']) ? intval($params['wConf']['width']) : 400;
 		$type = 'null';
 		if (isset($params['fieldConfig']['eval'])) {
-			$eval = t3lib_div::trimExplode(',', $params['fieldConfig']['eval'], TRUE);
+			$eval = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $params['fieldConfig']['eval'], TRUE);
 			if (in_array('time', $eval)) {
 				$type = 'time';
 				$value = (int) $value;
@@ -109,5 +111,6 @@ class t3lib_TCEforms_ValueSlider {
 	}
 
 }
+
 
 ?>

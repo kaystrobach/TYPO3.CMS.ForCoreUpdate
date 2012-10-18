@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Localization\Parser;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @subpackage t3lib
  * @author Dominique Feyer <dfeyer@reelpeek.net>
  */
-interface t3lib_l10n_parser
+interface LocalizationParserInterface
 {
 	/**
 	 * Returns parsed representation of XML file.
@@ -44,4 +46,5 @@ interface t3lib_l10n_parser
 	public function getParsedData($sourcePath, $languageKey, $charset);
 
 }
+
 ?>

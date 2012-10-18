@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Tree\Pagetree;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_tree_pagetree_NodeCollection extends t3lib_tree_NodeCollection {
+class PagetreeNodeCollection extends \TYPO3\CMS\Backend\Tree\TreeNodeCollection {
 
 	/**
 	 * Returns the collection in an array representation for e.g. serialization
@@ -45,5 +47,6 @@ class t3lib_tree_pagetree_NodeCollection extends t3lib_tree_NodeCollection {
 	}
 
 }
+
 
 ?>

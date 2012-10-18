@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_spellchecker extends tx_rtehtmlarea_api {
+class Spellchecker extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -61,7 +63,7 @@ class tx_rtehtmlarea_spellchecker extends tx_rtehtmlarea_api {
 	protected $spellCheckerModes = array('ultra', 'fast', 'normal', 'bad-spellers');
 
 	public function main($parentObject) {
-		return ((parent::main($parentObject) && t3lib_extMgm::isLoaded('static_info_tables')) && !in_array($this->htmlAreaRTE->language, t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->htmlAreaRTE->ID]['plugins'][$pluginName]['noSpellCheckLanguages']))) && ($this->htmlAreaRTE->contentCharset == 'iso-8859-1' || $this->htmlAreaRTE->contentCharset == 'utf-8');
+		return ((parent::main($parentObject) && \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('static_info_tables')) && !in_array($this->htmlAreaRTE->language, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->htmlAreaRTE->ID]['plugins'][$pluginName]['noSpellCheckLanguages']))) && ($this->htmlAreaRTE->contentCharset == 'iso-8859-1' || $this->htmlAreaRTE->contentCharset == 'utf-8');
 	}
 
 	/**
@@ -101,5 +103,6 @@ class tx_rtehtmlarea_spellchecker extends tx_rtehtmlarea_api {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_utility_VersionNumber {
+class VersionNumberUtility {
 
 	/**
 	 * Returns an integer from a three part version number, eg '4.12.3' -> 4012003
@@ -53,7 +55,7 @@ class t3lib_utility_VersionNumber {
 	 */
 	static public function convertIntegerToVersionNumber($versionInteger) {
 		if (!is_int($versionInteger)) {
-			throw new \InvalidArgumentException('t3lib_utility_VersionNumber::convertIntegerToVersionNumber() supports an integer argument only!', 1334072223);
+			throw new \InvalidArgumentException('TYPO3\\CMS\\Core\\Utility\\VersionNumberUtility::convertIntegerToVersionNumber() supports an integer argument only!', 1334072223);
 		}
 		$versionString = str_pad($versionInteger, 9, '0', STR_PAD_LEFT);
 		$parts = array(
@@ -127,11 +129,11 @@ class t3lib_utility_VersionNumber {
 	 * @return array
 	 */
 	static public function convertVersionsStringToVersionNumbers($versionsString) {
-		$versions = t3lib_div::trimExplode('-', $versionsString);
+		$versions = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('-', $versionsString);
 		for ($i = 0; $i < count($versions); $i++) {
-			$cleanedVersion = t3lib_div::trimExplode('.', $versions[$i]);
+			$cleanedVersion = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $versions[$i]);
 			for ($j = 0; $j < count($cleanedVersion); $j++) {
-				$cleanedVersion[$j] = t3lib_utility_Math::forceIntegerInRange($cleanedVersion[$j], 0, 999);
+				$cleanedVersion[$j] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($cleanedVersion[$j], 0, 999);
 			}
 			$cleanedVersionString = implode('.', $cleanedVersion);
 			if (static::convertVersionNumberToInteger($cleanedVersionString) === 0) {
@@ -150,10 +152,10 @@ class t3lib_utility_VersionNumber {
 	 * @return array
 	 */
 	static public function convertVersionStringToArray($version) {
-		$parts = t3lib_div::intExplode('.', $version . '..');
-		$parts[0] = t3lib_utility_Math::forceIntegerInRange($parts[0], 0, 999);
-		$parts[1] = t3lib_utility_Math::forceIntegerInRange($parts[1], 0, 999);
-		$parts[2] = t3lib_utility_Math::forceIntegerInRange($parts[2], 0, 999);
+		$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('.', $version . '..');
+		$parts[0] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts[0], 0, 999);
+		$parts[1] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts[1], 0, 999);
+		$parts[2] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts[2], 0, 999);
 		$result = array();
 		$result['version'] = ((($parts[0] . '.') . $parts[1]) . '.') . $parts[2];
 		$result['version_int'] = intval(($parts[0] * 1000000 + $parts[1] * 1000) + $parts[2]);
@@ -169,16 +171,16 @@ class t3lib_utility_VersionNumber {
 	 * @param string $raise one of "main", "sub", "dev" - the version part to raise by one
 	 * @param string $version (like 4.1.20)
 	 * @return string
-	 * @throws t3lib_exception
+	 * @throws \TYPO3\CMS\Core\Exception
 	 */
 	static public function raiseVersionNumber($raise, $version) {
 		if (!in_array($raise, array('main', 'sub', 'dev'))) {
-			throw new t3lib_exception('RaiseVersionNumber expects one of "main", "sub" or "dev".', 1342639555);
+			throw new \TYPO3\CMS\Core\Exception('RaiseVersionNumber expects one of "main", "sub" or "dev".', 1342639555);
 		}
-		$parts = t3lib_div::intExplode('.', $version . '..');
-		$parts[0] = t3lib_utility_Math::forceIntegerInRange($parts[0], 0, 999);
-		$parts[1] = t3lib_utility_Math::forceIntegerInRange($parts[1], 0, 999);
-		$parts[2] = t3lib_utility_Math::forceIntegerInRange($parts[2], 0, 999);
+		$parts = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('.', $version . '..');
+		$parts[0] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts[0], 0, 999);
+		$parts[1] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts[1], 0, 999);
+		$parts[2] = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($parts[2], 0, 999);
 		switch ((string) $raise) {
 		case 'main':
 			$parts[0]++;
@@ -197,5 +199,6 @@ class t3lib_utility_VersionNumber {
 	}
 
 }
+
 
 ?>

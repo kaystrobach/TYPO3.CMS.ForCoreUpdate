@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Tests\Unit\Repository;
+
 /***************************************************************
  * Copyright notice
  *
@@ -27,10 +29,10 @@
  * @package Extension Manager
  * @subpackage Tests
  */
-class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class ConfigurationItemRepositoryTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ConfigurationItemRepository
 	 */
 	public $configurationItemRepository;
 
@@ -48,7 +50,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 	public function getConfigurationItemRepositoryMock() {
 		$className = 'Tx_Extensionmanager_Repository_ConfigurationItemRepositoryMock';
 		if (!class_exists($className, FALSE)) {
-			eval((((((((((((((('class ' . $className) . ' extends Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository {') . '  public function addMetaInformation(&$configuration) {') . '    return parent::addMetaInformation($configuration);') . '  }') . '  public function extractInformationForConfigFieldsOfTypeUser($configurationOption) {') . '    return parent::extractInformationForConfigFieldsOfTypeUser($configurationOption);') . '  }') . '  public function extractInformationForConfigFieldsOfTypeOptions($configurationOption) {') . '    return parent::extractInformationForConfigFieldsOfTypeOptions($configurationOption);') . '  }') . '  public function mergeWithExistingConfiguration(array $configuration, array $extension) {') . '    return parent::mergeWithExistingConfiguration($configuration, $extension);') . '  }') . '}');
+			eval((((((((((((((('class ' . $className) . ' extends TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ConfigurationItemRepository {') . '  public function addMetaInformation(&$configuration) {') . '    return parent::addMetaInformation($configuration);') . '  }') . '  public function extractInformationForConfigFieldsOfTypeUser($configurationOption) {') . '    return parent::extractInformationForConfigFieldsOfTypeUser($configurationOption);') . '  }') . '  public function extractInformationForConfigFieldsOfTypeOptions($configurationOption) {') . '    return parent::extractInformationForConfigFieldsOfTypeOptions($configurationOption);') . '  }') . '  public function mergeWithExistingConfiguration(array $configuration, array $extension) {') . '    return parent::mergeWithExistingConfiguration($configuration, $extension);') . '  }') . '}');
 		}
 		return $className;
 	}
@@ -89,12 +91,12 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 					'cat' => 'basic',
 					'subcat_name' => 'enable',
 					'subcat' => 'a/enable/z',
-					'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationFrontend]',
+					'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationFrontend]',
 					'label' => 'Frontend configuration check',
 					'name' => 'checkConfigurationFE',
 					'value' => 0,
 					'default_value' => 0,
-					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationFrontend'
+					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationFrontend'
 				)
 			),
 			array(
@@ -102,12 +104,12 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 					'cat' => 'basic',
 					'subcat_name' => 'enable',
 					'subcat' => 'a/enable/z',
-					'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationBackend]',
+					'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationBackend]',
 					'label' => 'Backend configuration check',
 					'name' => 'checkConfigurationBE',
 					'value' => 0,
 					'default_value' => 0,
-					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationBackend'
+					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationBackend'
 				)
 			),
 			array(
@@ -115,12 +117,12 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 					'cat' => 'basic',
 					'subcat_name' => 'enable',
 					'subcat' => 'a/enable/z',
-					'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->buildHashMethodSelectorFE]',
+					'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->buildHashMethodSelectorFE]',
 					'label' => 'Hashing method for the frontend: Defines salted hashing method to use. Choose "Portable PHP password hashing" to stay compatible with other CMS (e.g. Drupal, Wordpress). Choose "MD5 salted hashing" to reuse TYPO3 passwords for OS level authentication (other servers could use TYPO3 passwords). Choose "Blowfish salted hashing" for advanced security to reuse passwords on OS level (Blowfish might not be supported on your system TODO).',
 					'name' => 'FE.saltedPWHashingMethod',
-					'value' => 'tx_saltedpasswords_salts_phpass',
-					'default_value' => 'tx_saltedpasswords_salts_phpass',
-					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->buildHashMethodSelectorFE'
+					'value' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\PhpassSalt',
+					'default_value' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\PhpassSalt',
+					'comparisonGeneric' => 'EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->buildHashMethodSelectorFE'
 				)
 			)
 		);
@@ -176,7 +178,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['testextensionkey'] = serialize(array(
 			'FE.' => array(
 				'enabled' => '1',
-				'saltedPWHashingMethod' => 'tx_saltedpasswords_salts_sha1'
+				'saltedPWHashingMethod' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\SaltInterface_sha1'
 			),
 			'CLI.' => array(
 				'enabled' => '0'
@@ -187,13 +189,13 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 				'value' => '0'
 			),
 			'FE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_md5'
+				'value' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\Md5Salt'
 			),
 			'BE.enabled' => array(
 				'value' => '1'
 			),
 			'BE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_md5'
+				'value' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\Md5Salt'
 			)
 		);
 		$expectedResult = array(
@@ -201,13 +203,13 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 				'value' => '1'
 			),
 			'FE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_sha1'
+				'value' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\SaltInterface_sha1'
 			),
 			'BE.enabled' => array(
 				'value' => '1'
 			),
 			'BE.saltedPWHashingMethod' => array(
-				'value' => 'tx_saltedpasswords_salts_md5'
+				'value' => 'TYPO3\\CMS\\Saltedpasswords\\Salt\\Md5Salt'
 			),
 			'CLI.enabled' => array(
 				'value' => '0'
@@ -225,7 +227,7 @@ class Tx_Extensionmanager_Repository_ConfigurationItemRepositoryTest extends Tx_
 		return array(
 			'demo data from salted passwords' => array(
 				'
-# cat=basic/enable; type=user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationFrontend]; label=Frontend configuration check
+# cat=basic/enable; type=user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationFrontend]; label=Frontend configuration check
 checkConfigurationFE=0
 
 # cat=advancedBackend; type=boolean; label=Force salted passwords: Enforce usage of SaltedPasswords. Old MD5 hashed passwords will stop working.
@@ -240,7 +242,7 @@ TSConstantEditor.advancedbackend {
 						'cat' => 'basic',
 						'subcat_name' => 'enable',
 						'subcat' => 'a/enable/z',
-						'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationFrontend]',
+						'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationFrontend]',
 						'label' => 'Frontend configuration check',
 						'name' => 'checkConfigurationFE',
 						'value' => '0',
@@ -267,7 +269,7 @@ TSConstantEditor.advancedbackend {
 						'cat' => 'basic',
 						'subcat_name' => 'enable',
 						'subcat' => 'a/enable/z',
-						'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:tx_saltedpasswords_emconfhelper->checkConfigurationFrontend]',
+						'type' => 'user[EXT:saltedpasswords/classes/class.tx_saltedpasswords_emconfhelper.php:TYPO3\\CMS\\Saltedpasswords\\Utility\\ExtensionManagerConfigurationUtility->checkConfigurationFrontend]',
 						'label' => 'Frontend configuration check',
 						'name' => 'checkConfigurationFE',
 						'value' => '0',
@@ -303,8 +305,8 @@ TSConstantEditor.advancedbackend {
 	 * @return void
 	 */
 	public function createArrayFromConstantsCreatesAnArrayWithMetaInformation($raw, $constants, $setupTsConstantEditor, $expected) {
-		$tsStyleConfig = $this->getMock('t3lib_tsStyleConfig');
-		$configurationItemRepositoryMock = $this->getMock('Tx_Extensionmanager_Domain_Repository_ConfigurationItemRepository', array('getT3libTsStyleConfig'));
+		$tsStyleConfig = $this->getMock('TYPO3\\CMS\\Core\\TypoScript\\ConfigurationForm');
+		$configurationItemRepositoryMock = $this->getMock('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ConfigurationItemRepository', array('getT3libTsStyleConfig'));
 		$configurationItemRepositoryMock->expects($this->once())->method('getT3libTsStyleConfig')->will($this->returnValue($tsStyleConfig));
 		$tsStyleConfig->expects($this->once())->method('ext_initTSstyleConfig')->with($raw, $this->anything(), $this->anything(), $this->anything())->will($this->returnValue($constants));
 		$tsStyleConfig->setup['constants']['TSConstantEditor.'] = $setupTsConstantEditor;
@@ -313,5 +315,6 @@ TSConstantEditor.advancedbackend {
 	}
 
 }
+
 
 ?>

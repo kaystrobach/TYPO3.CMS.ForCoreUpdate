@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Attribute;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Attributes_Acceptcharset extends tx_form_Domain_Model_Attributes_Abstract {
+class AcceptCharsetAttribute extends \TYPO3\CMS\Form\Domain\Model\Attribute\AbstractAttribute {
 
 	/**
 	 * Gets the attribute 'accept-charset'.
@@ -57,5 +59,6 @@ class tx_form_Domain_Model_Attributes_Acceptcharset extends tx_form_Domain_Model
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,14 +34,15 @@
  * @package TYPO3
  * @subpackage tslib
  */
-interface tslib_content_PostInitHook
+interface ContentObjectPostInitHookInterface
 {
 	/**
 	 * Hook for post processing the initialization of tslib_cObj
 	 *
-	 * @param tslib_cObj $parentObject Parent content object
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject Parent content object
 	 */
-	public function postProcessContentObjectInitialization(tslib_cObj &$parentObject);
+	public function postProcessContentObjectInitialization(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer &$parentObject);
 
 }
+
 ?>

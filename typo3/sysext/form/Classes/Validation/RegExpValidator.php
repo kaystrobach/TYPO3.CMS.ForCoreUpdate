@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Regexp extends tx_form_System_Validate_Abstract {
+class RegExpValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Regular expression for rule
@@ -76,5 +78,6 @@ class tx_form_System_Validate_Regexp extends tx_form_System_Validate_Abstract {
 	}
 
 }
+
 
 ?>

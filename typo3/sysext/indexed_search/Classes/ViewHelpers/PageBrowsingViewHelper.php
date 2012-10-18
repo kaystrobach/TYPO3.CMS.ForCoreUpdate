@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +35,7 @@
  *
  * @author 	Benjamin Mack <benni@typo3.org>
  */
-class Tx_IndexedSearch_ViewHelpers_PageBrowsingViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class PageBrowsingViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * main render function
@@ -46,7 +48,7 @@ class Tx_IndexedSearch_ViewHelpers_PageBrowsingViewHelper extends Tx_Fluid_Core_
 	 * @return the content
 	 */
 	public function render($maximumNumberOfResultPages, $numberOfResults, $resultsPerPage, $currentPage = 1) {
-		$maximumNumberOfResultPages = t3lib_utility_Math::forceIntegerInRange($maximumNumberOfResultPages, 1, 100, 10);
+		$maximumNumberOfResultPages = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($maximumNumberOfResultPages, 1, 100, 10);
 		$pageCount = ceil($numberOfResults / $resultsPerPage);
 		$content = '';
 		// only show the result browser if more than one page is needed
@@ -55,7 +57,7 @@ class Tx_IndexedSearch_ViewHelpers_PageBrowsingViewHelper extends Tx_Fluid_Core_
 			// prev page
 			// show on all pages after the 1st one
 			if ($currentPage > 0) {
-				$label = Tx_Extbase_Utility_Localization::translate('displayResults.previous', 'indexed_search');
+				$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('displayResults.previous', 'indexed_search');
 				$content .= ('<li>' . $this->makecurrentPageSelector_link($label, ($currentPage - 1), $freeIndexUid)) . '</li>';
 			}
 			for ($a = 0; $a < $pageCount; $a++) {
@@ -65,7 +67,7 @@ class Tx_IndexedSearch_ViewHelpers_PageBrowsingViewHelper extends Tx_Fluid_Core_
 					$min = $min - ($max - $pageCount);
 				}
 				if ($a >= $min && $a < $max) {
-					$label = Tx_Extbase_Utility_Localization::translate('displayResults.page', 'indexed_search');
+					$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('displayResults.page', 'indexed_search');
 					$label = trim(($label . ' ') . ($a + 1));
 					$label = $this->makecurrentPageSelector_link($label, $a, $freeIndexUid);
 					if ($a == $currentPage) {
@@ -77,7 +79,7 @@ class Tx_IndexedSearch_ViewHelpers_PageBrowsingViewHelper extends Tx_Fluid_Core_
 			}
 			// next link
 			if ($currentPage + 1 < $pageCount) {
-				$label = Tx_Extbase_Utility_Localization::translate('displayResults.next', 'indexed_search');
+				$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('displayResults.next', 'indexed_search');
 				$content = ('<li>' . $this->makecurrentPageSelector_link($label, ($currentPage + 1), $freeIndexUid)) . '</li>';
 			}
 			$content = ('<ul class="tx-indexedsearch-browsebox">' . $content) . '</ul>';
@@ -101,5 +103,6 @@ class Tx_IndexedSearch_ViewHelpers_PageBrowsingViewHelper extends Tx_Fluid_Core_
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class Tx_Belog_Domain_Model_Workspace extends Tx_Extbase_DomainObject_AbstractEntity {
+class Workspace extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var integer
@@ -68,5 +70,6 @@ class Tx_Belog_Domain_Model_Workspace extends Tx_Extbase_DomainObject_AbstractEn
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\IndexedSearch\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,12 +34,12 @@
  * @author 	Christian Jul Jensen <christian@typo3.com>
  * @author 	Benjamin Mack <benni@typo3.org>
  */
-class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
+class IndexSearchRepository {
 
 	/**
 	 * Indexer object
 	 *
-	 * @var tx_indexedsearch_indexer
+	 * @var \TYPO3\CMS\IndexedSearch\Indexer
 	 */
 	protected $indexerObj;
 
@@ -105,7 +107,7 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 	 */
 	public function initialize($settings, $searchData, $externalParsers, $searchRootPageIdList) {
 		// Initialize the indexer-class - just to use a few function (for making hashes)
-		$this->indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+		$this->indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\IndexedSearch\\Controller\\SearchFormController_indexer');
 		$this->externalParsers = $externalParsers;
 		$this->searchRootPageIdList = $searchRootPageIdList;
 		$this->frontendUserGroupList = $GLOBALS['TSFE']->gr_list;
@@ -152,7 +154,7 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 			// Total search-result count
 			$count = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
 			// The pointer is set to the result page that is currently being viewed
-			$pointer = t3lib_utility_Math::forceIntegerInRange($this->resultpagePointer, 0, floor($count / $this->resultsPerPage));
+			$pointer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->resultpagePointer, 0, floor($count / $this->resultsPerPage));
 			// Initialize result accumulation variables:
 			$c = 0;
 			// Result pointer: Counts up the position in the current search-result
@@ -292,9 +294,9 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 				/**
 				 * Indexer object
 				 *
-				 * @var tx_indexedsearch_indexer
+				 * @var \TYPO3\CMS\IndexedSearch\Indexer
 				 */
-				$indexerObj = t3lib_div::makeInstance('tx_indexedsearch_indexer');
+				$indexerObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\IndexedSearch\\Controller\\SearchFormController_indexer');
 				// Perform metaphone search
 				$storeMetaphoneInfoAsWords = $this->isTableUsed('index_words') ? FALSE : TRUE;
 				$res = $this->searchMetaphone($indexerObj->metaphone($sWord, $storeMetaphoneInfoAsWords));
@@ -430,18 +432,18 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 			$whereClause = (' AND ISEC.rl0 IN (' . $this->searchRootPageIdList) . ') ';
 		}
 		if (substr($this->sections, 0, 4) == 'rl1_') {
-			$list = implode(',', t3lib_div::intExplode(',', substr($this->sections, 4)));
+			$list = implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', substr($this->sections, 4)));
 			$whereClause .= (' AND ISEC.rl1 IN (' . $list) . ')';
 			$match = TRUE;
 		} elseif (substr($this->sections, 0, 4) == 'rl2_') {
-			$list = implode(',', t3lib_div::intExplode(',', substr($this->sections, 4)));
+			$list = implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', substr($this->sections, 4)));
 			$whereClause .= (' AND ISEC.rl2 IN (' . $list) . ')';
 			$match = TRUE;
 		} elseif (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['addRootLineFields'])) {
 			// Traversing user configured fields to see if any of those are used to limit search to a section:
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['addRootLineFields'] as $fieldName => $rootLineLevel) {
 				if (substr($this->sections, 0, strlen($fieldName) + 1) == $fieldName . '_') {
-					$list = implode(',', t3lib_div::intExplode(',', substr($this->sections, strlen($fieldName) + 1)));
+					$list = implode(',', \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', substr($this->sections, strlen($fieldName) + 1)));
 					$whereClause .= (((' AND ISEC.' . $fieldName) . ' IN (') . $list) . ')';
 					$match = TRUE;
 					break;
@@ -517,11 +519,11 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 			// First, look if the freeIndexUid is a meta configuration:
 			$indexCfgRec = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('indexcfgs', 'index_config', ('type=5 AND uid=' . intval($freeIndexUid)) . $this->enableFields('index_config'));
 			if (is_array($indexCfgRec)) {
-				$refs = t3lib_div::trimExplode(',', $indexCfgRec['indexcfgs']);
+				$refs = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $indexCfgRec['indexcfgs']);
 				// Default value to protect against empty array.
 				$list = array(-99);
 				foreach ($refs as $ref) {
-					list($table, $uid) = t3lib_div::revExplode('_', $ref, 2);
+					list($table, $uid) = \TYPO3\CMS\Core\Utility\GeneralUtility::revExplode('_', $ref, 2);
 					switch ($table) {
 					case 'index_config':
 						$idxRec = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', 'index_config', ('uid=' . intval($uid)) . $this->enableFields('index_config'));
@@ -577,10 +579,10 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 			// Collecting all pages IDs in which to search;
 			// filtering out ALL pages that are not accessible due to enableFields.
 			// Does NOT look for "no_search" field!
-			$siteIdNumbers = t3lib_div::intExplode(',', $this->searchRootPageIdList);
+			$siteIdNumbers = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->searchRootPageIdList);
 			$pageIdList = array();
 			foreach ($siteIdNumbers as $rootId) {
-				$pageIdList[] = tslib_cObj::getTreeList($rootId, 9999, 0, 0, '', '') . $rootId;
+				$pageIdList[] = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getTreeList($rootId, 9999, 0, 0, '', '') . $rootId;
 			}
 			$page_where = (' AND ISEC.page_id IN (' . implode(',', $pageIdList)) . ')';
 		}
@@ -749,7 +751,7 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 	 * @return integer Integer intepretation of the md5 hash of input string.
 	 */
 	protected function md5inthash($str) {
-		return tx_indexedsearch_indexer::md5inthash($str);
+		return \TYPO3\CMS\IndexedSearch\Indexer::md5inthash($str);
 	}
 
 	/**
@@ -761,7 +763,7 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 	 * @return boolean TRUE if given tables are enabled
 	 */
 	protected function isTableUsed($table_list) {
-		return tx_indexedsearch_indexer::isTableUsed($table_list);
+		return \TYPO3\CMS\IndexedSearch\Indexer::isTableUsed($table_list);
 	}
 
 	/**
@@ -773,7 +775,7 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 	public function hookRequest($functionName) {
 		// Hook: menuConfig_preProcessModMenu
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['pi1_hooks'][$functionName]) {
-			$hookObj = t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['pi1_hooks'][$functionName]);
+			$hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['pi1_hooks'][$functionName]);
 			if (method_exists($hookObj, $functionName)) {
 				$hookObj->pObj = $this;
 				return $hookObj;
@@ -782,5 +784,6 @@ class Tx_IndexedSearch_Domain_Repository_IndexSearchRepository {
 	}
 
 }
+
 
 ?>

@@ -311,7 +311,7 @@ $TCA['be_users'] = array(
 				'wizards' => array(
 					'_PADDING' => 4,
 					'0' => array(
-						'type' => t3lib_extMgm::isLoaded('tsconfig_help') ? 'popup' : '',
+						'type' => \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('tsconfig_help') ? 'popup' : '',
 						'title' => 'LLL:EXT:lang/locallang_tca.xml:TSconfig_title',
 						'script' => 'wizard_tsconfig.php?mode=beuser',
 						'icon' => 'wizard_tsconfig.gif',
@@ -355,7 +355,7 @@ $TCA['be_users'] = array(
 /**
  * @var $locales t3lib_l10n_locales
  */
-$locales = t3lib_div::makeInstance('t3lib_l10n_Locales');
+$locales = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Localization\\Locales');
 $languageItems = $locales->getLanguages();
 unset($languageItems['default']);
 asort($languageItems);
@@ -595,7 +595,7 @@ $TCA['be_groups'] = array(
 				'wizards' => array(
 					'_PADDING' => 4,
 					'0' => array(
-						'type' => t3lib_extMgm::isLoaded('tsconfig_help') ? 'popup' : '',
+						'type' => \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('tsconfig_help') ? 'popup' : '',
 						'title' => 'LLL:EXT:lang/locallang_tca.xml:TSconfig_title',
 						'script' => 'wizard_tsconfig.php?mode=beuser',
 						'icon' => 'wizard_tsconfig.gif',
@@ -677,7 +677,7 @@ $TCA['sys_filemounts'] = array(
 			'config' => array(
 				'type' => 'select',
 				'items' => array(),
-				'itemsProcFunc' => 't3lib/file/Service/UserfilemountService.php:t3lib_file_Service_UserfilemountService->renderTceformsSelectDropdown'
+				'itemsProcFunc' => 't3lib/file/Service/UserfilemountService.php:TYPO3\\CMS\\Core\\Resource\\Service\\UserFileMountService->renderTceformsSelectDropdown'
 			)
 		)
 	),

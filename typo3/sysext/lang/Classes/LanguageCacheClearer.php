@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Lang;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,10 +33,10 @@
  * @package TYPO3
  * @subpackage tx_Lang
  */
-class tx_lang_clearcache {
+class LanguageCacheClearer {
 
 	/**
-	 * @var t3lib_cache_frontend_StringFrontend
+	 * @var \TYPO3\CMS\Core\Cache\Frontend\StringFrontend
 	 */
 	protected $cacheInstance;
 
@@ -67,5 +69,6 @@ class tx_lang_clearcache {
 	}
 
 }
+
 
 ?>

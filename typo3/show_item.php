@@ -33,7 +33,7 @@ require_once 'init.php';
  * @package TYPO3
  * @subpackage core
  */
-class transferData extends t3lib_transferData {
+class transferData extends \TYPO3\CMS\Backend\Form\DataPreprocessor {
 
 	/**
 	 * @var string
@@ -66,7 +66,7 @@ class transferData extends t3lib_transferData {
 	 * @todo Define visibility
 	 */
 	public function regItem($table, $id, $field, $content) {
-		t3lib_div::loadTCA($table);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 		$config = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
 		switch ($config['type']) {
 		case 'input':
@@ -74,7 +74,7 @@ class transferData extends t3lib_transferData {
 				$content = '';
 				break;
 			}
-			if (t3lib_div::inList($config['eval'], 'date')) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($config['eval'], 'date')) {
 				$content = date($GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'], $content);
 			}
 			break;
@@ -93,11 +93,11 @@ class transferData extends t3lib_transferData {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/ContentElement/ElementInformationController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/ContentElement/ElementInformationController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/ContentElement/ElementInformationController.php';
 /**
- * @var $SOBE SC_show_item
+ * @var $SOBE \TYPO3\CMS\Backend\Controller\ContentElement\ElementInformationController
  */
-$SOBE = t3lib_div::makeInstance('SC_show_item');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\ContentElement\\ElementInformationController');
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();

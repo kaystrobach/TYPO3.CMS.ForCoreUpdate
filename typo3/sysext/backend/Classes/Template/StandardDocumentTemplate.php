@@ -1,9 +1,11 @@
 <?php
+namespace TYPO3\CMS\Backend\Template;
+
 /**
  * Extension class for "template" - used for backend pages without the "document" background image
  * The class were more significant in the past than today.
  */
-class noDoc extends template {
+class StandardDocumentTemplate extends \TYPO3\CMS\Backend\Template\DocumentTemplate {
 
 	/**
 	 * @todo Define visibility
@@ -11,5 +13,6 @@ class noDoc extends template {
 	public $divClass = 'typo3-noDoc';
 
 }
+
 
 ?>

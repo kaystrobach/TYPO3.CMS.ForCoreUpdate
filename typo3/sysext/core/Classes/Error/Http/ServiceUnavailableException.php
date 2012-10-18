@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error\Http;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,12 +30,12 @@
  * @package TYPO3
  * @subpackage error
  */
-class t3lib_error_http_ServiceUnavailableException extends t3lib_error_http_AbstractServerErrorException {
+class ServiceUnavailableException extends \TYPO3\CMS\Core\Error\Http\AbstractServerErrorException {
 
 	/**
 	 * @var array HTTP Status Header lines
 	 */
-	protected $statusHeaders = array(t3lib_utility_Http::HTTP_STATUS_503);
+	protected $statusHeaders = array(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_503);
 
 	/**
 	 * @var string Title of the message
@@ -59,5 +61,6 @@ class t3lib_error_http_ServiceUnavailableException extends t3lib_error_http_Abst
 	}
 
 }
+
 
 ?>

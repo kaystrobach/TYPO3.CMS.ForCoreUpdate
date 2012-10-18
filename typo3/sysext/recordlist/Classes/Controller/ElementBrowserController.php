@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Recordlist\Controller;
+
 /**
  * Script class for the Element Browser window.
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_browse_links {
+class ElementBrowserController {
 
 	/**
 	 * The mode determines the main kind of output from the element browser.
@@ -26,7 +28,7 @@ class SC_browse_links {
 	 * needed fo intercommunication between various classes that need access to variables via $GLOBALS['SOBE']
 	 * Not the most nice solution but introduced since we don't have another general way to return class-instances or registry for now
 	 *
-	 * @var browse_links
+	 * @var \TYPO3\CMS\Recordlist\Browser\ElementBrowser
 	 * @todo Define visibility
 	 */
 	public $browser;
@@ -34,7 +36,7 @@ class SC_browse_links {
 	/**
 	 * Document template object
 	 *
-	 * @var template
+	 * @var \TYPO3\CMS\Backend\Template\DocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -47,13 +49,13 @@ class SC_browse_links {
 	 */
 	public function init() {
 		// Find "mode"
-		$this->mode = t3lib_div::_GP('mode');
+		$this->mode = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('mode');
 		if (!$this->mode) {
 			$this->mode = 'rte';
 		}
 		// Creating backend template object:
 		// this might not be needed but some classes refer to $GLOBALS['SOBE']->doc, so ...
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 	}
 
@@ -65,7 +67,7 @@ class SC_browse_links {
 	 */
 	public function main() {
 		// Clear temporary DB mounts
-		$tmpMount = t3lib_div::_GET('setTempDBmount');
+		$tmpMount = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('setTempDBmount');
 		if (isset($tmpMount)) {
 			$GLOBALS['BE_USER']->setAndSaveSessionData('pageTree_temporaryMountPoint', intval($tmpMount));
 		}
@@ -75,7 +77,7 @@ class SC_browse_links {
 			$altMountPoints = $tempDBmount;
 		}
 		if ($altMountPoints) {
-			$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
+			$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $altMountPoints)));
 			$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
 		}
 		$this->content = '';
@@ -89,7 +91,7 @@ class SC_browse_links {
 			// Setting alternative browsing mounts (ONLY local to browse_links.php this script so they stay "read-only")
 			$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.altElementBrowserMountPoints'));
 			if ($altMountPoints) {
-				$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
+				$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $altMountPoints)));
 				$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
 			}
 		case 'file':
@@ -101,7 +103,7 @@ class SC_browse_links {
 			// @todo: add this feature for FAL and TYPO3 6.0
 			$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.folderTree.altElementBrowserMountPoints'));
 			if ($altMountPoints) {
-				$altMountPoints = t3lib_div::trimExplode(',', $altMountPoints);
+				$altMountPoints = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $altMountPoints);
 				foreach ($altMountPoints as $filePathRelativeToFileadmindir) {
 					$GLOBALS['BE_USER']->addFileMount('', $filePathRelativeToFileadmindir, $filePathRelativeToFileadmindir, 1, 'readonly');
 				}
@@ -111,9 +113,9 @@ class SC_browse_links {
 		}
 		// Render type by user func
 		$browserRendered = FALSE;
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'] as $classRef) {
-				$browserRenderObj = t3lib_div::getUserObj($classRef);
+		if (is_array(${$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering']})) {
+			foreach (${$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering']} as $classRef) {
+				$browserRenderObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
 				if ((is_object($browserRenderObj) && method_exists($browserRenderObj, 'isValid')) && method_exists($browserRenderObj, 'render')) {
 					if ($browserRenderObj->isValid($this->mode, $this)) {
 						$this->content .= $browserRenderObj->render($this->mode, $this);
@@ -125,7 +127,7 @@ class SC_browse_links {
 		}
 		// if type was not rendered use default rendering functions
 		if (!$browserRendered) {
-			$this->browser = t3lib_div::makeInstance('browse_links');
+			$this->browser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Recordlist\\Browser\\ElementBrowser');
 			$this->browser->init();
 			$modData = $GLOBALS['BE_USER']->getModuleData('browse_links.php', 'ses');
 			list($modData, $store) = $this->browser->processSessionData($modData);
@@ -164,5 +166,6 @@ class SC_browse_links {
 	}
 
 }
+
 
 ?>

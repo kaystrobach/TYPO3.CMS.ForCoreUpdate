@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Impexp;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -24,7 +26,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Extension of the page tree class. Used to get the tree of pages to export.
  *
@@ -32,12 +33,14 @@
  * @package TYPO3
  * @subpackage tx_impexp
  */
-class tx_impexp_localPageTree extends t3lib_browseTree {
+class LocalPageTree extends \TYPO3\CMS\Backend\Tree\View\BrowseTreeView {
 
 	/**
 	 * Initialization
+	 *
+	 * @todo Define visibility
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->init();
 	}
 
@@ -47,9 +50,10 @@ class tx_impexp_localPageTree extends t3lib_browseTree {
 	 * @param string $title Title to wrap
 	 * @param mixed $v (See parent class)
 	 * @return string Wrapped title
+	 * @todo Define visibility
 	 */
-	function wrapTitle($title, $v) {
-		$title = (!strcmp(trim($title), '')) ? '<em>['.$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.no_title', 1).']</em>' : htmlspecialchars($title);
+	public function wrapTitle($title, $v) {
+		$title = !strcmp(trim($title), '') ? ('<em>[' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:labels.no_title', 1)) . ']</em>' : htmlspecialchars($title);
 		return $title;
 	}
 
@@ -60,8 +64,9 @@ class tx_impexp_localPageTree extends t3lib_browseTree {
 	 * @param mixed $cmd (See parent class)
 	 * @param mixed $bMark (See parent class)
 	 * @return string Icon HTML
+	 * @todo Define visibility
 	 */
-	function PM_ATagWrap($icon, $cmd, $bMark = '') {
+	public function PM_ATagWrap($icon, $cmd, $bMark = '') {
 		return $icon;
 	}
 
@@ -71,8 +76,9 @@ class tx_impexp_localPageTree extends t3lib_browseTree {
 	 * @param string $icon Icon HTML
 	 * @param array $row Record row (page)
 	 * @return string Icon HTML
+	 * @todo Define visibility
 	 */
-	function wrapIcon($icon, $row) {
+	public function wrapIcon($icon, $row) {
 		return $icon;
 	}
 
@@ -80,8 +86,9 @@ class tx_impexp_localPageTree extends t3lib_browseTree {
 	 * Select permissions
 	 *
 	 * @return string SQL where clause
+	 * @todo Define visibility
 	 */
-	function permsC() {
+	public function permsC() {
 		return $this->BE_USER->getPagePermsClause(1);
 	}
 
@@ -91,24 +98,19 @@ class tx_impexp_localPageTree extends t3lib_browseTree {
 	 * @param integer $pid PID value
 	 * @param string $clause Additional where clause
 	 * @return array Array of tree elements
+	 * @todo Define visibility
 	 */
-	function ext_tree($pid, $clause = '') {
-
+	public function ext_tree($pid, $clause = '') {
 		// Initialize:
-		$this->init(' AND '.$this->permsC().$clause);
-
+		$this->init((' AND ' . $this->permsC()) . $clause);
 		// Get stored tree structure:
 		$this->stored = unserialize($this->BE_USER->uc['browseTrees']['browsePages']);
-
 		// PM action:
-		$PM = t3lib_div::intExplode('_', t3lib_div::_GP('PM'));
-
+		$PM = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode('_', \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('PM'));
 		// traverse mounts:
 		$titleLen = intval($this->BE_USER->uc['titleLen']);
 		$treeArr = array();
-
 		$idx = 0;
-
 		// Set first:
 		$this->bank = $idx;
 		$isOpen = $this->stored[$idx][$pid] || $this->expandFirst;
@@ -116,44 +118,41 @@ class tx_impexp_localPageTree extends t3lib_browseTree {
 		$curIds = $this->ids;
 		$this->reset();
 		$this->ids = $curIds;
-
 		// Set PM icon:
-		$cmd = $this->bank . '_' . ($isOpen ? '0_' : '1_') .$pid;
-		$icon = '<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/' . ($isOpen ? 'minus' : 'plus') . 'only.gif', 'width="18" height="16"') . ' align="top" alt="" />';
+		$cmd = (($this->bank . '_') . ($isOpen ? '0_' : '1_')) . $pid;
+		$icon = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, (('gfx/ol/' . ($isOpen ? 'minus' : 'plus')) . 'only.gif'), 'width="18" height="16"')) . ' align="top" alt="" />';
 		$firstHtml = $this->PM_ATagWrap($icon, $cmd);
-
-		if ($pid>0) {
-			$rootRec = t3lib_befunc::getRecordWSOL('pages', $pid);
-			$firstHtml.= $this->wrapIcon(t3lib_iconWorks::getSpriteIconForRecord('pages', $rootRec), $rootRec);
+		if ($pid > 0) {
+			$rootRec = \t3lib_befunc::getRecordWSOL('pages', $pid);
+			$firstHtml .= $this->wrapIcon(\TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord('pages', $rootRec), $rootRec);
 		} else {
 			$rootRec = array(
 				'title' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
 				'uid' => 0
 			);
-			$firstHtml .= $this->wrapIcon('<img' . t3lib_iconWorks::skinImg($this->backPath, 'gfx/i/_icon_website.gif', 'width="18" height="16"') . ' align="top" alt="" />', $rootRec);
+			$firstHtml .= $this->wrapIcon(('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/i/_icon_website.gif', 'width="18" height="16"')) . ' align="top" alt="" />', $rootRec);
 		}
-		$this->tree[] = array('HTML'=>$firstHtml, 'row'=>$rootRec);
+		$this->tree[] = array('HTML' => $firstHtml, 'row' => $rootRec);
 		if ($isOpen) {
 			// Set depth:
-			$depthD = '<img'.t3lib_iconWorks::skinImg($this->backPath, 'gfx/ol/blank.gif', 'width="18" height="16"').' align="top" alt="" />';
+			$depthD = ('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, 'gfx/ol/blank.gif', 'width="18" height="16"')) . ' align="top" alt="" />';
 			if ($this->addSelfId) {
 				$this->ids[] = $pid;
 			}
 			$this->getTree($pid, 999, $depthD);
-
 			$idH = array();
 			$idH[$pid]['uid'] = $pid;
 			if (count($this->buffer_idH)) {
 				$idH[$pid]['subrow'] = $this->buffer_idH;
 			}
 			$this->buffer_idH = $idH;
-
 		}
-
 		// Add tree:
 		$treeArr = array_merge($treeArr, $this->tree);
-
 		return $treeArr;
 	}
+
 }
+
+
 ?>

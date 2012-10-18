@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Sprite;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -35,7 +37,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_spritemanager_SimpleHandler extends t3lib_spritemanager_AbstractHandler {
+class SimpleSpriteHandler extends \TYPO3\CMS\Backend\Sprite\AbstractSpriteHandler {
 
 	/**
 	 * css template for single Icons registered by extension authors
@@ -76,12 +78,13 @@ class t3lib_spritemanager_SimpleHandler extends t3lib_spritemanager_AbstractHand
 		$iconsToProcess = array_merge((array) $GLOBALS['TBE_STYLES']['spritemanager']['singleIcons'], $this->collectTcaSpriteIcons());
 		foreach ($iconsToProcess as $iconName => $iconFile) {
 			$css = str_replace('###NAME###', str_replace(array('extensions-', 'tcarecords-'), array('', ''), $iconName), $this->styleSheetTemplateExtIcons);
-			$css = str_replace('###IMAGE###', t3lib_div::resolveBackPath($iconPath . $iconFile), $css);
+			$css = str_replace('###IMAGE###', \TYPO3\CMS\Core\Utility\GeneralUtility::resolveBackPath($iconPath . $iconFile), $css);
 			$this->iconNames[] = $iconName;
 			$this->styleSheetData .= $css;
 		}
 	}
 
 }
+
 
 ?>

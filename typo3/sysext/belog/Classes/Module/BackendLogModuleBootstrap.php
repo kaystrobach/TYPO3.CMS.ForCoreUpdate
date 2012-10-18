@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Belog\Module;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -35,7 +37,7 @@
  * @package TYPO3
  * @subpackage belog
  */
-class tx_belog_WebInfo_Bootstrap {
+class BackendLogModuleBootstrap {
 
 	/**
 	 * Dummy method, called by SCbase external object handling
@@ -70,11 +72,12 @@ class tx_belog_WebInfo_Bootstrap {
 		// Overwriting $_GET was the most simple solution here until extbase
 		// provides a clean way to solve this.
 		$_GET['tx_belog_tools_beloglog']['controller'] = 'WebInfo';
-		/** @var $extbaseBootstrap Tx_Extbase_Core_Bootstrap */
-		$extbaseBootstrap = t3lib_div::makeInstance('Tx_Extbase_Core_Bootstrap');
+		/** @var $extbaseBootstrap \TYPO3\CMS\Extbase\Core\Bootstrap */
+		$extbaseBootstrap = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Core\\Bootstrap');
 		return $extbaseBootstrap->run('', $configuration);
 	}
 
 }
+
 
 ?>

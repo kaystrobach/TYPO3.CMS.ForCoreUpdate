@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\TimeTracker;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -43,7 +45,7 @@
  * @subpackage t3lib
  * @see t3lib_tsfeBeUserAuth, tslib_fe, tslib_cObj, TSpagegen
  */
-class t3lib_timeTrack {
+class TimeTracker {
 
 	// Is loaded with the millisecond time when this object is created
 	/**
@@ -346,7 +348,7 @@ class t3lib_timeTrack {
 			if (!$flag_tree && $data['stackPointer']) {
 				$temp = array();
 				foreach ($data['tsStack'] as $k => $v) {
-					$temp[] = t3lib_div::fixed_lgd_cs(implode($v, $k ? '.' : '/'), -$keyLgd);
+					$temp[] = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(implode($v, $k ? '.' : '/'), -$keyLgd);
 				}
 				array_pop($temp);
 				$temp = array_reverse($temp);
@@ -356,12 +358,12 @@ class t3lib_timeTrack {
 				}
 			}
 			if ($flag_tree) {
-				$tmp = t3lib_div::trimExplode('.', $data['key'], 1);
+				$tmp = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $data['key'], 1);
 				$theLabel = end($tmp);
 			} else {
 				$theLabel = $data['key'];
 			}
-			$theLabel = t3lib_div::fixed_lgd_cs($theLabel, -$keyLgd);
+			$theLabel = \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($theLabel, -$keyLgd);
 			$theLabel = $data['stackPointer'] ? ('<span class="stackPointer">' . $theLabel) . '</span>' : $theLabel;
 			$keyLabel = $theLabel . $keyLabel;
 			$item .= (((('<td class="' . $logRowClass) . '" style="padding-left:2px;">') . ($flag_tree ? $data['icons'] : '')) . $this->fw($keyLabel)) . '</td>';
@@ -385,7 +387,7 @@ class t3lib_timeTrack {
 				}
 			}
 			if ($flag_queries && is_array($data['selectQuery'])) {
-				$msgArr[] = t3lib_utility_Debug::viewArray($data['selectQuery']);
+				$msgArr[] = \TYPO3\CMS\Core\Utility\DebugUtility::viewArray($data['selectQuery']);
 			}
 			if ($flag_content && strcmp($data['content'], '')) {
 				$maxlen = 120;
@@ -424,14 +426,14 @@ class t3lib_timeTrack {
 		$c = 0;
 		// First, find number of entries
 		foreach ($arr as $k => $v) {
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($k)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($k)) {
 				$ac++;
 			}
 		}
 		// Traverse through entries
 		$subtime = 0;
 		foreach ($arr as $k => $v) {
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($k)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($k)) {
 				$c++;
 				$deeper = is_array($arr[$k . '.']) ? 1 : 0;
 				$PM = 'join';
@@ -460,7 +462,7 @@ class t3lib_timeTrack {
 		$content = $this->fixCLen($content, $this->tsStackLog[$vKey]['value']);
 		// Traverse array again, this time substitute the unique hash with the red key
 		foreach ($arr as $k => $v) {
-			if (t3lib_utility_Math::canBeInterpretedAsInteger($k)) {
+			if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($k)) {
 				if (strlen($this->tsStackLog[$v]['content'])) {
 					$content = str_replace($v, ('<strong style="color:red;">[' . $this->tsStackLog[$v]['key']) . ']</strong>', $content);
 				}
@@ -480,7 +482,7 @@ class t3lib_timeTrack {
 	protected function fixCLen($c, $v) {
 		$len = $v == 'FILE' ? $this->printConf['contentLength_FILE'] : $this->printConf['contentLength'];
 		if (strlen($c) > $len) {
-			$c = ('<span style="color:green;">' . htmlspecialchars(t3lib_div::fixed_lgd_cs($c, $len))) . '</span>';
+			$c = ('<span style="color:green;">' . htmlspecialchars(\TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($c, $len))) . '</span>';
 		} else {
 			$c = htmlspecialchars($c);
 		}
@@ -521,5 +523,6 @@ class t3lib_timeTrack {
 	}
 
 }
+
 
 ?>

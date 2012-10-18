@@ -41,9 +41,9 @@ $LANG->includeLLFile('EXT:cms/layout/locallang.xml');
 require_once 'class.tx_cms_layout.php';
 $BE_USER->modAccess($MCONF, 1);
 // Will open up records locked by current user. It's assumed that the locking should end if this script is hit.
-t3lib_BEfunc::lockRecords();
+\TYPO3\CMS\Backend\Utility\BackendUtility::lockRecords();
 // Exits if 'cms' extension is not loaded:
-t3lib_extMgm::isLoaded('cms', 1);
+\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms', 1);
 /**
  * Local extension of position map class
  *
@@ -51,7 +51,7 @@ t3lib_extMgm::isLoaded('cms', 1);
  * @package TYPO3
  * @subpackage core
  */
-class ext_posMap extends t3lib_positionMap {
+class ext_posMap extends \TYPO3\CMS\Backend\Tree\View\PagePositionMap {
 
 	/**
 	 * @todo Define visibility
@@ -120,7 +120,7 @@ class ext_posMap extends t3lib_positionMap {
 	 */
 	public function wrapRecordHeader($str, $row) {
 		if ($row['uid'] == $this->moveUid) {
-			return (('<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/content_client.gif', 'width="7" height="10"')) . ' alt="" />') . $str;
+			return (('<img' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], 'gfx/content_client.gif', 'width="7" height="10"')) . ' alt="" />') . $str;
 		} else {
 			return $str;
 		}
@@ -133,9 +133,9 @@ class ext_posMap extends t3lib_positionMap {
  * and will be removed by 7.0. The class was renamed and is now located at:
  * typo3/sysext/backend/Classes/Controller/PageLayoutController.php
  */
-require_once t3lib_extMgm::extPath('backend') . 'Classes/Controller/PageLayoutController.php';
+require_once \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('backend') . 'Classes/Controller/PageLayoutController.php';
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_db_layout');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Controller\\PageLayoutController');
 $SOBE->init();
 // Include files?
 foreach ($SOBE->include_once as $INC_FILE) {

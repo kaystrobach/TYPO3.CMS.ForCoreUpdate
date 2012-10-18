@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Extensionmanager\Utility\Repository;
+
 /***************************************************************
  * Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package Extension Manager
  * @subpackage Utility/Repository
  */
-class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
+class Helper implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * ##########################################
@@ -58,17 +60,17 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	/**
 	 * Keeps instance of repository class.
 	 *
-	 * @var Tx_Extensionmanager_Domain_Model_Repository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Model\Repository
 	 */
 	protected $repository = NULL;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_RepositoryRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\RepositoryRepository
 	 */
 	protected $repositoryRepository;
 
 	/**
-	 * @var Tx_Extensionmanager_Domain_Repository_ExtensionRepository
+	 * @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository
 	 */
 	protected $extensionRepository;
 
@@ -78,10 +80,10 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @access public
 	 */
 	public function __construct() {
-		/** @var $objectManager Tx_Extbase_Object_ObjectManager */
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$repositoryRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_RepositoryRepository');
-		$this->extensionRepository = $this->objectManager->get('Tx_Extensionmanager_Domain_Repository_ExtensionRepository');
+		/** @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManager */
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$repositoryRepository = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\RepositoryRepository');
+		$this->extensionRepository = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ExtensionRepository');
 		$repository = $repositoryRepository->findByUid(1);
 		$this->setRepository($repository);
 	}
@@ -92,11 +94,11 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * Repository instance is passed by reference.
 	 *
 	 * @access public
-	 * @param Tx_Extensionmanager_Domain_Model_Repository $repository
+	 * @param \TYPO3\CMS\Extensionmanager\Domain\Model\Repository $repository
 	 * @return void
 	 * @see $repository
 	 */
-	public function setRepository(Tx_Extensionmanager_Domain_Model_Repository $repository) {
+	public function setRepository(\TYPO3\CMS\Extensionmanager\Domain\Model\Repository $repository) {
 		$this->repository = $repository;
 	}
 
@@ -134,17 +136,17 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 * @param string $localResource local resource (absolute file path) to store retrieved contents to
 	 * @return void
 	 * @see t3lib_div::getUrl(), t3lib_div::writeFile()
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 */
 	protected function fetchFile($remoteResource, $localResource) {
 		if (((is_string($remoteResource) && is_string($localResource)) && !empty($remoteResource)) && !empty($localResource)) {
-			$fileContent = t3lib_div::getUrl($remoteResource, 0, array(TYPO3_user_agent));
+			$fileContent = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($remoteResource, 0, array(TYPO3_user_agent));
 			if ($fileContent !== FALSE) {
-				if (t3lib_div::writeFile($localResource, $fileContent) === FALSE) {
-					throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Could not write to file %s.', htmlspecialchars($localResource)), 1342635378);
+				if (\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($localResource, $fileContent) === FALSE) {
+					throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('Could not write to file %s.', htmlspecialchars($localResource)), 1342635378);
 				}
 			} else {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager(sprintf('Could not access remote resource %s.', htmlspecialchars($remoteResource)), 1342635425);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException(sprintf('Could not access remote resource %s.', htmlspecialchars($remoteResource)), 1342635425);
 			}
 		}
 	}
@@ -220,7 +222,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 *
 	 * @access public
 	 * @param boolean $forcedUpdateFromRemote if boolean TRUE, mirror configuration will always retrieved from remote server
-	 * @return Tx_Extensionmanager_Domain_Model_Mirrors instance of repository mirrors class
+	 * @return \TYPO3\CMS\Extensionmanager\Domain\Model\Mirrors instance of repository mirrors class
 	 */
 	public function getMirrors($forcedUpdateFromRemote = TRUE) {
 		$assignedMirror = $this->repository->getMirrors();
@@ -228,8 +230,8 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 			if ($forcedUpdateFromRemote || !is_file($this->getLocalMirrorListFile())) {
 				$this->fetchMirrorListFile();
 			}
-			/** @var $objMirrorListImporter Tx_Extensionmanager_Utility_Importer_MirrorList */
-			$objMirrorListImporter = t3lib_div::makeInstance('Tx_Extensionmanager_Utility_Importer_MirrorList');
+			/** @var $objMirrorListImporter \TYPO3\CMS\Extensionmanager\Utility\Importer\MirrorListUtility */
+			$objMirrorListImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extensionmanager\\Utility\\Importer\\MirrorListUtility');
 			$this->repository->addMirrors($objMirrorListImporter->getMirrors($this->getLocalMirrorListFile()));
 		}
 		return $this->repository->getMirrors();
@@ -241,7 +243,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	 *
 	 * @access public
 	 * @see Tx_Extensionmanager_Utility_Repository_Helper::PROBLEM_NO_VERSIONS_IN_DATABASE,
-	 * @throws Tx_Extensionmanager_Exception_ExtensionManager
+	 * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
 	 * @return integer "0" if everything is perfect, otherwise bitmask with problems
 	 */
 	public function isExtListUpdateNecessary() {
@@ -252,14 +254,14 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 		if (!is_file($this->getLocalExtListFile())) {
 			$updateNecessity |= self::PROBLEM_EXTENSION_FILE_NOT_EXISTING;
 		} else {
-			$remotemd5 = t3lib_div::getUrl($this->getRemoteExtHashFile(), 0, array(TYPO3_user_agent));
+			$remotemd5 = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($this->getRemoteExtHashFile(), 0, array(TYPO3_user_agent));
 			if ($remotemd5 !== FALSE) {
 				$localmd5 = md5_file($this->getLocalExtListFile());
 				if ($remotemd5 !== $localmd5) {
 					$updateNecessity |= self::PROBLEM_EXTENSION_HASH_CHANGED;
 				}
 			} else {
-				throw new Tx_Extensionmanager_Exception_ExtensionManager('Could not retrieve extension hash file from remote server.', 1342635016);
+				throw new \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException('Could not retrieve extension hash file from remote server.', 1342635016);
 			}
 		}
 		return $updateNecessity;
@@ -293,7 +295,7 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 			if ($updateNecessity === 0) {
 				$uid = $this->repository->getUid();
 				/* @var $objExtListImporter Tx_Extensionmanager_Utility_Importer_ExtensionList */
-				$objExtListImporter = $this->objectManager->get('Tx_Extensionmanager_Utility_Importer_ExtensionList');
+				$objExtListImporter = $this->objectManager->get('TYPO3\\CMS\\Extensionmanager\\Utility\\Importer\\ExtensionListUtility');
 				$objExtListImporter->import($this->getLocalExtListFile(), $uid);
 				$updated = TRUE;
 			}
@@ -302,5 +304,6 @@ class Tx_Extensionmanager_Utility_Repository_Helper implements t3lib_Singleton {
 	}
 
 }
+
 
 ?>

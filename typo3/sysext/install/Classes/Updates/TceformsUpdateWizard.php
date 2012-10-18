@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\Updates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @author Ingmar Schlecht <ingmar@typo3.org>
  * @license http://www.gnu.org/copyleft/gpl.html
  */
-class Tx_Install_Updates_File_TceformsUpdateWizard extends Tx_Install_Updates_Base {
+class TceformsUpdateWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate {
 
 	/**
 	 * @var string
@@ -37,7 +39,7 @@ class Tx_Install_Updates_File_TceformsUpdateWizard extends Tx_Install_Updates_Ba
 	protected $title = 'Migrate all file relations from tt_content.image and pages.media';
 
 	/**
-	 * @var t3lib_file_Storage
+	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected $storage;
 
@@ -45,8 +47,8 @@ class Tx_Install_Updates_File_TceformsUpdateWizard extends Tx_Install_Updates_Ba
 	 * Initialize the storage repository.
 	 */
 	public function init() {
-		/** @var $storageRepository t3lib_file_Repository_StorageRepository */
-		$storageRepository = t3lib_div::makeInstance('t3lib_file_Repository_StorageRepository');
+		/** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
+		$storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
 		$storages = $storageRepository->findAll();
 		$this->storage = $storages[0];
 	}
@@ -162,7 +164,7 @@ class Tx_Install_Updates_File_TceformsUpdateWizard extends Tx_Install_Updates_Ba
 	}
 
 	protected function migrateField($table, $row, $fieldname, $fieldConfiguration) {
-		$fieldItems = t3lib_div::trimExplode(',', $row[$fieldname], TRUE);
+		$fieldItems = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $row[$fieldname], TRUE);
 		if (empty($fieldItems) || is_numeric($row[$fieldname])) {
 			return array();
 		}
@@ -187,18 +189,18 @@ class Tx_Install_Updates_File_TceformsUpdateWizard extends Tx_Install_Updates_Ba
 		$i = 0;
 		foreach ($fieldItems as $item) {
 			if (!PATH_site) {
-				throw new Exception('PATH_site was undefined.');
+				throw new \Exception('PATH_site was undefined.');
 			}
 			// copy file
 			$sourcePath = (PATH_site . $fieldConfiguration['sourcePath']) . $item;
 			$targetPath = ((PATH_site . $fileadminDirectory) . $fieldConfiguration['targetPath']) . $item;
 			if (!is_dir(dirname($targetPath))) {
-				t3lib_div::mkdir_deep(dirname($targetPath));
+				\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep(dirname($targetPath));
 			}
 			rename($sourcePath, $targetPath);
 			// get the File object
 			$file = $this->storage->getFile($fieldConfiguration['targetPath'] . $item);
-			if ($file instanceof t3lib_file_File) {
+			if ($file instanceof \TYPO3\CMS\Core\Resource\File) {
 				$fields = array(
 					// TODO add sorting/sorting_foreign
 					'fieldname' => $fieldname,
@@ -233,5 +235,6 @@ class Tx_Install_Updates_File_TceformsUpdateWizard extends Tx_Install_Updates_Ba
 	}
 
 }
+
 
 ?>

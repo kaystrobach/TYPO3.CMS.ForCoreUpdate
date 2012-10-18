@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Controller;
+
 /**
  * Script Class, generating the page output.
  * Instantiated in the bottom of this script.
@@ -7,7 +9,7 @@
  * @package TYPO3
  * @subpackage tslib
  */
-class SC_tslib_showpic {
+class ShowImageController {
 
 	// Page content accumulated here.
 	/**
@@ -84,20 +86,20 @@ class SC_tslib_showpic {
 	 */
 	public function init() {
 		// Loading internal vars with the GET/POST parameters from outside:
-		$this->file = t3lib_div::_GP('file');
-		$parametersArray = t3lib_div::_GP('parameters');
-		$this->frame = t3lib_div::_GP('frame');
-		$this->md5 = t3lib_div::_GP('md5');
+		$this->file = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('file');
+		$parametersArray = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('parameters');
+		$this->frame = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('frame');
+		$this->md5 = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('md5');
 		// Check parameters
 		// If no file-param or parameters are given, we must exit
 		if ((!$this->file || !isset($parametersArray)) || !is_array($parametersArray)) {
-			t3lib_utility_Http::setResponseCodeAndExit(t3lib_utility_Http::HTTP_STATUS_410);
+			\TYPO3\CMS\Core\Utility\HttpUtility::setResponseCodeAndExit(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_410);
 		}
 		$this->parametersEncoded = implode('', $parametersArray);
 		// Chech md5-checksum: If this md5-value does not match the one submitted, then we fail... (this is a kind of security that somebody don't just hit the script with a lot of different parameters
-		$md5_value = t3lib_div::hmac(implode('|', array($this->file, $this->parametersEncoded)));
+		$md5_value = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(implode('|', array($this->file, $this->parametersEncoded)));
 		if ($md5_value !== $this->md5) {
-			t3lib_utility_Http::setResponseCodeAndExit(t3lib_utility_Http::HTTP_STATUS_410);
+			\TYPO3\CMS\Core\Utility\HttpUtility::setResponseCodeAndExit(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_410);
 		}
 		$parameters = unserialize(base64_decode($this->parametersEncoded));
 		foreach ($parameters as $parameterName => $parameterValue) {
@@ -106,11 +108,11 @@ class SC_tslib_showpic {
 		// Check the file. If must be in a directory beneath the dir of this script...
 		// $this->file remains unchanged, because of the code in stdgraphic, but we do check if the file exists within the current path
 		$test_file = PATH_site . $this->file;
-		if (!t3lib_div::validPathStr($test_file)) {
-			t3lib_utility_Http::setResponseCodeAndExit(t3lib_utility_Http::HTTP_STATUS_410);
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::validPathStr($test_file)) {
+			\TYPO3\CMS\Core\Utility\HttpUtility::setResponseCodeAndExit(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_410);
 		}
 		if (!@is_file($test_file)) {
-			t3lib_utility_Http::setResponseCodeAndExit(t3lib_utility_Http::HTTP_STATUS_404);
+			\TYPO3\CMS\Core\Utility\HttpUtility::setResponseCodeAndExit(\TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_404);
 		}
 	}
 
@@ -123,13 +125,13 @@ class SC_tslib_showpic {
 	 */
 	public function main() {
 		// Creating stdGraphic object, initialize it and make image:
-		$img = t3lib_div::makeInstance('t3lib_stdGraphic');
+		$img = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions');
 		$img->mayScaleUp = 0;
 		$img->init();
 		if ($this->sample) {
 			$img->scalecmd = '-sample';
 		}
-		if ($this->alternativeTempPath && t3lib_div::inList($GLOBALS['TYPO3_CONF_VARS']['FE']['allowedTempPaths'], $this->alternativeTempPath)) {
+		if ($this->alternativeTempPath && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['FE']['allowedTempPaths'], $this->alternativeTempPath)) {
 			$img->tempPath = $this->alternativeTempPath;
 		}
 		// Need to connect to database, because this is used (typo3temp_db_tracking, cached image dimensions).
@@ -139,8 +141,8 @@ class SC_tslib_showpic {
 		} else {
 			$max = '';
 		}
-		$this->height = t3lib_utility_Math::forceIntegerInRange($this->height, 0);
-		$this->width = t3lib_utility_Math::forceIntegerInRange($this->width, 0);
+		$this->height = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->height, 0);
+		$this->width = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->width, 0);
 		if ($this->frame) {
 			$this->frame = intval($this->frame);
 		}
@@ -176,5 +178,6 @@ class SC_tslib_showpic {
 	}
 
 }
+
 
 ?>

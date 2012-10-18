@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Validation;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_System_Validate_Inarray extends tx_form_System_Validate_Abstract {
+class InArrayValidator extends \TYPO3\CMS\Form\Validation\AbstractValidator {
 
 	/**
 	 * Haystack to search in
@@ -94,5 +96,6 @@ class tx_form_System_Validate_Inarray extends tx_form_System_Validate_Abstract {
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_tableoperations extends tx_rtehtmlarea_api {
+class TableOperations extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -145,12 +147,13 @@ class tx_rtehtmlarea_tableoperations extends tx_rtehtmlarea_api {
 	public function applyToolbarConstraints($show) {
 		// We will not allow any table operations button if the table button is not enabled
 		if (!in_array('table', $show)) {
-			return array_diff($show, t3lib_div::trimExplode(',', $this->pluginButtons));
+			return array_diff($show, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pluginButtons));
 		} else {
 			return $show;
 		}
 	}
 
 }
+
 
 ?>

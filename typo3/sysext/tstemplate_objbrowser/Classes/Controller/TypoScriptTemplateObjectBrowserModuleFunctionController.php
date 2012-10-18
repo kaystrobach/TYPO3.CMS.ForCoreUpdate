@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\TstemplateObjbrowser\Controller;
+
 /**
  * This class displays the submodule "TypoScript Object Browser" inside the Web > Template module
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage tx_tstemplateobjbrowser
  */
-class tx_tstemplateobjbrowser extends t3lib_extobjbase {
+class TypoScriptTemplateObjectBrowserModuleFunctionController extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 
 	/**
 	 * Init
@@ -51,7 +53,7 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 			'ts_browser_alphaSort' => '1'
 		);
 		foreach (array('setup', 'const') as $bType) {
-			$addKey = t3lib_div::_GET('addKey');
+			$addKey = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('addKey');
 			// If any plus-signs were clicked, it's registred.
 			if (is_array($addKey)) {
 				reset($addKey);
@@ -111,7 +113,7 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 			'stdWrap' => ''
 		);
 		if ($parentType) {
-			if (isset($TSobjDataTypes[$parentType]) && (!$TSobjDataTypes[$parentType] || t3lib_div::inlist($TSobjDataTypes[$parentType], $parentValue))) {
+			if (isset($TSobjDataTypes[$parentType]) && (!$TSobjDataTypes[$parentType] || \TYPO3\CMS\Core\Utility\GeneralUtility::inlist($TSobjDataTypes[$parentType], $parentValue))) {
 				$ObjectKind = $parentValue;
 			} else {
 				// Object kind is "" if it should be known.
@@ -125,7 +127,7 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 			$result = array();
 			if (is_array($propertyArray)) {
 				foreach ($propertyArray as $key => $val) {
-					if (t3lib_utility_Math::canBeInterpretedAsInteger($key)) {
+					if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($key)) {
 						// If num-arrays
 						$result[$key] = $TSobjTable[$ObjectKind]['prop']['1,2,3'];
 					} else {
@@ -150,12 +152,12 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 		// Initializes the module. Done in this function because we may need to re-initialize if data is submitted!
 		global $tmpl, $tplRow, $theConstants;
 		// Defined global here!
-		$tmpl = t3lib_div::makeInstance('t3lib_tsparser_ext');
+		$tmpl = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\ExtendedTemplateService');
 		// Do not log time-performance information
 		$tmpl->tt_track = 0;
 		$tmpl->init();
 		// Gets the rootLine
-		$sys_page = t3lib_div::makeInstance('t3lib_pageSelect');
+		$sys_page = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 		$rootLine = $sys_page->getRootLine($pageId);
 		// This generates the constants/config + hierarchy info for the template.
 		$tmpl->runThroughTemplates($rootLine, $template_uid);
@@ -176,19 +178,19 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 	public function main() {
 		global $BACK_PATH;
 		global $tmpl, $tplRow, $theConstants;
-		$POST = t3lib_div::_POST();
+		$POST = \TYPO3\CMS\Core\Utility\GeneralUtility::_POST();
 		// Checking for more than one template an if, set a menu...
 		$manyTemplatesMenu = $this->pObj->templateMenu();
 		$template_uid = 0;
 		if ($manyTemplatesMenu) {
-			$template_uid = $this->pObj->MOD_SETTINGS['templatesOnPage'];
+			$template_uid = $this->pObj->MOD_SETTINGS['TYPO3\\CMS\\Backend\\Template\\DocumentTemplatesOnPage'];
 		}
 		// BUGBUG: Should we check if the uset may at all read and write template-records???
 		$bType = $this->pObj->MOD_SETTINGS['ts_browser_type'];
 		$existTemplate = $this->initialize_editor($this->pObj->id, $template_uid);
 		// initialize
 		if ($existTemplate) {
-			$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('currentTemplate'), ((((' <img ' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], t3lib_iconWorks::getIcon('sys_template', $tplRow))) . ' align="top" /> <strong>') . $this->pObj->linkWrapTemplateTitle($tplRow['title'], ($bType == 'setup' ? 'config' : 'constants'))) . '</strong>') . htmlspecialchars((trim($tplRow['sitetitle']) ? (' (' . $tplRow['sitetitle']) . ')' : '')));
+			$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('currentTemplate'), ((((' <img ' . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($GLOBALS['BACK_PATH'], \TYPO3\CMS\Backend\Utility\IconUtility::getIcon('sys_template', $tplRow))) . ' align="top" /> <strong>') . $this->pObj->linkWrapTemplateTitle($tplRow['title'], ($bType == 'setup' ? 'config' : 'constants'))) . '</strong>') . htmlspecialchars((trim($tplRow['sitetitle']) ? (' (' . $tplRow['sitetitle']) . ')' : '')));
 			if ($manyTemplatesMenu) {
 				$theOutput .= $this->pObj->doc->section('', $manyTemplatesMenu);
 			}
@@ -206,24 +208,24 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 					if ($POST['add_property']) {
 						$property = trim($POST['data'][$name]['name']);
 						if (preg_replace('/[^a-zA-Z0-9_\\.]*/', '', $property) != $property) {
-							$badPropertyMessage = t3lib_div::makeInstance('t3lib_FlashMessage', ($GLOBALS['LANG']->getLL('noSpaces') . '<br />') . $GLOBALS['LANG']->getLL('nothingUpdated'), $GLOBALS['LANG']->getLL('badProperty'), t3lib_FlashMessage::ERROR);
-							t3lib_FlashMessageQueue::addMessage($badPropertyMessage);
+							$badPropertyMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', ($GLOBALS['LANG']->getLL('noSpaces') . '<br />') . $GLOBALS['LANG']->getLL('nothingUpdated'), $GLOBALS['LANG']->getLL('badProperty'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+							\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($badPropertyMessage);
 						} else {
 							$pline = ((($name . '.') . $property) . ' = ') . trim($POST['data'][$name]['propertyValue']);
-							$propertyAddedMessage = t3lib_div::makeInstance('t3lib_FlashMessage', htmlspecialchars($pline), $GLOBALS['LANG']->getLL('propertyAdded'));
-							t3lib_FlashMessageQueue::addMessage($propertyAddedMessage);
+							$propertyAddedMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', htmlspecialchars($pline), $GLOBALS['LANG']->getLL('propertyAdded'));
+							\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($propertyAddedMessage);
 							$line .= LF . $pline;
 						}
 					} elseif ($POST['update_value']) {
 						$pline = ($name . ' = ') . trim($POST['data'][$name]['value']);
-						$updatedMessage = t3lib_div::makeInstance('t3lib_FlashMessage', htmlspecialchars($pline), $GLOBALS['LANG']->getLL('valueUpdated'));
-						t3lib_FlashMessageQueue::addMessage($updatedMessage);
+						$updatedMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', htmlspecialchars($pline), $GLOBALS['LANG']->getLL('valueUpdated'));
+						\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($updatedMessage);
 						$line .= LF . $pline;
 					} elseif ($POST['clear_object']) {
 						if ($POST['data'][$name]['clearValue']) {
 							$pline = $name . ' >';
-							$objectClearedMessage = t3lib_div::makeInstance('t3lib_FlashMessage', htmlspecialchars($pline), $GLOBALS['LANG']->getLL('objectCleared'));
-							t3lib_FlashMessageQueue::addMessage($objectClearedMessage);
+							$objectClearedMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', htmlspecialchars($pline), $GLOBALS['LANG']->getLL('objectCleared'));
+							\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($objectClearedMessage);
 							$line .= LF . $pline;
 						}
 					}
@@ -235,7 +237,7 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 					$field = $bType == 'setup' ? 'config' : 'constants';
 					$recData['sys_template'][$saveId][$field] = $tplRow[$field] . $line;
 					// Create new  tce-object
-					$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+					$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandler\\DataHandler');
 					$tce->stripslashes_values = 0;
 					// Initialize
 					$tce->start($recData, array());
@@ -248,7 +250,7 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 				}
 			}
 		}
-		$tsbr = t3lib_div::_GET('tsbr');
+		$tsbr = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('tsbr');
 		$update = 0;
 		if (is_array($tsbr)) {
 			// If any plus-signs were clicked, it's registred.
@@ -279,9 +281,9 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 		$tmpl->resourceCheck = 1;
 		$tmpl->removeFromGetFilePath = PATH_site;
 		if ($this->pObj->MOD_SETTINGS['ts_browser_type'] == 'const') {
-			$tmpl->ext_constants_BRP = intval(t3lib_div::_GP('breakPointLN'));
+			$tmpl->ext_constants_BRP = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('breakPointLN'));
 		} else {
-			$tmpl->ext_config_BRP = intval(t3lib_div::_GP('breakPointLN'));
+			$tmpl->ext_config_BRP = intval(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('breakPointLN'));
 		}
 		$tmpl->generateConfig();
 		if ($bType == 'setup') {
@@ -300,13 +302,13 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 				$out .= ('<input type="Submit" name="update_value" value="' . $GLOBALS['LANG']->getLL('updateButton')) . '" />';
 				$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('editProperty'), $out, 0, 0);
 				// Property
-				if (t3lib_extMgm::isLoaded('tsconfig_help')) {
+				if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('tsconfig_help')) {
 					$url = $BACK_PATH . 'wizard_tsconfig.php?mode=tsref&onlyProperty=1';
 					$params = array();
 					$params['formName'] = 'editForm';
 					$params['itemName'] = ('data[' . htmlspecialchars($this->pObj->sObj)) . '][name]';
 					$params['itemValue'] = ('data[' . htmlspecialchars($this->pObj->sObj)) . '][propertyValue]';
-					$TSicon = (((((((('<a href="#" onClick="vHWin=window.open(\'' . $url) . t3lib_div::implodeArrayForUrl('', array('P' => $params))) . '\',\'popUp') . $md5ID) . '\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;"><img src="') . $BACK_PATH) . 'gfx/wizard_tsconfig_s.gif" width="22" height="16" border="0" class="absmiddle" hspace=2 title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:tsRef')) . '"></a>';
+					$TSicon = (((((((('<a href="#" onClick="vHWin=window.open(\'' . $url) . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('', array('P' => $params))) . '\',\'popUp') . $md5ID) . '\',\'height=500,width=780,status=0,menubar=0,scrollbars=1\');vHWin.focus();return false;"><img src="') . $BACK_PATH) . 'gfx/wizard_tsconfig_s.gif" width="22" height="16" border="0" class="absmiddle" hspace=2 title="') . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:tsRef')) . '"></a>';
 				} else {
 					$TSicon = '';
 				}
@@ -326,15 +328,15 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 				$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('clearObject'), $out, 0, 0);
 				$theOutput .= $this->pObj->doc->spacer(10);
 			} else {
-				$noTemplateMessage = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->getLL('noCurrentTemplate'), $GLOBALS['LANG']->getLL('edit'), t3lib_FlashMessage::ERROR);
-				t3lib_FlashMessageQueue::addMessage($noTemplateMessage);
+				$noTemplateMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $GLOBALS['LANG']->getLL('noCurrentTemplate'), $GLOBALS['LANG']->getLL('edit'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+				\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($noTemplateMessage);
 			}
 			// Links:
 			$out = '';
 			$urlParameters = array(
 				'id' => $this->pObj->id
 			);
-			$aHref = t3lib_BEfunc::getModuleUrl('web_ts', $urlParameters);
+			$aHref = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_ts', $urlParameters);
 			if (!$this->pObj->MOD_SETTINGS[('ts_browser_TLKeys_' . $bType)][$this->pObj->sObj]) {
 				if (count($theSetup)) {
 					$out = ('<a href="' . htmlspecialchars((((((($aHref . '&addKey[') . rawurlencode($this->pObj->sObj)) . ']=1&SET[ts_browser_toplevel_') . $bType) . ']=') . rawurlencode($this->pObj->sObj)))) . '">';
@@ -355,19 +357,19 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 			$theOutput .= $this->pObj->doc->section('', $out);
 		} else {
 			$tmpl->tsbrowser_depthKeys = $this->pObj->MOD_SETTINGS['tsbrowser_depthKeys_' . $bType];
-			if (t3lib_div::_POST('search') && t3lib_div::_POST('search_field')) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::_POST('search') && \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('search_field')) {
 				// If any POST-vars are send, update the condition array
-				$tmpl->tsbrowser_depthKeys = $tmpl->ext_getSearchKeys($theSetup, '', t3lib_div::_POST('search_field'), array());
+				$tmpl->tsbrowser_depthKeys = $tmpl->ext_getSearchKeys($theSetup, '', \TYPO3\CMS\Core\Utility\GeneralUtility::_POST('search_field'), array());
 			}
 			$menu = ('<div class="tsob-menu"><label>' . $GLOBALS['LANG']->getLL('browse')) . '</label>';
-			$menu .= t3lib_BEfunc::getFuncMenu($this->pObj->id, 'SET[ts_browser_type]', $bType, $this->pObj->MOD_MENU['ts_browser_type']);
+			$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, 'SET[ts_browser_type]', $bType, $this->pObj->MOD_MENU['ts_browser_type']);
 			$menu .= ((('<label for="ts_browser_toplevel_' . $bType) . '">') . $GLOBALS['LANG']->getLL('objectList')) . '</label>';
-			$menu .= t3lib_BEfunc::getFuncMenu($this->pObj->id, ('SET[ts_browser_toplevel_' . $bType) . ']', $this->pObj->MOD_SETTINGS['ts_browser_toplevel_' . $bType], $this->pObj->MOD_MENU['ts_browser_toplevel_' . $bType]);
+			$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, ('SET[ts_browser_toplevel_' . $bType) . ']', $this->pObj->MOD_SETTINGS['ts_browser_toplevel_' . $bType], $this->pObj->MOD_MENU['ts_browser_toplevel_' . $bType]);
 			//search
 			$menu .= ('<label for="search_field">' . $GLOBALS['LANG']->getLL('search')) . '</label>';
 			$menu .= ((('<input type="Text" name="search_field" id="search_field" value="' . htmlspecialchars($POST['search_field'])) . '"') . $GLOBALS['TBE_TEMPLATE']->formWidth(20)) . '/>';
 			$menu .= ('<input type="Submit" name="search" class="tsob-search-submit" value="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:search')) . '" />';
-			$menu .= t3lib_BEfunc::getFuncCheck($this->pObj->id, 'SET[ts_browser_regexsearch]', $this->pObj->MOD_SETTINGS['ts_browser_regexsearch'], '', '', 'id="checkTs_browser_regexsearch"');
+			$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->pObj->id, 'SET[ts_browser_regexsearch]', $this->pObj->MOD_SETTINGS['ts_browser_regexsearch'], '', '', 'id="checkTs_browser_regexsearch"');
 			$menu .= ('<label for="checkTs_browser_regexsearch">' . $GLOBALS['LANG']->getLL('regExp')) . '</label>';
 			$menu .= '</div>';
 			$theOutput .= $this->pObj->doc->section('', ('<nobr>' . $menu) . '</nobr>');
@@ -381,21 +383,21 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 			$urlParameters = array(
 				'id' => $this->pObj->id
 			);
-			$aHref = t3lib_BEfunc::getModuleUrl('web_ts', $urlParameters);
+			$aHref = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_ts', $urlParameters);
 			// Parser Errors:
 			$pEkey = $bType == 'setup' ? 'config' : 'constants';
 			if (count($tmpl->parserErrors[$pEkey])) {
 				$errMsg = array();
-				$templateAnalyzerInstalled = t3lib_extMgm::isLoaded('tstemplate_analyzer');
+				$templateAnalyzerInstalled = \TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('tstemplate_analyzer');
 				foreach ($tmpl->parserErrors[$pEkey] as $inf) {
 					$errorLink = '';
 					if ($templateAnalyzerInstalled) {
-						$errorLink = (((' <a href="' . htmlspecialchars((($aHref . '&SET[function]=tx_tstemplateanalyzer&template=all&SET[ts_analyzer_checkLinenum]=1#line-') . $inf[2]))) . '">') . $GLOBALS['LANG']->getLL('errorShowDetails')) . '</a>';
+						$errorLink = (((' <a href="' . htmlspecialchars((($aHref . '&SET[function]=tx_tstemplateanalyzer&TYPO3\\CMS\\Backend\\Template\\DocumentTemplate=all&SET[ts_analyzer_checkLinenum]=1#line-') . $inf[2]))) . '">') . $GLOBALS['LANG']->getLL('errorShowDetails')) . '</a>';
 					}
 					$errMsg[] = (($inf[1] . ': &nbsp; &nbsp;') . $inf[0]) . $errorLink;
 				}
 				$theOutput .= $this->pObj->doc->spacer(10);
-				$flashMessage = t3lib_div::makeInstance('t3lib_FlashMessage', implode($errMsg, '<br />'), $GLOBALS['LANG']->getLL('errorsWarnings'), t3lib_FlashMessage::ERROR);
+				$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', implode($errMsg, '<br />'), $GLOBALS['LANG']->getLL('errorsWarnings'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
 				$theOutput .= $flashMessage->render();
 			}
 			if (isset($this->pObj->MOD_SETTINGS['ts_browser_TLKeys_' . $bType][$theKey])) {
@@ -417,15 +419,15 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 			';
 			// second row options
 			$menu = '<div class="tsob-menu-row2">';
-			$menu .= t3lib_BEfunc::getFuncCheck($this->pObj->id, 'SET[ts_browser_showComments]', $this->pObj->MOD_SETTINGS['ts_browser_showComments'], '', '', 'id="checkTs_browser_showComments"');
+			$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->pObj->id, 'SET[ts_browser_showComments]', $this->pObj->MOD_SETTINGS['ts_browser_showComments'], '', '', 'id="checkTs_browser_showComments"');
 			$menu .= ('<label for="checkTs_browser_showComments">' . $GLOBALS['LANG']->getLL('displayComments')) . '</label>';
-			$menu .= t3lib_BEfunc::getFuncCheck($this->pObj->id, 'SET[ts_browser_alphaSort]', $this->pObj->MOD_SETTINGS['ts_browser_alphaSort'], '', '', 'id="checkTs_browser_alphaSort"');
+			$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->pObj->id, 'SET[ts_browser_alphaSort]', $this->pObj->MOD_SETTINGS['ts_browser_alphaSort'], '', '', 'id="checkTs_browser_alphaSort"');
 			$menu .= ('<label for="checkTs_browser_alphaSort">' . $GLOBALS['LANG']->getLL('sortAlphabetically')) . '</label>';
-			$menu .= t3lib_BEfunc::getFuncCheck($this->pObj->id, 'SET[ts_browser_fixedLgd]', $this->pObj->MOD_SETTINGS['ts_browser_fixedLgd'], '', '', 'id="checkTs_browser_fixedLgd"');
+			$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncCheck($this->pObj->id, 'SET[ts_browser_fixedLgd]', $this->pObj->MOD_SETTINGS['ts_browser_fixedLgd'], '', '', 'id="checkTs_browser_fixedLgd"');
 			$menu .= ('<label for="checkTs_browser_fixedLgd">' . $GLOBALS['LANG']->getLL('cropLines')) . '</label>';
 			if ($bType == 'setup' && !$this->pObj->MOD_SETTINGS['ts_browser_fixedLgd']) {
 				$menu .= ('<br /><br /><label>' . $GLOBALS['LANG']->getLL('displayConstants')) . '</label>';
-				$menu .= t3lib_BEfunc::getFuncMenu($this->pObj->id, 'SET[ts_browser_const]', $this->pObj->MOD_SETTINGS['ts_browser_const'], $this->pObj->MOD_MENU['ts_browser_const']);
+				$menu .= \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->pObj->id, 'SET[ts_browser_const]', $this->pObj->MOD_SETTINGS['ts_browser_const'], $this->pObj->MOD_MENU['ts_browser_const']);
 			}
 			$menu .= '</div>';
 			$theOutput .= $this->pObj->doc->section($GLOBALS['LANG']->getLL('displayOptions'), ('<nobr>' . $menu) . '</nobr>', 0, 1);
@@ -451,5 +453,6 @@ class tx_tstemplateobjbrowser extends t3lib_extobjbase {
 	}
 
 }
+
 
 ?>

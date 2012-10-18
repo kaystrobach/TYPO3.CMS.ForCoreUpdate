@@ -48,7 +48,7 @@ class t3lib_ajax {
 	 * Default constructor writes deprecation log.
 	 */
 	public function __construct() {
-		t3lib_div::deprecationLog('Class t3lib_ajax is deprecated and unused since TYPO3 6.0. ' . 'It will be removed with version 6.2.');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::deprecationLog('Class t3lib_ajax is deprecated and unused since TYPO3 6.0. ' . 'It will be removed with version 6.2.');
 	}
 
 	/**
@@ -64,7 +64,7 @@ class t3lib_ajax {
 	 * @deprecated since 6.0, class will be removed with 6.2
 	 */
 	public function getJScode($handlerFunction, $fallback = '', $debug = 0) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		// Init the XMLHTTP request object
 		$code = '
 		function ajax_initObject() {
@@ -123,7 +123,7 @@ class t3lib_ajax {
 	 * @deprecated since 6.0, class will be removed with 6.2
 	 */
 	public function outputXMLreply($innerXML) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		// AJAX needs some XML data
 		header('Content-Type: text/xml');
 		$xml = ('<?xml version="1.0"?>
@@ -132,5 +132,6 @@ class t3lib_ajax {
 	}
 
 }
+
 
 ?>

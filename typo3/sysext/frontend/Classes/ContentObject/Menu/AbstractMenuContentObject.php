@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject\Menu;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -54,7 +56,7 @@
  * @subpackage tslib
  * @see tslib_cObj::HMENU()
  */
-class tslib_menu {
+class AbstractMenuContentObject {
 
 	// tells you which menu-number this is. This is important when getting data from the setup
 	/**
@@ -103,7 +105,7 @@ class tslib_menu {
 	/**
 	 * Loaded with the parent cObj-object when a new HMENU is made
 	 *
-	 * @var tslib_cObj
+	 * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 * @todo Define visibility
 	 */
 	public $parent_cObj;
@@ -135,7 +137,7 @@ class tslib_menu {
 	/**
 	 * template-object
 	 *
-	 * @var t3lib_TStemplate
+	 * @var \TYPO3\CMS\Core\TypoScript\TemplateService
 	 * @todo Define visibility
 	 */
 	public $tmpl;
@@ -143,7 +145,7 @@ class tslib_menu {
 	/**
 	 * sys_page-object, pagefunctions
 	 *
-	 * @var t3lib_pageSelect
+	 * @var \TYPO3\CMS\Frontend\Page\PageRepository
 	 * @todo Define visibility
 	 */
 	public $sys_page;
@@ -274,14 +276,14 @@ class tslib_menu {
 				if (isset($this->conf['alwaysActivePIDlist.'])) {
 					$this->conf['alwaysActivePIDlist'] = $this->parent_cObj->stdWrap($this->conf['alwaysActivePIDlist'], $this->conf['alwaysActivePIDlist.']);
 				}
-				$this->alwaysActivePIDlist = t3lib_div::intExplode(',', $this->conf['alwaysActivePIDlist']);
+				$this->alwaysActivePIDlist = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $this->conf['alwaysActivePIDlist']);
 			}
 			// 'not in menu' doktypes
 			if ($this->conf['excludeDoktypes']) {
 				$this->doktypeExcludeList = $GLOBALS['TYPO3_DB']->cleanIntList($this->conf['excludeDoktypes']);
 			}
 			// EntryLevel
-			$this->entryLevel = tslib_cObj::getKey(isset($conf['entryLevel.']) ? $this->parent_cObj->stdWrap($conf['entryLevel'], $conf['entryLevel.']) : $conf['entryLevel'], $this->tmpl->rootLine);
+			$this->entryLevel = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getKey(isset($conf['entryLevel.']) ? $this->parent_cObj->stdWrap($conf['entryLevel'], $conf['entryLevel.']) : $conf['entryLevel'], $this->tmpl->rootLine);
 			// Set parent page: If $id not stated with start() then the base-id will be found from rootLine[$this->entryLevel]
 			// Called as the next level in a menu. It is assumed that $this->MP_array is set from parent menu.
 			if ($id) {
@@ -415,7 +417,7 @@ class tslib_menu {
 					// Getting current page record NOT overlaid by any translation:
 					$currentPageWithNoOverlay = $this->sys_page->getRawRecord('pages', $GLOBALS['TSFE']->page['uid']);
 					// Traverse languages set up:
-					$languageItems = t3lib_div::intExplode(',', $value);
+					$languageItems = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
 					foreach ($languageItems as $sUid) {
 						// Find overlay record:
 						if ($sUid) {
@@ -424,7 +426,7 @@ class tslib_menu {
 							$lRecs = array();
 						}
 						// Checking if the "disabled" state should be set.
-						if (((t3lib_div::hideIfNotTranslated($GLOBALS['TSFE']->page['l18n_cfg']) && $sUid) && !count($lRecs) || $GLOBALS['TSFE']->page['l18n_cfg'] & 1 && (!$sUid || !count($lRecs))) || (!$this->conf['special.']['normalWhenNoLanguage'] && $sUid) && !count($lRecs)) {
+						if (((\TYPO3\CMS\Core\Utility\GeneralUtility::hideIfNotTranslated($GLOBALS['TSFE']->page['l18n_cfg']) && $sUid) && !count($lRecs) || $GLOBALS['TSFE']->page['l18n_cfg'] & 1 && (!$sUid || !count($lRecs))) || (!$this->conf['special.']['normalWhenNoLanguage'] && $sUid) && !count($lRecs)) {
 							$iState = $GLOBALS['TSFE']->sys_language_uid == $sUid ? 'USERDEF2' : 'USERDEF1';
 						} else {
 							$iState = $GLOBALS['TSFE']->sys_language_uid == $sUid ? 'ACT' : 'NO';
@@ -446,7 +448,7 @@ class tslib_menu {
 					if ($value == '') {
 						$value = $GLOBALS['TSFE']->page['uid'];
 					}
-					$items = t3lib_div::intExplode(',', $value);
+					$items = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
 					foreach ($items as $id) {
 						$MP = $this->tmpl->getFromMPmap($id);
 						// Checking if a page is a mount page and if so, change the ID and set the MP var properly.
@@ -497,9 +499,9 @@ class tslib_menu {
 					if ($value == '') {
 						$value = $this->id;
 					}
-					$loadDB = t3lib_div::makeInstance('FE_loadDBGroup');
+					$loadDB = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('FE_loadDBGroup');
 					$loadDB->start($value, 'pages');
-					$loadDB->additionalWhere['pages'] = tslib_cObj::enableFields('pages');
+					$loadDB->additionalWhere['pages'] = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::enableFields('pages');
 					$loadDB->getFromDB();
 					foreach ($loadDB->itemArray as $val) {
 						$MP = $this->tmpl->getFromMPmap($val['id']);
@@ -545,15 +547,15 @@ class tslib_menu {
 					if ($value == '') {
 						$value = $GLOBALS['TSFE']->page['uid'];
 					}
-					$items = t3lib_div::intExplode(',', $value);
-					if (t3lib_utility_Math::canBeInterpretedAsInteger($this->conf['special.']['depth'])) {
-						$depth = t3lib_utility_Math::forceIntegerInRange($this->conf['special.']['depth'], 1, 20);
+					$items = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
+					if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->conf['special.']['depth'])) {
+						$depth = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->conf['special.']['depth'], 1, 20);
 					} else {
 						$depth = 20;
 					}
 					// Max number of items
-					$limit = t3lib_utility_Math::forceIntegerInRange($this->conf['special.']['limit'], 0, 100);
-					$maxAge = intval(tslib_cObj::calc($this->conf['special.']['maxAge']));
+					$limit = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->conf['special.']['limit'], 0, 100);
+					$maxAge = intval(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::calc($this->conf['special.']['maxAge']));
 					if (!$limit) {
 						$limit = 10;
 					}
@@ -562,8 +564,8 @@ class tslib_menu {
 					// Get id's
 					$id_list_arr = array();
 					foreach ($items as $id) {
-						$bA = t3lib_utility_Math::forceIntegerInRange($this->conf['special.']['beginAtLevel'], 0, 100);
-						$id_list_arr[] = tslib_cObj::getTreeList(-1 * $id, ($depth - 1) + $bA, $bA - 1);
+						$bA = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->conf['special.']['beginAtLevel'], 0, 100);
+						$id_list_arr[] = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getTreeList(-1 * $id, ($depth - 1) + $bA, $bA - 1);
 					}
 					$id_list = implode(',', $id_list_arr);
 					// Get sortField (mode)
@@ -609,7 +611,7 @@ class tslib_menu {
 					}
 					break;
 				case 'keywords':
-					list($value) = t3lib_div::intExplode(',', $value);
+					list($value) = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
 					if (!$value) {
 						$value = $GLOBALS['TSFE']->page['uid'];
 					}
@@ -620,7 +622,7 @@ class tslib_menu {
 						$value_rec = $this->sys_page->getPage($value);
 						$kfieldSrc = $this->conf['special.']['keywordsField.']['sourceField'] ? $this->conf['special.']['keywordsField.']['sourceField'] : 'keywords';
 						// keywords.
-						$kw = trim(tslib_cObj::keywords($value_rec[$kfieldSrc]));
+						$kw = trim(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::keywords($value_rec[$kfieldSrc]));
 					}
 					// *'auto', 'manual', 'tstamp'
 					$mode = $this->conf['special.']['mode'];
@@ -644,19 +646,19 @@ class tslib_menu {
 						break;
 					}
 					// Depth, limit, extra where
-					if (t3lib_utility_Math::canBeInterpretedAsInteger($this->conf['special.']['depth'])) {
-						$depth = t3lib_utility_Math::forceIntegerInRange($this->conf['special.']['depth'], 0, 20);
+					if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->conf['special.']['depth'])) {
+						$depth = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->conf['special.']['depth'], 0, 20);
 					} else {
 						$depth = 20;
 					}
 					// Max number of items
-					$limit = t3lib_utility_Math::forceIntegerInRange($this->conf['special.']['limit'], 0, 100);
+					$limit = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->conf['special.']['limit'], 0, 100);
 					$extraWhere = ((' AND pages.uid<>' . $value) . ($this->conf['includeNotInMenu'] ? '' : ' AND pages.nav_hide=0')) . $this->getDoktypeExcludeWhere();
 					if ($this->conf['special.']['excludeNoSearchPages']) {
 						$extraWhere .= ' AND pages.no_search=0';
 					}
 					// Start point
-					$eLevel = tslib_cObj::getKey(isset($this->conf['special.']['entryLevel.']) ? $this->parent_cObj->stdWrap($this->conf['special.']['entryLevel'], $this->conf['special.']['entryLevel.']) : $this->conf['special.']['entryLevel'], $this->tmpl->rootLine);
+					$eLevel = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getKey(isset($this->conf['special.']['entryLevel.']) ? $this->parent_cObj->stdWrap($this->conf['special.']['entryLevel'], $this->conf['special.']['entryLevel.']) : $this->conf['special.']['entryLevel'], $this->tmpl->rootLine);
 					$startUid = intval($this->tmpl->rootLine[$eLevel]['uid']);
 					// Which field is for keywords
 					$kfield = 'keywords';
@@ -665,8 +667,8 @@ class tslib_menu {
 					}
 					// If there are keywords and the startuid is present.
 					if ($kw && $startUid) {
-						$bA = t3lib_utility_Math::forceIntegerInRange($this->conf['special.']['beginAtLevel'], 0, 100);
-						$id_list = tslib_cObj::getTreeList(-1 * $startUid, ($depth - 1) + $bA, $bA - 1);
+						$bA = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->conf['special.']['beginAtLevel'], 0, 100);
+						$id_list = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getTreeList(-1 * $startUid, ($depth - 1) + $bA, $bA - 1);
 						$kwArr = explode(',', $kw);
 						foreach ($kwArr as $word) {
 							$word = trim($word);
@@ -687,11 +689,11 @@ class tslib_menu {
 					$range = isset($this->conf['special.']['range.']) ? $this->parent_cObj->stdWrap($this->conf['special.']['range'], $this->conf['special.']['range.']) : $this->conf['special.']['range'];
 					$begin_end = explode('|', $range);
 					$begin_end[0] = intval($begin_end[0]);
-					if (!t3lib_utility_Math::canBeInterpretedAsInteger($begin_end[1])) {
+					if (!\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($begin_end[1])) {
 						$begin_end[1] = -1;
 					}
-					$beginKey = tslib_cObj::getKey($begin_end[0], $this->tmpl->rootLine);
-					$endKey = tslib_cObj::getKey($begin_end[1], $this->tmpl->rootLine);
+					$beginKey = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getKey($begin_end[0], $this->tmpl->rootLine);
+					$endKey = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getKey($begin_end[1], $this->tmpl->rootLine);
 					if ($endKey < $beginKey) {
 						$endKey = $beginKey;
 					}
@@ -727,7 +729,7 @@ class tslib_menu {
 					}
 					break;
 				case 'browse':
-					list($value) = t3lib_div::intExplode(',', $value);
+					list($value) = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $value);
 					if (!$value) {
 						$value = $GLOBALS['TSFE']->page['uid'];
 					}
@@ -852,7 +854,7 @@ class tslib_menu {
 			$c_b = 0;
 			$minItems = intval($this->mconf['minItems'] ? $this->mconf['minItems'] : $this->conf['minItems']);
 			$maxItems = intval($this->mconf['maxItems'] ? $this->mconf['maxItems'] : $this->conf['maxItems']);
-			$begin = tslib_cObj::calc($this->mconf['begin'] ? $this->mconf['begin'] : $this->conf['begin']);
+			$begin = \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::calc($this->mconf['begin'] ? $this->mconf['begin'] : $this->conf['begin']);
 			$minItemsConf = isset($this->mconf['minItems.']) ? $this->mconf['minItems.'] : (isset($this->conf['minItems.']) ? $this->conf['minItems.'] : NULL);
 			$minItems = is_array($minItemsConf) ? $this->parent_cObj->stdWrap($minItems, $minItemsConf) : $minItems;
 			$maxItemsConf = isset($this->mconf['maxItems.']) ? $this->mconf['maxItems.'] : (isset($this->conf['maxItems.']) ? $this->conf['maxItems.'] : NULL);
@@ -863,7 +865,7 @@ class tslib_menu {
 			// Fill in the menuArr with elements that should go into the menu:
 			$this->menuArr = array();
 			foreach ($temp as $data) {
-				$spacer = t3lib_div::inList($this->spacerIDList, $data['doktype']) || !strcmp($data['ITEM_STATE'], 'SPC') ? 1 : 0;
+				$spacer = \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->spacerIDList, $data['doktype']) || !strcmp($data['ITEM_STATE'], 'SPC') ? 1 : 0;
 				// if item is a spacer, $spacer is set
 				if ($this->filterMenuPages($data, $banUidArray, $spacer)) {
 					$c_b++;
@@ -932,9 +934,9 @@ class tslib_menu {
 		$includePage = TRUE;
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/tslib/class.tslib_menu.php']['filterMenuPages'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/tslib/class.tslib_menu.php']['filterMenuPages'] as $classRef) {
-				$hookObject = t3lib_div::getUserObj($classRef);
-				if (!$hookObject instanceof tslib_menu_filterMenuPagesHook) {
-					throw new UnexpectedValueException('$hookObject must implement interface tslib_menu_filterMenuPagesHook', 1269877402);
+				$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+				if (!$hookObject instanceof \TYPO3\CMS\Frontend\ContentObject\Menu\AbstractMenuFilterPagesHookInterface) {
+					throw new \UnexpectedValueException('$hookObject must implement interface TYPO3\\CMS\\Frontend\\ContentObject\\Menu\\AbstractMenuContentObject_filterMenuPagesHook', 1269877402);
 				}
 				$includePage = $includePage && $hookObject->processFilter($data, $banUidArray, $spacer, $this);
 			}
@@ -949,11 +951,11 @@ class tslib_menu {
 		// If the spacer-function is not enabled, spacers will not enter the $menuArr
 		if ($this->mconf['SPC'] || !$spacer) {
 			// Page may not be 'not_in_menu' or 'Backend User Section'
-			if (!t3lib_div::inList($this->doktypeExcludeList, $data['doktype'])) {
+			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->doktypeExcludeList, $data['doktype'])) {
 				// Not hidden in navigation
 				if (!$data['nav_hide'] || $this->conf['includeNotInMenu']) {
 					// not in banned uid's
-					if (!t3lib_div::inArray($banUidArray, $uid)) {
+					if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inArray($banUidArray, $uid)) {
 						// Checks if the default language version can be shown:
 						// Block page is set, if l18n_cfg allows plus: 1) Either default language or 2) another language but NO overlay record set for page!
 						$blockPage = $data['l18n_cfg'] & 1 && (!$GLOBALS['TSFE']->sys_language_uid || $GLOBALS['TSFE']->sys_language_uid && !$data['_PAGES_OVERLAY']);
@@ -961,7 +963,7 @@ class tslib_menu {
 							// Checking if a page should be shown in the menu depending on whether a translation exists:
 							$tok = TRUE;
 							// There is an alternative language active AND the current page requires a translation:
-							if ($GLOBALS['TSFE']->sys_language_uid && t3lib_div::hideIfNotTranslated($data['l18n_cfg'])) {
+							if ($GLOBALS['TSFE']->sys_language_uid && \TYPO3\CMS\Core\Utility\GeneralUtility::hideIfNotTranslated($data['l18n_cfg'])) {
 								if (!$data['_PAGES_OVERLAY']) {
 									$tok = FALSE;
 								}
@@ -971,7 +973,7 @@ class tslib_menu {
 								// Checking if "&L" should be modified so links to non-accessible pages will not happen.
 								if ($this->conf['protectLvar']) {
 									$languageUid = intval($GLOBALS['TSFE']->config['config']['sys_language_uid']);
-									if ($languageUid && ($this->conf['protectLvar'] == 'all' || t3lib_div::hideIfNotTranslated($data['l18n_cfg']))) {
+									if ($languageUid && ($this->conf['protectLvar'] == 'all' || \TYPO3\CMS\Core\Utility\GeneralUtility::hideIfNotTranslated($data['l18n_cfg']))) {
 										$olRec = $GLOBALS['TSFE']->sys_page->getPageOverlay($data['uid'], $languageUid);
 										if (!count($olRec)) {
 											// If no pages_language_overlay record then page can NOT be accessed in the language pointed to by "&L" and therefore we protect the link by setting "&L=0"
@@ -1281,17 +1283,17 @@ class tslib_menu {
 			$LD = $this->menuTypoLink($this->menuArr[$key], $mainTarget, '', '', $overrideArray, (($this->mconf['addParams'] . $MP_params) . $this->I['val']['additionalParams']) . $this->menuArr[$key]['_ADD_GETVARS'], $typeOverride);
 		}
 		// Override URL if using "External URL" as doktype with a valid e-mail address:
-		if (($this->menuArr[$key]['doktype'] == t3lib_pageSelect::DOKTYPE_LINK && $this->menuArr[$key]['urltype'] == 3) && t3lib_div::validEmail($this->menuArr[$key]['url'])) {
+		if (($this->menuArr[$key]['doktype'] == \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_LINK && $this->menuArr[$key]['urltype'] == 3) && \TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($this->menuArr[$key]['url'])) {
 			// Create mailto-link using tslib_cObj::typolink (concerning spamProtectEmailAddresses):
 			$LD['totalURL'] = $this->parent_cObj->typoLink_URL(array('parameter' => $this->menuArr[$key]['url']));
 			$LD['target'] = '';
 		}
 		// Override url if current page is a shortcut
-		if ($this->menuArr[$key]['doktype'] == t3lib_pageSelect::DOKTYPE_SHORTCUT && $this->menuArr[$key]['shortcut_mode'] != t3lib_pageSelect::SHORTCUT_MODE_RANDOM_SUBPAGE) {
+		if ($this->menuArr[$key]['doktype'] == \TYPO3\CMS\Frontend\Page\PageRepository::DOKTYPE_SHORTCUT && $this->menuArr[$key]['shortcut_mode'] != \TYPO3\CMS\Frontend\Page\PageRepository::SHORTCUT_MODE_RANDOM_SUBPAGE) {
 			$shortcut = NULL;
 			try {
 				$shortcut = $GLOBALS['TSFE']->getPageShortcut($this->menuArr[$key]['shortcut'], $this->menuArr[$key]['shortcut_mode'], $this->menuArr[$key]['uid']);
-			} catch (Exception $ex) {
+			} catch (\Exception $ex) {
 
 			}
 			if (!is_array($shortcut)) {
@@ -1391,13 +1393,13 @@ class tslib_menu {
 		}
 		// Make submenu if the page is the next active
 		$cls = strtolower($this->conf[($this->menuNumber + 1) . $objSuffix]);
-		$subLevelClass = $cls && t3lib_div::inList($this->tmpl->menuclasses, $cls) ? $cls : '';
+		$subLevelClass = $cls && \TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->tmpl->menuclasses, $cls) ? $cls : '';
 		// stdWrap for expAll
 		if (isset($this->mconf['expAll.'])) {
 			$this->mconf['expAll'] = $this->parent_cObj->stdWrap($this->mconf['expAll'], $this->mconf['expAll.']);
 		}
 		if (($subLevelClass && (($this->mconf['expAll'] || $this->isNext($uid, $this->getMPvar($this->I['key']))) || is_array($altArray))) && !$this->mconf['sectionIndex']) {
-			$submenu = t3lib_div::makeInstance('tslib_' . $subLevelClass);
+			$submenu = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tslib_' . $subLevelClass);
 			$submenu->entryLevel = $this->entryLevel + 1;
 			$submenu->rL_uidRegister = $this->rL_uidRegister;
 			$submenu->MP_array = $this->MP_array;
@@ -1503,7 +1505,7 @@ class tslib_menu {
 		$hasSubPages = FALSE;
 		foreach ($recs as $theRec) {
 			// no valid subpage if the document type is excluded from the menu
-			if (t3lib_div::inList($this->doktypeExcludeList, $theRec['doktype'])) {
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->doktypeExcludeList, $theRec['doktype'])) {
 				continue;
 			}
 			// No valid subpage if the page is hidden inside menus and
@@ -1513,12 +1515,12 @@ class tslib_menu {
 			}
 			// No valid subpage if the default language should be shown and the page settings
 			// are excluding the visibility of the default language
-			if (!$GLOBALS['TSFE']->sys_language_uid && t3lib_div::hideIfDefaultLanguage($theRec['l18n_cfg'])) {
+			if (!$GLOBALS['TSFE']->sys_language_uid && \TYPO3\CMS\Core\Utility\GeneralUtility::hideIfDefaultLanguage($theRec['l18n_cfg'])) {
 				continue;
 			}
 			// No valid subpage if the alternative language should be shown and the page settings
 			// are requiring a valid overlay but it doesn't exists
-			$hideIfNotTranslated = t3lib_div::hideIfNotTranslated($theRec['l18n_cfg']);
+			$hideIfNotTranslated = \TYPO3\CMS\Core\Utility\GeneralUtility::hideIfNotTranslated($theRec['l18n_cfg']);
 			if (($GLOBALS['TSFE']->sys_language_uid && $hideIfNotTranslated) && !$theRec['_PAGES_OVERLAY']) {
 				continue;
 			}
@@ -1626,7 +1628,7 @@ class tslib_menu {
 	 * @todo Define visibility
 	 */
 	public function setATagParts() {
-		$this->I['A1'] = (((('<a ' . t3lib_div::implodeAttributes($this->I['linkHREF'], 1)) . ' ') . $this->I['val']['ATagParams']) . $this->I['accessKey']['code']) . '>';
+		$this->I['A1'] = (((('<a ' . \TYPO3\CMS\Core\Utility\GeneralUtility::implodeAttributes($this->I['linkHREF'], 1)) . ' ') . $this->I['val']['ATagParams']) . $this->I['accessKey']['code']) . '>';
 		$this->I['A2'] = '</a>';
 	}
 
@@ -1686,7 +1688,7 @@ class tslib_menu {
 		$banUidArray = array();
 		if (trim($this->conf['excludeUidList'])) {
 			$banUidList = str_replace('current', $GLOBALS['TSFE']->page['uid'], $this->conf['excludeUidList']);
-			$banUidArray = t3lib_div::intExplode(',', $banUidList);
+			$banUidArray = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $banUidList);
 		}
 		return $banUidArray;
 	}
@@ -1708,7 +1710,7 @@ class tslib_menu {
 		$conf = array(
 			'parameter' => is_array($overrideArray) && $overrideArray['uid'] ? $overrideArray['uid'] : $page['uid']
 		);
-		if ($typeOverride && t3lib_utility_Math::canBeInterpretedAsInteger($typeOverride)) {
+		if ($typeOverride && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($typeOverride)) {
 			$conf['parameter'] .= ',' . $typeOverride;
 		}
 		if ($addParams) {
@@ -1761,7 +1763,7 @@ class tslib_menu {
 		$resource = $this->parent_cObj->exec_getQuery('tt_content', $selectSetup);
 		if (!$resource) {
 			$message = 'SectionIndex: Query to fetch the content elements failed!';
-			throw new UnexpectedValueException($message, 1337334849);
+			throw new \UnexpectedValueException($message, 1337334849);
 		}
 		$result = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource)) {
@@ -1798,5 +1800,6 @@ class tslib_menu {
 	}
 
 }
+
 
 ?>

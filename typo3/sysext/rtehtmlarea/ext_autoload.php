@@ -2,7 +2,7 @@
 /*
  * Register necessary class names with autoloader
  */
-$rtehtmlareaExtensionPath = t3lib_extMgm::extPath('rtehtmlarea');
+$rtehtmlareaExtensionPath = \TYPO3\CMS\Core\Extension\ExtensionManager::extPath('rtehtmlarea');
 return array(
 	'tx_rtehtmlarea_api' => $rtehtmlareaExtensionPath . 'class.tx_rtehtmlareaapi.php',
 	'tx_rtehtmlarea_base' => $rtehtmlareaExtensionPath . 'class.tx_rtehtmlarea_base.php',

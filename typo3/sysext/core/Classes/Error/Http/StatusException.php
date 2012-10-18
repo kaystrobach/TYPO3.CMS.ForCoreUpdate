@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Error\Http;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage error
  */
-class t3lib_error_http_StatusException extends t3lib_error_Exception {
+class StatusException extends \TYPO3\CMS\Core\Error\Exception {
 
 	/**
 	 * @var array HTTP Status Header lines
@@ -87,5 +89,6 @@ class t3lib_error_http_StatusException extends t3lib_error_Exception {
 	}
 
 }
+
 
 ?>

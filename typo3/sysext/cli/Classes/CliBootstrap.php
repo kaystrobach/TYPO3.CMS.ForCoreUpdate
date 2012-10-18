@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Cli;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class Typo3_Bootstrap_Cli {
+class CliBootstrap {
 
 	/**
 	 * Check the script is called from a cli environment.
@@ -72,7 +74,7 @@ class Typo3_Bootstrap_Cli {
 			die(1);
 		}
 		define('TYPO3_cliKey', $_SERVER['argv'][1]);
-		define('TYPO3_cliInclude', t3lib_div::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][TYPO3_cliKey][0]));
+		define('TYPO3_cliInclude', \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][TYPO3_cliKey][0]));
 		$GLOBALS['MCONF']['name'] = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys'][TYPO3_cliKey][1];
 		// This is a compatibility layer: Some cli scripts rely on this, like ext:phpunit cli
 		$GLOBALS['temp_cliScriptPath'] = array_shift($_SERVER['argv']);
@@ -108,5 +110,6 @@ class Typo3_Bootstrap_Cli {
 	}
 
 }
+
 
 ?>

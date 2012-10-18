@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_Form extends tx_form_Domain_Model_Element_Container {
+class Form extends \TYPO3\CMS\Form\Domain\Model\Element\ContainerElement {
 
 	/**
 	 * Allowed attributes for this object
@@ -87,7 +89,7 @@ class tx_form_Domain_Model_Form extends tx_form_Domain_Model_Element_Container {
 	 * @return void
 	 */
 	protected function equalizeNameAndIdAttribute() {
-		/** @var $nameAttribute tx_form_Domain_Model_Attributes_Name */
+		/** @var $nameAttribute \TYPO3\CMS\Form\Domain\Model\Attribute\NameAttribute */
 		$nameAttribute = $this->attributes->getAttributeObjectByKey('name');
 		$idAttribute = $this->attributes->getAttributeObjectByKey('id');
 		if (is_object($nameAttribute) && is_object($idAttribute)) {
@@ -102,5 +104,6 @@ class tx_form_Domain_Model_Form extends tx_form_Domain_Model_Element_Container {
 	}
 
 }
+
 
 ?>

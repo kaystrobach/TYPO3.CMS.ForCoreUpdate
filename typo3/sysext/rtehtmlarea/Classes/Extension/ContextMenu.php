@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Rtehtmlarea\Extension;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +28,7 @@
  *
  * @author Stanislas Rolland <typo3(arobas)sjbr.ca>
  */
-class tx_rtehtmlarea_contextmenu extends tx_rtehtmlarea_api {
+class ContextMenu extends \TYPO3\CMS\Rtehtmlarea\RteHtmlAreaApi {
 
 	protected $extensionKey = 'rtehtmlarea';
 
@@ -74,16 +76,17 @@ class tx_rtehtmlarea_contextmenu extends tx_rtehtmlarea_api {
 	RTEarea[' . $editorId) . '].contextMenu =  ') . $this->htmlAreaRTE->buildNestedJSArray($this->thisConfig['contextMenu.'])) . ';';
 			if ($this->thisConfig['contextMenu.']['showButtons']) {
 				$registerRTEinJavascriptString .= ((('
-	RTEarea[' . $editorId) . '].contextMenu.showButtons = ') . json_encode(t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList(t3lib_div::strtolower($this->thisConfig['contextMenu.']['showButtons'])), 1))) . ';';
+	RTEarea[' . $editorId) . '].contextMenu.showButtons = ') . json_encode(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList(\TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($this->thisConfig['contextMenu.']['showButtons'])), 1))) . ';';
 			}
 			if ($this->thisConfig['contextMenu.']['hideButtons']) {
 				$registerRTEinJavascriptString .= ((('
-	RTEarea[' . $editorId) . '].contextMenu.hideButtons = ') . json_encode(t3lib_div::trimExplode(',', $this->htmlAreaRTE->cleanList(t3lib_div::strtolower($this->thisConfig['contextMenu.']['hideButtons'])), 1))) . ';';
+	RTEarea[' . $editorId) . '].contextMenu.hideButtons = ') . json_encode(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->htmlAreaRTE->cleanList(\TYPO3\CMS\Core\Utility\GeneralUtility::strtolower($this->thisConfig['contextMenu.']['hideButtons'])), 1))) . ';';
 			}
 		}
 		return $registerRTEinJavascriptString;
 	}
 
 }
+
 
 ?>

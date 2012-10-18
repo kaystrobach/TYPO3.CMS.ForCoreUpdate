@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\FormProtection;
+
 /***************************************************************
  * Copyright notice
  *
@@ -84,13 +86,13 @@
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
-class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Abstract {
+class BackendFormProtection extends \TYPO3\CMS\Core\FormProtection\AbstractFormProtection {
 
 	/**
 	 * Keeps the instance of the user which existed during creation
 	 * of the object.
 	 *
-	 * @var t3lib_beUserAuth
+	 * @var \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
 	 */
 	protected $backendUser;
 
@@ -98,7 +100,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * Instance of the registry, which is used to permanently persist
 	 * the session token so that it can be restored during re-login.
 	 *
-	 * @var t3lib_Registry
+	 * @var \TYPO3\CMS\Core\Registry
 	 */
 	protected $registry;
 
@@ -107,7 +109,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 */
 	public function __construct() {
 		if (!$this->isAuthorizedBackendSession()) {
-			throw new t3lib_error_Exception('A back-end form protection may only be instantiated if there' . ' is an active back-end session.', 1285067843);
+			throw new \TYPO3\CMS\Core\Error\Exception('A back-end form protection may only be instantiated if there' . ' is an active back-end session.', 1285067843);
 		}
 		$this->backendUser = $GLOBALS['BE_USER'];
 		parent::__construct();
@@ -120,8 +122,8 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return void
 	 */
 	protected function createValidationErrorMessage() {
-		$message = t3lib_div::makeInstance('t3lib_FlashMessage', $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:error.formProtection.tokenInvalid'), '', t3lib_FlashMessage::ERROR, !(isset($GLOBALS['TYPO3_AJAX']) && $GLOBALS['TYPO3_AJAX'] === TRUE));
-		t3lib_FlashMessageQueue::addMessage($message);
+		$message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage', $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:error.formProtection.tokenInvalid'), '', \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR, !(isset($GLOBALS['TYPO3_AJAX']) && $GLOBALS['TYPO3_AJAX'] === TRUE));
+		\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($message);
 	}
 
 	/**
@@ -158,7 +160,7 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	public function setSessionTokenFromRegistry() {
 		$this->sessionToken = $this->getRegistry()->get('core', 'formSessionToken:' . $this->backendUser->user['uid']);
 		if (empty($this->sessionToken)) {
-			throw new UnexpectedValueException('Failed to restore the session token from the registry.', 1301827270);
+			throw new \UnexpectedValueException('Failed to restore the session token from the registry.', 1301827270);
 		}
 		return $this->sessionToken;
 	}
@@ -187,11 +189,11 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	/**
 	 * Returns the instance of the registry.
 	 *
-	 * @return t3lib_Registry
+	 * @return \TYPO3\CMS\Core\Registry
 	 */
 	protected function getRegistry() {
-		if (!$this->registry instanceof t3lib_Registry) {
-			$this->registry = t3lib_div::makeInstance('t3lib_Registry');
+		if (!$this->registry instanceof \TYPO3\CMS\Core\Registry) {
+			$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		}
 		return $this->registry;
 	}
@@ -200,10 +202,10 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * Inject the registry. Currently only used in unit tests.
 	 *
 	 * @access private
-	 * @param t3lib_Registry $registry
+	 * @param \TYPO3\CMS\Core\Registry $registry
 	 * @return void
 	 */
-	public function injectRegistry(t3lib_Registry $registry) {
+	public function injectRegistry(\TYPO3\CMS\Core\Registry $registry) {
 		$this->registry = $registry;
 	}
 
@@ -213,9 +215,10 @@ class t3lib_formprotection_BackendFormProtection extends t3lib_formprotection_Ab
 	 * @return boolean
 	 */
 	protected function isAuthorizedBackendSession() {
-		return (isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof t3lib_beUserAuth) && isset($GLOBALS['BE_USER']->user['uid']);
+		return (isset($GLOBALS['BE_USER']) && $GLOBALS['BE_USER'] instanceof \TYPO3\CMS\Core\Authentication\BackendUserAuthentication) && isset($GLOBALS['BE_USER']->user['uid']);
 	}
 
 }
+
 
 ?>

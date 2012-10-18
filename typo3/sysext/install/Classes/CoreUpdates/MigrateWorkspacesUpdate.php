@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Install\CoreUpdates;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  *
  * @author Tolleiv Nietsch <info@tolleiv.de>
  */
-class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
+class MigrateWorkspacesUpdate extends \TYPO3\CMS\Install\CoreUpdates\InstallSysExtsUpdate {
 
 	protected $title = 'Versioning and Workspaces';
 
@@ -52,7 +54,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 		if ($this->versionNumber >= 4005000) {
 			// If neither version nor workspaces is installed, we're not doing a migration
 			// Present the user with the choice of activating versioning and workspaces
-			if (!t3lib_extMgm::isLoaded('version') && !t3lib_extMgm::isLoaded('workspaces')) {
+			if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('version') && !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('workspaces')) {
 				$result = TRUE;
 				// Override the default description
 				$description = 'Activates the usage of workspaces in your installation. Workspaces let you edit elements
@@ -61,8 +63,8 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 				$description .= 'This wizard will install system extensions "version" and "workspaces" (and may
 					install "fluid" and "extbase" too, as they are used by the "workspaces" extension).';
 			} else {
-				Typo3_Bootstrap::getInstance()->loadExtensionTables(FALSE);
-				if (!t3lib_extMgm::isLoaded('version') || !t3lib_extMgm::isLoaded('workspaces')) {
+				\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->loadExtensionTables(FALSE);
+				if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('version') || !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('workspaces')) {
 					$result = TRUE;
 					$reason .= ' Both extensions "version" and "workspaces" need to be
 						present to use the entire versioning and workflow featureset of TYPO3.';
@@ -97,7 +99,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 	 */
 	public function getUserInput($inputPrefix) {
 		$content = '';
-		if (!t3lib_extMgm::isLoaded('version') && !t3lib_extMgm::isLoaded('workspaces')) {
+		if (!\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('version') && !\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('workspaces')) {
 			// We need feedback only if versioning is not activated at all
 			// In such a case we want to leave the user with the choice of not activating the stuff at all
 			$content = '
@@ -138,7 +140,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 		if (empty($this->pObj->INSTALL['update']['migrateWorkspaces']['versioning'])) {
 			return TRUE;
 		}
-		Typo3_Bootstrap::getInstance()->loadExtensionTables(FALSE);
+		\TYPO3\CMS\Core\Core\Bootstrap::getInstance()->loadExtensionTables(FALSE);
 		// install version and workspace extension (especially when updating from very old TYPO3 versions
 		$this->installExtensions(array('extbase', 'fluid', 'version', 'workspaces'));
 		// migrate all workspaces to support groups and be_users
@@ -179,7 +181,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 		$foundDraftRecords = FALSE;
 		$tables = array_keys($GLOBALS['TCA']);
 		foreach ($tables as $table) {
-			$versioningVer = t3lib_utility_Math::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
+			$versioningVer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
 			if ($versioningVer > 0) {
 				if ($this->hasElementsOnWorkspace($table, -1)) {
 					$foundDraftRecords = TRUE;
@@ -210,7 +212,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 		if (!$workspacesWithReviewers && !empty($workspaceUids)) {
 			$tables = array_keys($GLOBALS['TCA']);
 			foreach ($tables as $table) {
-				$versioningVer = t3lib_utility_Math::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
+				$versioningVer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
 				if ($versioningVer > 0) {
 					$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('uid', $table, ('t3ver_wsid IN (' . implode(',', $workspaceUids)) . ') AND t3ver_stage IN (-1,1,10) AND pid = -1');
 					if ($count > 0) {
@@ -258,7 +260,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 			't3ver_stage' => intval($newStageId)
 		);
 		foreach ($tables as $table) {
-			$versioningVer = t3lib_utility_Math::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
+			$versioningVer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
 			if ($versioningVer > 0) {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $values);
 				$this->sqlQueries[] = $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery;
@@ -307,7 +309,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 			't3ver_wsid' => intval($wsId)
 		);
 		foreach ($tables as $table) {
-			$versioningVer = t3lib_utility_Math::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
+			$versioningVer = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($GLOBALS['TCA'][$table]['ctrl']['versioningWS'], 0, 2, 0);
 			if ($versioningVer > 0 && $this->hasElementsOnWorkspace($table, -1)) {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $where, $values);
 				$this->sqlQueries[] = $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery;
@@ -328,7 +330,7 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 		$this->sqlQueries[] = $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery;
 		foreach ($workspaces as $workspace) {
 			$updateArray = array(
-				'adminusers' => 'be_users_' . implode(',be_users_', t3lib_div::trimExplode(',', $workspace['adminusers'], TRUE))
+				'adminusers' => 'be_users_' . implode(',be_users_', \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $workspace['adminusers'], TRUE))
 			);
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('sys_workspace', 'uid = ' . $workspace['uid'], $updateArray);
 			$this->sqlQueries[] = $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery;
@@ -365,5 +367,6 @@ class tx_coreupdates_migrateworkspaces extends tx_coreupdates_installsysexts {
 	}
 
 }
+
 
 ?>

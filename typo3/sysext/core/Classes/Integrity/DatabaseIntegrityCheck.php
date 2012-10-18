@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Integrity;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -44,7 +46,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_admin {
+class DatabaseIntegrityCheck {
 
 	/**
 	 * @var boolean If set, genTree() includes deleted pages. This is default.
@@ -154,9 +156,9 @@ class t3lib_admin {
 	 */
 	public function genTree($theID, $depthData, $versions = FALSE) {
 		if ($versions) {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,doktype,deleted,t3ver_wsid,t3ver_id,t3ver_count' . (t3lib_extMgm::isLoaded('cms') ? ',hidden' : ''), 'pages', ((('pid=-1 AND t3ver_oid=' . intval($theID)) . ' ') . (!$this->genTree_includeDeleted ? 'AND deleted=0' : '')) . $this->perms_clause, '', 'sorting');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,doktype,deleted,t3ver_wsid,t3ver_id,t3ver_count' . (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms') ? ',hidden' : ''), 'pages', ((('pid=-1 AND t3ver_oid=' . intval($theID)) . ' ') . (!$this->genTree_includeDeleted ? 'AND deleted=0' : '')) . $this->perms_clause, '', 'sorting');
 		} else {
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,doktype,deleted' . (t3lib_extMgm::isLoaded('cms') ? ',hidden' : ''), 'pages', ((('pid=' . intval($theID)) . ' ') . (!$this->genTree_includeDeleted ? 'AND deleted=0' : '')) . $this->perms_clause, '', 'sorting');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,title,doktype,deleted' . (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('cms') ? ',hidden' : ''), 'pages', ((('pid=' . intval($theID)) . ' ') . (!$this->genTree_includeDeleted ? 'AND deleted=0' : '')) . $this->perms_clause, '', 'sorting');
 		}
 		// Traverse the records selected:
 		$a = 0;
@@ -176,7 +178,7 @@ class t3lib_admin {
 				$PM = 'join';
 				$LN = $a == $c ? 'blank' : 'line';
 				$BTM = $a == $c ? 'bottom' : '';
-				$this->genTree_HTML .= (((((($depthData . '<img') . t3lib_iconWorks::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />') . $versionLabel) . t3lib_iconWorks::getSpriteIconForRecord('pages', $row)) . htmlspecialchars((($row['uid'] . ': ') . t3lib_div::fixed_lgd_cs(strip_tags($row['title']), 50)))) . '</span></div>';
+				$this->genTree_HTML .= (((((($depthData . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />') . $versionLabel) . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord('pages', $row)) . htmlspecialchars((($row['uid'] . ': ') . \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs(strip_tags($row['title']), 50)))) . '</span></div>';
 			}
 			// Register various data for this item:
 			$this->page_idArray[$newID] = $row;
@@ -195,7 +197,7 @@ class t3lib_admin {
 			}
 			$this->recStats['doktype'][$row['doktype']]++;
 			// Create the HTML code prefix for recursive call:
-			$genHTML = ((($depthData . '<img') . t3lib_iconWorks::skinImg($this->backPath, (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />') . $versionLabel;
+			$genHTML = ((($depthData . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />') . $versionLabel;
 			// If all records should be shown, do so:
 			if ($this->genTree_includeRecords) {
 				foreach ($GLOBALS['TCA'] as $tableName => $cfg) {
@@ -225,10 +227,10 @@ class t3lib_admin {
 	public function genTree_records($theID, $depthData, $table = '', $versions = FALSE) {
 		if ($versions) {
 			// Select all records from table pointing to this page:
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(t3lib_BEfunc::getCommonSelectFields($table), $table, ('pid=-1 AND t3ver_oid=' . intval($theID)) . (!$this->genTree_includeDeleted ? t3lib_BEfunc::deleteClause($table) : ''));
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(\TYPO3\CMS\Backend\Utility\BackendUtility::getCommonSelectFields($table), $table, ('pid=-1 AND t3ver_oid=' . intval($theID)) . (!$this->genTree_includeDeleted ? \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table) : ''));
 		} else {
 			// Select all records from table pointing to this page:
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(t3lib_BEfunc::getCommonSelectFields($table), $table, ('pid=' . intval($theID)) . (!$this->genTree_includeDeleted ? t3lib_BEfunc::deleteClause($table) : ''));
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(\TYPO3\CMS\Backend\Utility\BackendUtility::getCommonSelectFields($table), $table, ('pid=' . intval($theID)) . (!$this->genTree_includeDeleted ? \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table) : ''));
 		}
 		// Traverse selected:
 		$a = 0;
@@ -248,7 +250,7 @@ class t3lib_admin {
 				$PM = 'join';
 				$LN = $a == $c ? 'blank' : 'line';
 				$BTM = $a == $c ? 'bottom' : '';
-				$this->genTree_HTML .= (((((($depthData . '<img') . t3lib_iconWorks::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />') . $versionLabel) . t3lib_iconWorks::getSpriteIconForRecord($table, $row, array('title' => $table))) . htmlspecialchars((($row['uid'] . ': ') . t3lib_BEfunc::getRecordTitle($table, $row)))) . '</span></div>';
+				$this->genTree_HTML .= (((((($depthData . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, ((('gfx/ol/' . $PM) . $BTM) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />') . $versionLabel) . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord($table, $row, array('title' => $table))) . htmlspecialchars((($row['uid'] . ': ') . \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($table, $row)))) . '</span></div>';
 			}
 			// Register various data for this item:
 			$this->rec_idArray[$table][$newID] = $row;
@@ -261,7 +263,7 @@ class t3lib_admin {
 			}
 			// Select all versions of this record:
 			if ($this->genTree_includeVersions && $GLOBALS['TCA'][$table]['ctrl']['versioningWS']) {
-				$genHTML = (($depthData . '<img') . t3lib_iconWorks::skinImg($this->backPath, (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />';
+				$genHTML = (($depthData . '<img') . \TYPO3\CMS\Backend\Utility\IconUtility::skinImg($this->backPath, (('gfx/ol/' . $LN) . '.gif'), 'width="18" height="16"')) . ' align="top" alt="" />';
 				$this->genTree_records($newID, $genHTML, $table, TRUE);
 			}
 		}
@@ -277,7 +279,7 @@ class t3lib_admin {
 	 * @todo Define visibility
 	 */
 	public function genTreeStatus($root = 0) {
-		t3lib_div::logDeprecatedFunction();
+		\TYPO3\CMS\Core\Utility\GeneralUtility::logDeprecatedFunction();
 		$this->genTree_includeDeleted = TRUE;
 		// if set, genTree() includes deleted pages. This is default.
 		$this->genTree_includeVersions = TRUE;
@@ -303,7 +305,7 @@ class t3lib_admin {
 		$this->lostPagesList = '';
 		if ($pid_list) {
 			foreach ($GLOBALS['TCA'] as $table => $tableConf) {
-				t3lib_div::loadTCA($table);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 				$pid_list_tmp = $pid_list;
 				if (!isset($GLOBALS['TCA'][$table]['ctrl']['versioningWS']) || !$GLOBALS['TCA'][$table]['ctrl']['versioningWS']) {
 					// Remove preceding "-1," for non-versioned tables
@@ -315,7 +317,7 @@ class t3lib_admin {
 					$this->lRecords[$table][$row['uid']] = array(
 						'uid' => $row['uid'],
 						'pid' => $row['pid'],
-						'title' => strip_tags(t3lib_BEfunc::getRecordTitle($table, $row))
+						'title' => strip_tags(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($table, $row))
 					);
 					$lostIdList[] = $row['uid'];
 				}
@@ -363,7 +365,7 @@ class t3lib_admin {
 		$list_n = array();
 		if ($pid_list) {
 			foreach ($GLOBALS['TCA'] as $table => $tableConf) {
-				t3lib_div::loadTCA($table);
+				\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 				$pid_list_tmp = $pid_list;
 				if (!isset($GLOBALS['TCA'][$table]['ctrl']['versioningWS']) || !$GLOBALS['TCA'][$table]['ctrl']['versioningWS']) {
 					// Remove preceding "-1," for non-versioned tables
@@ -373,7 +375,7 @@ class t3lib_admin {
 				if ($count) {
 					$list[$table] = $count;
 				}
-				$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('uid', $table, (('pid IN (' . $pid_list_tmp) . ')') . t3lib_BEfunc::deleteClause($table));
+				$count = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('uid', $table, (('pid IN (' . $pid_list_tmp) . ')') . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table));
 				if ($count) {
 					$list_n[$table] = $count;
 				}
@@ -392,7 +394,7 @@ class t3lib_admin {
 	public function getGroupFields($mode) {
 		$result = array();
 		foreach ($GLOBALS['TCA'] as $table => $tableConf) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			$cols = $GLOBALS['TCA'][$table]['columns'];
 			foreach ($cols as $field => $config) {
 				if ($config['config']['type'] == 'group') {
@@ -421,7 +423,7 @@ class t3lib_admin {
 	public function getFileFields($uploadfolder) {
 		$result = array();
 		foreach ($GLOBALS['TCA'] as $table => $tableConf) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			$cols = $GLOBALS['TCA'][$table]['columns'];
 			foreach ($cols as $field => $config) {
 				if (($config['config']['type'] == 'group' && $config['config']['internal_type'] == 'file') && $config['config']['uploadfolder'] == $uploadfolder) {
@@ -442,7 +444,7 @@ class t3lib_admin {
 	public function getDBFields($theSearchTable) {
 		$result = array();
 		foreach ($GLOBALS['TCA'] as $table => $tableConf) {
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			$cols = $GLOBALS['TCA'][$table]['columns'];
 			foreach ($cols as $field => $config) {
 				if ($config['config']['type'] == 'group' && $config['config']['internal_type'] == 'db') {
@@ -469,9 +471,9 @@ class t3lib_admin {
 		if (is_array($fkey_arrays)) {
 			foreach ($fkey_arrays as $table => $field_list) {
 				if ($GLOBALS['TCA'][$table] && trim($field_list)) {
-					t3lib_div::loadTCA($table);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 					$fieldArr = explode(',', $field_list);
-					if (t3lib_extMgm::isLoaded('dbal')) {
+					if (\TYPO3\CMS\Core\Extension\ExtensionManager::isLoaded('dbal')) {
 						$fields = $GLOBALS['TYPO3_DB']->admin_get_fields($table);
 						$field = array_shift($fieldArr);
 						$cl_fl = ($GLOBALS['TYPO3_DB']->MetaType($fields[$field]['type'], $table) == 'I' || $GLOBALS['TYPO3_DB']->MetaType($fields[$field]['type'], $table) == 'N') || $GLOBALS['TYPO3_DB']->MetaType($fields[$field]['type'], $table) == 'R' ? $field . '<>0' : $field . '<>\'\'';
@@ -492,8 +494,8 @@ class t3lib_admin {
 										// Files...
 										if ($fieldConf['MM']) {
 											$tempArr = array();
-											/** @var $dbAnalysis t3lib_loadDBGroup */
-											$dbAnalysis = t3lib_div::makeInstance('t3lib_loadDBGroup');
+											/** @var $dbAnalysis \TYPO3\CMS\Core\Database\RelationHandler */
+											$dbAnalysis = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 											$dbAnalysis->start('', 'files', $fieldConf['MM'], $row['uid']);
 											foreach ($dbAnalysis->itemArray as $somekey => $someval) {
 												if ($someval['id']) {
@@ -511,8 +513,8 @@ class t3lib_admin {
 										}
 									}
 									if ($fieldConf['internal_type'] == 'db') {
-										/** @var $dbAnalysis t3lib_loadDBGroup */
-										$dbAnalysis = t3lib_div::makeInstance('t3lib_loadDBGroup');
+										/** @var $dbAnalysis \TYPO3\CMS\Core\Database\RelationHandler */
+										$dbAnalysis = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 										$dbAnalysis->start($row[$field], $fieldConf['allowed'], $fieldConf['MM'], $row['uid'], $table, $fieldConf);
 										foreach ($dbAnalysis->itemArray as $tempArr) {
 											$this->checkGroupDBRefs[$tempArr['table']][$tempArr['id']] += 1;
@@ -520,8 +522,8 @@ class t3lib_admin {
 									}
 								}
 								if ($fieldConf['type'] == 'select' && $fieldConf['foreign_table']) {
-									/** @var $dbAnalysis t3lib_loadDBGroup */
-									$dbAnalysis = t3lib_div::makeInstance('t3lib_loadDBGroup');
+									/** @var $dbAnalysis \TYPO3\CMS\Core\Database\RelationHandler */
+									$dbAnalysis = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 									$dbAnalysis->start($row[$field], $fieldConf['foreign_table'], $fieldConf['MM'], $row['uid'], $table, $fieldConf);
 									foreach ($dbAnalysis->itemArray as $tempArr) {
 										if ($tempArr['id'] > 0) {
@@ -629,7 +631,7 @@ class t3lib_admin {
 				$idlist = array_keys($dbArr);
 				$theList = implode(',', $idlist);
 				if ($theList) {
-					$mres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $table, (('uid IN (' . $theList) . ')') . t3lib_BEfunc::deleteClause($table));
+					$mres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $table, (('uid IN (' . $theList) . ')') . \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table));
 					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($mres)) {
 						if (isset($dbArr[$row['uid']])) {
 							unset($dbArr[$row['uid']]);
@@ -664,14 +666,14 @@ class t3lib_admin {
 		foreach ($fileFields as $info) {
 			$table = $info[0];
 			$field = $info[1];
-			t3lib_div::loadTCA($table);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 			$mres = $GLOBALS['TYPO3_DB']->exec_SELECTquery((('uid,pid,' . $GLOBALS['TCA'][$table]['ctrl']['label']) . ',') . $field, $table, (($field . ' LIKE \'%') . $GLOBALS['TYPO3_DB']->quoteStr($id, $table)) . '%\'');
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($mres)) {
 				// Now this is the field, where the reference COULD come from. But we're not garanteed, so we must carefully examine the data.
 				$fieldConf = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
 				$allowedTables = $fieldConf['type'] == 'group' ? $fieldConf['allowed'] : $fieldConf['foreign_table'];
-				/** @var $dbAnalysis t3lib_loadDBGroup */
-				$dbAnalysis = t3lib_div::makeInstance('t3lib_loadDBGroup');
+				/** @var $dbAnalysis \TYPO3\CMS\Core\Database\RelationHandler */
+				$dbAnalysis = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\RelationHandler');
 				$dbAnalysis->start($row[$field], $allowedTables, $fieldConf['MM'], $row['uid'], $table, $fieldConf);
 				foreach ($dbAnalysis->itemArray as $tempArr) {
 					if ($tempArr['table'] == $searchTable && $tempArr['id'] == $id) {
@@ -717,5 +719,6 @@ class t3lib_admin {
 	}
 
 }
+
 
 ?>

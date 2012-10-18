@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Beuser\ViewHelpers\Form;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage beuser
  */
-class Tx_Beuser_ViewHelpers_Form_SelectDefaultValueViewHelper extends Tx_Fluid_ViewHelpers_Form_SelectViewHelper {
+class SelectDefaultValueViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\SelectViewHelper {
 
 	/**
 	 * @return void
@@ -48,5 +50,6 @@ class Tx_Beuser_ViewHelpers_Form_SelectDefaultValueViewHelper extends Tx_Fluid_V
 	}
 
 }
+
 
 ?>

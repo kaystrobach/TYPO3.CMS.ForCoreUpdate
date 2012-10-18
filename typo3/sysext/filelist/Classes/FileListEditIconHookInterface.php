@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Filelist;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,16 +33,17 @@
  * @package TYPO3
  * @subpackage cms
  */
-interface fileList_editIconHook
+interface FileListEditIconHookInterface
 {
 	/**
 	 * Modifies edit icon array
 	 *
 	 * @param array $cells Array of edit icons
-	 * @param fileList $parentObject Parent object
+	 * @param \TYPO3\CMS\Filelist\FileList $parentObject Parent object
 	 * @return void
 	 */
 	public function manipulateEditIcons(&$cells, &$parentObject);
 
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Hooks;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,14 +32,14 @@
  * @package TYPO3
  * @subpackage cms
  */
-class tx_cms_fehooks {
+class FrontendHooks {
 
 	/**
 	 * Include the preview block in cause we're looking at a hidden page
 	 * in the LIVE workspace
 	 *
 	 * @param array $params
-	 * @param tslib_fe $pObj
+	 * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pObj
 	 * @return string
 	 */
 	public function hook_previewInfo($params, $pObj) {
@@ -54,5 +56,6 @@ class tx_cms_fehooks {
 	}
 
 }
+
 
 ?>

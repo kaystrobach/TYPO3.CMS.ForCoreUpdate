@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
+abstract class AbstractFile implements \TYPO3\CMS\Core\Resource\FileInterface {
 
 	/**
 	 * Various file properties
@@ -47,7 +49,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	/**
 	 * The storage this file is located in
 	 *
-	 * @var t3lib_file_Storage
+	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	protected $storage = NULL;
 
@@ -98,10 +100,9 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * Any kind of software, often known as "application"
 	 */
 	const FILETYPE_SOFTWARE = 5;
-	
 	/******************
 	 * VARIOUS FILE PROPERTY GETTERS
-	 ******************/ 
+	 ******************/
 	/**
 	 * Returns true if the given property key exists for this file.
 	 *
@@ -158,7 +159,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getSize() {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821480);
+			throw new \RuntimeException('File has been deleted.', 1329821480);
 		}
 		return $this->properties['size'];
 	}
@@ -179,7 +180,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getSha1() {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821481);
+			throw new \RuntimeException('File has been deleted.', 1329821481);
 		}
 		return $this->getStorage()->hashFile($this, 'sha1');
 	}
@@ -191,7 +192,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getCreationTime() {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821487);
+			throw new \RuntimeException('File has been deleted.', 1329821487);
 		}
 		return $this->getProperty('creation_date');
 	}
@@ -203,7 +204,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getModificationTime() {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821488);
+			throw new \RuntimeException('File has been deleted.', 1329821488);
 		}
 		return $this->getProperty('modification_date');
 	}
@@ -283,7 +284,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getContents() {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821479);
+			throw new \RuntimeException('File has been deleted.', 1329821479);
 		}
 		return $this->getStorage()->getFileContents($this);
 	}
@@ -292,11 +293,11 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * Replace the current file contents with the given string
 	 *
 	 * @param string $contents The contents to write to the file.
-	 * @return t3lib_file_File The file object (allows chaining).
+	 * @return \TYPO3\CMS\Core\Resource\File The file object (allows chaining).
 	 */
 	public function setContents($contents) {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821478);
+			throw new \RuntimeException('File has been deleted.', 1329821478);
 		}
 		$this->getStorage()->setFileContents($this, $contents);
 		return $this;
@@ -308,7 +309,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	/**
 	 * Get the storage this file is located in
 	 *
-	 * @return t3lib_file_Storage
+	 * @return \TYPO3\CMS\Core\Resource\ResourceStorage
 	 */
 	public function getStorage() {
 		if ($this->storage === NULL) {
@@ -324,9 +325,9 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	protected function loadStorage() {
 		$storageUid = $this->getProperty('storage');
-		if (t3lib_utility_Math::canBeInterpretedAsInteger($storageUid)) {
-			/** @var $fileFactory t3lib_file_Factory */
-			$fileFactory = t3lib_div::makeInstance('t3lib_file_Factory');
+		if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($storageUid)) {
+			/** @var $fileFactory \TYPO3\CMS\Core\Resource\ResourceFactory */
+			$fileFactory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 			$this->storage = $fileFactory->getStorageObject($storageUid);
 		}
 	}
@@ -351,11 +352,11 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 *
 	 * @internal Should only be used by other parts of the File API (e.g. drivers after moving a file)
 	 * @param integer|t3lib_file_Storage $storage
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function setStorage($storage) {
 		// Do not check for deleted file here as we might need this method for the recycler later on
-		if (is_object($storage) && $storage instanceof t3lib_file_Storage) {
+		if (is_object($storage) && $storage instanceof \TYPO3\CMS\Core\Resource\ResourceStorage) {
 			$this->storage = $storage;
 			$this->properties['storage'] = $storage->getUid();
 		} else {
@@ -383,7 +384,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * @return string Combined storage and file identifier, e.g. StorageUID:path/and/fileName.png
 	 */
 	public function getCombinedIdentifier() {
-		if (is_array($this->properties) && t3lib_utility_Math::canBeInterpretedAsInteger($this->properties['storage'])) {
+		if (is_array($this->properties) && \TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($this->properties['storage'])) {
 			$combinedIdentifier = ($this->properties['storage'] . ':') . $this->getIdentifier();
 		} else {
 			$combinedIdentifier = ($this->getStorage()->getUid() . ':') . $this->getIdentifier();
@@ -424,11 +425,11 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 * Renames this file.
 	 *
 	 * @param string $newName The new file name
-	 * @return t3lib_file_File
+	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function rename($newName) {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821482);
+			throw new \RuntimeException('File has been deleted.', 1329821482);
 		}
 		return $this->getStorage()->renameFile($this, $newName);
 	}
@@ -436,14 +437,14 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	/**
 	 * Copies this file into a target folder
 	 *
-	 * @param t3lib_file_Folder $targetFolder Folder to copy file into.
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder Folder to copy file into.
 	 * @param string $targetFileName an optional destination fileName
 	 * @param string $conflictMode overrideExistingFile", "renameNewFile", "cancel
-	 * @return t3lib_file_File The new (copied) file.
+	 * @return \TYPO3\CMS\Core\Resource\File The new (copied) file.
 	 */
-	public function copyTo(t3lib_file_Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
+	public function copyTo(\TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821483);
+			throw new \RuntimeException('File has been deleted.', 1329821483);
 		}
 		return $targetFolder->getStorage()->copyFile($this, $targetFolder, $targetFileName, $conflictMode);
 	}
@@ -451,14 +452,14 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	/**
 	 * Moves the file into the target folder
 	 *
-	 * @param t3lib_file_Folder $targetFolder Folder to move file into.
+	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder Folder to move file into.
 	 * @param string $targetFileName an optional destination fileName
 	 * @param string $conflictMode overrideExistingFile", "renameNewFile", "cancel
-	 * @return t3lib_file_File This file object, with updated properties.
+	 * @return \TYPO3\CMS\Core\Resource\File This file object, with updated properties.
 	 */
-	public function moveTo(t3lib_file_Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
+	public function moveTo(\TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName = NULL, $conflictMode = 'renameNewFile') {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821484);
+			throw new \RuntimeException('File has been deleted.', 1329821484);
 		}
 		return $targetFolder->getStorage()->moveFile($this, $targetFolder, $targetFileName, $conflictMode);
 	}
@@ -477,7 +478,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getPublicUrl($relativeToCurrentScript = FALSE) {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821485);
+			throw new \RuntimeException('File has been deleted.', 1329821485);
 		}
 		return $this->getStorage()->getPublicUrl($this, $relativeToCurrentScript);
 	}
@@ -492,7 +493,7 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	 */
 	public function getForLocalProcessing($writable = TRUE) {
 		if ($this->deleted) {
-			throw new RuntimeException('File has been deleted.', 1329821486);
+			throw new \RuntimeException('File has been deleted.', 1329821486);
 		}
 		return $this->getStorage()->getFileForLocalProcessing($this, $writable);
 	}
@@ -510,5 +511,6 @@ abstract class t3lib_file_AbstractFile implements t3lib_file_FileInterface {
 	abstract public function updateProperties(array $properties);
 
 }
+
 
 ?>

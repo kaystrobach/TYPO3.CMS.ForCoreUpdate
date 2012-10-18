@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Domain\Model\Json;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Model_JSON_Element {
+class AbstractJsonElement {
 
 	/**
 	 * The ExtJS xtype of the element
@@ -132,7 +134,7 @@ class tx_form_Domain_Model_JSON_Element {
 				}
 			}
 		} else {
-			$this->configuration['filters'] = new stdClass();
+			$this->configuration['filters'] = new \stdClass();
 		}
 	}
 
@@ -176,10 +178,11 @@ class tx_form_Domain_Model_JSON_Element {
 		if (isset($parameters['validation']) && is_array($parameters['validation'])) {
 			$this->configuration['validation'] = $parameters['validation'];
 		} else {
-			$this->configuration['validation'] = new stdClass();
+			$this->configuration['validation'] = new \stdClass();
 		}
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Reports\Report\Status;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +30,7 @@
  * @package TYPO3
  * @subpackage reports
  */
-class tx_reports_reports_status_WarningMessagePostProcessor {
+class WarningMessagePostProcessor {
 
 	/**
 	 * Tries to get the highest severity of the system's status first, if
@@ -40,12 +42,12 @@ class tx_reports_reports_status_WarningMessagePostProcessor {
 	 */
 	public function displayWarningMessages_postProcess(array &$warningMessages) {
 		// Get highest severity
-		$registry = t3lib_div::makeInstance('t3lib_Registry');
+		$registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$highestSeverity = $registry->get('tx_reports', 'status.highestSeverity', NULL);
 		if (!is_null($highestSeverity)) {
 			// Status update has run, so taking over control over the core messages
 			unset($warningMessages['install_password'], $warningMessages['backend_admin'], $warningMessages['install_enabled'], $warningMessages['install_encryption'], $warningMessages['file_deny_pattern'], $warningMessages['file_deny_htaccess'], $warningMessages['install_update'], $warningMessages['backend_reference'], $warningMessages['memcached']);
-			if ($highestSeverity > tx_reports_reports_status_Status::OK) {
+			if ($highestSeverity > \TYPO3\CMS\Reports\Status::OK) {
 				// Display a message that there's something wrong and that
 				// the admin should take a look at the detailed status report
 				$GLOBALS['LANG']->includeLLFile('EXT:reports/reports/locallang.xml');
@@ -55,5 +57,6 @@ class tx_reports_reports_status_WarningMessagePostProcessor {
 	}
 
 }
+
 
 ?>

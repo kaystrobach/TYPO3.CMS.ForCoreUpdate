@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Cache\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @author Karsten Dambekalns <karsten@typo3.org>
  * @api
  */
-class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend implements t3lib_cache_backend_TaggableBackend {
+class PdoBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend implements \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface {
 
 	/**
 	 * @var string
@@ -107,17 +109,17 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 * @param array $tags Tags to associate with this cache entry
 	 * @param integer $lifetime Lifetime of this cache entry in seconds. If NULL is specified, the default lifetime is used. "0" means unlimited liftime.
 	 * @return void
-	 * @throws \t3lib_cache_Exception if no cache frontend has been set.
+	 * @throws \TYPO3\CMS\Core\Cache\Exception if no cache frontend has been set.
 	 * @throws \InvalidArgumentException if the identifier is not valid
-	 * @throws \t3lib_cache_exception_InvalidData if $data is not a string
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\InvalidDataException if $data is not a string
 	 * @api
 	 */
 	public function set($entryIdentifier, $data, array $tags = array(), $lifetime = NULL) {
-		if (!$this->cache instanceof t3lib_cache_frontend_Frontend) {
-			throw new \t3lib_cache_Exception('No cache frontend has been set yet via setCache().', 1259515600);
+		if (!$this->cache instanceof \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface) {
+			throw new \TYPO3\CMS\Core\Cache\Exception('No cache frontend has been set yet via setCache().', 1259515600);
 		}
 		if (!is_string($data)) {
-			throw new \t3lib_cache_exception_InvalidData(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1259515601);
+			throw new \TYPO3\CMS\Core\Cache\Exception\InvalidDataException(('The specified data is of type "' . gettype($data)) . '" but a string is expected.', 1259515601);
 		}
 		if ($this->has($entryIdentifier)) {
 			$this->remove($entryIdentifier);
@@ -126,13 +128,13 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 		$statementHandle = $this->databaseHandle->prepare('INSERT INTO "cache" ("identifier", "context", "cache", "created", "lifetime", "content") VALUES (?, ?, ?, ?, ?, ?)');
 		$result = $statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier, $GLOBALS['EXEC_TIME'], $lifetime, $data));
 		if ($result === FALSE) {
-			throw new \t3lib_cache_Exception(('The cache entry "' . $entryIdentifier) . '" could not be written.', 1259530791);
+			throw new \TYPO3\CMS\Core\Cache\Exception(('The cache entry "' . $entryIdentifier) . '" could not be written.', 1259530791);
 		}
 		$statementHandle = $this->databaseHandle->prepare('INSERT INTO "tags" ("identifier", "context", "cache", "tag") VALUES (?, ?, ?, ?)');
 		foreach ($tags as $tag) {
 			$result = $statementHandle->execute(array($entryIdentifier, $this->context, $this->cacheIdentifier, $tag));
 			if ($result === FALSE) {
-				throw new \t3lib_cache_Exception(((('The tag "' . $tag) . ' for cache entry "') . $entryIdentifier) . '" could not be written.', 1259530751);
+				throw new \TYPO3\CMS\Core\Cache\Exception(((('The tag "' . $tag) . ' for cache entry "') . $entryIdentifier) . '" could not be written.', 1259530751);
 			}
 		}
 	}
@@ -254,10 +256,10 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 			$splitdsn = explode(':', $this->dataSourceName, 2);
 			$this->pdoDriver = $splitdsn[0];
 			if ($this->pdoDriver === 'sqlite' && !file_exists($splitdsn[1])) {
-				$this->databaseHandle = t3lib_div::makeInstance('PDO', $this->dataSourceName, $this->username, $this->password);
+				$this->databaseHandle = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('PDO', $this->dataSourceName, $this->username, $this->password);
 				$this->createCacheTables();
 			} else {
-				$this->databaseHandle = t3lib_div::makeInstance('PDO', $this->dataSourceName, $this->username, $this->password);
+				$this->databaseHandle = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('PDO', $this->dataSourceName, $this->username, $this->password);
 			}
 			$this->databaseHandle->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 			if ($this->pdoDriver === 'mysql') {
@@ -276,12 +278,13 @@ class t3lib_cache_backend_PdoBackend extends t3lib_cache_backend_AbstractBackend
 	 */
 	protected function createCacheTables() {
 		try {
-			t3lib_PdoHelper::importSql($this->databaseHandle, $this->pdoDriver, PATH_t3lib . 'cache/backend/resources/ddl.sql');
+			\TYPO3\CMS\Core\Database\PdoHelper::importSql($this->databaseHandle, $this->pdoDriver, PATH_t3lib . 'cache/backend/resources/ddl.sql');
 		} catch (\PDOException $e) {
 			throw new \RuntimeException((('Could not create cache tables with DSN "' . $this->dataSourceName) . '". PDO error: ') . $e->getMessage(), 1259576985);
 		}
 	}
 
 }
+
 
 ?>

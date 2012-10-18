@@ -262,9 +262,9 @@ class t3lib_readmail {
 		// Email:
 		$reg = '';
 		preg_match('/<([^>]*)>/', $str, $reg);
-		if (t3lib_div::validEmail($str)) {
+		if (\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($str)) {
 			$outArr['email'] = $str;
-		} elseif ($reg[1] && t3lib_div::validEmail($reg[1])) {
+		} elseif ($reg[1] && \TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($reg[1])) {
 			$outArr['email'] = $reg[1];
 			// Find name:
 			list($namePart) = explode($reg[0], $str);
@@ -290,7 +290,7 @@ class t3lib_readmail {
 	 */
 	public function getContentTypeData($contentTypeStr) {
 		$outValue = array();
-		$cTypeParts = t3lib_div::trimExplode(';', $contentTypeStr, 1);
+		$cTypeParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(';', $contentTypeStr, 1);
 		// Content type, first value is supposed to be the mime-type, whatever after the first is something else.
 		$outValue['_MIME_TYPE'] = $cTypeParts[0];
 		reset($cTypeParts);
@@ -315,7 +315,7 @@ class t3lib_readmail {
 	public function makeUnixDate($dateStr) {
 		$dateParts = explode(',', $dateStr);
 		$dateStr = count($dateParts) > 1 ? $dateParts[1] : $dateParts[0];
-		$spaceParts = t3lib_div::trimExplode(' ', $dateStr, 1);
+		$spaceParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $dateStr, 1);
 		$spaceParts[1] = $this->dateAbbrevs[strtoupper($spaceParts[1])];
 		$timeParts = explode(':', $spaceParts[3]);
 		$timeStamp = mktime($timeParts[0], $timeParts[1], $timeParts[2], $spaceParts[1], $spaceParts[0], $spaceParts[2]);
@@ -428,7 +428,7 @@ class t3lib_readmail {
 		switch ($cType) {
 		case 'multipart':
 			if ($mailParts['_CONTENT_TYPE_DAT']['boundary']) {
-				$contentSectionParts = t3lib_div::trimExplode('--' . $mailParts['_CONTENT_TYPE_DAT']['boundary'], $mailParts['CONTENT'], 1);
+				$contentSectionParts = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('--' . $mailParts['_CONTENT_TYPE_DAT']['boundary'], $mailParts['CONTENT'], 1);
 				$contentSectionParts_proc = array();
 				foreach ($contentSectionParts as $k => $v) {
 					if (substr($v, 0, 2) == '--') {

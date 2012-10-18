@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +41,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_diff {
+class DiffUtility {
 
 	// External, static
 	// If set, the HTML tags are stripped from the input strings first.
@@ -151,15 +153,15 @@ class t3lib_diff {
 	 */
 	public function getDiff($str1, $str2) {
 		// Create file 1 and write string
-		$file1 = t3lib_div::tempnam('diff1_');
-		t3lib_div::writeFile($file1, $str1);
+		$file1 = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('diff1_');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($file1, $str1);
 		// Create file 2 and write string
-		$file2 = t3lib_div::tempnam('diff2_');
-		t3lib_div::writeFile($file2, $str2);
+		$file2 = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('diff2_');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($file2, $str2);
 		// Perform diff.
 		$cmd = ((((($GLOBALS['TYPO3_CONF_VARS']['BE']['diff_path'] . ' ') . $this->diffOptions) . ' ') . $file1) . ' ') . $file2;
 		$res = array();
-		t3lib_utility_Command::exec($cmd, $res);
+		\TYPO3\CMS\Core\Utility\CommandUtility::exec($cmd, $res);
 		unlink($file1);
 		unlink($file2);
 		return $res;
@@ -176,7 +178,7 @@ class t3lib_diff {
 	 */
 	public function addClearBuffer($clearBuffer, $last = 0) {
 		if (strlen($clearBuffer) > 200) {
-			$clearBuffer = (((($this->clearBufferIdx ? t3lib_div::fixed_lgd_cs($clearBuffer, 70) : '') . '[') . strlen($clearBuffer)) . ']') . (!$last ? t3lib_div::fixed_lgd_cs($clearBuffer, -70) : '');
+			$clearBuffer = (((($this->clearBufferIdx ? \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($clearBuffer, 70) : '') . '[') . strlen($clearBuffer)) . ']') . (!$last ? \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($clearBuffer, -70) : '');
 		}
 		$this->clearBufferIdx++;
 		return $clearBuffer;
@@ -192,10 +194,10 @@ class t3lib_diff {
 	 * @todo Define visibility
 	 */
 	public function explodeStringIntoWords($str) {
-		$strArr = t3lib_div::trimExplode(LF, $str);
+		$strArr = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(LF, $str);
 		$outArray = array();
 		foreach ($strArr as $lineOfWords) {
-			$allWords = t3lib_div::trimExplode(' ', $lineOfWords, 1);
+			$allWords = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $lineOfWords, 1);
 			$outArray = array_merge($outArray, $allWords);
 			$outArray[] = '';
 			$outArray[] = '';
@@ -221,5 +223,6 @@ class t3lib_diff {
 	}
 
 }
+
 
 ?>

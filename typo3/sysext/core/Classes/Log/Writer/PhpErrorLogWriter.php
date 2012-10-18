@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Core\Log\Writer;
+
 /***************************************************************
  * Copyright notice
  *
@@ -30,26 +32,27 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-class t3lib_log_writer_PhpErrorLog extends t3lib_log_writer_Abstract {
+class PhpErrorLogWriter extends \TYPO3\CMS\Core\Log\Writer\AbstractWriter {
 
 	/**
 	 * Writes the log record
 	 *
-	 * @param t3lib_log_Record $record Log record
-	 * @return t3lib_log_writer_Writer $this
+	 * @param \TYPO3\CMS\Core\Log\LogRecord $record Log record
+	 * @return \TYPO3\CMS\Core\Log\Writer\Writer $this
 	 * @throws RuntimeException
 	 */
-	public function writeLog(t3lib_log_Record $record) {
-		$levelName = t3lib_log_Level::getName($record->getLevel());
+	public function writeLog(\TYPO3\CMS\Core\Log\LogRecord $record) {
+		$levelName = \TYPO3\CMS\Core\Log\LogLevel::getName($record->getLevel());
 		$data = $record->getData();
 		$data = !empty($data) ? '- ' . json_encode($data) : '';
 		$message = sprintf('TYPO3 [%s] request="%s" component="%s": %s %s', $levelName, $record->getRequestId(), $record->getComponent(), $record->getMessage(), $data);
 		if (FALSE === error_log($message)) {
-			throw new RuntimeException('Could not write log record to PHP error log', 1345036336);
+			throw new \RuntimeException('Could not write log record to PHP error log', 1345036336);
 		}
 		return $this;
 	}
 
 }
+
 
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Form\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +32,7 @@
  * @package TYPO3
  * @subpackage form
  */
-class tx_form_Domain_Factory_TyposcriptToJson {
+class TypoScriptToJsonConverter {
 
 	/**
 	 * @var array
@@ -55,14 +57,14 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	 *
 	 * @param string $class Type of element
 	 * @param array $arguments Configuration array
-	 * @return tx_form_Domain_Model_JSON_Element
+	 * @return \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement
 	 */
 	public function createElement($class, array $arguments = array()) {
 		$class = strtolower((string) $class);
 		$className = 'tx_form_Domain_Model_Json_' . ucfirst($class);
 		$this->addValidationRules($arguments);
-		/** @var $object tx_form_Domain_Model_JSON_Element */
-		$object = t3lib_div::makeInstance($className);
+		/** @var $object \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement */
+		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
 		$object->setParameters($arguments);
 		if ($object->childElementsAllowed()) {
 			$this->getChildElementsByIntegerKey($object, $arguments);
@@ -74,13 +76,13 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	 * Rendering of a "numerical array" of Form objects from TypoScript
 	 * Creates new object for each element found
 	 *
-	 * @param tx_form_Domain_Model_JSON_Element $parentElement Parent model object
+	 * @param \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $parentElement Parent model object
 	 * @param array $arguments Configuration array
 	 * @return void
 	 */
-	protected function getChildElementsByIntegerKey(tx_form_Domain_Model_JSON_Element $parentElement, array $typoscript) {
+	protected function getChildElementsByIntegerKey(\TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $parentElement, array $typoscript) {
 		if (is_array($typoscript)) {
-			$keys = t3lib_TStemplate::sortedKeyList($typoscript);
+			$keys = \TYPO3\CMS\Core\TypoScript\TemplateService::sortedKeyList($typoscript);
 			foreach ($keys as $key) {
 				$class = $typoscript[$key];
 				if (intval($key) && !strstr($key, '.')) {
@@ -101,13 +103,13 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	 * Checks if the typoscript object is part of the FORM or has a predefined
 	 * class for name or header object
 	 *
-	 * @param tx_form_Domain_Model_JSON_Element $parentElement The parent object
+	 * @param \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $parentElement The parent object
 	 * @param string $class A predefined class
 	 * @param array $arguments Configuration array
 	 * @return void
 	 */
-	private function setElementType(tx_form_Domain_Model_JSON_Element $parentElement, $class, array $arguments) {
-		if (in_array($class, tx_form_Common::getInstance()->getFormObjects())) {
+	private function setElementType(\TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $parentElement, $class, array $arguments) {
+		if (in_array($class, \TYPO3\CMS\Form\Utility\FormUtility::getInstance()->getFormObjects())) {
 			if (strstr($arguments['class'], 'predefined-name')) {
 				$class = 'NAME';
 			}
@@ -118,12 +120,12 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	/**
 	 * Add child object to this element
 	 *
-	 * @param tx_form_Domain_Model_JSON_Element $parentElement The parent object
+	 * @param \TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $parentElement The parent object
 	 * @param string $class Type of element
 	 * @param array $arguments Configuration array
 	 * @return void
 	 */
-	public function addElement(tx_form_Domain_Model_JSON_Element $parentElement, $class, array $arguments) {
+	public function addElement(\TYPO3\CMS\Form\Domain\Model\Json\AbstractJsonElement $parentElement, $class, array $arguments) {
 		$element = $this->createElement($class, $arguments);
 		$parentElement->addElement($element);
 	}
@@ -168,5 +170,6 @@ class tx_form_Domain_Factory_TyposcriptToJson {
 	}
 
 }
+
 
 ?>

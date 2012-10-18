@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Backend\Controller\File;
+
 /**
  * Script Class for the create-new script; Displays a form for creating up to 10 folders or one new text file
  *
@@ -6,7 +8,7 @@
  * @package TYPO3
  * @subpackage core
  */
-class SC_file_newfolder {
+class CreateFolderController {
 
 	// External, static:
 	/**
@@ -18,7 +20,7 @@ class SC_file_newfolder {
 	/**
 	 * document template object
 	 *
-	 * @var smallDoc
+	 * @var \TYPO3\CMS\Backend\Template\SmallDocumentTemplate
 	 * @todo Define visibility
 	 */
 	public $doc;
@@ -44,7 +46,7 @@ class SC_file_newfolder {
 	/**
 	 * The folder object which is  the target directory
 	 *
-	 * @var t3lib_file_Folder $folderObject
+	 * @var \TYPO3\CMS\Core\Resource\Folder $folderObject
 	 */
 	protected $folderObject;
 
@@ -69,24 +71,24 @@ class SC_file_newfolder {
 	 */
 	public function init() {
 		// Initialize GPvars:
-		$this->number = t3lib_div::_GP('number');
-		$this->target = ($combinedIdentifier = t3lib_div::_GP('target'));
-		$this->returnUrl = t3lib_div::sanitizeLocalUrl(t3lib_div::_GP('returnUrl'));
+		$this->number = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('number');
+		$this->target = ($combinedIdentifier = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('target'));
+		$this->returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('returnUrl'));
 		// create the folder object
 		if ($combinedIdentifier) {
-			$this->folderObject = t3lib_file_Factory::getInstance()->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
+			$this->folderObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
 		}
 		// Cleaning and checking target directory
 		if (!$this->folderObject) {
 			$title = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:paramError', TRUE);
 			$message = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_file_list.xml:targetNoDir', TRUE);
-			throw new RuntimeException(($title . ': ') . $message, 1294586843);
+			throw new \RuntimeException(($title . ': ') . $message, 1294586843);
 		}
 		// Setting the title and the icon
-		$icon = t3lib_iconWorks::getSpriteIcon('apps-filetree-root');
+		$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('apps-filetree-root');
 		$this->title = (($icon . htmlspecialchars($this->folderObject->getStorage()->getName())) . ': ') . htmlspecialchars($this->folderObject->getIdentifier());
 		// Setting template object
-		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 		$this->doc->setModuleTemplate('templates/file_newfolder.html');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->doc->JScode = $this->doc->wrapScriptTags(((((('
@@ -122,7 +124,7 @@ class SC_file_newfolder {
 		$pageContent .= $this->doc->divider(5);
 		$code = '<form action="tce_file.php" method="post" name="editform">';
 		// Making the selector box for the number of concurrent folder-creations
-		$this->number = t3lib_utility_Math::forceIntegerInRange($this->number, 1, 10);
+		$this->number = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($this->number, 1, 10);
 		$code .= ('
 			<div id="c-select">
 				<label for="number-of-new-folders">' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:file_newfolder.php.number_of_folders')) . '</label>
@@ -156,7 +158,7 @@ class SC_file_newfolder {
 			</div>
 			';
 		// CSH:
-		$code .= t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'file_newfolder', $GLOBALS['BACK_PATH'], '<br />');
+		$code .= \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'file_newfolder', $GLOBALS['BACK_PATH'], '<br />');
 		$pageContent .= $code;
 		// Add spacer:
 		$pageContent .= $this->doc->spacer(10);
@@ -165,7 +167,7 @@ class SC_file_newfolder {
 		$pageContent .= '</form><form action="tce_file.php" method="post" name="editform2">';
 		// Create a list of allowed file extensions with the nice format "*.jpg, *.gif" etc.
 		$fileExtList = array();
-		$textfileExt = t3lib_div::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['SYS']['textfile_ext'], TRUE);
+		$textfileExt = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['SYS']['textfile_ext'], TRUE);
 		foreach ($textfileExt as $fileExt) {
 			if (!preg_match((('/' . $GLOBALS['TYPO3_CONF_VARS']['BE']['fileDenyPattern']) . '/i'), ('.' . $fileExt))) {
 				$fileExtList[] = '*.' . $fileExt;
@@ -188,7 +190,7 @@ class SC_file_newfolder {
 			</div>
 			';
 		// CSH:
-		$code .= t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'file_newfile', $GLOBALS['BACK_PATH'], '<br />');
+		$code .= \TYPO3\CMS\Backend\Utility\BackendUtility::cshItem('xMOD_csh_corebe', 'file_newfile', $GLOBALS['BACK_PATH'], '<br />');
 		$pageContent .= $this->doc->section($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.php:file_newfolder.php.newfile'), $code);
 		$pageContent .= $this->doc->sectionEnd();
 		$pageContent .= '</form>';
@@ -196,7 +198,7 @@ class SC_file_newfolder {
 		// Add the HTML as a section:
 		$markerArray = array(
 			'CSH' => $docHeaderButtons['csh'],
-			'FUNC_MENU' => t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
+			'FUNC_MENU' => \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']),
 			'CONTENT' => $pageContent,
 			'PATH' => $this->title
 		);
@@ -216,5 +218,6 @@ class SC_file_newfolder {
 	}
 
 }
+
 
 ?>

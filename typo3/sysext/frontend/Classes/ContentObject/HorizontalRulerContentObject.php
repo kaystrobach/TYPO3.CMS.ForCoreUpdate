@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\ContentObject;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @author Xavier Perseguers <typo3@perseguers.ch>
  * @author Steffen Kamper <steffen@typo3.org>
  */
-class tslib_content_HorizontalRuler extends tslib_content_Abstract {
+class HorizontalRulerContentObject extends \TYPO3\CMS\Frontend\ContentObject\AbstractContentObject {
 
 	/**
 	 * Rendering the cObject, HRULER
@@ -41,7 +43,7 @@ class tslib_content_HorizontalRuler extends tslib_content_Abstract {
 	 */
 	public function render($conf = array()) {
 		$lineThickness = isset($conf['lineThickness.']) ? $this->cObj->stdWrap($conf['lineThickness'], $conf['lineThickness.']) : $conf['lineThickness'];
-		$lineThickness = t3lib_utility_Math::forceIntegerInRange($lineThickness, 1, 50);
+		$lineThickness = \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($lineThickness, 1, 50);
 		$lineColor = isset($conf['lineColor.']) ? $this->cObj->stdWrap($conf['lineColor'], $conf['lineColor.']) : $conf['lineColor'];
 		if (!$lineColor) {
 			$lineColor = 'black';
@@ -84,5 +86,6 @@ class tslib_content_HorizontalRuler extends tslib_content_Abstract {
 	}
 
 }
+
 
 ?>

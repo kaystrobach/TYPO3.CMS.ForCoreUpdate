@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Page;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +33,7 @@
  * @package TYPO3
  * @subpackage t3lib
  */
-interface t3lib_pageSelect_getRecordOverlayHook
+interface PageRepositoryGetRecordOverlayHookInterface
 {
 	/**
 	 * Enables to preprocess a record overlay
@@ -40,9 +42,9 @@ interface t3lib_pageSelect_getRecordOverlayHook
 	 * @param array $row
 	 * @param integer $sys_language_content
 	 * @param string $OLmode
-	 * @param t3lib_pageSelect $parent
+	 * @param \TYPO3\CMS\Frontend\Page\PageRepository $parent
 	 */
-	public function getRecordOverlay_preProcess($table, &$row, &$sys_language_content, $OLmode, t3lib_pageSelect $parent);
+	public function getRecordOverlay_preProcess($table, &$row, &$sys_language_content, $OLmode, \TYPO3\CMS\Frontend\Page\PageRepository $parent);
 
 	/**
 	 * Enables to postprocess a record overlay
@@ -51,9 +53,10 @@ interface t3lib_pageSelect_getRecordOverlayHook
 	 * @param array $row
 	 * @param integer $sys_language_content
 	 * @param string $OLmode
-	 * @param t3lib_pageSelect $parent
+	 * @param \TYPO3\CMS\Frontend\Page\PageRepository $parent
 	 */
-	public function getRecordOverlay_postProcess($table, &$row, &$sys_language_content, $OLmode, t3lib_pageSelect $parent);
+	public function getRecordOverlay_postProcess($table, &$row, &$sys_language_content, $OLmode, \TYPO3\CMS\Frontend\Page\PageRepository $parent);
 
 }
+
 ?>

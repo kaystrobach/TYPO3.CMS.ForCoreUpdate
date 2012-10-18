@@ -1,4 +1,6 @@
 <?php
+namespace TYPO3\CMS\Frontend\Tests\Unit;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,7 @@
  * @author Oliver Hader <oliver@typo3.org>
  * @author Oliver Klee <typo3-coding@oliverklee.de>
  */
-class tslib_contentTest extends tx_phpunit_testcase {
+class ContentTest extends tx_phpunit_testcase {
 
 	/**
 	 * @var 	array
@@ -63,19 +65,19 @@ class tslib_contentTest extends tx_phpunit_testcase {
 			'_SERVER' => $_SERVER,
 			'TYPO3_CONF_VARS' => $GLOBALS['TYPO3_CONF_VARS']
 		);
-		$this->template = $this->getMock('t3lib_TStemplate', array('getFileName', 'linkData'));
-		$this->tsfe = $this->getMock('tslib_fe', array(), array(), '', FALSE);
+		$this->template = $this->getMock('TYPO3\\CMS\\Core\\TypoScript\\TemplateService', array('getFileName', 'linkData'));
+		$this->tsfe = $this->getMock('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController', array(), array(), '', FALSE);
 		$this->tsfe->tmpl = $this->template;
 		$this->tsfe->config = array();
-		$sysPageMock = $this->getMock('t3lib_pageSelect');
+		$sysPageMock = $this->getMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 		$this->tsfe->sys_page = $sysPageMock;
 		$GLOBALS['TSFE'] = $this->tsfe;
-		$GLOBALS['TSFE']->csConvObj = new t3lib_cs();
+		$GLOBALS['TSFE']->csConvObj = new \TYPO3\CMS\Core\Charset\CharsetConverter();
 		$GLOBALS['TSFE']->renderCharset = 'utf-8';
-		$GLOBALS['TYPO3_CONF_VARS']['SYS']['t3lib_cs_utils'] = 'mbstring';
-		$className = 'tslib_cObj_' . uniqid('test');
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['TYPO3\\CMS\\Core\\Charset\\CharsetConverter_utils'] = 'mbstring';
+		$className = 'TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer_' . uniqid('test');
 		eval(('
-			class ' . $className) . ' extends tslib_cObj {
+			class ' . $className) . ' extends TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer {
 				public $stdWrapHookObjects = array();
 				public $getImgResourceHookObjects;
 			}
@@ -120,7 +122,7 @@ class tslib_contentTest extends tx_phpunit_testcase {
 	public function getImgResourceHookGetsCalled() {
 		$this->template->expects($this->atLeastOnce())->method('getFileName')->with('typo3/clear.gif')->will($this->returnValue('typo3/clear.gif'));
 		$className = uniqid('tx_coretest');
-		$getImgResourceHookMock = $this->getMock('tslib_cObj_getImgResourceHook', array('getImgResourcePostProcess'), array(), $className);
+		$getImgResourceHookMock = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectGetImageResourceHookInterface', array('getImgResourcePostProcess'), array(), $className);
 		$getImgResourceHookMock->expects($this->once())->method('getImgResourcePostProcess')->will($this->returnCallback(array($this, 'isGetImgResourceHookCalledCallback')));
 		$this->cObj->getImgResourceHookObjects = array($getImgResourceHookMock);
 		$this->cObj->IMAGE($this->typoScriptImage);
@@ -137,7 +139,7 @@ class tslib_contentTest extends tx_phpunit_testcase {
 		$this->assertEquals('typo3/clear.gif', $file);
 		$this->assertEquals('typo3/clear.gif', $imageResource['origFile']);
 		$this->assertTrue(is_array($fileArray));
-		$this->assertTrue($parent instanceof tslib_cObj);
+		$this->assertTrue($parent instanceof \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer);
 		return $imageResource;
 	}
 
@@ -1041,5 +1043,6 @@ class tslib_contentTest extends tx_phpunit_testcase {
 	}
 
 }
+
 
 ?>
