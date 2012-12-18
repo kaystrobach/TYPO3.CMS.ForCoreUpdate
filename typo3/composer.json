@@ -1,0 +1,8 @@
+{
+	"config": {
+		"vendor-dir": "contrib"
+	},
+	"require": {
+		"doctrine/dbal": "2.3.*"
+	}
+}

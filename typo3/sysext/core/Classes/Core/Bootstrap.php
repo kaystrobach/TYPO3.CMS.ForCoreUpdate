@@ -286,6 +286,10 @@ class Bootstrap {
 	 * @return \TYPO3\CMS\Core\Core\Bootstrap
 	 */
 	protected function registerAutoloader() {
+		/** Composer loader */
+		require_once PATH_typo3 . '/contrib/composer/autoload_real.php';
+		\ComposerAutoloaderInit::getLoader();
+
 		if (PHP_VERSION_ID < 50307) {
 			\TYPO3\CMS\Core\Compatibility\CompatbilityClassLoaderPhpBelow50307::registerAutoloader();
 		} else {
