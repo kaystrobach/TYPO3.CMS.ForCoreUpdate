@@ -3993,11 +3993,16 @@ class DataHandler {
 	 * @todo Define visibility
 	 */
 	public function deleteEl($table, $uid, $noRecordCheck = FALSE, $forceHardDelete = FALSE) {
-		if ($table == 'pages') {
-			$this->deletePages($uid, $noRecordCheck, $forceHardDelete);
-		} else {
-			$this->deleteVersionsForRecord($table, $uid, $forceHardDelete);
-			$this->deleteRecord($table, $uid, $noRecordCheck, $forceHardDelete);
+		switch ($table) {
+			case 'pages':
+				$this->deletePages($uid, $noRecordCheck, $forceHardDelete);
+				break;
+			case 'sys_file':
+				$this->deleteSysFile($uid);
+				break;
+			default:
+				$this->deleteVersionsForRecord($table, $uid, $forceHardDelete);
+				$this->deleteRecord($table, $uid, $noRecordCheck, $forceHardDelete);
 		}
 	}
 
@@ -4204,6 +4209,20 @@ class DataHandler {
 			}
 		} else {
 			$this->newlog($res, 1);
+		}
+	}
+
+	public function deleteSysFile($uid) {
+		/** @var $fileRepository \TYPO3\CMS\Core\Resource\FileRepository */
+		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
+		/** @var $fileReference \TYPO3\CMS\Core\Resource\File */
+		$file = $fileRepository->findByUid($uid);
+		if (!empty($file) && $file instanceof \TYPO3\CMS\Core\Resource\File) {
+			$file->delete($file);
+			$file->updateProperties(array('deleted' => 1));
+			$fileRepository->update($file);
+		} else {
+			// ToDo: Throw error message / write something into log
 		}
 	}
 
