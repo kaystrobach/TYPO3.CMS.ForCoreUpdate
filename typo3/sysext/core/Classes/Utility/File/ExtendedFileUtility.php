@@ -383,40 +383,47 @@ class ExtendedFileUtility extends \TYPO3\CMS\Core\Utility\File\BasicFileUtility 
 		// @todo implement the recycler feature which has been removed from the original implementation
 		// checks to delete the file
 		if ($fileObject instanceof \TYPO3\CMS\Core\Resource\File) {
-			$refIndexRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				'*',
-				'sys_refindex',
-				'deleted=0 AND ref_table="sys_file" AND ref_uid=' . intval($fileObject->getUid())
-			);
-			// check if the file still has references
-			if (count($refIndexRecords) > 0) {
+			try {
+				$result = $fileObject->delete();
+			}
+			catch (\TYPO3\CMS\Core\Resource\Exception\FileHasReferences $e) {
+				$refIndexRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+					'tablename,recuid',
+					'sys_refindex',
+					'deleted=0 AND ref_table="sys_file" AND ref_uid=' . intval($fileObject->getUid())
+				);
 				$shortcutContent = array();
 				foreach ($refIndexRecords as $row) {
+					switch ($row['tablename']) {
+						case 'sys_file_reference':
+							$orgRow = $row;
+							$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
+								'tablenames AS "tablename", uid_foreign as "recuid"',
+								'sys_file_reference',
+								'uid=' . intval($row['recuid'])
+							);
+							break;
+					}
 					$shortcutRecord = NULL;
 					$shortcutRecord = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord($row['tablename'], $row['recuid']);
-					if (is_array($shortcutRecord) && $row['tablename'] !== 'sys_file_reference') {
+					if (is_array($shortcutRecord)) {
 						$icon = \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIconForRecord($row['tablename'], $shortcutRecord);
 						$onClick = 'showClickmenu("' . $row['tablename'] . '", "' . $row['recuid'] . '", "1", "+info,history,edit,delete", "|", "");return false;';
 						$shortcutContent[] = '<a href="#" oncontextmenu="' . htmlspecialchars($onClick) . '" onclick="' . htmlspecialchars($onClick) . '">' . $icon . '</a>' . htmlspecialchars((\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($row['tablename'], $shortcutRecord) . '  [' . \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordPath($shortcutRecord['pid'], '', 80) . ']'));
 					}
 				}
-				$out = '<p>The file cannot be deleted since it is still used at the following places:<br />' . implode('<br />', $shortcutContent) . '</p>';
+				$out = '<p>The file cannot be deleted since it is still used at the following places:</p><ul><li>' . implode('</li><li>', $shortcutContent) . '</li></ul>';
 				$flashMessage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_flashMessage', $out, 'File not deleted', \TYPO3\CMS\Core\Messaging\FlashMessage::WARNING, TRUE);
 				\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($flashMessage);
-				return;
-			} else {
-				try {
-					$result = $fileObject->delete();
-				} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
-					$this->writelog(4, 1, 112, 'You are not allowed to access the file', array($fileObject->getIdentifier()));
-				} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
-					$this->writelog(4, 1, 111, 'Target was not within your mountpoints! T="%s"', array($fileObject->getIdentifier()));
-				} catch (\RuntimeException $e) {
-					$this->writelog(4, 1, 110, 'Could not delete file "%s". Write-permission problem?', array($fileObject->getIdentifier()));
-				}
-				// Log success
-				$this->writelog(4, 0, 1, 'File "%s" deleted', array($fileObject->getIdentifier()));
+			} catch (\TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException $e) {
+				$this->writelog(4, 1, 112, 'You are not allowed to access the file', array($fileObject->getIdentifier()));
+			} catch (\TYPO3\CMS\Core\Resource\Exception\NotInMountPointException $e) {
+				$this->writelog(4, 1, 111, 'Target was not within your mountpoints! T="%s"', array($fileObject->getIdentifier()));
+			} catch (\RuntimeException $e) {
+				$this->writelog(4, 1, 110, 'Could not delete file "%s". Write-permission problem?', array($fileObject->getIdentifier()));
 			}
+			// Log success
+			$this->writelog(4, 0, 1, 'File "%s" deleted', array($fileObject->getIdentifier()));
 		} else {
 			try {
 				/** @var $fileObject \TYPO3\CMS\Core\Resource\FolderInterface */

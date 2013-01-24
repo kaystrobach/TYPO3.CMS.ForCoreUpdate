@@ -963,15 +963,30 @@ class ResourceStorage {
 	 * @return bool TRUE if deletion succeeded
 	 */
 	public function deleteFile($fileObject) {
+		// Check file permissions
 		if (!$this->checkFileActionPermission('remove', $fileObject)) {
 			throw new \TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException('You are not allowed to delete the file "' . $fileObject->getIdentifier() . '\'', 1319550425);
 		}
+		// Check references
+		$countOfReferences = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows(
+			'*',
+			'sys_refindex',
+			'deleted=0 AND ref_table="sys_file" AND ref_uid=' . intval($fileObject->getUid())
+		);
+		if (!empty($countOfReferences)) {
+			throw new \TYPO3\CMS\Core\Resource\Exception\FileHasReferences('The file cannot be deleted since it is still used at some existing places', 1359018313);
+		}
+		// Delete file
 		$result = $this->driver->deleteFile($fileObject);
 		if ($result === FALSE) {
 			throw new \TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException('Deleting the file "' . $fileObject->getIdentifier() . '\' failed.', 1329831691);
 		}
 		// Mark the file object as deleted
 		$fileObject->setDeleted();
+		// Write changes to database
+		// ToDo: Move update delete property to a more appropriate place
+		$fileObject->updateProperties(array('deleted' => 1));
+		$this->getFileRepository()->update($fileObject);
 		return TRUE;
 	}
 
