@@ -217,15 +217,23 @@ class ExtensionManagementUtility {
 	 *
 	 * @param string $table The table name of a table already present in $GLOBALS['TCA'] with a columns section
 	 * @param array $columnArray The array with the additional columns (typical some fields an extension wants to add)
-	 * @param boolean $addTofeInterface If $addTofeInterface is TRUE the list of fields are also added to the fe_admin_fieldList.
+	 * @param boolean $addToFrontendInterface If $addTofeInterface is TRUE the list of fields are also added to the fe_admin_fieldList.
 	 * @return void
 	 */
-	static public function addTCAcolumns($table, $columnArray, $addTofeInterface = 0) {
-		if (is_array($columnArray) && is_array($GLOBALS['TCA'][$table]) && is_array($GLOBALS['TCA'][$table]['columns'])) {
-			// Candidate for \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge() if integer-keys will some day make trouble...
-			$GLOBALS['TCA'][$table]['columns'] = array_merge($GLOBALS['TCA'][$table]['columns'], $columnArray);
-			if ($addTofeInterface) {
-				$GLOBALS['TCA'][$table]['feInterface']['fe_admin_fieldList'] .= ',' . implode(',', array_keys($columnArray));
+	static public function addTCAcolumns($table, $columnArray, $addToFrontendInterface = FALSE) {
+		if (is_array($columnArray)) {
+			try {
+				/** @var $structureObject \TYPO3\CMS\Core\DataHandling\DataStructure */
+				$structureObject = \TYPO3\CMS\Core\DataHandling\DataStructure::getInstance($table);
+				// add each field to the table
+				foreach ($columnArray as $columnName => $columnConfiguration) {
+					$structureObject->addField($columnName, $columnConfiguration);
+					if ($addToFrontendInterface) {
+						$structureObject->addFieldToFrontendInterface($columnName);
+					}
+				}
+			} catch (\RuntimeException $e) {
+				// do nothing, so the behaviour is the same as before
 			}
 		}
 	}
