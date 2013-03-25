@@ -245,6 +245,30 @@ class SimpleFileBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend im
 	}
 
 	/**
+	 * @param string $entryIdentifier
+	 * @param string $filePath
+	 * @internal This is not an API method
+	 */
+	public function setLinkToPhpFile($entryIdentifier, $filePath) {
+		if (!file_exists($filePath)) {
+			throw new \InvalidArgumentException('The specified file path must exist.', 1364205235);
+		}
+		if (strtolower(substr($filePath, -3)) !== 'php') {
+			throw new \InvalidArgumentException('The specified file must be a php file.', 1364205377);
+		}
+		if ($entryIdentifier !== basename($entryIdentifier)) {
+			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1364205166);
+		}
+		if ($entryIdentifier === '') {
+			throw new \InvalidArgumentException('The specified entry identifier must not be empty.', 1364205170);
+		}
+		$cacheEntryPathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		if (@!symlink($filePath, $cacheEntryPathAndFilename)) {
+			$this->set($entryIdentifier, '<?php require \'' . $filePath . '\';');
+		}
+	}
+
+	/**
 	 * Loads data from a cache file.
 	 *
 	 * @param string $entryIdentifier An identifier which describes the cache entry to load
@@ -257,7 +281,7 @@ class SimpleFileBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend im
 			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1334756877);
 		}
 		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
-		if (!file_exists($pathAndFilename)) {
+		if (!file_exists($pathAndFilename) && !is_link($pathAndFilename)) {
 			return FALSE;
 		}
 		return file_get_contents($pathAndFilename);
@@ -275,7 +299,8 @@ class SimpleFileBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend im
 		if ($entryIdentifier !== basename($entryIdentifier)) {
 			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1334756878);
 		}
-		return file_exists($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension);
+		$pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
+		return file_exists($pathAndFilename) || is_link($pathAndFilename);
 	}
 
 	/**
@@ -359,7 +384,7 @@ class SimpleFileBackend extends \TYPO3\CMS\Core\Cache\Backend\AbstractBackend im
 		if ($entryIdentifier !== basename($entryIdentifier)) {
 			throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073036);
 		}
-		return file_exists($pathAndFilename) ? require_once $pathAndFilename : FALSE;
+		return (file_exists($pathAndFilename) || is_link($pathAndFilename)) ? require_once $pathAndFilename : FALSE;
 	}
 
 }

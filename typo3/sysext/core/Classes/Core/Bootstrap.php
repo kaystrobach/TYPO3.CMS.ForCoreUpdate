@@ -132,6 +132,7 @@ class Bootstrap {
 			->populateLocalConfiguration()
 			->registerExtDirectComponents()
 			->initializeCachingFramework()
+			->loadClassAliasMapCache()
 			->registerAutoloader()
 			->checkUtf8DatabaseSettingsOrDie()
 			->transferDeprecatedCurlSettings()
@@ -280,6 +281,16 @@ class Bootstrap {
 	 */
 	protected function initializeCachingFramework() {
 		\TYPO3\CMS\Core\Cache\Cache::initializeCachingFramework();
+		return $this;
+	}
+
+	/**
+	 *  Loads the class alias map cache
+	 *
+	 * @return \TYPO3\CMS\Core\Core\Bootstrap
+	 */
+	protected function loadClassAliasMapCache() {
+		\TYPO3\CMS\Core\Core\ClassAliasMap::loadClassAliasMapCache();
 		return $this;
 	}
 
