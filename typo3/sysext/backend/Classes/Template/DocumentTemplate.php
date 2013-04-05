@@ -1677,8 +1677,12 @@ class DocumentTemplate {
 	 * @return string JavaScript section for the HTML header.
 	 */
 	public function getDynTabMenu($menuItems, $identString, $toggle = 0, $foldout = FALSE, $noWrap = TRUE, $fullWidth = FALSE, $defaultTabIndex = 1, $dividers2tabs = 2) {
+
+            // include JS for TabMenu
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/TabMenu');
+
 		// Load the static code, if not already done with the function below
-		$this->loadJavascriptLib('js/tabmenu.js');
+		//$this->loadJavascriptLib('js/tabmenu.js');
 		$content = '';
 		if (is_array($menuItems)) {
 			// Init:
@@ -1702,30 +1706,34 @@ class DocumentTemplate {
 					$options[$tabRows] = array();
 				}
 				if ($toggle == 1) {
-					$onclick = 'this.blur(); DTM_toggle("' . $id . '","' . $index . '"); return false;';
+					$onclick = 'DTM_toggle("' . $id . '","' . $index . '"); return false;';
 				} else {
-					$onclick = 'this.blur(); DTM_activate("' . $id . '","' . $index . '", ' . ($toggle < 0 ? 1 : 0) . '); return false;';
+					$onclick = 'DTM_activate("' . $id . '","' . $index . '", ' . ($toggle < 0 ? 1 : 0) . '); return false;';
 				}
 				$isEmpty = !(strcmp(trim($def['content']), '') || strcmp(trim($def['icon']), ''));
 				// "Removes" empty tabs
 				if ($isEmpty && $dividers2tabs == 1) {
 					continue;
 				}
-				$mouseOverOut = ' onmouseover="DTM_mouseOver(this);" onmouseout="DTM_mouseOut(this);"';
+
 				$requiredIcon = '<img name="' . $id . '-' . $index . '-REQ" src="' . $GLOBALS['BACK_PATH'] . 'gfx/clear.gif" class="t3-TCEforms-reqTabImg" alt="" />';
 				if (!$foldout) {
 					// Create TAB cell:
 					$options[$tabRows][] = '
-							<td class="' . ($isEmpty ? 'disabled' : 'tab') . '" id="' . $id . '-' . $index . '-MENU"' . $noWrap . $mouseOverOut . '>' . ($isEmpty ? '' : '<a href="#" onclick="' . htmlspecialchars($onclick) . '"' . ($def['linkTitle'] ? ' title="' . htmlspecialchars($def['linkTitle']) . '"' : '') . '>') . $def['icon'] . ($def['label'] ? htmlspecialchars($def['label']) : '&nbsp;') . $requiredIcon . $this->icons($def['stateIcon'], 'margin-left: 10px;') . ($isEmpty ? '' : '</a>') . '</td>';
+						<li class="' . ($isEmpty ? 'disabled' : 'tab') . '" id="' . $id . '-' . $index . '-MENU"' . $noWrap . '>' .
+                            ($isEmpty ? '' : '<a href="#' . $id . '-' . $index . '" data-toggle="TabMenu" ' . ($def['linkTitle'] ? ' title="' . htmlspecialchars($def['linkTitle']) . '"' : '') . '>') . $def['icon'] . ($def['label'] ? htmlspecialchars($def['label']) : '&nbsp;') . $requiredIcon . $this->icons($def['stateIcon'], 'margin-left: 10px;') . ($isEmpty ? '' : '</a>') .
+                        '</li>';
 					$titleLenCount += strlen($def['label']);
 				} else {
 					// Create DIV layer for content:
 					$divs[] = '
-						<div class="' . ($isEmpty ? 'disabled' : 'tab') . '" id="' . $id . '-' . $index . '-MENU"' . $mouseOverOut . '>' . ($isEmpty ? '' : '<a href="#" onclick="' . htmlspecialchars($onclick) . '"' . ($def['linkTitle'] ? ' title="' . htmlspecialchars($def['linkTitle']) . '"' : '') . '>') . $def['icon'] . ($def['label'] ? htmlspecialchars($def['label']) : '&nbsp;') . $requiredIcon . ($isEmpty ? '' : '</a>') . '</div>';
+						<div class="' . ($isEmpty ? 'disabled' : 'tab') . '" id="' . $id . '-' . $index . '-MENU"'  . '>' .
+                            ($isEmpty ? '' : '<a href="#" onclick="' . htmlspecialchars($onclick) . '"' . ($def['linkTitle'] ? ' title="' . htmlspecialchars($def['linkTitle']) . '"' : '') . '>') . $def['icon'] . ($def['label'] ? htmlspecialchars($def['label']) : '&nbsp;') . $requiredIcon . ($isEmpty ? '' : '</a>') .
+                        '</div>';
 				}
 				// Create DIV layer for content:
 				$divs[] = '
-						<div style="display: none;" id="' . $id . '-' . $index . '-DIV" class="c-tablayer">' . ($def['description'] ? '<p class="c-descr">' . nl2br(htmlspecialchars($def['description'])) . '</p>' : '') . $def['content'] . '</div>';
+						<div style="display: none;" id="' . $id . '-' . $index . '" class="c-tablayer">' . ($def['description'] ? '<p class="c-descr">' . nl2br(htmlspecialchars($def['description'])) . '</p>' : '') . $def['content'] . '</div>';
 				// Create initialization string:
 				$JSinit[] = '
 						DTM_array["' . $id . '"][' . $c . '] = "' . $id . '-' . $index . '";
@@ -1747,11 +1755,9 @@ class DocumentTemplate {
 						$tabContent .= '
 
 					<!-- Tab menu -->
-					<table cellpadding="0" cellspacing="0" border="0"' . ($fullWidth ? ' width="100%"' : '') . ' class="typo3-dyntabmenu">
-						<tr>
-								' . implode('', $options[$a]) . '
-						</tr>
-					</table>';
+					<ul class="nav nav-tabs typo3-dyntabmenu" style="' . ($fullWidth ? ' width="100%"' : '') . '">
+						' . implode('', $options[$a]) . '
+					</ul>';
 					}
 					$content .= '<div class="typo3-dyntabmenu-tabs">' . $tabContent . '</div>';
 				}
@@ -1763,12 +1769,13 @@ class DocumentTemplate {
 				// Java Script section added:
 				$content .= '
 				<!-- Initialization JavaScript for the menu -->
+				<!--
 				<script type="text/javascript">
 					DTM_array["' . $id . '"] = new Array();
 					' . implode('', $JSinit) . '
 					' . ($toggle <= 0 ? 'DTM_activate("' . $id . '", top.DTM_currentTabs["' . $id . '"]?top.DTM_currentTabs["' . $id . '"]:' . intval($defaultTabIndex) . ', 0);' : '') . '
 				</script>
-
+                -->
 				';
 			}
 		}
