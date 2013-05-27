@@ -1404,11 +1404,6 @@ interface t3lib_extFileFunctions_processDataHook extends \TYPO3\CMS\Core\Utility
 /**
  * @deprecated since 6.0 will be removed in 7.0
  */
-class t3lib_div extends \TYPO3\CMS\Core\Utility\GeneralUtility {}
-
-/**
- * @deprecated since 6.0 will be removed in 7.0
- */
 class t3lib_utility_Http extends \TYPO3\CMS\Core\Utility\HttpUtility {}
 
 /**
