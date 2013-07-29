@@ -25,6 +25,11 @@
 				Test setup
 			</a>
 		</li>
+		<li id="t3-install-menu-updateWizard" class="{f:if(condition:'{action} == \'coreUpdater\'', then:'act')}">
+			<a href="Install.php?install[action]=coreUpdater&install[context]={context}&install[controller]=tool">
+				Core update
+			</a>
+		</li>
 		<li id="t3-install-menu-updateWizard" class="{f:if(condition:'{action} == \'updateWizard\'', then:'act')}">
 			<a href="Install.php?install[action]=updateWizard&install[context]={context}&install[controller]=tool">
 				Update wizard

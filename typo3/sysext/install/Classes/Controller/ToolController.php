@@ -44,6 +44,7 @@ class ToolController extends AbstractController {
 		'systemEnvironment',
 		'folderStructure',
 		'testSetup',
+		'coreUpdater',
 		'updateWizard',
 		'allConfiguration',
 		'cleanUp',
@@ -112,7 +113,7 @@ class ToolController extends AbstractController {
 		$toolAction = $this->objectManager->get('TYPO3\\CMS\\Install\\Controller\\Action\\Tool\\' . $actionClass);
 		if (!($toolAction instanceof \TYPO3\CMS\Install\Controller\Action\ActionInterface)) {
 			throw new Exception(
-				$action . ' does not implement ActionInterface',
+				$action . ' does non implement ActionInterface',
 				1369474308
 			);
 		}
